@@ -13,6 +13,7 @@
 
 The following directory structure is proposed in order to properly develop, test and maintain the Red5 XDN SaaS site:
 
+```sh
 - src
   - api
   - assets
@@ -34,6 +35,7 @@ The following directory structure is proposed in order to properly develop, test
   - store (if using redux)
   - styles
   - utils
+```
 
 * src - the top level directory, in which the index and App files reside. This loose structure was provided from CRA upon scaffolding.
 * assets - Any non-code related assets, such as logos and icons that are used site-wide.
