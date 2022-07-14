@@ -1,0 +1,67 @@
+{
+  "name": "watchparty-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@mui/material": "^5.9.0",
+    "@mui/styled-engine-sc": "^5.8.0",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^0.27.2",
+    "formik": "^2.2.9",
+    "formik-mui": "^5.0.0-alpha.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "5.0.1",
+    "styled-components": "^5.3.5",
+    "web-vitals": "^2.1.4",
+    "webrtc-adapter": "^8.1.1",
+    "yup": "^0.32.11"
+  },
+  "scripts": {
+    "start": "PORT=3006 react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint:check": "eslint src/**/*.tsx src/**/*.{tsx,ts}",
+    "lint:fix": "eslint src/**/*.tsx src/**/*.{tsx,ts} --fix",
+    "pretty:check": "prettier  --config .prettierrc.js  --check '{src}/**/*.{ts,tsx,js}'",
+    "pretty:fix": "prettier  --config .prettierrc.js  --write '{src}/**/*.{ts,tsx,js}'",
+    "prepare": "husky install"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.30.1",
+    "husky": "^8.0.1",
+    "prettier": "2.7.1",
+    "red5pro-webrtc-sdk": "^10.3.0",
+    "tss-react": "^3.7.1"
+  }
+}
