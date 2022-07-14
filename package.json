@@ -23,14 +23,14 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "PORT=3006 react-scripts start",
+    "start": "PORT=3006 export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start ",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint:check": "eslint src/**/*.tsx src/**/*.{tsx,ts}",
     "lint:fix": "eslint src/**/*.tsx src/**/*.{tsx,ts} --fix",
-    "pretty:check": "prettier  --config .prettierrc.js  --check '{src}/**/*.{ts,tsx,js}'",
-    "pretty:fix": "prettier  --config .prettierrc.js  --write '{src}/**/*.{ts,tsx,js}'",
+    "pretty:check": "prettier --config .prettierrc.js  --check src/**/*.{tsx,ts}",
+    "pretty:fix": "prettier --config .prettierrc.js  --write src/**/*.{tsx,ts}",
     "prepare": "husky install"
   },
   "eslintConfig": {
