@@ -27,10 +27,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint:check": "eslint src/**/*.tsx src/**/*.{tsx,ts}",
-    "lint:fix": "eslint src/**/*.tsx src/**/*.{tsx,ts} --fix",
-    "pretty:check": "prettier --config .prettierrc.js  --check src/**/*.{tsx,ts}",
-    "pretty:fix": "prettier --config .prettierrc.js  --write src/**/*.{tsx,ts}",
+    "lint:check": "eslint src/**/*.{tsx,ts,js}",
+    "lint:fix": "eslint src/**/*.{tsx,ts,js} --fix",
+    "pretty:check": "prettier --config .prettierrc.json  --check --ignore-unknown ./src/**/*.{tsx,ts,js}",
+    "pretty:fix": "prettier --config .prettierrc.json  --write --ignore-unknown ./src/**/*.{tsx,ts,js}",
     "prepare": "husky install"
   },
   "eslintConfig": {

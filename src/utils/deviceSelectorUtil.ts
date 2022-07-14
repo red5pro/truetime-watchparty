@@ -1,7 +1,4 @@
-const updateCameraDeviceList = (
-  videoTrack: any,
-  devices: MediaDeviceInfo[],
-) => {
+const updateCameraDeviceList = (videoTrack: any, devices: MediaDeviceInfo[]) => {
   const cameras = devices.filter((item: MediaDeviceInfo) => {
     return item.kind === 'videoinput'
   })
@@ -17,10 +14,7 @@ function updateAudioDeviceList(audioTrack: any, devices: MediaDeviceInfo[]) {
   return audioTrack ? [audioTrack, ...mics] : mics
 }
 
-export const allowMediaStreamSwap = async (
-  constraints: any,
-  mediaStream: any,
-) => {
+export const allowMediaStreamSwap = async (constraints: any, mediaStream: any) => {
   //beginMediaMonitor
   const tracks = mediaStream.getTracks()
   const audioTracks = tracks.filter((track: any) => {
@@ -37,7 +31,7 @@ export const allowMediaStreamSwap = async (
     const microphoneList = updateAudioDeviceList(
       audioTracks[0],
 
-      devices,
+      devices
     )
 
     return [cameraList, microphoneList]

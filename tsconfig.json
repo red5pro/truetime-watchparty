@@ -30,6 +30,6 @@
     "isolatedModules": true,
     "incremental": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js"],
   "exclude": ["__mocks__", "node_modules", ".vscode", "src/**/*.test.jsx"]
 }

@@ -15,7 +15,7 @@ module.exports = {
   ],
   settings: {
     'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx'],
+      '@typescript-eslint/parser': ['.js', '.ts', '.tsx'],
     },
   },
   parser: '@typescript-eslint/parser',

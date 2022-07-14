@@ -14,7 +14,7 @@ root.render(
     {/* <Typography variant='h3' variantMapping='h1'>
       FOOTER
     </Typography> */}
-  </React.StrictMode>,
+  </React.StrictMode>
 )
 
 // If you want to start measuring performance in your app, pass a function
