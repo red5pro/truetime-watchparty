@@ -5,6 +5,7 @@ import RoomContext from '../RoomContext/RoomContext'
 import MainVideo from '../MainVideo/MainVideo'
 import Loading from '../Loading/Loading'
 import { Box } from '@mui/material'
+import SubscribersPanel from '../SubscribersPanel/SubscribersPanel'
 
 interface ISubscriberProps {
   room: string
@@ -21,7 +22,7 @@ const Subscriber = (props: ISubscriberProps) => {
 
   const joinRoom = async (values: IRoomFormValues) => {
     const streamNameField = values.name ?? `publisher-${Math.floor(Math.random() * 0x10000).toString(16)}`
-    roomContext.setCurrentStreamName(streamNameField)
+    roomContext?.setCurrentStreamName(streamNameField)
 
     const elemId = `${streamNameField}-subscriber`
     setElementId(elemId)
@@ -46,6 +47,8 @@ const Subscriber = (props: ISubscriberProps) => {
       })
       await subscriber.subscribe()
 
+      console.log({ subscriber })
+
       setIsSubscribing(false)
       setIsSubscribed(true)
     } catch (error: any) {
@@ -59,8 +62,13 @@ const Subscriber = (props: ISubscriberProps) => {
     <>
       {!isSubscribed && !isSubscribing && <VideoPreview room={room} onJoinRoom={joinRoom} />}
       {isSubscribing && <Loading />}
-      <Box display={isSubscribed ? 'block' : 'none'}>
-        <MainVideo elementId={elementId} />
+      <Box display={isSubscribed ? 'flex' : 'none'}>
+        <Box width="75%">
+          <MainVideo elementId={elementId} />
+        </Box>
+        <Box width="25%">
+          <SubscribersPanel />
+        </Box>
       </Box>
     </>
   )

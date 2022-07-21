@@ -7,7 +7,19 @@ interface IRoomProviderProps {
   streamName?: string
 }
 
-const RoomContext = React.createContext<any>(null)
+interface IRoomContextProps {
+  room: string
+  streamName: string
+  setCurrentStreamName: (value: string) => void
+  mediaStream: MediaStream | undefined
+  constraints: any
+  setCameraSelected: (value: MediaDeviceInfo) => void
+  setMicrophoneSelected: (value: MediaDeviceInfo | any) => void
+  cameraSelected: MediaDeviceInfo | undefined
+  microphoneSelected: MediaDeviceInfo | any
+}
+
+const RoomContext = React.createContext<IRoomContextProps | null>(null)
 
 const RoomProvider = (props: IRoomProviderProps) => {
   const { children, room, streamName } = props
@@ -16,6 +28,8 @@ const RoomProvider = (props: IRoomProviderProps) => {
   const [constraints, setConstraints] = React.useState<any>()
   const [currentStreamName, setCurrentStreamName] = React.useState<string>('')
   const [roomName, setRoomName] = React.useState<string>('')
+  const [cameraSelected, setCameraSelected] = React.useState<MediaDeviceInfo>()
+  const [microphoneSelected, setMicrophoneSelected] = React.useState<MediaDeviceInfo | any>()
 
   React.useEffect(() => {
     getMediaStream()
@@ -59,6 +73,10 @@ const RoomProvider = (props: IRoomProviderProps) => {
     setCurrentStreamName,
     mediaStream,
     constraints,
+    setCameraSelected,
+    setMicrophoneSelected,
+    cameraSelected,
+    microphoneSelected,
   }
 
   return <RoomContext.Provider value={values}>{children}</RoomContext.Provider>

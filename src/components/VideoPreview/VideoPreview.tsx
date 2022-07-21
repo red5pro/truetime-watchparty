@@ -41,7 +41,7 @@ const VideoPreview = (props: IVideoPreviewProps) => {
   const roomContext = React.useContext(RoomContext.Context)
 
   React.useEffect(() => {
-    if (roomContext && roomContext.mediaStream) {
+    if (roomContext && roomContext?.mediaStream) {
       setMediaOptions()
     }
   }, [roomContext?.mediaStream])
@@ -49,23 +49,25 @@ const VideoPreview = (props: IVideoPreviewProps) => {
   React.useEffect(() => {
     if (micOptions.length) {
       setMicrophoneSelected(micOptions[0].deviceId)
+      roomContext?.setMicrophoneSelected(micOptions[0])
     }
   }, [micOptions])
 
   React.useEffect(() => {
     if (cameraOptions.length) {
       setCameraSelected(cameraOptions[0].deviceId ?? cameraOptions[0].id)
+      roomContext?.setCameraSelected(cameraOptions[0])
     }
   }, [cameraOptions])
 
   const setMediaOptions = async () => {
-    const [cameraList, microphoneList] = await allowMediaStreamSwap(roomContext.constraints, roomContext.mediaStream)
+    const [cameraList, microphoneList] = await allowMediaStreamSwap(roomContext?.constraints, roomContext?.mediaStream)
 
     if (videoRef) {
       const video: any = videoRef.current
 
-      if (video && roomContext.mediaStream) {
-        video.srcObject = roomContext.mediaStream
+      if (video && roomContext?.mediaStream) {
+        video.srcObject = roomContext?.mediaStream
         await video.play()
       }
     }
@@ -114,12 +116,14 @@ const VideoPreview = (props: IVideoPreviewProps) => {
             const value = ev?.target?.value
             setFieldValue('microphone', value.deviceId)
             setMicrophoneSelected(value.deviceId)
+            roomContext?.setMicrophoneSelected(value)
             // setSelectedMicrophoneIndexFromTrack(audioTrack, mics);
           }
           const cameraHandleChange = (ev: any) => {
             const value = ev?.target?.value
             setFieldValue('camera', value.deviceId ?? value.id)
             setCameraSelected(value.deviceId ?? value.id)
+            roomContext?.setCameraSelected(value)
             // setSelectedCameraIndexFromTrack(videoTrack, cameras)
           }
           return (
