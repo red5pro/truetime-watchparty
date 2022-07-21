@@ -1,4 +1,5 @@
 import adapter from 'webrtc-adapter'
+import { SERVER_HOST } from '../settings/variables'
 import { SessionStorage } from './sessionStorageUtils'
 
 const getParameterByName = (name: string, url?: string) => {
@@ -40,7 +41,7 @@ const setInSessionStorage = () => {
 
   const json = {
     version: buildVersion,
-    host: 'watchtest.red5.net',
+    host: SERVER_HOST,
     port: isSecure ? 443 : 5080,
     stream1: 'stream1',
     stream2: 'stream2',
@@ -107,7 +108,7 @@ const setInSessionStorage = () => {
     verboseLogging: true,
     recordBroadcast: false,
     muteOnAutoplayRestriction: true,
-    mediaElementId: 'red5pro-subscriber',
+    mediaElementId: '',
     subscriptionId: 'lou' + Math.floor(Math.random() * 0x10000).toString(16),
     // authentication: {
     //   enabled: false,

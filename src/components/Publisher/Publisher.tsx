@@ -2,20 +2,21 @@ import VideoPreview, { IRoomFormValues } from '../VideoPreview/VideoPreview'
 import { RTCPublisher } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
 import { getAuthenticationParams, getConfiguration, getServerSettings } from '../../utils/publishUtils'
-import RoomContext from '../RoomContext/RoomContext'
 import WatchContext from '../WatchContext/WatchContext'
+import RoomContext from '../RoomContext/RoomContext'
+import Loading from '../Loading/Loading'
+import MainVideo from '../MainVideo/MainVideo'
+import { Box } from '@mui/material'
+import { SERVER_HOST } from '../../settings/variables'
 
-interface IPublisherProps {
-  room: string
-  setRoom: (room: string) => void
-  setStream: (stream: string) => void
-}
-
-const Publisher = (props: IPublisherProps) => {
-  const { room, setRoom, setStream } = props
-
-  const roomContext = React.useContext(RoomContext.Context)
+const Publisher = () => {
   const watchContext = React.useContext(WatchContext.Context)
+  const roomContext = React.useContext(RoomContext.Context)
+
+  const [elementId, setElementId] = React.useState<string>('')
+  const [streamNameField, setStreamNameField] = React.useState<string>('')
+  const [isPublished, setIsPublished] = React.useState<boolean>(false)
+  const [isPublishing, setIsPublishing] = React.useState<boolean>(false)
 
   const getUserMediaConfiguration = (configuration: any) => {
     return {
@@ -79,6 +80,7 @@ const Publisher = (props: IPublisherProps) => {
 
   const processStreams = (list: any[], previousList: any, roomName: string, exclusion: string) => {
     console.log('TEST', `To streams: ${list}`)
+    debugger
 
     const nonPublishers = list.filter((name: string) => {
       return name !== exclusion
@@ -95,7 +97,7 @@ const Publisher = (props: IPublisherProps) => {
     console.log('TEST', `To add: ${toAdd}`)
     console.log('TEST', `To remove: ${toRemove}`)
 
-    roomContext.removeSubscribers(toRemove)
+    watchContext.removeSubscribers(toRemove)
     const configuration = getConfiguration()
     const authParams = getAuthenticationParams(configuration)
 
@@ -128,24 +130,27 @@ const Publisher = (props: IPublisherProps) => {
     // }
   }
 
-  const establishSocketHost = (publisher: any, roomName: string, streamName: string) => {
-    //if (hostSocket) return
+  const establishSocketHost = (roomName: string, streamName: string) => {
+    debugger
+    const { streamsList, hostSocket, setHostSocket } = watchContext
+
+    if (hostSocket) return
 
     const isSecure = window.location.protocol.includes('https')
     const wsProtocol = isSecure ? 'wss' : 'ws'
-    const host = location.host
-    // const url = `${wsProtocol}://${socketEndpoint}:8001?room=${roomName}&streamName=${streamName}`
-    // hacked to support remote server while doing local development
 
-    const url = `${wsProtocol}://${host}:8443?room=${roomName}&streamName=${streamName}`
-    const hostSocket = new WebSocket(url)
-    const { streamsList } = watchContext
-    hostSocket.onmessage = function (message) {
+    // hacked to support remote server while doing local development
+    const url = `${wsProtocol}://${SERVER_HOST}:8443?room=${roomName}&streamName=${streamName}`
+    const newHostSocket = new WebSocket(url)
+
+    newHostSocket.onmessage = function (message) {
       const payload = JSON.parse(message.data)
       if (roomName === payload.room) {
         processStreams(payload.streams, streamsList, roomName, streamName)
       }
     }
+
+    setHostSocket(newHostSocket)
   }
 
   const onResolutionUpdate = (frameWidth: number, frameHeight: number) => {
@@ -153,20 +158,13 @@ const Publisher = (props: IPublisherProps) => {
   }
 
   const onPublishSuccess = (publisher: any, roomName: string, streamName: string) => {
-    const isPublishing = true
-
-    console.log('[Red5ProPublisher] Publish Complete.')
-    //here remove hidden main video
-    //establishSharedObject(publisher, roomField.value, streamNameField.value)
     if (publisher.getType().toUpperCase() !== 'RTC') {
-      establishSocketHost(publisher, roomName, streamName)
+      establishSocketHost(roomName, streamName)
     }
     try {
       const pc = publisher.getPeerConnection()
       const stream = publisher.getMediaStream()
       // bitrateTrackingTicket = window.trackBitrate(pc, onBitrateUpdate, null, null, true)
-      //statisticsField.classList.remove('hidden')
-      // mainProgram.classList.remove('hidden')
       stream.getVideoTracks().forEach((track: any) => {
         const settings = track.getSettings()
         onResolutionUpdate(settings.width, settings.height)
@@ -177,7 +175,7 @@ const Publisher = (props: IPublisherProps) => {
   }
 
   const determinePublisher = async (mediaStream: MediaStream, room: string, name: string) => {
-    const configuration = getConfiguration()
+    const configuration = { ...getConfiguration(), mediaElementId: elementId }
     const authParams = getAuthenticationParams(configuration)
     const userMediaConf = getUserMediaConfiguration(configuration)
 
@@ -194,7 +192,7 @@ const Publisher = (props: IPublisherProps) => {
     const rtcConfig = Object.assign({}, config, {
       protocol: getSocketLocationFromProtocol().protocol,
       port: getSocketLocationFromProtocol().port,
-      host: location.host,
+      host: SERVER_HOST,
       bandwidth: {
         video: 256,
       },
@@ -202,11 +200,9 @@ const Publisher = (props: IPublisherProps) => {
       streamName: name,
     })
 
-    debugger
     const publisher = new RTCPublisher()
     const publisherInit = await publisher.init(rtcConfig)
 
-    console.log({ publisherInit })
     return publisherInit
   }
 
@@ -216,9 +212,10 @@ const Publisher = (props: IPublisherProps) => {
       await targetPublisher.publish()
 
       onPublishSuccess(targetPublisher, room, name)
-      // createMainVideo()
+
+      setIsPublishing(false)
+      setIsPublished(true)
     } catch (error) {
-      debugger
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error('[Red5ProPublisher] :: Error in publishing - ' + jsonError)
       console.error(error)
@@ -227,20 +224,30 @@ const Publisher = (props: IPublisherProps) => {
     }
   }
 
-  const joinRoom = (values: IRoomFormValues) => {
-    debugger
-    const streamNameField = values.name ?? `publisher-${Math.floor(Math.random() * 0x10000).toString(16)}`
+  React.useEffect(() => {
+    const streamNameField = Math.floor(Math.random() * 0x10000).toString(16)
+    setStreamNameField(streamNameField)
+    setElementId(`${streamNameField}-publisher`)
+  }, [])
 
-    setRoom(values.room)
-    setStream(streamNameField)
-
+  const createEvent = async (values: IRoomFormValues) => {
+    setIsPublishing(true)
     doPublish(values.room, streamNameField, roomContext.mediaStream)
-    // setPublishingUI(streamName);
+
+    // TODO
+    // setRoom(values.room)
+    // setStream(streamNameField)
+
+    // setPublishingUI(streamName)
   }
 
   return (
     <>
-      <VideoPreview room={room} onJoinRoom={joinRoom} />
+      {!isPublished && !isPublishing && <VideoPreview room={''} onJoinRoom={createEvent} />}
+      {isPublishing && <Loading />}
+      <Box display={isPublished ? 'block' : 'none'}>
+        <MainVideo elementId={elementId} />
+      </Box>
     </>
   )
 }

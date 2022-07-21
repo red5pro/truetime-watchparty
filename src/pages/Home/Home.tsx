@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import { Link } from 'react-router-dom'
 import useStyles from './Home.module'
 
@@ -9,8 +9,9 @@ const Home = () => {
       <nav>
         <Link to="/">Home</Link> | <Link to="about">About</Link>
       </nav>
-      <Typography>Initiate a new Conference</Typography>
-      {/* <VideoPreview onJoinRoom={() => console.log('join')} /> */}
+
+      <Link to="create">Initiate a new Conference</Link>
+      <Link to="red5pro">Red 5 Event</Link>
     </Box>
   )
 }

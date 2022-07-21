@@ -24,7 +24,7 @@ export interface IRoomFormValues {
 
 interface IVideoPreviewProps {
   room?: string
-  onJoinRoom: (values: IRoomFormValues) => void
+  onJoinRoom: (values: IRoomFormValues) => Promise<void>
 }
 
 const VideoPreview = (props: IVideoPreviewProps) => {
