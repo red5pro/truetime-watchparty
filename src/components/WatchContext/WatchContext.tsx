@@ -11,6 +11,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
   const { children } = props
 
   const [streamsList, setStreamsList] = React.useState<string[]>([])
+  const [hostSocket, setHostSocket] = React.useState<any>()
 
   const addSubscriber = (name: string) => {
     const list = [...streamsList, name]
@@ -31,6 +32,8 @@ const WatchProvider = (props: IWatchProviderProps) => {
     addSubscriber,
     removeSubscribers,
     streamsList,
+    hostSocket,
+    setHostSocket,
   }
 
   return <WatchContext.Provider value={exportedValues}>{children}</WatchContext.Provider>

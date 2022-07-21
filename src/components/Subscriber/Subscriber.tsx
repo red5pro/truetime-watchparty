@@ -6,6 +6,7 @@ import MainVideo from '../MainVideo/MainVideo'
 import Loading from '../Loading/Loading'
 import { Box } from '@mui/material'
 import SubscribersPanel from '../SubscribersPanel/SubscribersPanel'
+import { SERVER_HOST } from '../../settings/variables'
 
 interface ISubscriberProps {
   room: string
@@ -35,7 +36,7 @@ const Subscriber = (props: ISubscriberProps) => {
         app: 'live',
         port: 443,
         protocol: 'wss',
-        host: 'watchtest.red5.net',
+        host: SERVER_HOST,
         streamName: 'demo-stream', // Where does this came from? url?
         rtcConfiguration: {
           iceServers: [{ urls: 'stun:stun2.l.google.com:19302' }],
