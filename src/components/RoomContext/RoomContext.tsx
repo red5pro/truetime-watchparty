@@ -26,7 +26,7 @@ const RoomProvider = (props: IRoomProviderProps) => {
 
   const [mediaStream, setMediaStream] = React.useState<MediaStream>()
   const [constraints, setConstraints] = React.useState<any>()
-  const [currentStreamName, setCurrentStreamName] = React.useState<string>('')
+  const [currentStreamName, setCurrentStreamName] = React.useState<string>('lou-stream') //demo-stream: Stream with name demo-stream already has a broadcast session.
   const [roomName, setRoomName] = React.useState<string>('')
   const [cameraSelected, setCameraSelected] = React.useState<MediaDeviceInfo>()
   const [microphoneSelected, setMicrophoneSelected] = React.useState<MediaDeviceInfo | any>()
@@ -37,7 +37,7 @@ const RoomProvider = (props: IRoomProviderProps) => {
 
   React.useEffect(() => {
     if (streamName) {
-      setCurrentStreamName(streamName)
+      setCurrentStreamName('lou-stream')
     }
   }, [streamName])
 

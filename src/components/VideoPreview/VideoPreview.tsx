@@ -86,9 +86,6 @@ const VideoPreview = (props: IVideoPreviewProps) => {
   return (
     <Box>
       <CardContent className={classes.container}>
-        <Typography component="h5" variant="h5" textAlign="center" margin={3}>
-          Join the Party!
-        </Typography>
         <video
           ref={videoRef}
           width="100%"
