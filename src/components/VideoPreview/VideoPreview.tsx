@@ -1,11 +1,4 @@
-import {
-  Box,
-  CardContent,
-  ListItemText,
-  MenuItem,
-  Select,
-  Typography,
-} from '@mui/material'
+import { Box, CardContent, ListItemText, MenuItem, Select, Typography } from '@mui/material'
 import * as React from 'react'
 import { allowMediaStreamSwap } from '../../utils/deviceSelectorUtil'
 import useVideoStyles from './VideoPreview.module'
@@ -13,6 +6,7 @@ import { Button, LinearProgress } from '@mui/material'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-mui'
 import * as Yup from 'yup'
+import RoomContext from '../RoomContext/RoomContext'
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().max(50).required('Name field is required'),
@@ -21,7 +15,20 @@ const validationSchema = Yup.object().shape({
   microphone: Yup.string().max(50).required('Microphone field is required'),
 })
 
-const VideoPreview = () => {
+export interface IRoomFormValues {
+  name: string
+  room: string
+  camera: string
+  microphone: string
+}
+
+interface IVideoPreviewProps {
+  room?: string
+  onJoinRoom: (values: IRoomFormValues) => void
+}
+
+const VideoPreview = (props: IVideoPreviewProps) => {
+  const { room, onJoinRoom } = props
   const { classes } = useVideoStyles()
   const [cameraSelected, setCameraSelected] = React.useState<string>('')
   const [microphoneSelected, setMicrophoneSelected] = React.useState<string>('')
@@ -29,53 +36,39 @@ const VideoPreview = () => {
   const videoRef = React.useRef(null)
 
   // TODO Check how to remove this any
-  const [cameraOptions, setCameraOptions] = React.useState<
-    MediaDeviceInfo[] | any
-  >([])
+  const [cameraOptions, setCameraOptions] = React.useState<MediaDeviceInfo[] | any>([])
   const [micOptions, setMicOptions] = React.useState<MediaDeviceInfo[]>([])
+  const roomContext = React.useContext(RoomContext.Context)
 
   React.useEffect(() => {
-    getMediaStream()
-  }, [])
+    if (roomContext && roomContext?.mediaStream) {
+      setMediaOptions()
+    }
+  }, [roomContext?.mediaStream])
 
   React.useEffect(() => {
     if (micOptions.length) {
       setMicrophoneSelected(micOptions[0].deviceId)
+      roomContext?.setMicrophoneSelected(micOptions[0])
     }
   }, [micOptions])
 
   React.useEffect(() => {
     if (cameraOptions.length) {
       setCameraSelected(cameraOptions[0].deviceId ?? cameraOptions[0].id)
+      roomContext?.setCameraSelected(cameraOptions[0])
     }
   }, [cameraOptions])
 
-  const getMediaStream = async () => {
-    const constraints = {
-      audio: true,
-      video: {
-        width: {
-          ideal: 320,
-        },
-        height: {
-          ideal: 240,
-        },
-      },
-    }
-
-    const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
-
-    const [cameraList, microphoneList] = await allowMediaStreamSwap(
-      constraints,
-      mediaStream,
-    )
+  const setMediaOptions = async () => {
+    const [cameraList, microphoneList] = await allowMediaStreamSwap(roomContext?.constraints, roomContext?.mediaStream)
 
     if (videoRef) {
       const video: any = videoRef.current
 
-      if (video && mediaStream) {
-        video.srcObject = mediaStream
-        video.play()
+      if (video && roomContext?.mediaStream) {
+        video.srcObject = roomContext?.mediaStream
+        await video.play()
       }
     }
 
@@ -85,24 +78,21 @@ const VideoPreview = () => {
 
   const initialValues = {
     name: '',
-    room: '',
+    room: room ?? '',
     camera: cameraSelected ?? '',
     microphone: microphoneSelected ?? '',
   }
 
-  console.log({ cameraOptions, micOptions })
-
   return (
     <Box>
       <CardContent className={classes.container}>
-        <Typography component='h5' variant='h5' textAlign='center' margin={3}>
+        <Typography component="h5" variant="h5" textAlign="center" margin={3}>
           Join the Party!
         </Typography>
         <video
           ref={videoRef}
-          id='video'
-          width='100%'
-          height='100%'
+          width="100%"
+          height="100%"
           autoPlay
           muted
           playsInline
@@ -114,53 +104,43 @@ const VideoPreview = () => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            setSubmitting(false)
-            alert(JSON.stringify(values, null, 2))
-          }, 500)
+        onSubmit={async (values) => {
+          await onJoinRoom(values)
         }}
+        enableReinitialize
       >
         {(props: any) => {
           const { submitForm, isSubmitting, setFieldValue } = props
+
           const microHandleChange = (ev: any) => {
             const value = ev?.target?.value
             setFieldValue('microphone', value.deviceId)
             setMicrophoneSelected(value.deviceId)
+            roomContext?.setMicrophoneSelected(value)
             // setSelectedMicrophoneIndexFromTrack(audioTrack, mics);
           }
           const cameraHandleChange = (ev: any) => {
             const value = ev?.target?.value
             setFieldValue('camera', value.deviceId ?? value.id)
             setCameraSelected(value.deviceId ?? value.id)
+            roomContext?.setCameraSelected(value)
             // setSelectedCameraIndexFromTrack(videoTrack, cameras)
           }
           return (
             // TODO COLAPSE ADVANCE SETTINGS
             <Form>
-              <Box
-                display='flex'
-                width='30%'
-                margin='auto'
-                className={classes.formContainer}
-              >
+              <Box display="flex" width="30%" margin="auto" className={classes.formContainer}>
                 <Field
                   component={TextField}
-                  name='name'
-                  type='text'
-                  label='Enter Your Name'
+                  name="name"
+                  type="text"
+                  label="Enter Your Name"
                   className={classes.inputField}
                 />
-                <Field
-                  component={TextField}
-                  type='text'
-                  label='Room'
-                  name='room'
-                  className={classes.inputField}
-                />
+                <Field component={TextField} type="text" label="Room" name="room" className={classes.inputField} />
                 <Select
-                  id='camera'
-                  name='camera'
+                  id="camera"
+                  name="camera"
                   onChange={cameraHandleChange}
                   className={classes.inputField}
                   MenuProps={{
@@ -169,28 +149,18 @@ const VideoPreview = () => {
                     },
                   }}
                   value={cameraSelected}
-                  {...props}
                 >
-                  {cameraOptions.map(
-                    (opt: MediaDeviceInfo | any, key: number) => {
-                      return (
-                        <MenuItem
-                          value={opt.deviceId ?? opt.id}
-                          key={key}
-                          className={classes.menuItem}
-                        >
-                          <ListItemText className={classes.item}>{`${
-                            opt.label ?? 'camera '
-                          }${key}`}</ListItemText>
-                        </MenuItem>
-                      )
-                    },
-                  )}
+                  {cameraOptions.map((opt: MediaDeviceInfo | any, key: number) => {
+                    return (
+                      <MenuItem value={opt.deviceId ?? opt.id} key={key} className={classes.menuItem}>
+                        <ListItemText className={classes.item}>{`${opt.label ?? 'camera '}${key}`}</ListItemText>
+                      </MenuItem>
+                    )
+                  })}
                 </Select>
-                {console.log({ cameraSelected, microphoneSelected })}
                 <Select
-                  id='microphone'
-                  name='microphone'
+                  id="microphone"
+                  name="microphone"
                   onChange={microHandleChange}
                   value={microphoneSelected}
                   className={classes.inputField}
@@ -199,30 +169,18 @@ const VideoPreview = () => {
                       zIndex: 13000,
                     },
                   }}
-                  {...props}
                 >
                   {micOptions.map((opt: MediaDeviceInfo, key: number) => {
                     return (
-                      <MenuItem
-                        value={opt.deviceId}
-                        key={key}
-                        className={classes.menuItem}
-                      >
-                        <ListItemText className={classes.item}>{`${
-                          opt.label ?? 'camera '
-                        }${key}`}</ListItemText>
+                      <MenuItem value={opt.deviceId} key={key} className={classes.menuItem}>
+                        <ListItemText className={classes.item}>{`${opt.label ?? 'camera '}${key}`}</ListItemText>
                       </MenuItem>
                     )
                   })}
                 </Select>
                 {isSubmitting && <LinearProgress />}
                 <br />
-                <Button
-                  variant='contained'
-                  color='primary'
-                  disabled={isSubmitting}
-                  onClick={submitForm}
-                >
+                <Button variant="contained" color="primary" disabled={isSubmitting} onClick={submitForm}>
                   Join!
                 </Button>
               </Box>

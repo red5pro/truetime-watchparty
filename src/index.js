@@ -2,18 +2,15 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
 import AppRoutes from './routes/Routes'
-import { Typography } from '@mui/material'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
-    {/* <Typography variant='h3' variantMapping='h1'>
-      HEADER
-    </Typography> */}
+    {/* Header here */}
+
     <AppRoutes />
-    {/* <Typography variant='h3' variantMapping='h1'>
-      FOOTER
-    </Typography> */}
+
+    {/* Footer here */}
   </React.StrictMode>
 )
 

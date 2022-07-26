@@ -1,7 +1,5 @@
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
-// import TestSDK from '../../components/TestSDK/TestSDK'
-import VideoPreview from '../../components/VideoPreview/VideoPreview'
 import useStyles from './Home.module'
 
 const Home = () => {
@@ -9,10 +7,10 @@ const Home = () => {
   return (
     <Box className={classes.classes.container}>
       <nav>
-        <Link to='/'>Home</Link> | <Link to='about'>About</Link>
+        <Link to="/">Home</Link> | <Link to="about">About</Link>
       </nav>
-      {/* <TestSDK /> */}
-      <VideoPreview />
+      <Typography>Initiate a new Conference</Typography>
+      {/* <VideoPreview onJoinRoom={() => console.log('join')} /> */}
     </Box>
   )
 }
