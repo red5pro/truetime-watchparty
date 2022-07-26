@@ -53,40 +53,7 @@ const Publisher = () => {
       : { protocol: 'wss', port: settings?.wssport ?? '' }
   }
 
-  const positionExisting = (list: string[] = []) => {
-    list.forEach((name, index) => {
-      // TODO need to know what is this for
-      console.log({ name, index })
-
-      // const elementContainer = document.getElementById(
-      //   window.getConferenceSubscriberElementContainerId(name),
-      // );
-      // if (elementContainer && index < bottomRowLimit) {
-      //   if (
-      //     elementContainer.parentNode &&
-      //     elementContainer.parentNode !== bottomSubscribersEl
-      //   ) {
-      //     elementContainer.parentNode.removeChild(elementContainer);
-      //     bottomSubscribersEl.appendChild(elementContainer);
-      //   }
-      // } else if (elementContainer) {
-      //   if (
-      //     elementContainer.parentNode &&
-      //     elementContainer.parentNode !== sideSubscribersEl
-      //   ) {
-      //     elementContainer.parentNode.removeChild(elementContainer);
-      //     sideSubscribersEl.appendChild(elementContainer);
-      //   }
-      // }
-    })
-  }
-
-  const relayout = () => console.log('relayout')
-
   const processStreams = (list: any[], previousList: any, roomName: string, exclusion: string) => {
-    console.log('TEST', `To streams: ${list}`)
-    debugger
-
     const nonPublishers = list.filter((name: string) => {
       return name !== exclusion
     })
@@ -99,14 +66,11 @@ const Publisher = () => {
       return [existing, toAdd, toRemove]
     })
 
-    console.log('TEST', `To add: ${toAdd}`)
-    console.log('TEST', `To remove: ${toRemove}`)
-
     watchContext.removeSubscribers(toRemove)
     const configuration = getConfiguration()
     const authParams = getAuthenticationParams(configuration)
 
-    positionExisting(existing)
+    // positionExisting(existing)
     // let lastIndex = existing.length
     // const subscribers = toAdd.map((name: string, index: number) => {
     //   // const parent = lastIndex++ < bottomRowLimit ? bottomSubscribersEl : sideSubscribersEl
