@@ -4,8 +4,9 @@ import VideoPreview, { IRoomFormValues } from '../VideoPreview/VideoPreview'
 import RoomContext from '../RoomContext/RoomContext'
 import MainVideo from '../MainVideo/MainVideo'
 import Loading from '../Loading/Loading'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import SubscribersPanel from '../SubscribersPanel/SubscribersPanel'
+import { SERVER_HOST } from '../../settings/variables'
 
 interface ISubscriberProps {
   room: string
@@ -35,8 +36,8 @@ const Subscriber = (props: ISubscriberProps) => {
         app: 'live',
         port: 443,
         protocol: 'wss',
-        host: 'watchtest.red5.net',
-        streamName: 'demo-stream', // Where does this came from? url?
+        host: SERVER_HOST,
+        streamName: roomContext?.streamName,
         rtcConfiguration: {
           iceServers: [{ urls: 'stun:stun2.l.google.com:19302' }],
           iceCandidatePoolSize: 2,
@@ -46,8 +47,6 @@ const Subscriber = (props: ISubscriberProps) => {
         subscriptionId: `${streamNameField}-${Math.floor(Math.random() * 0x10000).toString(16)}`,
       })
       await subscriber.subscribe()
-
-      console.log({ subscriber })
 
       setIsSubscribing(false)
       setIsSubscribed(true)
@@ -60,6 +59,9 @@ const Subscriber = (props: ISubscriberProps) => {
 
   return (
     <>
+      <Typography component="h5" variant="h5" textAlign="center" margin={3}>
+        Join the Party!
+      </Typography>
       {!isSubscribed && !isSubscribing && <VideoPreview room={room} onJoinRoom={joinRoom} />}
       {isSubscribing && <Loading />}
       <Box display={isSubscribed ? 'flex' : 'none'}>

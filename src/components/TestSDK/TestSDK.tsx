@@ -1,12 +1,13 @@
 import { Box } from '@mui/material'
 import React from 'react'
 import { RTCPublisher, RTCSubscriber } from 'red5pro-webrtc-sdk'
+import { SERVER_HOST } from '../../settings/variables'
 
 const isSecure = false
 
 const config = {
   protocol: isSecure ? 'wss' : 'ws',
-  host: 'watchtest.red5.net',
+  host: SERVER_HOST,
   port: isSecure ? 443 : 5080,
   app: 'live',
   streamName: 'mystream',
