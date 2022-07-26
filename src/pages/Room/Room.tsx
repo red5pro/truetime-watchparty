@@ -6,6 +6,7 @@ import RoomContext from '../../components/RoomContext/RoomContext'
 import * as React from 'react'
 
 import Subscriber from '../../components/Subscriber/Subscriber'
+import WatchContext from '../../components/WatchContext/WatchContext'
 
 const Room = () => {
   const params = useParams()
@@ -14,7 +15,9 @@ const Room = () => {
   return (
     <Box className={classes.classes.container}>
       <RoomContext.Provider room={params.room ?? ''}>
-        <Subscriber room={params.room ?? ''} />
+        <WatchContext.Provider>
+          <Subscriber room={params.room ?? ''} />
+        </WatchContext.Provider>
       </RoomContext.Provider>
     </Box>
   )

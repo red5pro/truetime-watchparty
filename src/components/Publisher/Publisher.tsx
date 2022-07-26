@@ -11,12 +11,14 @@ import { SERVER_HOST } from '../../settings/variables'
 import SubscribersPanel from '../SubscribersPanel/SubscribersPanel'
 import PhoneDisabledIcon from '@mui/icons-material/PhoneDisabled'
 import usePublisherStyles from './Publisher.module'
+import SubscribersPanelList from '../SubscribersPanel/SubscribersPanelList'
 
 const Publisher = () => {
   const watchContext = React.useContext(WatchContext.Context)
   const roomContext = React.useContext(RoomContext.Context)
 
   const [elementId, setElementId] = React.useState<string>('')
+  const [bitrateTrackingTicket, setBitrateTrackingTicket] = React.useState<string>('')
   const [isPublished, setIsPublished] = React.useState<boolean>(false)
   const [isPublishing, setIsPublishing] = React.useState<boolean>(false)
   const [publisher, setPublisher] = React.useState<any>()
@@ -44,6 +46,7 @@ const Publisher = () => {
     }
   }
 
+  // TODO: REMOVE DUPLICATE CODE HERE WITH WATCHCONTEXT
   const getSocketLocationFromProtocol = () => {
     const settings = getServerSettings()
     const isSecure = window.location.protocol.includes('https')
@@ -126,11 +129,11 @@ const Publisher = () => {
     // updateStatistics(bitrate, packetsSent, frameWidth, frameHeight);
   }
 
-  const onPublishSuccess = (publisher: any, roomName: string) => {
+  const onPublishSuccess = (publisher: any, roomName: string, streamName: string) => {
     setPublisher(publisher)
 
     if (publisher.getType().toUpperCase() !== 'RTC') {
-      establishSocketHost(roomName)
+      watchContext.methods.establishSocketHost(roomName, roomContext?.streamName ?? '')
     }
     try {
       const connection = publisher.getPeerConnection()
@@ -141,7 +144,17 @@ const Publisher = () => {
       sender.replaceTrack(broadcastTrack)
 
       const stream = publisher.getMediaStream()
-      // bitrateTrackingTicket = window.trackBitrate(pc, onBitrateUpdate, null, null, true)
+      const bitrateTrackingTicket = watchContext.methods.trackBitrate(
+        connection,
+        null,
+        false,
+        true,
+        roomName,
+        streamName
+      )
+
+      setBitrateTrackingTicket(bitrateTrackingTicket)
+
       stream.getVideoTracks().forEach((track: any) => {
         const settings = track.getSettings()
         onResolutionUpdate(settings.width, settings.height)
@@ -171,7 +184,8 @@ const Publisher = () => {
       port: getSocketLocationFromProtocol().port,
       host: SERVER_HOST,
       bandwidth: {
-        video: 256,
+        video: 750,
+        audio: 56,
       },
       app: `live`,
       streamName: roomContext?.streamName ?? '',
@@ -184,15 +198,14 @@ const Publisher = () => {
   }
 
   const onPublisherEvent = (event: any) => {
-    console.log('[Red5ProPublisher]: PublisherEvent ' + event.type + '.')
     if (event.type === 'WebSocket.Message.Unhandled') {
-      console.log(event)
+      console.log('[Red5ProPublisher]: PublisherEvent ' + event.type + '.')
     } else if (event.type === RTCPublisherEventTypes.MEDIA_STREAM_AVAILABLE) {
       //      window.allowMediaStreamSwap(targetPublisher, targetPublisher.getOptions().mediaConstraints, document.getElementById('red5pro-publisher'));
     } else if (event.type === 'Publisher.Connection.Closed') {
       // notifyOfPublishFailure();
     }
-    // updateStatusFromEvent(event);
+    watchContext.methods.updateSuscriberStatusFromEvent(event)
     return
   }
 
@@ -202,7 +215,7 @@ const Publisher = () => {
       targetPublisher.on('*', onPublisherEvent)
       await targetPublisher.publish() // targetPublisher.publish(name)
 
-      onPublishSuccess(targetPublisher, room)
+      onPublishSuccess(targetPublisher, room, name)
 
       setIsPublishing(false)
       setIsPublished(true)
@@ -241,6 +254,7 @@ const Publisher = () => {
         publisher.off('*', onPublisherEvent)
         window.location.href = '/'
       })
+      watchContext.methods.untrackBitrate(bitrateTrackingTicket)
     } catch (error) {
       console.log(error)
       window.location.href = '/'
@@ -260,7 +274,8 @@ const Publisher = () => {
           <MainVideo elementId={elementId} />
         </Box>
         <Box width="25%">
-          <SubscribersPanel isPublisher />
+          {/* <SubscribersPanel isPublisher /> */}
+          <SubscribersPanelList />
         </Box>
         <Box className={classes.hangOff}>
           <PhoneDisabledIcon fontSize="large" onClick={hangOff} />

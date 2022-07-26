@@ -50,8 +50,8 @@ const setInSessionStorage = () => {
     embedHeight: 480,
     buffer: 0.5,
     bandwidth: {
-      audio: 56,
       video: 750,
+      audio: 56,
     },
     signalingSocketOnly: true,
     keyFramerate: 3000,
