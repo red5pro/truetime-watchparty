@@ -23,10 +23,6 @@ const defineIceServers = (jsonInput: any) => {
     } else {
       jsonOutput.rtcConfiguration.iceServers = jsonInput.googleIce
     }
-
-    console.log(
-      'ICE server provided in query param: ' + JSON.stringify(jsonOutput.rtcConfiguration.iceServers, null, 2)
-    )
   }
   return jsonOutput
 }
