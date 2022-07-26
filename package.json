@@ -24,6 +24,7 @@
   },
   "scripts": {
     "start": "PORT=3006 export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start ",
+    "start:debug": "PORT=3006 BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' export HTTPS=false&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start ",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
