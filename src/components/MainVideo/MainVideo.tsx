@@ -7,7 +7,7 @@ interface IMainVideoProps {
 }
 
 const MainVideo = ({ elementId }: IMainVideoProps) => {
-  const videoRef = React.useRef(null)
+  const videoRef: any = React.useRef(null)
 
   const { classes } = useMainVideoStyles()
 
