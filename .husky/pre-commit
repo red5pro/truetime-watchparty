@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run lint:check
+npm run pretty:check
+# npm run build
+# npm run test --silent -- --watchAll=false --passWithNoTests
+
