@@ -1,4 +1,5 @@
 import adapter from 'webrtc-adapter'
+import { SERVER_HOST } from '../settings/variables'
 import { SessionStorage } from './sessionStorageUtils'
 
 const getParameterByName = (name: string, url?: string) => {
@@ -22,10 +23,6 @@ const defineIceServers = (jsonInput: any) => {
     } else {
       jsonOutput.rtcConfiguration.iceServers = jsonInput.googleIce
     }
-
-    console.log(
-      'ICE server provided in query param: ' + JSON.stringify(jsonOutput.rtcConfiguration.iceServers, null, 2)
-    )
   }
   return jsonOutput
 }
@@ -40,7 +37,7 @@ const setInSessionStorage = () => {
 
   const json = {
     version: buildVersion,
-    host: 'watchtest.red5.net',
+    host: SERVER_HOST,
     port: isSecure ? 443 : 5080,
     stream1: 'stream1',
     stream2: 'stream2',
@@ -53,8 +50,8 @@ const setInSessionStorage = () => {
     embedHeight: 480,
     buffer: 0.5,
     bandwidth: {
-      audio: 56,
       video: 750,
+      audio: 56,
     },
     signalingSocketOnly: true,
     keyFramerate: 3000,
@@ -107,7 +104,7 @@ const setInSessionStorage = () => {
     verboseLogging: true,
     recordBroadcast: false,
     muteOnAutoplayRestriction: true,
-    mediaElementId: 'red5pro-subscriber',
+    mediaElementId: '',
     subscriptionId: 'lou' + Math.floor(Math.random() * 0x10000).toString(16),
     // authentication: {
     //   enabled: false,
