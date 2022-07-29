@@ -102,29 +102,6 @@ const Publisher = () => {
     // }
   }
 
-  const establishSocketHost = (roomName: string) => {
-    const { streamsList, hostSocket, setHostSocket } = watchContext
-    const streamName = roomContext?.streamName ?? ''
-
-    if (hostSocket) return
-
-    const isSecure = window.location.protocol.includes('https')
-    const wsProtocol = isSecure ? 'wss' : 'ws'
-
-    // hacked to support remote server while doing local development
-    const url = `${wsProtocol}://${SERVER_HOST}:8443?room=${roomName}&streamName=${streamName}`
-    const newHostSocket = new WebSocket(url)
-
-    newHostSocket.onmessage = function (message) {
-      const payload = JSON.parse(message.data)
-      if (roomName === payload.room) {
-        processStreams(payload.streams, streamsList, roomName, streamName)
-      }
-    }
-
-    setHostSocket(newHostSocket)
-  }
-
   const onResolutionUpdate = (frameWidth: number, frameHeight: number) => {
     // updateStatistics(bitrate, packetsSent, frameWidth, frameHeight);
   }
@@ -197,13 +174,19 @@ const Publisher = () => {
     return publisherInit
   }
 
+  const notifyOfPublishFailure = () => {
+    console.log('There seems to be an issue with broadcasting your stream. Please reload this page and join again.')
+    alert('There seems to be an issue with broadcasting your stream. Please reload this page and join again.')
+  }
+
   const onPublisherEvent = (event: any) => {
+    console.log('[Red5ProPublisher] ' + event.type + '.')
     if (event.type === 'WebSocket.Message.Unhandled') {
-      console.log('[Red5ProPublisher]: PublisherEvent ' + event.type + '.')
+      console.log(event)
     } else if (event.type === RTCPublisherEventTypes.MEDIA_STREAM_AVAILABLE) {
       //      window.allowMediaStreamSwap(targetPublisher, targetPublisher.getOptions().mediaConstraints, document.getElementById('red5pro-publisher'));
     } else if (event.type === 'Publisher.Connection.Closed') {
-      // notifyOfPublishFailure();
+      notifyOfPublishFailure()
     }
     watchContext.methods.updateSuscriberStatusFromEvent(event)
     return

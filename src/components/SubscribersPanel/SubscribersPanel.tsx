@@ -71,7 +71,7 @@ const SubscribersPanel = ({ isPublisher }: ISubscribersPanelProps) => {
         onContextMenu={() => false}
         className={classes.video}
       />
-      {isPublisher && (
+      {
         <Box display="flex" justifyContent="flex-end" className={classes.mediaControlsContainer}>
           <Box component="div" onClick={toggleCamera}>
             {cameraOn ? <VideocamIcon fontSize="large" /> : <VideocamOffIcon fontSize="large" />}
@@ -80,7 +80,7 @@ const SubscribersPanel = ({ isPublisher }: ISubscribersPanelProps) => {
             {micOn ? <MicIcon fontSize="large" /> : <MicOffIcon fontSize="large" />}
           </Box>
         </Box>
-      )}
+      }
     </CardContent>
   )
 }

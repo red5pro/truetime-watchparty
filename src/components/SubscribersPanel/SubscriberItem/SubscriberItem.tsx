@@ -4,7 +4,6 @@ import * as React from 'react'
 import { getAuthenticationParams, getConfiguration } from '../../../utils/publishUtils'
 import WatchContext from '../../WatchContext/WatchContext'
 import useItemStyles from './SubscriberItem.module'
-import RoomContext from '../../RoomContext/RoomContext'
 
 interface ISubscriberItemProps {
   name: string
@@ -13,12 +12,9 @@ interface ISubscriberItemProps {
 const SubscriberItem = ({ name }: ISubscriberItemProps) => {
   const { classes } = useItemStyles()
   const videoRef = React.useRef(null)
-  const elemId = `${name}-subscriber}`
+  const elemId = `${name}-subscriber`
 
   const watchContext = React.useContext(WatchContext.Context)
-  const roomContext = React.useContext(RoomContext.Context)
-
-  console.log('StreamName', roomContext?.streamName)
 
   React.useEffect(() => {
     if (name) {

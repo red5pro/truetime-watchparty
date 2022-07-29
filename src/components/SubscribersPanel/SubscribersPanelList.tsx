@@ -22,7 +22,7 @@ const SubscribersPanelList = ({ isPublisher }: ISubscribersPanelProps) => {
   }, [watchContext.streamsList, watchContext.streamsList.length])
 
   const showSubscribersInPanel = async () => {
-    console.log(watchContext.streamsList)
+    console.log('showSubscribersInPanel', watchContext.streamsList)
   }
 
   return (
