@@ -49,7 +49,7 @@ const Publisher = () => {
   // TODO: REMOVE DUPLICATE CODE HERE WITH WATCHCONTEXT
   const getSocketLocationFromProtocol = () => {
     const settings = getServerSettings()
-    const isSecure = window.location.protocol.includes('https')
+    const isSecure = window.location.protocol.includes('https') || window.location.hostname.includes('localhost')
 
     return !isSecure
       ? { protocol: 'ws', port: settings?.wsport ?? '' }
@@ -164,12 +164,14 @@ const Publisher = () => {
         video: 750,
         audio: 56,
       },
-      app: `live`,
-      streamName: roomContext?.streamName ?? '',
+      app: `live/${roomContext?.room}` ?? 'live',
+      streamName: roomContext?.streamName ?? 'stream1',
+      clearMediaOnUnpublish: true,
     })
 
+    const stream = roomContext?.mediaStream
     const publisher = new RTCPublisher()
-    const publisherInit = await publisher.init(rtcConfig)
+    const publisherInit = await publisher.initWithStream(rtcConfig, stream)
 
     return publisherInit
   }
@@ -215,7 +217,6 @@ const Publisher = () => {
 
   React.useEffect(() => {
     const streamNameField = Math.floor(Math.random() * 0x10000).toString(16)
-
     setElementId(`${streamNameField}-publisher`)
   }, [])
 
@@ -223,6 +224,8 @@ const Publisher = () => {
     setIsPublishing(true)
 
     if (roomContext?.mediaStream) {
+      roomContext.room = values.room
+      roomContext.streamName = values.name
       doPublish(values.room, values.name)
     }
   }
@@ -249,7 +252,7 @@ const Publisher = () => {
       <Typography component="h5" variant="h5" textAlign="center" margin={3}>
         Create a New Party!
       </Typography>
-      {!isPublished && !isPublishing && <VideoPreview room={''} onJoinRoom={createEvent} />}
+      {!isPublished && !isPublishing && <VideoPreview room={roomContext?.room} onJoinRoom={createEvent} />}
       {isPublishing && <Loading />}
 
       <Box display={isPublished ? 'flex' : 'none'}>
