@@ -1,0 +1,107 @@
+import { makeStyles } from 'tss-react/mui'
+
+import { BUTTONSIZE } from './CustomButton'
+
+const getRootStyles = (size: BUTTONSIZE, theme: any) =>
+  ({
+    [BUTTONSIZE.SMALL]: {
+      '& > *': {
+        margin: theme.spacing(1),
+        fontSize: '14px',
+        lineHeight: '18',
+        minWidth: '139px',
+        padding: '8px',
+        boxShadow: 'none',
+        fontWeight: 700,
+        fontStyle: 'normal',
+        cursor: 'pointer',
+        transition: '.3s all',
+        height: '32px',
+        [theme.breakpoints.down('md')]: {
+          fontSize: '11px',
+        },
+      },
+      '& p': {
+        fontSize: '14px',
+        fontWeight: 700,
+        [theme.breakpoints.down('md')]: {
+          fontSize: '11px',
+        },
+      },
+    },
+    [BUTTONSIZE.MEDIUM]: {
+      '& > *': {
+        margin: theme.spacing(1),
+        fontSize: '16px',
+        lineHeight: '18',
+        minWidth: '190px',
+        padding: '8px',
+        boxShadow: 'none',
+        fontWeight: 700,
+        fontStyle: 'normal',
+        cursor: 'pointer',
+        transition: '.3s all',
+        height: '40px',
+        [theme.breakpoints.down('md')]: {
+          fontSize: '14px',
+          minWidth: 'auto',
+        },
+      },
+      '& p': {
+        fontSize: '16px',
+        fontWeight: 700,
+        [theme.breakpoints.down('md')]: {
+          fontSize: '14px',
+        },
+      },
+    },
+    [BUTTONSIZE.LARGE]: {
+      '& > *': {
+        margin: theme.spacing(1),
+        fontSize: '20px',
+        lineHeight: '18',
+        minWidth: '210px',
+        padding: '8px',
+        boxShadow: 'none',
+        fontWeight: 700,
+        fontStyle: 'normal',
+        cursor: 'pointer',
+        transition: '.3s all',
+        height: '54px',
+        [theme.breakpoints.down('md')]: {
+          fontSize: '18px',
+        },
+      },
+      '& p': {
+        fontSize: '20px',
+        fontWeight: 700,
+        [theme.breakpoints.down('md')]: {
+          fontSize: '18px',
+        },
+      },
+    },
+  }[size])
+
+const useStyles = (size: BUTTONSIZE) =>
+  makeStyles()((theme: any) => ({
+    root: getRootStyles(size, theme),
+    primary: {
+      boxSizing: 'border-box',
+      backgroundColor: '#FFFFFF',
+      borderRadius: '24px',
+      width: '130px',
+      height: '35px',
+      border: '1px solid rgba(255, 255, 255, 0.15)',
+      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
+      backdropFilter: 'blur(24px)',
+      color: 'rgba(27, 27, 27, 0.95)',
+      '& > *': {
+        fill: 'rgba(27, 27, 27, 0.95)',
+      },
+      '&:hover': {
+        backgroundColor: '#FFFFFF',
+      },
+    },
+  }))
+
+export default useStyles
