@@ -57,7 +57,11 @@ const Subscriber = (props: ISubscriberProps) => {
 
   const joinRoom = async (values: IRoomFormValues) => {
     const streamNameField = values.name ?? `publisher-${Math.floor(Math.random() * 0x10000).toString(16)}`
-    roomContext?.setCurrentStreamName(streamNameField)
+    // roomContext?.setCurrentStreamName(streamNameField)
+    if (roomContext) {
+      roomContext.room = values.room
+      roomContext.streamName = values.name
+    }
 
     const elemId = `${streamNameField}-subscriber`
     setElementId(elemId)
@@ -67,7 +71,7 @@ const Subscriber = (props: ISubscriberProps) => {
     setIsSubscribing(true)
     try {
       await subscriber.init({
-        app: 'live',
+        app: `live/${roomContext?.room}`,
         port: 443,
         protocol: 'wss',
         host: SERVER_HOST,
@@ -78,14 +82,14 @@ const Subscriber = (props: ISubscriberProps) => {
           bundlePolicy: 'max-bundle',
         },
         mediaElementId: elemId,
-        subscriptionId: `${streamNameField}-subscription`,
+        subscriptionId: `${roomContext?.streamName}-${Math.floor(Math.random() * 0x10000).toString(16)}`,
       })
       await subscriber.subscribe()
       subscriber.on('*', (ev: Event) => onSubscriberEvent(ev))
 
       console.log({ subscriber })
 
-      watchContext.methods.establishSocketHost(roomContext?.room, values.name)
+      watchContext.methods.establishSocketHost(roomContext?.room, roomContext?.streamName)
 
       setIsSubscribing(false)
       setIsSubscribed(true)
