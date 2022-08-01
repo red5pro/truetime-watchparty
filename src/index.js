@@ -2,36 +2,25 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import reportWebVitals from './reportWebVitals'
 import AppRoutes from './routes/routes'
-import { ThemeProvider, createTheme } from '@mui/material'
-import './assets/styles/index.css'
-
-const theme = createTheme({
-  typography: {
-    fontFamily: [
-      'GeneralSans-Variable',
-      'GeneralSans-VariableItalic',
-      'GeneralSans-Extralight',
-      'GeneralSans-ExtralightItalic',
-      'GeneralSans-Light',
-      'GeneralSans-LightItalic',
-      'GeneralSans-Regular',
-      'GeneralSans-Italic',
-      'GeneralSans-Medium',
-      'GeneralSans-MediumItalic',
-      'GeneralSans-Semibold',
-      'GeneralSans-SemiboldItalic',
-      'GeneralSans-Bold',
-      'GeneralSans-BoldItalic',
-    ].join(','),
-  },
-})
+import { CssBaseline, GlobalStyles } from '@mui/material'
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
+import { mergeThemes } from '../src/utils/theme'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
     {/* Header here */}
-    <ThemeProvider theme={theme}>
-      <AppRoutes />
+    <ThemeProvider theme={mergeThemes()}>
+      <CssBaseline />
+      <GlobalStyles
+        styles={{
+          body: { backgroundColor: '#19191A' },
+          a: { fontFamily: 'GeneralSans-Regular', color: '#ffffff' },
+        }}
+      />
+      <StyledEngineProvider injectFirst>
+        <AppRoutes />
+      </StyledEngineProvider>
     </ThemeProvider>
     {/* Footer here */}
   </React.StrictMode>
