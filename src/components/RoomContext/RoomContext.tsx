@@ -5,10 +5,13 @@ interface IRoomProviderProps {
   children: any
   room?: string
   streamName?: string
+  mainStreamName?: string
 }
 
 interface IRoomContextProps {
   room: string
+  mainEventStreamName: string
+  setMainEventStreamName: (value: string) => void
   streamName: string
   setCurrentStreamName: (value: string) => void
   mediaStream: MediaStream | undefined
@@ -22,10 +25,11 @@ interface IRoomContextProps {
 const RoomContext = React.createContext<IRoomContextProps | null>(null)
 
 const RoomProvider = (props: IRoomProviderProps) => {
-  const { children, room, streamName } = props
+  const { children, room, streamName, mainStreamName } = props
 
   const [mediaStream, setMediaStream] = React.useState<MediaStream>()
   const [constraints, setConstraints] = React.useState<any>()
+  const [mainEventStreamName, setMainEventStreamName] = React.useState<string>('demo-stream') //demo-stream: Stream with name demo-stream already has a broadcast session.
   const [currentStreamName, setCurrentStreamName] = React.useState<string>('lou-stream') //demo-stream: Stream with name demo-stream already has a broadcast session.
   const [roomName, setRoomName] = React.useState<string>('')
   const [cameraSelected, setCameraSelected] = React.useState<MediaDeviceInfo>()
@@ -37,9 +41,15 @@ const RoomProvider = (props: IRoomProviderProps) => {
 
   React.useEffect(() => {
     if (streamName) {
-      setCurrentStreamName('lou-stream')
+      setCurrentStreamName(streamName)
     }
   }, [streamName])
+
+  React.useEffect(() => {
+    if (mainStreamName) {
+      setMainEventStreamName(mainStreamName)
+    }
+  }, [mainStreamName])
 
   React.useEffect(() => {
     if (room) {
@@ -71,6 +81,8 @@ const RoomProvider = (props: IRoomProviderProps) => {
     room: roomName,
     streamName: currentStreamName,
     setCurrentStreamName,
+    mainEventStreamName,
+    setMainEventStreamName,
     mediaStream,
     constraints,
     setCameraSelected,
