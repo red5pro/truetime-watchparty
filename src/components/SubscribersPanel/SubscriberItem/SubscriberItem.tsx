@@ -6,10 +6,11 @@ import WatchContext from '../../WatchContext/WatchContext'
 import useItemStyles from './SubscriberItem.module'
 
 interface ISubscriberItemProps {
+  room: string
   name: string
 }
 
-const SubscriberItem = ({ name }: ISubscriberItemProps) => {
+const SubscriberItem = ({ room, name }: ISubscriberItemProps) => {
   const { classes } = useItemStyles()
   const videoRef = React.useRef(null)
   const elemId = `${name}-subscriber`
@@ -17,11 +18,11 @@ const SubscriberItem = ({ name }: ISubscriberItemProps) => {
   const watchContext = React.useContext(WatchContext.Context)
 
   React.useEffect(() => {
-    if (name) {
+    if (name && room) {
       setSubscriberItem()
       // setMediaOptions()
     }
-  }, [name])
+  }, [name, room])
 
   const setSubscriberItem = async () => {
     const configuration = getConfiguration()
@@ -36,14 +37,14 @@ const SubscriberItem = ({ name }: ISubscriberItemProps) => {
       },
       authParams,
       {
-        app: `live`,
+        app: `live/${room}`,
       }
     )
     const uid = Math.floor(Math.random() * 0x10000).toString(16)
 
     const rtcConfig = Object.assign({}, baseSubscriberConfig, {
       streamName: name,
-      subscriptionId: `${name}-subscription`, //check if this is correct
+      subscriptionId: `${name}-subscriber-${Math.floor(Math.random() * 0x10000).toString(16)}`, //check if this is correct
       mediaElementId: elemId,
     })
 
@@ -63,7 +64,9 @@ const SubscriberItem = ({ name }: ISubscriberItemProps) => {
   }
 
   const handleEvent = (ev: Event) => {
-    console.log({ ev })
+    if (ev.type !== 'Subscribe.Time.Update') {
+      console.log({ ev })
+    }
   }
 
   return (

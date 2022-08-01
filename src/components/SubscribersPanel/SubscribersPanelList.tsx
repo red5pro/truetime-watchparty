@@ -12,6 +12,7 @@ interface ISubscribersPanelProps {
 
 const SubscribersPanelList = ({ isPublisher }: ISubscribersPanelProps) => {
   const { classes } = useVideoStyles()
+  const roomContext = React.useContext(RoomContext.Context)
   const watchContext = React.useContext(WatchContext.Context)
   console.log(watchContext.streamsList)
 
@@ -30,7 +31,7 @@ const SubscribersPanelList = ({ isPublisher }: ISubscribersPanelProps) => {
       <SubscribersPanel isPublisher={isPublisher} />
       {watchContext.streamsList.map((item: string) => (
         <Box key={item}>
-          <SubscriberItem name={item} />
+          <SubscriberItem room={roomContext ? roomContext.room : ''} name={item} />
         </Box>
       ))}
     </Box>

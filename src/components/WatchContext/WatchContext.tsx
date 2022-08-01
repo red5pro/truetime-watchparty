@@ -232,7 +232,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
   const establishSocketHost = (roomName: string, streamName: string, isPublisher = true) => {
     if (hostSocket) return
 
-    const isSecure = window.location.protocol.includes('https')
+    const isSecure = window.location.protocol.includes('https') || window.location.hostname.includes('localhost')
     const wsProtocol = isSecure ? 'wss' : 'ws'
 
     console.log('HERE!!! connecting to socket')
