@@ -5,18 +5,11 @@ import RoomContext from '../RoomContext/RoomContext'
 import MainVideo from '../MainVideo/MainVideo'
 import Loading from '../Loading/Loading'
 import { Box, Typography } from '@mui/material'
-import SubscribersPanel from '../SubscribersPanel/SubscribersPanel'
 import { SERVER_HOST } from '../../settings/variables'
 import WatchContext from '../WatchContext/WatchContext'
 import SubscribersPanelList from '../SubscribersPanel/SubscribersPanelList'
 
-interface ISubscriberProps {
-  room: string
-}
-
-const Subscriber = (props: ISubscriberProps) => {
-  const { room } = props
-
+const Subscriber = () => {
   const [elementId, setElementId] = React.useState<string>('')
 
   const [isSubscribed, setIsSubscribed] = React.useState<boolean>(false)
@@ -56,40 +49,35 @@ const Subscriber = (props: ISubscriberProps) => {
   }
 
   const joinRoom = async (values: IRoomFormValues) => {
-    const streamNameField = values.name ?? `publisher-${Math.floor(Math.random() * 0x10000).toString(16)}`
-    // roomContext?.setCurrentStreamName(streamNameField)
     if (roomContext) {
-      roomContext.room = values.room
-      roomContext.streamName = values.name
+      roomContext.setCurrentStreamName(values.name)
     }
 
-    const elemId = `${streamNameField}-subscriber`
+    const elemId = `${values.name}-subscriber`
     setElementId(elemId)
 
     const subscriber = new RTCSubscriber()
 
     setIsSubscribing(true)
     try {
-      await subscriber.init({
-        app: `live/${roomContext?.room}`,
-        port: 443,
-        protocol: 'wss',
-        host: SERVER_HOST,
-        streamName: roomContext?.streamName,
-        rtcConfiguration: {
-          iceServers: [{ urls: 'stun:stun2.l.google.com:19302' }],
-          iceCandidatePoolSize: 2,
-          bundlePolicy: 'max-bundle',
-        },
-        mediaElementId: elemId,
-        subscriptionId: `${roomContext?.streamName}-${Math.floor(Math.random() * 0x10000).toString(16)}`,
-      })
-      await subscriber.subscribe()
-      subscriber.on('*', (ev: Event) => onSubscriberEvent(ev))
+      // await subscriber.init({
+      //   app: `live/${roomContext?.room}`,
+      //   port: 443,
+      //   protocol: 'wss',
+      //   host: SERVER_HOST,
+      //   streamName: roomContext?.mainEventStreamName,
+      //   rtcConfiguration: {
+      //     iceServers: [{ urls: 'stun:stun2.l.google.com:19302' }],
+      //     iceCandidatePoolSize: 2,
+      //     bundlePolicy: 'max-bundle',
+      //   },
+      //   mediaElementId: elemId,
+      //   subscriptionId: `${roomContext?.currentStreamName}-${Math.floor(Math.random() * 0x10000).toString(16)}`,
+      // })
+      // await subscriber.subscribe()
+      // subscriber.on('*', (ev: Event) => onSubscriberEvent(ev))
 
-      console.log({ subscriber })
-
-      watchContext.methods.establishSocketHost(roomContext?.room, roomContext?.streamName)
+      // watchContext.methods.establishSocketHost(roomContext?.room, values.name)
 
       setIsSubscribing(false)
       setIsSubscribed(true)
@@ -105,16 +93,18 @@ const Subscriber = (props: ISubscriberProps) => {
       <Typography component="h5" variant="h5" textAlign="center" margin={3}>
         Join the Party!
       </Typography>
-      {!isSubscribed && !isSubscribing && <VideoPreview room={room} onJoinRoom={joinRoom} />}
+      {!isSubscribed && !isSubscribing && <VideoPreview room={roomContext?.room} onJoinRoom={joinRoom} />}
       {isSubscribing && <Loading />}
-      <Box display={isSubscribed ? 'flex' : 'none'}>
-        <Box width="75%">
-          <MainVideo elementId={elementId} />
+      {isSubscribed && (
+        <Box display={isSubscribed ? 'flex' : 'none'}>
+          <Box width="75%">
+            <MainVideo />
+          </Box>
+          <Box width="25%">
+            <SubscribersPanelList />
+          </Box>
         </Box>
-        <Box width="25%">
-          <SubscribersPanelList />
-        </Box>
-      </Box>
+      )}
     </>
   )
 }

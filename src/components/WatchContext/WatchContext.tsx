@@ -2,7 +2,7 @@ import * as React from 'react'
 import { SubscriberEventTypes, RTCSubscriberEventTypes } from 'red5pro-webrtc-sdk'
 import { SERVER_HOST } from '../../settings/variables'
 import { removeFromArray } from '../../utils/commonUtils'
-import { getAuthenticationParams, getConfiguration, getServerSettings } from '../../utils/publishUtils'
+import { getServerSettings } from '../../utils/publishUtils'
 
 interface IWatchProviderProps {
   children: any
@@ -38,8 +38,21 @@ const WatchProvider = (props: IWatchProviderProps) => {
   const [statusField, setStatusField] = React.useState<string>('')
   const [inFailedState, setInFailedState] = React.useState<boolean>(false)
   const [subscriberMap, setSubscribersMap] = React.useState<any>([])
+  const [mainVideoConnected, setMainVideoConnected] = React.useState<boolean>(false)
+  const [streamConnected, setStreamConnected] = React.useState<string[]>([])
 
-  console.log({ subscriberMap })
+  //---- START: Methods to identify if the participant has already connect to a stream ----
+  const addStreamConnected = (value: string) => {
+    const streamList = [...streamConnected, value]
+    setStreamConnected(streamList)
+  }
+
+  const removeStreamConnected = (value: string) => {
+    const streamList = streamConnected.filter((x: string) => x !== value)
+    setStreamConnected(streamList)
+  }
+
+  //---- END:  Methods to identify if the participant has already connect to a stream ----
 
   const bitrateStart = async (
     ticket: any,
@@ -235,8 +248,6 @@ const WatchProvider = (props: IWatchProviderProps) => {
     const isSecure = window.location.protocol.includes('https') || window.location.hostname.includes('localhost')
     const wsProtocol = isSecure ? 'wss' : 'ws'
 
-    console.log('HERE!!! connecting to socket')
-
     // hacked to support remote server while doing local development
     const url = `${wsProtocol}://${SERVER_HOST}:8443?room=${roomName}&streamName=${streamName}`
     const newHostSocket = new WebSocket(url)
@@ -362,6 +373,8 @@ const WatchProvider = (props: IWatchProviderProps) => {
   }
 
   const exportedValues = {
+    streamConnected,
+    mainVideoConnected,
     streamsList,
     hostSocket,
     methods: {
@@ -374,6 +387,9 @@ const WatchProvider = (props: IWatchProviderProps) => {
       updateSuscriberStatusFromEvent,
       getSocketLocationFromProtocol,
       addSubscriberMap,
+      setMainVideoConnected,
+      addStreamConnected,
+      removeStreamConnected,
     },
   }
 

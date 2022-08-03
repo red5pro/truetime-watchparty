@@ -1,6 +1,6 @@
 import { makeStyles } from 'tss-react/mui'
 
-const useVideoStyles = makeStyles()(() => {
+const usePanelStyles = makeStyles()(() => {
   return {
     formContainer: {
       flexDirection: 'column',
@@ -27,4 +27,4 @@ const useVideoStyles = makeStyles()(() => {
   }
 })
 
-export default useVideoStyles
+export default usePanelStyles

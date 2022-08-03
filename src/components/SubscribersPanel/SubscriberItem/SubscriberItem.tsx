@@ -6,23 +6,26 @@ import WatchContext from '../../WatchContext/WatchContext'
 import useItemStyles from './SubscriberItem.module'
 
 interface ISubscriberItemProps {
-  room: string
+  room?: string
   name: string
+  elementId?: string
+  shouldAddToMap?: boolean
 }
 
-const SubscriberItem = ({ room, name }: ISubscriberItemProps) => {
+const SubscriberItem = ({ room, name, elementId, shouldAddToMap }: ISubscriberItemProps) => {
   const { classes } = useItemStyles()
   const videoRef = React.useRef(null)
-  const elemId = `${name}-subscriber`
+  const elemId = elementId ?? `${name}-subscriber`
 
   const watchContext = React.useContext(WatchContext.Context)
 
   React.useEffect(() => {
-    if (name && room) {
+    const isAlreadyConnected = watchContext.streamConnected.find((x: string) => x === name)
+    if (name && !isAlreadyConnected) {
       setSubscriberItem()
-      // setMediaOptions()
+      watchContext.methods.addStreamConnected(name)
     }
-  }, [name, room])
+  }, [name])
 
   const setSubscriberItem = async () => {
     const configuration = getConfiguration()
@@ -37,14 +40,15 @@ const SubscriberItem = ({ room, name }: ISubscriberItemProps) => {
       },
       authParams,
       {
-        app: `live/${room}`,
+        // if MainVideo --> 'live'
+        app: room ? `live/${room}` : 'live',
       }
     )
     const uid = Math.floor(Math.random() * 0x10000).toString(16)
 
     const rtcConfig = Object.assign({}, baseSubscriberConfig, {
       streamName: name,
-      subscriptionId: `${name}-subscriber-${Math.floor(Math.random() * 0x10000).toString(16)}`, //check if this is correct
+      subscriptionId: `${name}-subscriber-${Math.floor(Math.random() * 0x10000).toString(16)}`,
       mediaElementId: elemId,
     })
 
@@ -53,7 +57,11 @@ const SubscriberItem = ({ room, name }: ISubscriberItemProps) => {
       subscriber.on('*', (e: Event) => handleEvent(e))
 
       await subscriber.init(rtcConfig)
-      watchContext.methods.addSubscriberMap(subscriber)
+
+      if (shouldAddToMap) {
+        watchContext.methods.addSubscriberMap(subscriber)
+        watchContext.methods.establishSocketHost(room, name)
+      }
 
       await subscriber.subscribe()
     } catch (error) {
@@ -65,7 +73,7 @@ const SubscriberItem = ({ room, name }: ISubscriberItemProps) => {
 
   const handleEvent = (ev: Event) => {
     if (ev.type !== 'Subscribe.Time.Update') {
-      console.log({ ev })
+      // console.log({ ev: ev.type, name: name })
     }
   }
 

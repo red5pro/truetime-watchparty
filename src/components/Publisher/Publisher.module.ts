@@ -8,6 +8,7 @@ const usePublisherStyles = makeStyles()(() => {
       right: '5px',
       cursor: 'pointer',
     },
+    ownVideo: {},
   }
 })
 

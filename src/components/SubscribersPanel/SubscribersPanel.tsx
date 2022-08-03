@@ -1,19 +1,20 @@
 import { Box, CardContent } from '@mui/material'
 import * as React from 'react'
 import RoomContext from '../RoomContext/RoomContext'
-import useVideoStyles from './SubscribersPanel.module'
+import usePanelStyles from './SubscribersPanel.module'
 import VideocamIcon from '@mui/icons-material/Videocam'
 import VideocamOffIcon from '@mui/icons-material/VideocamOff'
 import MicIcon from '@mui/icons-material/Mic'
 import MicOffIcon from '@mui/icons-material/MicOff'
 
-interface ISubscribersPanelProps {
-  isPublisher?: boolean
+interface ICurrentStreamVideoProps {
+  elementId?: string
 }
 
-const SubscribersPanel = ({ isPublisher }: ISubscribersPanelProps) => {
-  const { classes } = useVideoStyles()
+const CurrentStreamVideo = ({ elementId }: ICurrentStreamVideoProps) => {
+  const { classes } = usePanelStyles()
   const roomContext = React.useContext(RoomContext.Context)
+
   const videoRef = React.useRef(null)
   const [cameraOn, setCameraOn] = React.useState<boolean>(true)
   const [micOn, setMicOn] = React.useState<boolean>(false)
@@ -61,6 +62,7 @@ const SubscribersPanel = ({ isPublisher }: ISubscribersPanelProps) => {
   return (
     <CardContent className={classes.container}>
       <video
+        id={elementId ?? `${roomContext?.currentStreamName}-subscriber`}
         ref={videoRef}
         width="100%"
         height="100%"
@@ -85,4 +87,4 @@ const SubscribersPanel = ({ isPublisher }: ISubscribersPanelProps) => {
   )
 }
 
-export default SubscribersPanel
+export default CurrentStreamVideo

@@ -4,15 +4,16 @@ import { startAdapter } from '../../utils/adapterConfig'
 interface IRoomProviderProps {
   children: any
   room?: string
-  streamName?: string
+  currentStreamName?: string
   mainStreamName?: string
 }
 
 interface IRoomContextProps {
   room: string
+  setRoomName: (value: string) => void
   mainEventStreamName: string
   setMainEventStreamName: (value: string) => void
-  streamName: string
+  currentStreamName: string
   setCurrentStreamName: (value: string) => void
   mediaStream: MediaStream | undefined
   constraints: any
@@ -25,12 +26,12 @@ interface IRoomContextProps {
 const RoomContext = React.createContext<IRoomContextProps | null>(null)
 
 const RoomProvider = (props: IRoomProviderProps) => {
-  const { children, room, streamName, mainStreamName } = props
+  const { children, room, currentStreamName: streamName, mainStreamName } = props
 
   const [mediaStream, setMediaStream] = React.useState<MediaStream>()
   const [constraints, setConstraints] = React.useState<any>()
   const [mainEventStreamName, setMainEventStreamName] = React.useState<string>('demo-stream') //demo-stream: Stream with name demo-stream already has a broadcast session.
-  const [currentStreamName, setCurrentStreamName] = React.useState<string>('lou-stream') //demo-stream: Stream with name demo-stream already has a broadcast session.
+  const [currentStreamName, setCurrentStreamName] = React.useState<string>('') //demo-stream: Stream with name demo-stream already has a broadcast session.
   const [roomName, setRoomName] = React.useState<string>('')
   const [cameraSelected, setCameraSelected] = React.useState<MediaDeviceInfo>()
   const [microphoneSelected, setMicrophoneSelected] = React.useState<MediaDeviceInfo | any>()
@@ -78,8 +79,9 @@ const RoomProvider = (props: IRoomProviderProps) => {
   }
 
   const values = {
+    setRoomName,
     room: roomName,
-    streamName: currentStreamName,
+    currentStreamName,
     setCurrentStreamName,
     mainEventStreamName,
     setMainEventStreamName,

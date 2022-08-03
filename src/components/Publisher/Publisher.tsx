@@ -1,17 +1,17 @@
 import VideoPreview, { IRoomFormValues } from '../VideoPreview/VideoPreview'
 import { RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
-import { getAuthenticationParams, getConfiguration, getServerSettings } from '../../utils/publishUtils'
+import { getAuthenticationParams, getConfiguration } from '../../utils/publishUtils'
 import WatchContext from '../WatchContext/WatchContext'
 import RoomContext from '../RoomContext/RoomContext'
 import Loading from '../Loading/Loading'
 import MainVideo from '../MainVideo/MainVideo'
 import { Box, Typography } from '@mui/material'
 import { SERVER_HOST } from '../../settings/variables'
-import SubscribersPanel from '../SubscribersPanel/SubscribersPanel'
 import PhoneDisabledIcon from '@mui/icons-material/PhoneDisabled'
 import usePublisherStyles from './Publisher.module'
 import SubscribersPanelList from '../SubscribersPanel/SubscribersPanelList'
+import CurrentStreamVideo from '../SubscribersPanel/SubscribersPanel'
 
 const Publisher = () => {
   const watchContext = React.useContext(WatchContext.Context)
@@ -23,7 +23,20 @@ const Publisher = () => {
   const [isPublishing, setIsPublishing] = React.useState<boolean>(false)
   const [publisher, setPublisher] = React.useState<any>()
 
+  const [readyToPublish, setReadyToPublish] = React.useState<boolean>(false)
+
   const { classes } = usePublisherStyles()
+
+  React.useEffect(() => {
+    const streamNameField = Math.floor(Math.random() * 0x10000).toString(16)
+    setElementId(`${streamNameField}-publisher`)
+  }, [])
+
+  React.useEffect(() => {
+    if (readyToPublish && roomContext?.room && roomContext.currentStreamName) {
+      doPublish(roomContext?.room, roomContext?.currentStreamName)
+    }
+  }, [readyToPublish])
 
   const getUserMediaConfiguration = (configuration: any) => {
     return {
@@ -46,62 +59,6 @@ const Publisher = () => {
     }
   }
 
-  // TODO: REMOVE DUPLICATE CODE HERE WITH WATCHCONTEXT
-  const getSocketLocationFromProtocol = () => {
-    const settings = getServerSettings()
-    const isSecure = window.location.protocol.includes('https') || window.location.hostname.includes('localhost')
-
-    return !isSecure
-      ? { protocol: 'ws', port: settings?.wsport ?? '' }
-      : { protocol: 'wss', port: settings?.wssport ?? '' }
-  }
-
-  const processStreams = (list: any[], previousList: any, roomName: string, exclusion: string) => {
-    const nonPublishers = list.filter((name: string) => {
-      return name !== exclusion
-    })
-
-    const [existing, toAdd, toRemove] = nonPublishers.filter((name: string, index: number, self: any[]) => {
-      const existing = self.indexOf(name) && previousList.indexOf(name) !== -1
-      const toAdd = self.indexOf(name) && previousList.indexOf(name) === -1
-      const toRemove = self.indexOf(name) && list.indexOf(name) === -1
-
-      return [existing, toAdd, toRemove]
-    })
-
-    watchContext.removeSubscribers(toRemove)
-    const configuration = getConfiguration()
-    const authParams = getAuthenticationParams(configuration)
-
-    // positionExisting(existing)
-    // let lastIndex = existing.length
-    // const subscribers = toAdd.map((name: string, index: number) => {
-    //   // const parent = lastIndex++ < bottomRowLimit ? bottomSubscribersEl : sideSubscribersEl
-    //   return new window.ConferenceSubscriberItem(name, parent, index, relayout)
-    // })
-    // relayout()
-
-    const baseSubscriberConfig = Object.assign(
-      {},
-      configuration,
-      {
-        protocol: getSocketLocationFromProtocol().protocol,
-        port: getSocketLocationFromProtocol().port,
-      },
-      authParams,
-      {
-        app: `live/${roomName}`,
-      }
-    )
-
-    // if (subscribers.length > 0) {
-    //   //subscribers[0].execute(baseSubscriberConfig)
-    //   subscribers.forEach((sub) => {
-    //     sub.execute(baseSubscriberConfig)
-    //   })
-    // }
-  }
-
   const onResolutionUpdate = (frameWidth: number, frameHeight: number) => {
     // updateStatistics(bitrate, packetsSent, frameWidth, frameHeight);
   }
@@ -110,7 +67,7 @@ const Publisher = () => {
     setPublisher(publisher)
 
     if (publisher.getType().toUpperCase() !== 'RTC') {
-      watchContext.methods.establishSocketHost(roomName, roomContext?.streamName ?? '')
+      watchContext.methods.establishSocketHost(roomName, roomContext?.currentStreamName ?? '')
     }
     try {
       const connection = publisher.getPeerConnection()
@@ -141,7 +98,7 @@ const Publisher = () => {
     }
   }
 
-  const determinePublisher = async () => {
+  const determinePublisher = async (room: string, name: string) => {
     const configuration = { ...getConfiguration(), mediaElementId: elementId }
     const authParams = getAuthenticationParams(configuration)
     const userMediaConf = getUserMediaConfiguration(configuration)
@@ -157,15 +114,15 @@ const Publisher = () => {
     )
 
     const rtcConfig = Object.assign({}, config, {
-      protocol: getSocketLocationFromProtocol().protocol,
-      port: getSocketLocationFromProtocol().port,
+      protocol: watchContext.methods.getSocketLocationFromProtocol().protocol,
+      port: watchContext.methods.getSocketLocationFromProtocol().port,
       host: SERVER_HOST,
       bandwidth: {
         video: 750,
         audio: 56,
       },
-      app: `live/${roomContext?.room}` ?? 'live',
-      streamName: roomContext?.streamName ?? 'stream1',
+      app: `live/${room}`,
+      streamName: name,
       clearMediaOnUnpublish: true,
     })
 
@@ -182,7 +139,6 @@ const Publisher = () => {
   }
 
   const onPublisherEvent = (event: any) => {
-    console.log('[Red5ProPublisher] ' + event.type + '.')
     if (event.type === 'WebSocket.Message.Unhandled') {
       console.log(event)
     } else if (event.type === RTCPublisherEventTypes.MEDIA_STREAM_AVAILABLE) {
@@ -196,37 +152,33 @@ const Publisher = () => {
 
   const doPublish = async (room: string, name: string) => {
     try {
-      const targetPublisher = await determinePublisher()
+      setIsPublishing(true)
+
+      const targetPublisher = await determinePublisher(room, name)
       targetPublisher.on('*', onPublisherEvent)
-      await targetPublisher.publish() // targetPublisher.publish(name)
+      await targetPublisher.publish(name)
 
       onPublishSuccess(targetPublisher, room, name)
-
-      setIsPublishing(false)
-      setIsPublished(true)
-
-      window.history.replaceState(null, '', room)
+      window.history.pushState(null, '', `${room}`)
+      // window.history.pushState(null, '', `${room}/${roomContext?.mainEventStreamName}`)
     } catch (error) {
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error('[Red5ProPublisher] :: Error in publishing - ' + jsonError)
       console.error(error)
 
       // onPublishFail(jsonError)
+    } finally {
+      setIsPublished(true)
+      setIsPublishing(false)
     }
   }
 
-  React.useEffect(() => {
-    const streamNameField = Math.floor(Math.random() * 0x10000).toString(16)
-    setElementId(`${streamNameField}-publisher`)
-  }, [])
-
   const createEvent = async (values: IRoomFormValues) => {
-    setIsPublishing(true)
-
     if (roomContext?.mediaStream) {
-      roomContext.room = values.room
-      roomContext.streamName = values.name
-      doPublish(values.room, values.name)
+      roomContext.setRoomName(values.room)
+      roomContext.setCurrentStreamName(values.name)
+
+      setReadyToPublish(true)
     }
   }
 
@@ -252,21 +204,31 @@ const Publisher = () => {
       <Typography component="h5" variant="h5" textAlign="center" margin={3}>
         Create a New Party!
       </Typography>
-      {!isPublished && !isPublishing && <VideoPreview room={roomContext?.room} onJoinRoom={createEvent} />}
-      {isPublishing && <Loading />}
-
-      <Box display={isPublished ? 'flex' : 'none'}>
-        <Box width="75%">
-          <MainVideo elementId={elementId} />
-        </Box>
-        <Box width="25%">
-          {/* <SubscribersPanel isPublisher /> */}
-          <SubscribersPanelList />
-        </Box>
-        <Box className={classes.hangOff}>
-          <PhoneDisabledIcon fontSize="large" onClick={hangOff} />
-        </Box>
-      </Box>
+      {!isPublished && !isPublishing && (
+        <>
+          <VideoPreview room={roomContext?.room} onJoinRoom={createEvent} />
+          <Box display="none">
+            <CurrentStreamVideo elementId={elementId} />
+          </Box>
+        </>
+      )}
+      {!isPublished && isPublishing && <Loading />}
+      {isPublished && (
+        <>
+          {console.log('aca main video')}
+          <Box display="flex">
+            <Box width="75%">
+              <MainVideo />
+            </Box>
+            <Box width="25%">
+              <SubscribersPanelList />
+            </Box>
+            <Box className={classes.hangOff}>
+              <PhoneDisabledIcon fontSize="large" onClick={hangOff} />
+            </Box>
+          </Box>
+        </>
+      )}
     </>
   )
 }
