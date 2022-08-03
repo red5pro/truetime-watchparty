@@ -1,4 +1,5 @@
 import { createTheme, Theme } from '@mui/material'
+import '../assets/styles/index.css'
 
 export const THEME_WRAPPER = 'emw'
 
@@ -57,7 +58,7 @@ export const mergeThemes = () => {
         },
       },
       typography: {
-        fontFamily: 'GeneralSans-Regular',
+        fontFamily: fontFamily,
         fontSize: 14,
         h1: {
           fontSize: '90px',
