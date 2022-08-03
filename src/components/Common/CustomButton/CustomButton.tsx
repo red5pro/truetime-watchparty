@@ -3,8 +3,6 @@ import * as React from 'react'
 
 import useStyles from './CustomButton.module'
 
-//NOTE: The BUTTONS styles can be found here: https://www.figma.com/file/OaSVcfiJEPua9SWdXjzqmw/Element-Certified-Design-Mocks?node-id=2882%3A51090
-
 export enum BUTTONTYPE {
   PRIMARY = 'primary',
 }

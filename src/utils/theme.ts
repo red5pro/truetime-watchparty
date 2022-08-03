@@ -43,175 +43,152 @@ const fontFamily = [
 ].join(',')
 
 export const mergeThemes = () => {
-  const theme = createTheme(
-    {
-      shape: {
-        borderRadius: 17.5,
-      },
+  const theme = createTheme({
+    shape: {
+      borderRadius: 17.5,
+    },
 
-      palette: {
-        text: {
-          primary: '#ffffff',
-        },
-        primary: {
-          main: '#FFFFFF',
+    palette: {
+      text: {
+        primary: '#ffffff',
+      },
+      primary: {
+        main: '#FFFFFF',
+      },
+    },
+    typography: {
+      fontFamily: fontFamily,
+      fontSize: 14,
+      h1: {
+        fontSize: '90px',
+        color: '#FFFFFF',
+        fontFamily: 'GeneralSans-Regular',
+        fontWeight: 600,
+        fontStyle: 'normal',
+      },
+      h2: {
+        color: '#FFFFFF',
+      },
+      h3: {
+        color: '#FFFFFF',
+      },
+      h4: {
+        color: '#FFFFFF',
+      },
+      h5: {
+        color: '#FFFFFF',
+      },
+    },
+    components: {
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            cursor: 'pointer',
+            textDecoration: 'none',
+            '&:hover': {
+              textDecoration: 'underline',
+            },
+          },
         },
       },
-      typography: {
-        fontFamily: fontFamily,
-        fontSize: 14,
-        h1: {
-          fontSize: '90px',
-          color: '#FFFFFF',
-          fontFamily: 'GeneralSans-Regular',
-          fontWeight: 600,
-          fontStyle: 'normal',
-        },
-        h2: {
-          color: '#FFFFFF',
-        },
-        h3: {
-          color: '#FFFFFF',
-        },
-        h4: {
-          color: '#FFFFFF',
-        },
-        h5: {
-          color: '#FFFFFF',
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            fontSize: '14px',
+            fontFamily: 'GeneralSans-Regular',
+          },
         },
       },
-      components: {
-        MuiLink: {
-          styleOverrides: {
-            root: {
-              cursor: 'pointer',
-              textDecoration: 'none',
-              '&:hover': {
-                textDecoration: 'underline',
-              },
-            },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            boxShadow: 'none',
+            borderRadius: '5px',
           },
         },
-        MuiTypography: {
-          styleOverrides: {
-            root: {
-              fontSize: '14px',
-              fontFamily: 'GeneralSans-Regular',
-            },
+      },
+      MuiDivider: {
+        styleOverrides: {
+          root: {
+            color: 'lightgray',
+            width: '100%',
+            marginTop: 10,
+            marginBottom: 10,
           },
         },
-        MuiPaper: {
-          styleOverrides: {
-            root: {
-              boxShadow: 'none',
-              borderRadius: '5px',
-            },
-          },
-        },
-        MuiDivider: {
-          styleOverrides: {
-            root: {
-              color: 'lightgray',
-              width: '100%',
-              marginTop: 10,
-              marginBottom: 10,
-            },
-          },
-        },
-        MuiInputBase: {
-          styleOverrides: {
-            root: {
-              height: '32px',
-              width: '290px',
+      },
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            height: '32px',
+            width: '290px',
 
-              borderRadius: '20px',
-              padding: '9px 14px',
-              margin: '9px 0',
+            borderRadius: '20px',
+            padding: '9px 14px',
+            margin: '9px 0',
 
-              border: '1px solid #FFFFFF26 !important',
-              background:
-                'linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))',
-              '& fieldset': {
-                border: '1px solid #FFFFFF26',
-                color: 'rgba(0, 0, 0, 0.6)',
-              },
-              '& fieldset:hover': {
-                border: '1px solid #FFFFFF26',
-                color: 'rgba(0, 0, 0, 0.6)',
-              },
-              '&.Mui-focused fieldset': {
-                border: '1px solid #FFFFFF26',
-              },
-              '&:hover, &:focus, &:after': {
-                borderBottom: '1px solid #FFFFFF26 !important',
-              },
+            border: '1px solid #FFFFFF26 !important',
+            background:
+              'linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))',
+            '& fieldset': {
+              border: '1px solid #FFFFFF26',
+              color: 'rgba(0, 0, 0, 0.6)',
+            },
+            '& fieldset:hover': {
+              border: '1px solid #FFFFFF26',
+              color: 'rgba(0, 0, 0, 0.6)',
+            },
+            '&.Mui-focused fieldset': {
+              border: '1px solid #FFFFFF26',
+            },
+            '&:hover, &:focus, &:after': {
+              borderBottom: '1px solid #FFFFFF26 !important',
             },
           },
         },
-        MuiOutlinedInput: {
-          styleOverrides: {
-            root: {
-              '&.Mui-focused fieldset': {
-                borderColor: '#3F51B5',
-              },
-              borderRadius: '4px',
-              color: '#464547',
+      },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            '&.Mui-focused fieldset': {
+              borderColor: '#3F51B5',
+            },
+            borderRadius: '4px',
+            color: '#464547',
+          },
+        },
+      },
+      MuiInputLabel: {
+        styleOverrides: {
+          root: {
+            '&.Mui-focused': {
+              color: '#0C9ED9 !important',
             },
           },
         },
-        MuiInputLabel: {
-          styleOverrides: {
-            root: {
-              '&.Mui-focused': {
-                color: '#0C9ED9 !important',
-              },
-            },
+      },
+      MuiButton: {
+        styleOverrides: {
+          outlined: {
+            padding: '15px',
+            borderRadius: '15px',
+            boxShadow: 'none',
           },
-        },
-        MuiButton: {
-          styleOverrides: {
-            outlined: {
-              padding: '15px',
-              borderRadius: '15px',
-              boxShadow: 'none',
-            },
-            contained: {
-              padding: '15px',
-              borderRadius: '15px',
-              boxShadow: 'none',
-            },
-            text: {
-              padding: '15px',
-              borderRadius: '15px',
-              textTransform: 'capitalize',
-              fontWeight: 600,
-              fontStyle: 'normal',
-            },
+          contained: {
+            padding: '15px',
+            borderRadius: '15px',
+            boxShadow: 'none',
+          },
+          text: {
+            padding: '15px',
+            borderRadius: '15px',
+            textTransform: 'capitalize',
+            fontWeight: 600,
+            fontStyle: 'normal',
           },
         },
       },
     },
-    {
-      button: {
-        // primaryColor: primaryColor,
-        // primaryButtonColor: primaryButtonColor,
-        // primaryButtonBorder: primaryButtonBorder,
-        // primaryButtonFontColor: primaryButtonFontColor,
-        // primaryButtonColorHover: primaryButtonColorHover,
-        // primaryButtonBorderHover: primaryButtonBorderHover,
-        // primaryButtonFontColorHover: primaryButtonFontColorHover,
-        //secondary pallete
-        // secondaryButtonColor: secondaryButtonColor,
-        // secondaryButtonBorder: secondaryButtonBorder,
-        // secondaryButtonFontColor: secondaryButtonFontColor,
-        // secondaryButtonColorHover: secondaryButtonColorHover,
-        // secondaryButtonBorderHover: secondaryButtonBorderHover,
-        // secondaryButtonFontColorHover: secondaryButtonFontColorHover,
-        // secondaryColor: secondaryColor,
-        //tertiary pallete
-        // tertiaryColor: tertiaryColor,
-      },
-    }
-  )
+  })
   return theme
 }
