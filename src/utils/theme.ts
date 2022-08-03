@@ -58,7 +58,7 @@ export const mergeThemes = () => {
       },
       typography: {
         fontFamily: 'GeneralSans-Regular',
-        fontSize: 12,
+        fontSize: 14,
         h1: {
           fontSize: '90px',
           color: '#FFFFFF',
@@ -94,10 +94,8 @@ export const mergeThemes = () => {
         MuiTypography: {
           styleOverrides: {
             root: {
-              body1: {
-                fontSize: `initial`,
-                fontFamily: 'GeneralSans-Regular',
-              },
+              fontSize: '14px',
+              fontFamily: 'GeneralSans-Regular',
             },
           },
         },
@@ -122,16 +120,29 @@ export const mergeThemes = () => {
         MuiInputBase: {
           styleOverrides: {
             root: {
+              height: '32px',
+              width: '290px',
+
+              borderRadius: '20px',
+              padding: '9px 14px',
+              margin: '9px 0',
+
+              border: '1px solid #FFFFFF26 !important',
+              background:
+                'linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))',
               '& fieldset': {
-                border: `2px solid #E6E6E6`,
+                border: '1px solid #FFFFFF26',
                 color: 'rgba(0, 0, 0, 0.6)',
               },
               '& fieldset:hover': {
-                border: `2px solid #E6E6E6`,
+                border: '1px solid #FFFFFF26',
                 color: 'rgba(0, 0, 0, 0.6)',
               },
               '&.Mui-focused fieldset': {
-                borderColor: `#0C9ED9 !important`,
+                border: '1px solid #FFFFFF26',
+              },
+              '&:hover, &:focus, &:after': {
+                borderBottom: '1px solid #FFFFFF26 !important',
               },
             },
           },
