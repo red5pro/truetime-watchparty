@@ -209,15 +209,6 @@ const WatchProvider = (props: IWatchProviderProps) => {
     })
   }
 
-  const getSocketLocationFromProtocol = () => {
-    const settings = getServerSettings()
-    const isSecure = window.location.protocol.includes('https')
-
-    return !isSecure
-      ? { protocol: 'ws', port: settings?.wsport ?? '' }
-      : { protocol: 'wss', port: settings?.wssport ?? '' }
-  }
-
   const processStreams = (list: string[], roomName: string, exclusion: string) => {
     const nonPublishers = list.filter((name: string) => {
       return name !== exclusion
@@ -385,7 +376,6 @@ const WatchProvider = (props: IWatchProviderProps) => {
       untrackBitrate,
       establishSocketHost,
       updateSuscriberStatusFromEvent,
-      getSocketLocationFromProtocol,
       addSubscriberMap,
       setMainVideoConnected,
       addStreamConnected,

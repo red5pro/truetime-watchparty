@@ -1,7 +1,7 @@
 import { CardContent } from '@mui/material'
 import { RTCSubscriber } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
-import { getAuthenticationParams, getConfiguration } from '../../../utils/publishUtils'
+import { getAuthenticationParams, getConfiguration, getSocketLocationFromProtocol } from '../../../utils/publishUtils'
 import WatchContext from '../../WatchContext/WatchContext'
 import useItemStyles from './SubscriberItem.module'
 
@@ -14,14 +14,18 @@ interface ISubscriberItemProps {
 
 const SubscriberItem = ({ room, name, elementId, shouldAddToMap }: ISubscriberItemProps) => {
   const { classes } = useItemStyles()
-  const videoRef = React.useRef(null)
   const elemId = elementId ?? `${name}-subscriber`
+
+  const [triedToConnect, setTryToConnect] = React.useState<boolean>(false)
+
+  const videoRef = React.useRef(null)
 
   const watchContext = React.useContext(WatchContext.Context)
 
   React.useEffect(() => {
     const isAlreadyConnected = watchContext.streamConnected.find((x: string) => x === name)
     if (name && !isAlreadyConnected) {
+      setTryToConnect(true)
       setSubscriberItem()
       watchContext.methods.addStreamConnected(name)
     }
@@ -31,12 +35,14 @@ const SubscriberItem = ({ room, name, elementId, shouldAddToMap }: ISubscriberIt
     const configuration = getConfiguration()
     const authParams = getAuthenticationParams(configuration)
 
+    const socketLocation = getSocketLocationFromProtocol()
+
     const baseSubscriberConfig = Object.assign(
       {},
       configuration,
       {
-        protocol: watchContext.methods.getSocketLocationFromProtocol().protocol,
-        port: watchContext.methods.getSocketLocationFromProtocol().port,
+        protocol: socketLocation.protocol,
+        port: socketLocation.port,
       },
       authParams,
       {
@@ -48,7 +54,7 @@ const SubscriberItem = ({ room, name, elementId, shouldAddToMap }: ISubscriberIt
 
     const rtcConfig = Object.assign({}, baseSubscriberConfig, {
       streamName: name,
-      subscriptionId: `${name}-subscriber-${Math.floor(Math.random() * 0x10000).toString(16)}`,
+      subscriptionId: `${name}-subscriber-${uid}`,
       mediaElementId: elemId,
     })
 
@@ -56,14 +62,15 @@ const SubscriberItem = ({ room, name, elementId, shouldAddToMap }: ISubscriberIt
       const subscriber = new RTCSubscriber()
       subscriber.on('*', (e: Event) => handleEvent(e))
 
-      await subscriber.init(rtcConfig)
+      if (!triedToConnect) {
+        await subscriber.init(rtcConfig)
+        await subscriber.subscribe()
 
-      if (shouldAddToMap) {
-        watchContext.methods.addSubscriberMap(subscriber)
-        watchContext.methods.establishSocketHost(room, name)
+        if (shouldAddToMap) {
+          watchContext.methods.addSubscriberMap(subscriber)
+          watchContext.methods.establishSocketHost(room, name)
+        }
       }
-
-      await subscriber.subscribe()
     } catch (error) {
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error('[Red5ProSubscription] :: Error in subs - ' + jsonError)

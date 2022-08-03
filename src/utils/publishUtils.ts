@@ -32,3 +32,12 @@ export const getAuthenticationParams = (configuration: any) => {
       }
     : {}
 }
+
+export const getSocketLocationFromProtocol = () => {
+  const settings = getServerSettings()
+  const isSecure = window.location.protocol.includes('https')
+
+  return !isSecure
+    ? { protocol: 'ws', port: settings?.wsport ?? '' }
+    : { protocol: 'wss', port: settings?.wssport ?? '' }
+}

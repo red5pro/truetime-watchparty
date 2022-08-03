@@ -4,10 +4,8 @@ import useStyles from './SubscribeEvent.module'
 import { useParams } from 'react-router-dom'
 import RoomContext from '../../components/RoomContext/RoomContext'
 import * as React from 'react'
-
-import Subscriber from '../../components/Subscriber/Subscriber'
 import WatchContext from '../../components/WatchContext/WatchContext'
-import Publisher from '../../components/Publisher/Publisher'
+import Participant from '../../components/Participant/Participant'
 
 const SubscribeEvent = () => {
   const params = useParams()
@@ -17,8 +15,7 @@ const SubscribeEvent = () => {
     <Box className={classes.classes.container}>
       <RoomContext.Provider room={params.room ?? ''} mainStreamName={params.stream ?? ''}>
         <WatchContext.Provider>
-          {/* <Subscriber /> */}
-          <Publisher />
+          <Participant />
         </WatchContext.Provider>
       </RoomContext.Provider>
     </Box>

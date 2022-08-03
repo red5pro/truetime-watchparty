@@ -1,6 +1,6 @@
 import { makeStyles } from 'tss-react/mui'
 
-const usePublisherStyles = makeStyles()(() => {
+const useParticipantStyles = makeStyles()(() => {
   return {
     hangOff: {
       position: 'fixed',
@@ -12,4 +12,4 @@ const usePublisherStyles = makeStyles()(() => {
   }
 })
 
-export default usePublisherStyles
+export default useParticipantStyles

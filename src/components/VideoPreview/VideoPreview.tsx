@@ -35,7 +35,6 @@ const VideoPreview = (props: IVideoPreviewProps) => {
 
   const videoRef = React.useRef(null)
 
-  // TODO Check how to remove this any
   const [cameraOptions, setCameraOptions] = React.useState<MediaDeviceInfo[] | any>([])
   const [micOptions, setMicOptions] = React.useState<MediaDeviceInfo[]>([])
   const roomContext = React.useContext(RoomContext.Context)
@@ -124,7 +123,6 @@ const VideoPreview = (props: IVideoPreviewProps) => {
             // setSelectedCameraIndexFromTrack(videoTrack, cameras)
           }
           return (
-            // TODO COLAPSE ADVANCE SETTINGS
             <Form>
               <Box display="flex" width="30%" margin="auto" className={classes.formContainer}>
                 <Field
