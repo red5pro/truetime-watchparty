@@ -1,11 +1,19 @@
+import * as React from 'react'
 import { Box, Input, Typography } from '@mui/material'
+import { Link } from 'react-router-dom'
+
 import WbcLogo from '../../assets/logos/WbcLogo'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
-import { Link } from 'react-router-dom'
 import useStyles from './Home.module'
 
 const Home = () => {
   const { classes } = useStyles()
+  const [partyCode, setPartyCode] = React.useState<string>('')
+
+  const onInputChange = (ev: any) => setPartyCode(ev?.target?.value ?? '')
+
+  const onClick = () => console.log(partyCode)
+
   return (
     <Box className={classes.container} display="flex">
       <Box className={classes.leftContainer}>
@@ -16,8 +24,8 @@ const Home = () => {
         </Box>
         <Typography className={classes.partyCode}>Type Party Code</Typography>
         <Box display="flex">
-          <Input placeholder="Party Code" className={classes.input} />
-          <CustomButton size={BUTTONSIZE.SMALL} buttonType={BUTTONTYPE.PRIMARY}>
+          <Input placeholder="Party Code" className={classes.input} onBlur={onInputChange} />
+          <CustomButton size={BUTTONSIZE.SMALL} buttonType={BUTTONTYPE.PRIMARY} onClick={onClick}>
             Join
           </CustomButton>
         </Box>
