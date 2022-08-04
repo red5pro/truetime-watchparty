@@ -11,14 +11,14 @@ const useStyles = makeStyles()((theme: any) => {
       },
     },
     leftContainer: {
-      background: 'linear-gradient(90deg, #1B1828 0%, rgba(20, 20, 20, 0.4) 40%)',
+      background: 'linear-gradient(to bottom right, #1b1828,#2a448a)',
       backdropFilter: 'blur(88px)',
       display: 'flex',
       flexDirection: 'column',
       height: '100vh',
       alignItems: 'flex-start',
       justifyContent: 'center',
-      marginLeft: '15%',
+      paddingLeft: '15%',
       width: '60%',
 
       [theme.breakpoints.down('sm')]: {
