@@ -15,6 +15,15 @@ const useVideoStyles = makeStyles()(() => {
     select: {},
     menuItem: {},
     item: {},
+    mediaControlsContainer: {
+      position: 'relative',
+      bottom: '40px',
+
+      '& svg': {
+        color: '#e4e1e5',
+        cursor: 'pointer',
+      },
+    },
   }
 })
 
