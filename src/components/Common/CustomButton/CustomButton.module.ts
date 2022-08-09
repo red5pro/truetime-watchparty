@@ -89,8 +89,6 @@ const useStyles = (size: BUTTONSIZE) =>
       boxSizing: 'border-box',
       backgroundColor: '#FFFFFF',
       borderRadius: '24px',
-      width: '130px',
-      height: '35px',
       border: '1px solid rgba(255, 255, 255, 0.15)',
       boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
       backdropFilter: 'blur(24px)',
@@ -100,6 +98,35 @@ const useStyles = (size: BUTTONSIZE) =>
       },
       '&:hover': {
         backgroundColor: '#FFFFFF',
+      },
+    },
+    secondary: {
+      boxSizing: 'border-box',
+      backgroundColor: '#80FF44',
+      borderRadius: '24px',
+      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
+      backdropFilter: 'blur(24px)',
+      color: '#303030',
+      '& > *': {
+        fill: '#303030',
+      },
+      '&:hover': {
+        backgroundColor: '#80FF44',
+      },
+    },
+    tertiary: {
+      boxSizing: 'border-box',
+      backgroundColor: 'transparent',
+      borderRadius: '24px',
+      border: '1px solid #FFFFFF',
+      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
+      backdropFilter: 'blur(24px)',
+      color: '#FFFFFF',
+      '& > *': {
+        fill: '#FFFFFF',
+      },
+      '&:hover': {
+        backgroundColor: 'transparent',
       },
     },
   }))
