@@ -5,6 +5,8 @@ import useStyles from './CustomButton.module'
 
 export enum BUTTONTYPE {
   PRIMARY = 'primary',
+  SECONDARY = 'secondary',
+  TERTIARY = 'tertiary',
 }
 
 export enum BUTTONSIZE {
@@ -45,6 +47,10 @@ const CustomButton = (props: ICustomButtonProps): JSX.Element => {
     switch (buttonType) {
       case BUTTONTYPE.PRIMARY:
         return classes.primary
+      case BUTTONTYPE.SECONDARY:
+        return classes.secondary
+      case BUTTONTYPE.TERTIARY:
+        return classes.tertiary
     }
   }
 

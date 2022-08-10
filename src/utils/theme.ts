@@ -50,34 +50,34 @@ export const mergeThemes = () => {
 
     palette: {
       text: {
-        primary: '#ffffff',
+        primary: '#FBFBFB',
       },
       primary: {
-        main: '#FFFFFF',
+        main: '#FBFBFB',
       },
     },
     typography: {
       fontFamily: fontFamily,
       fontSize: 14,
       h1: {
-        fontSize: '90px',
-        color: '#FFFFFF',
+        fontSize: '90px !important',
+        color: '#FBFBFB',
         fontFamily: 'GeneralSans-Regular',
         fontWeight: 600,
         fontStyle: 'normal',
       },
-      h2: {
-        color: '#FFFFFF',
-      },
-      h3: {
-        color: '#FFFFFF',
-      },
-      h4: {
-        color: '#FFFFFF',
-      },
-      h5: {
-        color: '#FFFFFF',
-      },
+      // h2: {
+      //   color: '#FFFFFF',
+      // },
+      // h3: {
+      //   color: '#FFFFFF',
+      // },
+      // h4: {
+      //   color: '#FFFFFF',
+      // },
+      // h5: {
+      //   color: '#FFFFFF',
+      // },
     },
     components: {
       MuiLink: {
