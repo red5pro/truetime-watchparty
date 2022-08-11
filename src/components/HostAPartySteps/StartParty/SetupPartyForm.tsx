@@ -35,7 +35,7 @@ export interface IPartyData {
   thankMsg: string
   country: string
   partyName: string
-  makeVisible: boolean
+  vipOkay: boolean
   notifyMe: boolean
 }
 
@@ -44,7 +44,7 @@ const validationSchema = Yup.object().shape({
   thankMsg: Yup.string().max(150).required('Thank you message field is required'),
   partyName: Yup.string().max(150).required('Party Name field is required'),
   country: Yup.string().max(50).required('Country field is required'),
-  makeVisible: Yup.boolean(),
+  vipOkay: Yup.boolean(),
   notifyMe: Yup.boolean(),
 })
 
@@ -55,14 +55,13 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
   const { classes } = useStyles()
   const { executeRecaptcha } = useGoogleReCaptcha()
 
-  const [countrySelected, setCountrySelected] = React.useState<ICountry>(SELECT_COUNTRIES[0])
   const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string | undefined>()
 
   const initialValues = {
     welcomeMsg: data?.welcomeMsg ?? '',
     thankMsg: data?.thankMsg ?? '',
     partyName: data?.partyName ?? '',
-    makeVisible: data?.makeVisible ?? false,
+    vipOkay: data?.vipOkay ?? true,
     notifyMe: data?.notifyMe ?? false,
     country: data?.country ?? '',
   }
@@ -79,23 +78,24 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
   }, [executeRecaptcha])
 
   const handleSubmit = async (values: IPartyData) => {
-    setData(values)
     const token = await handleReCaptchaVerify()
     if (token) {
+      const joinToken = (Math.random() + 1).toString(36).substring(2)
+
       // TODO GET EMAIL & PASS FROM ACCOUNT AFTER LOGIN
       const email = 'lou@red5pro.com'
       const password = 'abc123'
       const conference: IConference = {
-        streamGuid: 'live/mainscreen',
         displayName: values.partyName,
         welcomeMessage: values.welcomeMsg,
         thankYouMessage: values.thankMsg,
         location: values.country,
-        maxParticipants: 10,
-        joinToken: '',
+        maxParticipants: 8,
+        joinToken,
         joinLocked: false,
-        vipOkay: true,
+        vipOkay: values.vipOkay ?? true,
       }
+      setData(values)
 
       const response = await CONFERENCE_API_CALLS.createConference(conference, email, password)
 
@@ -119,9 +119,6 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
 
         const countryHandleChange = (ev: any) => {
           setFieldValue('country', ev?.target?.value)
-          setCountrySelected(
-            SELECT_COUNTRIES.find((c: ICountry) => c.label === ev?.target?.value) ?? SELECT_COUNTRIES[0]
-          )
         }
 
         return (
@@ -183,12 +180,12 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
 
               <Box display="flex" height="auto" alignItems="center" marginY={2}>
                 <Checkbox
-                  id="makeVisible"
-                  name="makeVisible"
+                  id="vipOkay"
+                  name="vipOkay"
                   className={classes.checkbox}
-                  value={values.makeVisible}
-                  checked={values.makeVisible ?? false}
-                  onChange={(ev: any) => setFieldValue('makeVisible', ev?.target?.checked)}
+                  value={values.vipOkay}
+                  checked={values.vipOkay ?? false}
+                  onChange={(ev: any) => setFieldValue('vipOkay', ev?.target?.checked)}
                 />
                 <Typography marginX={2}>Make my party visible for special guests to join</Typography>
                 <Tooltip
