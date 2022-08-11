@@ -1,5 +1,4 @@
 export interface IConference {
-  streamGuid: string
   displayName: string
   welcomeMessage: string
   thankYouMessage: string
