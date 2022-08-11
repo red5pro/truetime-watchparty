@@ -11,7 +11,7 @@ interface IMediaContextProps {
   mediaStream: MediaStream | undefined
   cameraSelected: string | undefined
   microphoneSelected: string | undefined
-  setCameraSelected: (deviceId: string) => void
+  setCameraSelected: (deviceId: string | undefined) => void
   setMicrophoneSelected: (deviceId: string | undefined) => void
   setConstraints: (constraints: any) => void
   setMediaStream: (stream: MediaStream | undefined) => void
