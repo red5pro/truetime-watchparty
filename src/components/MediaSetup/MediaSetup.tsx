@@ -5,7 +5,11 @@ import MediaContext from '../MediaContext/MediaContext'
 import useMediaStyles from './MediaSetup.module'
 import { DEFAULT_CONSTRAINTS } from '../../settings/variables'
 
-const MediaSetup = () => {
+interface IMediaSetupProps {
+  selfCleanup: boolean
+}
+
+const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
   const mediaContext = React.useContext(MediaContext.Context)
 
   const videoRef: any = React.useRef(null)
@@ -29,12 +33,16 @@ const MediaSetup = () => {
     }
 
     return () => {
-      if (video && video.srcObject) {
-        ;(video.srcObject as MediaStream).getTracks().forEach((t) => t.stop())
-        video.srcObject = null
-        mediaContext?.setConstraints(undefined)
-        mediaContext?.setMediaStream(undefined)
+      // TODO: This may need to be pushed to parent container
+      //        as we may want to maintain the media stream when publishing.
+      if (typeof selfCleanup === 'boolean' && selfCleanup) {
+        if (video && video.srcObject) {
+          video.srcObject.getTracks().forEach((t: MediaStreamTrack) => t.stop())
+          mediaContext?.setConstraints(undefined)
+          mediaContext?.setMediaStream(undefined)
+        }
       }
+      video.srcObject = null
     }
   }, [videoRef, mediaContext?.mediaStream])
 
