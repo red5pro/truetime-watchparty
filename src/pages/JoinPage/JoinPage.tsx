@@ -9,6 +9,13 @@ import useQueryParams from '../../hooks/useQueryParams'
 import useStyles from './JoinPage.module'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 
+enum Section {
+  Landing = 1,
+  Nickname,
+  AVSetup,
+}
+
+// Preferrably wrapped in a ParticipantContext/AuthContext with user/participant record?
 const JoinPage = () => {
   const { classes } = useStyles()
   const query = useQueryParams()
@@ -17,6 +24,8 @@ const JoinPage = () => {
   const [conferenceId, setConferenceId] = React.useState<string | null>(null)
   const [participantId, setParticipantId] = React.useState<string | null>(null)
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | null>(null)
+
+  const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
 
   React.useEffect(() => {
     if (params && params.conferenceid) {
@@ -58,6 +67,21 @@ const JoinPage = () => {
     }
   }
 
+  const onStartSetup = () => {
+    // TODO: Access the nickname entered
+    // TODO: Store nickname... in API call? in Session Storage?
+    setCurrentSection(Section.AVSetup)
+  }
+
+  const onJoin = () => {
+    // TODO: Define and Store media settings... in a MediaContext? in Session storage?
+    // TODO: Navigate to new party page.
+  }
+
+  const onReturnToLanding = () => setCurrentSection(Section.Landing)
+  const onReturnToNickname = () => setCurrentSection(Section.Nickname)
+  const onStartJoin = () => setCurrentSection(Section.Nickname)
+
   return (
     <>
       <Box className={classes.root}>
@@ -65,13 +89,27 @@ const JoinPage = () => {
           Join WatchParty
         </Typography>
         {!conferenceData && <Loading />}
-        {conferenceData && (
+        {conferenceData && currentSection === Section.Landing && (
           <>
             <p>TODO: Episode/Series Info?</p>
             <p>{conferenceData.displayName}</p>
             <p>{conferenceData.welcomeMessage}</p>
             <p>TODO: Participant listing...</p>
-            <button>Join Party</button>
+            <button onClick={onStartJoin}>Join Party</button>
+          </>
+        )}
+        {conferenceData && currentSection === Section.Nickname && (
+          <>
+            <p>Nickname</p>
+            <button onClick={onReturnToLanding}>back</button>
+            <button onClick={onStartSetup}>next</button>
+          </>
+        )}
+        {conferenceData && currentSection === Section.AVSetup && (
+          <>
+            <p>AV Setup</p>
+            <button onClick={onReturnToNickname}>back</button>
+            <button onClick={onJoin}>join</button>
           </>
         )}
       </Box>
