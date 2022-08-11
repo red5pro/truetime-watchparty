@@ -1,3 +1,4 @@
+import { calculateNewValue } from '@testing-library/user-event/dist/utils'
 import { makeStyles } from 'tss-react/mui'
 
 const useMediaStyles = makeStyles()({
@@ -7,7 +8,9 @@ const useMediaStyles = makeStyles()({
     flexDirection: 'column',
   },
   video: {
-    borderRadius: '30px',
+    borderRadius: '20px',
+    width: 'auto',
+    height: 'calc(100vh / 3)',
   },
 })
 
