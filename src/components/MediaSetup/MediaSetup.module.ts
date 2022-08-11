@@ -6,7 +6,9 @@ const useMediaStyles = makeStyles()({
     display: 'flex',
     flexDirection: 'column',
   },
-  video: {},
+  video: {
+    borderRadius: '30px',
+  },
 })
 
 export default useMediaStyles

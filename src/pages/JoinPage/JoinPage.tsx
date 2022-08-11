@@ -12,6 +12,7 @@ import useQueryParams from '../../hooks/useQueryParams'
 import useStyles from './JoinPage.module'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import MediaSetup from '../../components/MediaSetup/MediaSetup'
+import MediaContext from '../../components/MediaContext/MediaContext'
 
 enum Section {
   Landing = 1,
@@ -26,6 +27,8 @@ const validationSchema = Yup.object().shape({
 // TODO: How is episode/series info accessed from this page? Wrapped in a Context Provider?
 // Preferrably wrapped in a ParticipantContext/AuthContext with user/participant record?
 const JoinPage = () => {
+  const mediaContext = React.useContext(MediaContext.Context)
+
   const { classes } = useStyles()
   const query = useQueryParams()
   const params = useParams()
@@ -80,6 +83,14 @@ const JoinPage = () => {
     }
   }
 
+  const clearMediaContext = () => {
+    if (mediaContext && mediaContext.mediaStream) {
+      mediaContext.mediaStream.getTracks().forEach((t: MediaStreamTrack) => t.stop())
+      mediaContext.setConstraints(undefined)
+      mediaContext.setMediaStream(undefined)
+    }
+  }
+
   const onStartSetup = (values: any) => {
     // TODO: Access the nickname entered
     // TODO: Store nickname... in API call? in Session Storage?
@@ -91,8 +102,14 @@ const JoinPage = () => {
     // TODO: Navigate to new party page.
   }
 
-  const onReturnToLanding = () => setCurrentSection(Section.Landing)
-  const onReturnToNickname = () => setCurrentSection(Section.Nickname)
+  const onReturnToLanding = () => {
+    clearMediaContext()
+    setCurrentSection(Section.Landing)
+  }
+  const onReturnToNickname = () => {
+    clearMediaContext()
+    setCurrentSection(Section.Nickname)
+  }
   const onStartJoin = () => setCurrentSection(Section.Nickname)
 
   return (
@@ -158,7 +175,7 @@ const JoinPage = () => {
         {conferenceData && currentSection === Section.AVSetup && (
           <>
             <p>Choose your camera and mic preferences</p>
-            <MediaSetup />
+            <MediaSetup selfCleanup={false} />
             <button onClick={onReturnToNickname}>back</button>
             <button onClick={onJoin}>join</button>
           </>
