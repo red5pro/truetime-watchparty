@@ -5,6 +5,7 @@ import useQueryParams from '../../hooks/useQueryParams'
 import MediaContext from '../../components/MediaContext/MediaContext'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
+import Loading from '../../components/Loading/Loading'
 
 const MainStagePage = () => {
   const mediaContext = React.useContext(MediaContext.Context)
@@ -22,6 +23,16 @@ const MainStagePage = () => {
     // TODO: If have auth context, navigate back to join?
     navigate(`/join/${params.conferenceid}?u_id=${query.get('u_id')}`)
   }
+
+  React.useEffect(() => {
+    addEventListener('popstate', () => {
+      clearMediaContext()
+    })
+
+    return () => {
+      clearMediaContext()
+    }
+  }, [])
 
   React.useEffect(() => {
     if (params && params.conferenceid) {
@@ -64,6 +75,14 @@ const MainStagePage = () => {
     } catch (e) {
       // TODO: Display alert
       console.error(e)
+    }
+  }
+
+  const clearMediaContext = () => {
+    if (mediaContext && mediaContext.mediaStream) {
+      mediaContext.mediaStream.getTracks().forEach((t: MediaStreamTrack) => t.stop())
+      mediaContext.setConstraints(undefined)
+      mediaContext.setMediaStream(undefined)
     }
   }
 
