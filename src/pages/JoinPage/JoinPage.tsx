@@ -32,6 +32,7 @@ const JoinPage = () => {
   const { classes } = useStyles()
   const query = useQueryParams()
   const params = useParams()
+  const navigate = useNavigate()
 
   const [conferenceId, setConferenceId] = React.useState<string | null>(null)
   const [participantId, setParticipantId] = React.useState<string | null>(null)
@@ -100,6 +101,7 @@ const JoinPage = () => {
   const onJoin = () => {
     // TODO: Define and Store media settings... in a MediaContext? in Session storage?
     // TODO: Navigate to new party page.
+    navigate(`/main/${conferenceId}?u_id=${participantId}`)
   }
 
   const onReturnToLanding = () => {
