@@ -1,13 +1,17 @@
 import * as React from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Box, Typography } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Button, LinearProgress } from '@mui/material'
+import { Formik, Form, Field } from 'formik'
+import { TextField } from 'formik-mui'
+import * as Yup from 'yup'
 
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import Loading from '../../components/Loading/Loading'
 import useQueryParams from '../../hooks/useQueryParams'
 import useStyles from './JoinPage.module'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
+import MediaSetup from '../../components/MediaSetup/MediaSetup'
 
 enum Section {
   Landing = 1,
@@ -15,6 +19,11 @@ enum Section {
   AVSetup,
 }
 
+const validationSchema = Yup.object().shape({
+  nickname: Yup.string().max(50).required('Nickname field is required'),
+})
+
+// TODO: How is episode/series info accessed from this page? Wrapped in a Context Provider?
 // Preferrably wrapped in a ParticipantContext/AuthContext with user/participant record?
 const JoinPage = () => {
   const { classes } = useStyles()
@@ -26,6 +35,10 @@ const JoinPage = () => {
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | null>(null)
 
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
+
+  const initialValues = {
+    nickname: '', // TODO: get from participant context or session storage?
+  }
 
   React.useEffect(() => {
     if (params && params.conferenceid) {
@@ -67,7 +80,7 @@ const JoinPage = () => {
     }
   }
 
-  const onStartSetup = () => {
+  const onStartSetup = (values: any) => {
     // TODO: Access the nickname entered
     // TODO: Store nickname... in API call? in Session Storage?
     setCurrentSection(Section.AVSetup)
@@ -100,14 +113,52 @@ const JoinPage = () => {
         )}
         {conferenceData && currentSection === Section.Nickname && (
           <>
-            <p>Nickname</p>
-            <button onClick={onReturnToLanding}>back</button>
-            <button onClick={onStartSetup}>next</button>
+            <p>TODO: Episode/Series Info?</p>
+            <p>{conferenceData.displayName}</p>
+            <p>{conferenceData.welcomeMessage}</p>
+            <p>TODO: Participant listing...</p>
+            <p>Choose a Nickname</p>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={(values) => onStartSetup(values)}
+              enableReinitialize
+            >
+              {(props: any) => {
+                const { submitForm, isSubmitting, setFieldValue } = props
+
+                const nicknameChange = (e: any) => {
+                  const value = e?.target?.value
+                  // TODO: Store name somewhere?
+                }
+
+                return (
+                  <Form>
+                    <Box display="flex" width="30%" margin="auto" className={classes.formContainer}>
+                      <Field
+                        component={TextField}
+                        name="nickname"
+                        type="text"
+                        label="Nickname / Display Name"
+                        className={classes.inputField}
+                      />
+                    </Box>
+                    <Button variant="contained" color="primary" disabled={isSubmitting} onClick={onReturnToLanding}>
+                      Back
+                    </Button>
+                    <Button variant="contained" color="primary" disabled={isSubmitting} onClick={submitForm}>
+                      Next
+                    </Button>
+                  </Form>
+                )
+              }}
+            </Formik>
           </>
         )}
         {conferenceData && currentSection === Section.AVSetup && (
           <>
-            <p>AV Setup</p>
+            <p>Choose your camera and mic preferences</p>
+            <MediaSetup />
             <button onClick={onReturnToNickname}>back</button>
             <button onClick={onJoin}>join</button>
           </>

@@ -12,7 +12,12 @@ const useStyles = makeStyles()((theme: any) => {
       flexDirection: 'column',
       alignItems: 'center',
     },
-    loading: {},
+    formContainer: {
+      flexDirection: 'column',
+    },
+    inputField: {
+      margin: '10px 0 !important',
+    },
   }
 })
 
