@@ -225,7 +225,12 @@ const JoinPage = () => {
               >
                 <ArrowBackIosIcon />
               </Button>
-              <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onJoin}>
+              <CustomButton
+                disabled={!mediaContext?.mediaStream}
+                size={BUTTONSIZE.MEDIUM}
+                buttonType={BUTTONTYPE.SECONDARY}
+                onClick={onJoin}
+              >
                 Join
               </CustomButton>
             </Box>
