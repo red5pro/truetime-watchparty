@@ -1,15 +1,15 @@
 import { CardContent } from '@mui/material'
 import * as React from 'react'
-import useMainVideoStyles from './MainVideo.module'
+import useVideoStyles from './VideoElement.module'
 
 interface IMainVideoProps {
   elementId: string
+  styles: any
 }
 
-const MainVideo = ({ elementId }: IMainVideoProps) => {
+const VideoElement = ({ elementId, styles }: IMainVideoProps) => {
   const videoRef: any = React.useRef(null)
-
-  const { classes } = useMainVideoStyles()
+  const { classes } = useVideoStyles()
 
   return (
     <CardContent className={classes.container}>
@@ -22,10 +22,10 @@ const MainVideo = ({ elementId }: IMainVideoProps) => {
         autoPlay
         playsInline
         onContextMenu={() => false}
-        className={classes.video}
+        className={`${classes.video} ${styles}`}
       />
     </CardContent>
   )
 }
 
-export default MainVideo
+export default VideoElement

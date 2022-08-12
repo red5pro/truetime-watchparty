@@ -5,7 +5,7 @@ import { getAuthenticationParams, getConfiguration, getServerSettings } from '..
 import WatchContext from '../WatchContext/WatchContext'
 import RoomContext from '../RoomContext/RoomContext'
 import Loading from '../Loading/Loading'
-import MainVideo from '../MainVideo/MainVideo'
+import VideoElement from '../VideoElement/VideoElement'
 import { Box, Typography } from '@mui/material'
 import { SERVER_HOST } from '../../settings/variables'
 import SubscribersPanel from '../SubscribersPanel/SubscribersPanel'
@@ -257,7 +257,7 @@ const Publisher = () => {
 
       <Box display={isPublished ? 'flex' : 'none'}>
         <Box width="75%">
-          <MainVideo elementId={elementId} />
+          <VideoElement elementId={elementId} styles={{}} />
         </Box>
         <Box width="25%">
           <SubscribersPanel isPublisher />
