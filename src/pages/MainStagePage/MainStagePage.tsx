@@ -25,13 +25,13 @@ const MainStagePage = () => {
   }
 
   React.useEffect(() => {
-    addEventListener('popstate', () => {
-      clearMediaContext()
-    })
-
-    return () => {
-      clearMediaContext()
-    }
+    // TODO: Ensure that if we navigate away from this page, we shut down media...
+    // addEventListener('popstate', () => {
+    //   clearMediaContext()
+    // })
+    // return () => {
+    //   clearMediaContext()
+    // }
   }, [])
 
   React.useEffect(() => {
