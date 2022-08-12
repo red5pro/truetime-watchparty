@@ -1,2 +1,4 @@
 export const SERVER_HOST = process.env.SERVER_HOST || 'watchtest.red5.net'
-export const API_SERVER_HOST = process.env.API_SERVER_HOST || ''
+export const API_SERVER_HOST = process.env.API_SERVER_HOST || 'wat-101-sm.red5.net'
+export const RECAPTCHA_SITE_KEY = process.env.RECAPTCHA_SITE_KEY || '6LdnYWAhAAAAALa4NtXnet5rmzV-dLTDeuVcIP2a'
+export const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY || '6LdnYWAhAAAAABLHrGDm34M2M3gZE4Qy-3o0LMKJ'
