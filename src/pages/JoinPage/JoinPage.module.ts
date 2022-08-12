@@ -18,6 +18,31 @@ const useStyles = makeStyles()((theme: any) => {
     inputField: {
       margin: '10px 0 !important',
     },
+    buttonContainer: {
+      [theme.breakpoints.down('sm')]: {
+        flexDirection: 'column',
+      },
+      alignItems: 'center',
+    },
+    backButton: {
+      zIndex: 2,
+      color: 'white !important',
+      border: 'solid 1px #FFFFFF',
+      backgroundColor: 'transparent',
+      width: '40px',
+      minWidth: '40px',
+      height: '40px',
+      borderRadius: '20px',
+
+      [theme.breakpoints.down('sm')]: {
+        top: '1rem',
+      },
+
+      '& svg': {
+        display: 'block',
+        margin: '0 2px 0 8px',
+      },
+    },
   }
 })
 
