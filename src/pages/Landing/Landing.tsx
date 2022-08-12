@@ -31,7 +31,7 @@ const Home = () => {
         </Box>
         <Box mt={4} display="flex">
           <Typography mr={2}>Already have a party?</Typography>
-          <Link to="" className={classes.link}>
+          <Link to="login" className={classes.link}>
             Sign in here
           </Link>
         </Box>
