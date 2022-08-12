@@ -1,12 +1,13 @@
 import { makeStyles } from 'tss-react/mui'
 
-const useMainVideoStyles = makeStyles()({
+const useVideoStyles = makeStyles()({
   container: {
-    margin: '1rem',
     display: 'flex',
     flexDirection: 'column',
   },
-  video: {},
+  video: {
+    objectFit: 'cover',
+  },
 })
 
-export default useMainVideoStyles
+export default useVideoStyles

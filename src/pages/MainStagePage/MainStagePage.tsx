@@ -6,9 +6,15 @@ import MediaContext from '../../components/MediaContext/MediaContext'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import Loading from '../../components/Loading/Loading'
+import { Box } from '@mui/system'
+import Subscriber from '../../components/Subscriber/Subscriber'
+import { USE_STREAM_MANAGER } from '../../settings/variables'
+import useStyles from './MainStagePage.module'
 
 const MainStagePage = () => {
   const mediaContext = React.useContext(MediaContext.Context)
+
+  const { classes } = useStyles()
 
   const query = useQueryParams()
   const params = useParams()
@@ -87,9 +93,15 @@ const MainStagePage = () => {
   }
 
   return (
-    <>
+    <Box>
       <p>Main Stage</p>
-    </>
+      <Subscriber
+        useStreamManager={USE_STREAM_MANAGER}
+        host="release-11.red5.net"
+        streamGuid="live/stream1todd"
+        styles={classes.mainVideo}
+      />
+    </Box>
   )
 }
 

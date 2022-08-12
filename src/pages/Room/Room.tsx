@@ -14,7 +14,7 @@ const Room = () => {
   return (
     <Box className={classes.classes.container}>
       <RoomContext.Provider room={params.room ?? ''}>
-        <Subscriber room={params.room ?? ''} />
+        <Subscriber useStreamManager={false} host="" streamGuid="" styles={{}} />
       </RoomContext.Provider>
     </Box>
   )
