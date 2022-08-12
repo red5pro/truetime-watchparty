@@ -37,7 +37,7 @@ const JoinPage = () => {
   const params = useParams()
   const navigate = useNavigate()
 
-  const [conferenceId, setConferenceId] = React.useState<string | null>(null)
+  const [joinToken, setJoinToken] = React.useState<string | null>(null)
   const [participantId, setParticipantId] = React.useState<string | null>(null)
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | null>(null)
 
@@ -48,10 +48,10 @@ const JoinPage = () => {
   }
 
   React.useEffect(() => {
-    if (params && params.conferenceid) {
-      setConferenceId(params.conferenceid)
+    if (params && params.token) {
+      setJoinToken(params.token)
     } else {
-      setConferenceId('')
+      setJoinToken('')
     }
   }, [params])
 
@@ -62,11 +62,17 @@ const JoinPage = () => {
   }, [query])
 
   React.useEffect(() => {
-    if (conferenceId && participantId) {
+    if (joinToken && participantId) {
       // TODO: Get Party/Conference info for display
-      getConferenceData(conferenceId, participantId)
+      getConferenceData(joinToken, participantId)
     }
-  }, [conferenceId, participantId])
+  }, [joinToken, participantId])
+
+  React.useEffect(() => {
+    if (currentSection !== Section.AVSetup) {
+      clearMediaContext()
+    }
+  }, [currentSection])
 
   React.useEffect(() => {
     if (conferenceData) {
@@ -104,7 +110,7 @@ const JoinPage = () => {
   const onJoin = () => {
     // TODO: Define and Store media settings... in a MediaContext? in Session storage?
     // TODO: Navigate to new party page.
-    navigate(`/main/${conferenceId}?u_id=${participantId}`)
+    navigate(`/main/${joinToken}?u_id=${participantId}`)
   }
 
   const onReturnToLanding = () => {

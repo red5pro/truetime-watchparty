@@ -13,6 +13,7 @@ const useMediaStyles = makeStyles()({
     minHeight: '360px',
     backgroundColor: 'black',
     objectFit: 'cover',
+    transform: 'scaleX(-1)',
   },
 })
 

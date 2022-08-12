@@ -1,5 +1,7 @@
 import * as React from 'react'
 import { Box, CardContent, MenuItem, Select } from '@mui/material'
+import MicIcon from '@mui/icons-material/Mic'
+import CameraAltIcon from '@mui/icons-material/CameraAlt'
 
 import MediaContext from '../MediaContext/MediaContext'
 import useMediaStyles from './MediaSetup.module'
@@ -89,7 +91,6 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
           ref={videoRef}
           width="100%"
           height="100%"
-          controls
           autoPlay
           playsInline
           muted
@@ -97,10 +98,10 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
           className={classes.video}
         />
         {mediaContext && mediaContext.cameraSelected && (
-          <Select onChange={onCameraSelect} value={mediaContext.cameraSelected}>
+          <Select sx={{ width: '100%' }} onChange={onCameraSelect} value={mediaContext.cameraSelected}>
             {devices.cameras.map((d: MediaDeviceInfo) => {
               return (
-                <MenuItem key={d.deviceId} value={d.deviceId}>
+                <MenuItem key={d.deviceId} value={d.deviceId} sx={{ color: 'black' }}>
                   {d.label}
                 </MenuItem>
               )
@@ -108,10 +109,10 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
           </Select>
         )}
         {mediaContext && mediaContext.microphoneSelected && (
-          <Select onChange={onMicrophoneSelect} value={mediaContext.microphoneSelected}>
+          <Select sx={{ width: '100%' }} onChange={onMicrophoneSelect} value={mediaContext.microphoneSelected}>
             {devices.microphones.map((d: MediaDeviceInfo) => {
               return (
-                <MenuItem key={d.deviceId} value={d.deviceId}>
+                <MenuItem key={d.deviceId} value={d.deviceId} sx={{ color: 'black' }}>
                   {d.label}
                 </MenuItem>
               )
