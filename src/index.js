@@ -1,9 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import reportWebVitals from './reportWebVitals'
-import AppRoutes from './routes/routes'
+import { CookiesProvider } from 'react-cookie'
 import { CssBaseline, GlobalStyles } from '@mui/material'
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
+
+import reportWebVitals from './reportWebVitals'
+import AppRoutes from './routes/routes'
 import { mergeThemes } from '../src/utils/theme'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
@@ -19,7 +21,9 @@ root.render(
         }}
       />
       <StyledEngineProvider injectFirst>
-        <AppRoutes />
+        <CookiesProvider>
+          <AppRoutes />
+        </CookiesProvider>
       </StyledEngineProvider>
     </ThemeProvider>
     {/* Footer here */}

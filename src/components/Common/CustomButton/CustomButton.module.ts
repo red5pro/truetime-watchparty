@@ -129,6 +129,22 @@ const useStyles = (size: BUTTONSIZE) =>
         backgroundColor: 'transparent',
       },
     },
+    facebook: {
+      padding: '0 15px',
+      boxSizing: 'border-box',
+      backgroundColor: '#2050CC',
+      borderRadius: '24px',
+      border: '1px solid #2050CC',
+      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
+      backdropFilter: 'blur(24px)',
+      color: '#FFFFFF',
+      '& > *': {
+        fill: '#FFFFFF',
+      },
+      '&:hover': {
+        backgroundColor: '#2050CC',
+      },
+    },
   }))
 
 export default useStyles

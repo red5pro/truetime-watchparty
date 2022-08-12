@@ -1,8 +1,6 @@
 import axios, { AxiosResponse } from 'axios'
 import { IConference } from '../../models/Conference'
-import { API_SERVER_HOST } from '../../settings/variables'
-
-const MAIN_ENDPOINT = `https://${API_SERVER_HOST}/conferenceapi/1.0`
+import { MAIN_ENDPOINT } from '../../settings/variables'
 
 const ENDPOINT = {
   SERIES: `${MAIN_ENDPOINT}/series`,
