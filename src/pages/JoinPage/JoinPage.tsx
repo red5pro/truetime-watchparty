@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Box, Typography } from '@mui/material'
 import { Button, LinearProgress } from '@mui/material'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-mui'
 import * as Yup from 'yup'
@@ -13,6 +14,7 @@ import useStyles from './JoinPage.module'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import MediaSetup from '../../components/MediaSetup/MediaSetup'
 import MediaContext from '../../components/MediaContext/MediaContext'
+import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 
 enum Section {
   Landing = 1,
@@ -122,13 +124,22 @@ const JoinPage = () => {
         </Typography>
         {!conferenceData && <Loading />}
         {conferenceData && currentSection === Section.Landing && (
-          <>
+          <Box>
             <p>TODO: Episode/Series Info?</p>
-            <p>{conferenceData.displayName}</p>
-            <p>{conferenceData.welcomeMessage}</p>
-            <p>TODO: Participant listing...</p>
-            <button onClick={onStartJoin}>Join Party</button>
-          </>
+            <Typography sx={{ fontSize: '24px' }}>Series 1</Typography>
+            <Typography variant="h1">Event 1</Typography>
+            <Typography marginTop={3} sx={{ fontSize: '18px', fontWeight: 600 }}>
+              08 July - 09:00 PM
+            </Typography>
+            <Box>
+              <Typography sx={{ fontSize: '36px' }}>{conferenceData.displayName}</Typography>
+              <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{conferenceData.welcomeMessage}</Typography>
+              <p>TODO: Participant listing...</p>
+              <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onStartJoin}>
+                Join Party
+              </CustomButton>
+            </Box>
+          </Box>
         )}
         {conferenceData && currentSection === Section.Nickname && (
           <>
@@ -152,22 +163,34 @@ const JoinPage = () => {
                 }
 
                 return (
-                  <Form>
+                  <Form autoComplete="off">
                     <Box display="flex" width="30%" margin="auto" className={classes.formContainer}>
                       <Field
                         component={TextField}
                         name="nickname"
                         type="text"
-                        label="Nickname / Display Name"
+                        placeholder="Nickname"
                         className={classes.inputField}
                       />
                     </Box>
-                    <Button variant="contained" color="primary" disabled={isSubmitting} onClick={onReturnToLanding}>
-                      Back
-                    </Button>
-                    <Button variant="contained" color="primary" disabled={isSubmitting} onClick={submitForm}>
-                      Next
-                    </Button>
+                    <Box display="flex" marginY={4} className={classes.buttonContainer}>
+                      <Button
+                        color="inherit"
+                        disabled={isSubmitting}
+                        onClick={onReturnToLanding}
+                        className={classes.backButton}
+                      >
+                        <ArrowBackIosIcon />
+                      </Button>
+                      <CustomButton
+                        size={BUTTONSIZE.MEDIUM}
+                        buttonType={BUTTONTYPE.SECONDARY}
+                        disabled={isSubmitting}
+                        onClick={submitForm}
+                      >
+                        Next
+                      </CustomButton>
+                    </Box>
                   </Form>
                 )
               }}
