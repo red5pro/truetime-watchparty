@@ -44,10 +44,6 @@ const fontFamily = [
 
 export const mergeThemes = () => {
   const theme = createTheme({
-    shape: {
-      borderRadius: 17.5,
-    },
-
     palette: {
       text: {
         primary: '#FBFBFB',
@@ -57,7 +53,7 @@ export const mergeThemes = () => {
       },
     },
     typography: {
-      fontFamily: fontFamily,
+      fontFamily: 'GeneralSans-Regular',
       fontSize: 14,
       h1: {
         fontSize: '90px !important',
@@ -66,18 +62,26 @@ export const mergeThemes = () => {
         fontWeight: 600,
         fontStyle: 'normal',
       },
-      // h2: {
-      //   color: '#FFFFFF',
-      // },
-      // h3: {
-      //   color: '#FFFFFF',
-      // },
-      // h4: {
-      //   color: '#FFFFFF',
-      // },
-      // h5: {
-      //   color: '#FFFFFF',
-      // },
+      h2: {
+        color: '#FBFBFB',
+        fontWeight: 600,
+        fontSize: '60px !important',
+      },
+      h3: {
+        color: '#FBFBFB',
+        fontWeight: 600,
+        fontSize: '40px !important',
+      },
+      h4: {
+        color: '#FBFBFB',
+        fontWeight: 500,
+        fontSize: '30px !important',
+      },
+      h5: {
+        color: '#FBFBFB',
+        fontWeight: 500,
+        fontSize: '20px !important',
+      },
     },
     components: {
       MuiLink: {
@@ -123,26 +127,31 @@ export const mergeThemes = () => {
             height: '32px',
             width: '290px',
 
-            borderRadius: '20px',
-            padding: '9px 14px',
+            padding: '0',
             margin: '9px 0',
-
-            border: '1px solid #FFFFFF26 !important',
-            background:
-              'linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15))',
+            backgroundColor: 'rgba(0, 0, 0, 0.3) !important',
             '& fieldset': {
-              border: '1px solid #FFFFFF26',
-              color: 'rgba(0, 0, 0, 0.6)',
+              border: '1px solid #655f5f',
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
             },
             '& fieldset:hover': {
-              border: '1px solid #FFFFFF26',
-              color: 'rgba(0, 0, 0, 0.6)',
+              border: '1px solid #FFFFFF',
             },
             '&.Mui-focused fieldset': {
-              border: '1px solid #FFFFFF26',
+              border: '1px solid #FFFFFF',
             },
-            '&:hover, &:focus, &:after': {
-              borderBottom: '1px solid #FFFFFF26 !important',
+            '&:hover, &:focus, &:after, &:webkit-autofill': {
+              backgroundColor: 'inherit',
+              padding: '6px 14px',
+            },
+            '& input': {
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              padding: '6px 14px !important',
+
+              '&:hover, &:focus, &:after, &:after': {
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                padding: '6px 14px !important',
+              },
             },
           },
         },
@@ -150,20 +159,29 @@ export const mergeThemes = () => {
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
-            '&.Mui-focused fieldset': {
-              borderColor: '#3F51B5',
-            },
             borderRadius: '4px',
-            color: '#464547',
+            color: '#FFFFFF',
+          },
+          input: {
+            backgroundColor: 'rgba(0, 0, 0, 0.3) !important',
+            padding: '3px 14px !important',
+            '&:hover, &:focus, &:after, &:after': {
+              backgroundColor: 'rgba(0, 0, 0, 0.3) !important',
+            },
           },
         },
       },
       MuiInputLabel: {
         styleOverrides: {
           root: {
-            '&.Mui-focused': {
-              color: '#0C9ED9 !important',
-            },
+            '&.Mui-focused': {},
+          },
+        },
+      },
+      MuiList: {
+        styleOverrides: {
+          root: {
+            paddingTop: 0,
           },
         },
       },

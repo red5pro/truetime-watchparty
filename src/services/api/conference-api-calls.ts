@@ -1,9 +1,12 @@
 import axios, { AxiosResponse } from 'axios'
+import { IConference } from '../../models/Conference'
 import { API_SERVER_HOST } from '../../settings/variables'
 
+const MAIN_ENDPOINT = `https://${API_SERVER_HOST}/conferenceapi/1.0`
+
 const ENDPOINT = {
-  SERIES: `https://${API_SERVER_HOST}/conferenceapi/1.0/series`,
-  CONFERENCE: `https://${API_SERVER_HOST}/conferenceapi/1.0/conference`,
+  SERIES: `${MAIN_ENDPOINT}/series`,
+  CONFERENCE: `${MAIN_ENDPOINT}/conference`,
 }
 
 const getSeriesList = async (email: string, password: string) => {
@@ -117,9 +120,35 @@ const getConferenceDetails = async (conferenceid: any, email: string, password: 
   } as AxiosResponse
 }
 
+const createConference = async (conference: IConference, email: string, password: string) => {
+  // try {
+  //   const response: AxiosResponse = await axios.post(
+  //     `${ENDPOINT.CONFERENCE}?user=${email}&password=${password}`,
+  //     conference
+  //   )
+
+  //   return response
+  // } catch (e: any) {
+  //   console.log(e)
+
+  //   return {
+  //     data: null,
+  //     status: e.code,
+  //     statusText: e.message,
+  //   } as AxiosResponse
+  // }
+
+  return {
+    data: {
+      conferenceId: 1,
+    },
+  } as AxiosResponse
+}
+
 export const CONFERENCE_API_CALLS = {
   getSeriesList,
   getCurrentEpisode,
   getAllEpisodes,
   getConferenceDetails,
+  createConference,
 }
