@@ -1,10 +1,11 @@
 import * as React from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import { Box, Typography } from '@mui/material'
+import { Box, Tooltip, Typography } from '@mui/material'
 import { Button, LinearProgress } from '@mui/material'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import { Formik, Form, Field } from 'formik'
 import { TextField } from 'formik-mui'
+import InfoIcon from '@mui/icons-material/Info'
 import * as Yup from 'yup'
 
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
@@ -119,35 +120,46 @@ const JoinPage = () => {
   return (
     <>
       <Box className={classes.root}>
-        <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px' }}>
+        <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>
           Join WatchParty
         </Typography>
         {!conferenceData && <Loading />}
         {conferenceData && currentSection === Section.Landing && (
-          <Box>
+          <Box className={classes.landingContainer}>
             <p>TODO: Episode/Series Info?</p>
             <Typography sx={{ fontSize: '24px' }}>Series 1</Typography>
             <Typography variant="h1">Event 1</Typography>
-            <Typography marginTop={3} sx={{ fontSize: '18px', fontWeight: 600 }}>
-              08 July - 09:00 PM
-            </Typography>
-            <Box>
-              <Typography sx={{ fontSize: '36px' }}>{conferenceData.displayName}</Typography>
+            <Box display="flex" alignItems="center" sx={{ marginTop: '24px' }}>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>08 July - 09:00 PM</Typography>
+              <Tooltip title="TODO: What is this?" arrow sx={{ marginLeft: '12px' }}>
+                <InfoIcon fontSize="small" />
+              </Tooltip>
+            </Box>
+            <Box className={classes.conferenceDetails}>
+              <Typography sx={{ fontSize: '36px', fontWeight: 600 }}>{conferenceData.displayName}</Typography>
               <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{conferenceData.welcomeMessage}</Typography>
               <p>TODO: Participant listing...</p>
-              <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onStartJoin}>
+              <CustomButton
+                className={classes.landingJoin}
+                size={BUTTONSIZE.MEDIUM}
+                buttonType={BUTTONTYPE.SECONDARY}
+                onClick={onStartJoin}
+              >
                 Join Party
               </CustomButton>
             </Box>
           </Box>
         )}
         {conferenceData && currentSection === Section.Nickname && (
-          <>
+          <Box className={classes.nicknameContainer}>
             <p>TODO: Episode/Series Info?</p>
-            <p>{conferenceData.displayName}</p>
-            <p>{conferenceData.welcomeMessage}</p>
+            <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>Event 1</Typography>
+            <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>08 July - 09:00 PM</Typography>
+            <Typography marginTop={2} sx={{ fontSize: '36px', fontWeight: 600 }}>
+              {conferenceData.displayName}
+            </Typography>
+            <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{conferenceData.welcomeMessage}</Typography>
             <p>TODO: Participant listing...</p>
-            <p>Choose a Nickname</p>
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
@@ -163,7 +175,8 @@ const JoinPage = () => {
                 }
 
                 return (
-                  <Form autoComplete="off">
+                  <Form autoComplete="off" className={classes.nicknameForm}>
+                    <Typography sx={{ fontSize: '16px', fontWeight: 600 }}>Choose a Nickname</Typography>
                     <Box display="flex" width="30%" margin="auto" className={classes.formContainer}>
                       <Field
                         component={TextField}
@@ -195,15 +208,28 @@ const JoinPage = () => {
                 )
               }}
             </Formik>
-          </>
+          </Box>
         )}
         {conferenceData && currentSection === Section.AVSetup && (
-          <>
-            <p>Choose your camera and mic preferences</p>
+          <Box className={classes.mediaSetupContainer}>
+            <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>
+              Choose your camera and microphone preferences
+            </Typography>
             <MediaSetup selfCleanup={false} />
-            <button onClick={onReturnToNickname}>back</button>
-            <button onClick={onJoin}>join</button>
-          </>
+            <Box className={classes.mediaSetupButtons}>
+              <Button
+                color="inherit"
+                onClick={onReturnToNickname}
+                className={classes.backButton}
+                sx={{ position: 'absolute', left: 0 }}
+              >
+                <ArrowBackIosIcon />
+              </Button>
+              <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onJoin}>
+                Join
+              </CustomButton>
+            </Box>
+          </Box>
         )}
       </Box>
     </>

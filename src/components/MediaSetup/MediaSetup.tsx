@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { CardContent, MenuItem, Select } from '@mui/material'
+import { Box, CardContent, MenuItem, Select } from '@mui/material'
 
 import MediaContext from '../MediaContext/MediaContext'
 import useMediaStyles from './MediaSetup.module'
@@ -83,8 +83,7 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
   }
 
   return (
-    <>
-      <p>Setup</p>
+    <Box>
       <CardContent className={classes.container}>
         <video
           ref={videoRef}
@@ -120,7 +119,7 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
           </Select>
         )}
       </CardContent>
-    </>
+    </Box>
   )
 }
 
