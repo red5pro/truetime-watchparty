@@ -10,19 +10,50 @@ const useStyles = makeStyles()((theme: any) => {
       overflow: 'auto',
       display: 'flex',
       flexDirection: 'column',
+      padding: '0 75px 0 75px',
+    },
+    landingContainer: {
+      marginTop: '33px',
+    },
+    nicknameContainer: {
+      marginTop: 'calc(100vh / 5)',
+    },
+    mediaSetupContainer: {
+      display: 'flex',
+      flexDirection: 'column',
       alignItems: 'center',
+      marginTop: 'calc(100vh / 6)',
+    },
+    conferenceDetails: {
+      marginTop: '75px',
+    },
+    landingJoin: {
+      marginTop: '50px',
+    },
+    nicknameForm: {
+      marginTop: 'calc(100vh / 8)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'left',
     },
     formContainer: {
       flexDirection: 'column',
+      margin: 'unset',
     },
-    inputField: {
-      margin: '10px 0 !important',
-    },
+    inputField: {},
     buttonContainer: {
       [theme.breakpoints.down('sm')]: {
         flexDirection: 'column',
       },
       alignItems: 'center',
+    },
+    mediaSetupButtons: {
+      display: 'flex',
+      alignItems: 'center',
+      position: 'relative',
+      textAlign: 'center',
+      width: 'calc(100vw / 3)',
+      justifyContent: 'center',
     },
     backButton: {
       zIndex: 2,
