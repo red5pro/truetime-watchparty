@@ -5,3 +5,9 @@ export const getContextAndNameFromGuid = (guid: string) => {
   const name = paths.pop()
   return { name: name, context: paths.join('/') }
 }
+
+export enum UserRoles {
+  ORGANIZER = 'ORGANIZER',
+  VIP = 'VIP',
+  ADMIN = 'ADMIN',
+}

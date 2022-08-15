@@ -1,9 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import reportWebVitals from './reportWebVitals'
-import AppRoutes from './routes/routes'
+import { CookiesProvider } from 'react-cookie'
 import { CssBaseline, GlobalStyles } from '@mui/material'
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
+
+import reportWebVitals from './reportWebVitals'
+import AppRoutes from './routes/routes'
 import { mergeThemes } from '../src/utils/theme'
 import MediaContext from './components/MediaContext/MediaContext'
 
@@ -20,9 +22,11 @@ root.render(
         }}
       />
       <StyledEngineProvider injectFirst>
-        <MediaContext.Provider>
-          <AppRoutes />
-        </MediaContext.Provider>
+        <CookiesProvider>
+          <MediaContext.Provider>
+            <AppRoutes />
+          </MediaContext.Provider>
+        </CookiesProvider>
       </StyledEngineProvider>
     </ThemeProvider>
     {/* Footer here */}
