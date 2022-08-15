@@ -13,6 +13,7 @@ import Loading from '../../components/Loading/Loading'
 import useQueryParams from '../../hooks/useQueryParams'
 import useStyles from './JoinPage.module'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
+import { Participant } from '../../models/Participant'
 import MediaSetup from '../../components/MediaSetup/MediaSetup'
 import MediaContext from '../../components/MediaContext/MediaContext'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
@@ -26,6 +27,23 @@ enum Section {
 const validationSchema = Yup.object().shape({
   nickname: Yup.string().max(50).required('Nickname field is required'),
 })
+
+// List up to 2, then remaining amount
+const getParticipantText = (participants: Participant[] | undefined) => {
+  if (!participants || participants.length === 0) {
+    return 'Nobody is currently in the Watch Party.'
+  }
+  const maxLength = 2
+  const length = participants.length
+  if (length < maxLength) {
+    return `${participants[0].displayName} is already here.}`
+  } else if (length === maxLength) {
+    return `${participants[0].displayName} and ${participants[1].displayName} are already here.`
+  }
+  return `${participants[0].displayName}, ${participants[1].displayName} and ${
+    participants.length - maxLength
+  } other(s) are already here.`
+}
 
 // TODO: How is episode/series info accessed from this page? Wrapped in a Context Provider?
 // Preferrably wrapped in a ParticipantContext/AuthContext with user/participant record?
@@ -63,8 +81,7 @@ const JoinPage = () => {
 
   React.useEffect(() => {
     if (joinToken && participantId) {
-      // TODO: Get Party/Conference info for display
-      getConferenceData(joinToken, participantId)
+      getConferenceData(joinToken)
     }
   }, [joinToken, participantId])
 
@@ -80,12 +97,9 @@ const JoinPage = () => {
     }
   }, [conferenceData])
 
-  const getConferenceData = async (c_id: string, p_id: string) => {
+  const getConferenceData = async (token: string) => {
     try {
-      // TODO: Get credentials from somewhere?
-      const username = 'user'
-      const password = 'pass'
-      const details = await CONFERENCE_API_CALLS.getConferenceDetails(c_id, username, password)
+      const details = await CONFERENCE_API_CALLS.getJoinDetails(token)
       setConferenceData(details.data)
     } catch (e) {
       // TODO: Display alert
@@ -144,7 +158,9 @@ const JoinPage = () => {
             <Box className={classes.conferenceDetails}>
               <Typography sx={{ fontSize: '36px', fontWeight: 600 }}>{conferenceData.displayName}</Typography>
               <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{conferenceData.welcomeMessage}</Typography>
-              <p>TODO: Participant listing...</p>
+              <Typography paddingTop={2} sx={{ fontSize: '12px', fontWeight: 500 }}>
+                {getParticipantText(conferenceData.participants)}
+              </Typography>
               <CustomButton
                 className={classes.landingJoin}
                 size={BUTTONSIZE.MEDIUM}
@@ -165,7 +181,9 @@ const JoinPage = () => {
               {conferenceData.displayName}
             </Typography>
             <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{conferenceData.welcomeMessage}</Typography>
-            <p>TODO: Participant listing...</p>
+            <Typography paddingTop={2} sx={{ fontSize: '12px', fontWeight: 500 }}>
+              {getParticipantText(conferenceData.participants)}
+            </Typography>
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
