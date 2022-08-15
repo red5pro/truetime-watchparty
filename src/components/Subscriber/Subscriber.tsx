@@ -6,6 +6,7 @@ import Loading from '../Loading/Loading'
 import { Box } from '@mui/material'
 import { SERVER_HOST } from '../../settings/variables'
 import { getContextAndNameFromGuid } from '../../utils/commonUtils'
+import { getEdge } from '../../utils/streamManagerUtils'
 
 interface ISubscriberProps {
   host: string
@@ -75,6 +76,13 @@ const Subscriber = (props: ISubscriberProps) => {
         streamName: streamName,
         mediaElementId: elementId,
         subscriptionId: `${streamName}-${Math.floor(Math.random() * 0x10000).toString(16)}`,
+        connectionParams: {
+          /* username, password, token? */
+        },
+      }
+      if (useStreamManager) {
+        const payload = await getEdge(host, context, streamName)
+        config.connectionParams = { ...config.connectionParams, host: payload.serverAddress, app: payload.scope }
       }
       sub.on('*', onSubscribeEvent)
       await sub.init(config)
