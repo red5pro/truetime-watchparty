@@ -7,6 +7,7 @@ import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
 import reportWebVitals from './reportWebVitals'
 import AppRoutes from './routes/routes'
 import { mergeThemes } from '../src/utils/theme'
+import MediaContext from './components/MediaContext/MediaContext'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
@@ -22,8 +23,10 @@ root.render(
       />
       <StyledEngineProvider injectFirst>
         <CookiesProvider>
-          <AppRoutes />
-        </CookiesProvider>
+          <MediaContext.Provider>
+            <AppRoutes />
+          </MediaContext.Provider>
+        <CookiesProvider>
       </StyledEngineProvider>
     </ThemeProvider>
     {/* Footer here */}

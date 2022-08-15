@@ -1,6 +1,6 @@
 import { Box, CardContent, ListItemText, MenuItem, Select, Typography } from '@mui/material'
 import * as React from 'react'
-import { allowMediaStreamSwap } from '../../utils/deviceSelectorUtil'
+import { getDeviceListing } from '../../utils/deviceSelectorUtil'
 import useVideoStyles from './VideoPreview.module'
 import { Button, LinearProgress } from '@mui/material'
 import { Formik, Form, Field } from 'formik'
@@ -26,6 +26,8 @@ interface IVideoPreviewProps {
   room?: string
   onJoinRoom: (values: IRoomFormValues) => Promise<void>
 }
+
+// TODO: Mark for deprecation?
 
 const VideoPreview = (props: IVideoPreviewProps) => {
   const { room, onJoinRoom } = props
@@ -61,7 +63,7 @@ const VideoPreview = (props: IVideoPreviewProps) => {
   }, [cameraOptions])
 
   const setMediaOptions = async () => {
-    const [cameraList, microphoneList] = await allowMediaStreamSwap(roomContext?.constraints, roomContext?.mediaStream)
+    const [cameraList, microphoneList] = await getDeviceListing(roomContext?.mediaStream)
 
     if (videoRef) {
       const video: any = videoRef.current
@@ -72,8 +74,8 @@ const VideoPreview = (props: IVideoPreviewProps) => {
       }
     }
 
-    setCameraOptions(cameraList)
-    setMicOptions(microphoneList)
+    setCameraOptions(cameraList.availableDevices)
+    setMicOptions(microphoneList.availableDevices)
   }
 
   const initialValues = {
