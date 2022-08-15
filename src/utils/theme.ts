@@ -124,7 +124,7 @@ export const mergeThemes = () => {
       MuiInputBase: {
         styleOverrides: {
           root: {
-            height: '32px',
+            height: '35px',
             width: '290px',
 
             padding: '0',
@@ -174,6 +174,7 @@ export const mergeThemes = () => {
       MuiInputLabel: {
         styleOverrides: {
           root: {
+            color: '#655f5f',
             '&.Mui-focused': {},
           },
         },

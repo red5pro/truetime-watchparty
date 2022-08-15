@@ -9,13 +9,15 @@ import useStyles from './ViewEvents.module'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import ElementList from '../../Common/ElementList/ElementList'
 import { IStepActionsSubComponent } from '../HostAPartySteps'
+import { IAccount } from '../../../models/Account'
 
 interface IViewEventsProps {
   onActions: IStepActionsSubComponent
+  account?: IAccount | null
 }
 
 const ViewEvents = (props: IViewEventsProps) => {
-  const { onActions } = props
+  const { onActions, account } = props
 
   const [currentSerie, setCurrentSerie] = React.useState<Serie>()
   const [currentEpisode, setCurrentEpisode] = React.useState<Episode>()
@@ -89,14 +91,16 @@ const ViewEvents = (props: IViewEventsProps) => {
                   Join a WatchParty
                 </CustomButton>
               </Box>
-              <Box display="flex">
-                <Typography sx={{ fontSize: '14px' }} mr={2}>
-                  Already have a party?
-                </Typography>
-                <Link to="" className={classes.link}>
-                  Sign in
-                </Link>
-              </Box>
+              {!account && (
+                <Box display="flex">
+                  <Typography sx={{ fontSize: '14px' }} mr={2}>
+                    Already have a party?
+                  </Typography>
+                  <Link to="login" className={classes.link}>
+                    Sign in
+                  </Link>
+                </Box>
+              )}
               <Typography marginTop={4} sx={{ fontSize: '24px', fontWeight: '500' }}>
                 What is a Watch Party?
               </Typography>

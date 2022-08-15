@@ -7,6 +7,7 @@ export enum BUTTONTYPE {
   PRIMARY = 'primary',
   SECONDARY = 'secondary',
   TERTIARY = 'tertiary',
+  FACEBOOK = 'facebook',
 }
 
 export enum BUTTONSIZE {
@@ -51,6 +52,8 @@ const CustomButton = (props: ICustomButtonProps): JSX.Element => {
         return classes.secondary
       case BUTTONTYPE.TERTIARY:
         return classes.tertiary
+      case BUTTONTYPE.FACEBOOK:
+        return classes.facebook
     }
   }
 
