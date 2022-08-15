@@ -8,9 +8,11 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import Loading from '../../components/Loading/Loading'
 import { Box } from '@mui/system'
 import Subscriber from '../../components/Subscriber/Subscriber'
-import { USE_STREAM_MANAGER } from '../../settings/variables'
+import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import useStyles from './MainStagePage.module'
+import { Typography } from '@mui/material'
 
+// TODO: How do we go from jointoken top conference id in flow?
 const MainStagePage = () => {
   const mediaContext = React.useContext(MediaContext.Context)
 
@@ -20,14 +22,15 @@ const MainStagePage = () => {
   const params = useParams()
   const navigate = useNavigate()
 
-  const [joinToken, setJoinToken] = React.useState<string | null>(null)
+  const [conferenceId, setConferenceId] = React.useState<string | null>(null)
   const [participantId, setParticipantId] = React.useState<string | null>(null)
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | null>(null)
+  const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>(undefined)
 
   if (!mediaContext || !mediaContext.mediaStream) {
     // TODO: Navigate back to auth?
     // TODO: If have auth context, navigate back to join?
-    navigate(`/join/${params.token}?u_id=${query.get('u_id')}`)
+    navigate(`/join/${params.conferenceid}?u_id=${query.get('u_id')}`)
   }
 
   React.useEffect(() => {
@@ -41,10 +44,10 @@ const MainStagePage = () => {
   }, [])
 
   React.useEffect(() => {
-    if (params && params.token) {
-      setJoinToken(params.token)
+    if (params && params.conferenceid) {
+      setConferenceId(params.conferenceid)
     } else {
-      setJoinToken('')
+      setConferenceId('')
     }
   }, [params])
 
@@ -55,15 +58,19 @@ const MainStagePage = () => {
   }, [query])
 
   React.useEffect(() => {
-    console.log('MEDIA', mediaContext?.mediaStream)
+    // TODO: Got here without setting up media. Where to send them?
+    if (!mediaContext || !mediaContext.mediaStream) {
+      // navigate(`/join`)
+    }
+    setPublishMediaStream(mediaContext?.mediaStream)
   }, [mediaContext?.mediaStream])
 
   React.useEffect(() => {
-    if (joinToken && participantId) {
+    if (conferenceId && participantId) {
       // TODO: Get Party/Conference info for display
-      getConferenceData(joinToken, participantId)
+      getConferenceData(conferenceId, participantId)
     }
-  }, [joinToken, participantId])
+  }, [conferenceId, participantId])
 
   React.useEffect(() => {
     if (conferenceData) {
@@ -93,14 +100,19 @@ const MainStagePage = () => {
   }
 
   return (
-    <Box>
-      <p>Main Stage</p>
-      <Subscriber
-        useStreamManager={USE_STREAM_MANAGER}
-        host="release-11.red5.net"
-        streamGuid="live/stream1todd"
-        styles={classes.mainVideo}
-      />
+    <Box className={classes.rootContainer}>
+      {conferenceData && (
+        <Subscriber
+          useStreamManager={USE_STREAM_MANAGER}
+          host={STREAM_HOST}
+          streamGuid={conferenceData.streamGuid}
+          styles={classes.mainVideo}
+        />
+      )}
+      <Box className={classes.content}>
+        <Typography sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>Join WatchParty</Typography>
+        {!conferenceData && <Loading />}
+      </Box>
     </Box>
   )
 }

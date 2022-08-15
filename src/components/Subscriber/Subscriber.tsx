@@ -14,8 +14,13 @@ interface ISubscriberProps {
   styles: any
 }
 
+const DELAY = 2000
+const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
+
 const Subscriber = (props: ISubscriberProps) => {
   const { useStreamManager, host, streamGuid, styles } = props
+
+  let retryTimeout: any
 
   const [elementId, setElementId] = React.useState<string>('')
   const [context, setContext] = React.useState<string>('')
@@ -24,6 +29,8 @@ const Subscriber = (props: ISubscriberProps) => {
   const [isSubscribing, setIsSubscribing] = React.useState<boolean>(false)
 
   const [subscriber, setSubscriber] = React.useState<any | undefined>()
+
+  const [retryId, setRetryId] = React.useState<number>(-1)
 
   React.useEffect(() => {
     const elemId = `${streamName}-subscriber`
@@ -36,6 +43,7 @@ const Subscriber = (props: ISubscriberProps) => {
     }
 
     return () => {
+      stopRetry()
       if (subscriber) {
         stop()
       }
@@ -48,6 +56,15 @@ const Subscriber = (props: ISubscriberProps) => {
     }
   }, [elementId, streamName, context])
 
+  const onSubscribeEvent = (event: any) => {
+    if (event.type !== 'Subscribe.Time.Update') {
+      console.log(`[Red5ProSubscriber(${streamName})] :: ${event.type}`)
+      if (RETRY_EVENTS.indexOf(event.type) > -1) {
+        startRetry()
+      }
+    }
+  }
+
   const start = async () => {
     setIsSubscribing(true)
     try {
@@ -59,6 +76,7 @@ const Subscriber = (props: ISubscriberProps) => {
         mediaElementId: elementId,
         subscriptionId: `${streamName}-${Math.floor(Math.random() * 0x10000).toString(16)}`,
       }
+      sub.on('*', onSubscribeEvent)
       await sub.init(config)
       await sub.subscribe()
       setSubscriber(sub)
@@ -68,6 +86,42 @@ const Subscriber = (props: ISubscriberProps) => {
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error(`[Red5ProSubscriber(${streamName})] :: Error in subscribing -  ${jsonError}`)
       console.error(error)
+      startRetry()
+    }
+  }
+
+  const stop = async () => {
+    try {
+      if (subscriber) {
+        subscriber.off('*', onSubscribeEvent)
+        await subscriber.unsubscribe()
+      }
+      setSubscriber(undefined)
+    } catch (error: any) {
+      const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
+      console.error(`[Red5ProSubscriber(${streamName})] :: Error in unsubscribing -  ${jsonError}`)
+      console.error(error)
+      startRetry()
+    }
+  }
+
+  const startRetry = () => {
+    stopRetry()
+    retryTimeout = setTimeout(async () => {
+      console.log(`[Red5ProSubscriber${streamName}]:: RETRY...`)
+      try {
+        await stop()
+      } catch (e: any) {
+        console.error(e)
+      } finally {
+        start()
+      }
+    }, DELAY)
+  }
+
+  const stopRetry = () => {
+    if (retryTimeout) {
+      clearTimeout(retryTimeout)
     }
   }
 

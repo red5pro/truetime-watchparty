@@ -138,130 +138,128 @@ const JoinPage = () => {
   const onStartJoin = () => setCurrentSection(Section.Nickname)
 
   return (
-    <>
-      <Box className={classes.root}>
-        <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>
-          Join WatchParty
-        </Typography>
-        {!conferenceData && <Loading />}
-        {conferenceData && currentSection === Section.Landing && (
-          <Box className={classes.landingContainer}>
-            <p>TODO: Episode/Series Info?</p>
-            <Typography sx={{ fontSize: '24px' }}>Series 1</Typography>
-            <Typography variant="h1">Event 1</Typography>
-            <Box display="flex" alignItems="center" sx={{ marginTop: '24px' }}>
-              <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>08 July - 09:00 PM</Typography>
-              <Tooltip title="TODO: What is this?" arrow sx={{ marginLeft: '12px' }}>
-                <InfoIcon fontSize="small" />
-              </Tooltip>
-            </Box>
-            <Box className={classes.conferenceDetails}>
-              <Typography sx={{ fontSize: '36px', fontWeight: 600 }}>{conferenceData.displayName}</Typography>
-              <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{conferenceData.welcomeMessage}</Typography>
-              <Typography paddingTop={2} sx={{ fontSize: '12px', fontWeight: 500 }}>
-                {getParticipantText(conferenceData.participants)}
-              </Typography>
-              <CustomButton
-                className={classes.landingJoin}
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.SECONDARY}
-                onClick={onStartJoin}
-              >
-                Join Party
-              </CustomButton>
-            </Box>
+    <Box className={classes.root}>
+      <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>
+        Join WatchParty
+      </Typography>
+      {!conferenceData && <Loading />}
+      {conferenceData && currentSection === Section.Landing && (
+        <Box className={classes.landingContainer}>
+          <p>TODO: Episode/Series Info?</p>
+          <Typography sx={{ fontSize: '24px' }}>Series 1</Typography>
+          <Typography variant="h1">Event 1</Typography>
+          <Box display="flex" alignItems="center" sx={{ marginTop: '24px' }}>
+            <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>08 July - 09:00 PM</Typography>
+            <Tooltip title="TODO: What is this?" arrow sx={{ marginLeft: '12px' }}>
+              <InfoIcon fontSize="small" />
+            </Tooltip>
           </Box>
-        )}
-        {conferenceData && currentSection === Section.Nickname && (
-          <Box className={classes.nicknameContainer}>
-            <p>TODO: Episode/Series Info?</p>
-            <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>Event 1</Typography>
-            <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>08 July - 09:00 PM</Typography>
-            <Typography marginTop={2} sx={{ fontSize: '36px', fontWeight: 600 }}>
-              {conferenceData.displayName}
-            </Typography>
+          <Box className={classes.conferenceDetails}>
+            <Typography sx={{ fontSize: '36px', fontWeight: 600 }}>{conferenceData.displayName}</Typography>
             <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{conferenceData.welcomeMessage}</Typography>
             <Typography paddingTop={2} sx={{ fontSize: '12px', fontWeight: 500 }}>
               {getParticipantText(conferenceData.participants)}
             </Typography>
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={(values) => onStartSetup(values)}
-              enableReinitialize
+            <CustomButton
+              className={classes.landingJoin}
+              size={BUTTONSIZE.MEDIUM}
+              buttonType={BUTTONTYPE.SECONDARY}
+              onClick={onStartJoin}
             >
-              {(props: any) => {
-                const { submitForm, isSubmitting, setFieldValue } = props
-
-                const nicknameChange = (e: any) => {
-                  const value = e?.target?.value
-                  // TODO: Store name somewhere?
-                }
-
-                return (
-                  <Form autoComplete="off" className={classes.nicknameForm}>
-                    <Typography sx={{ fontSize: '16px', fontWeight: 600 }}>Choose a Nickname</Typography>
-                    <Box display="flex" width="30%" margin="auto" className={classes.formContainer}>
-                      <Field
-                        component={TextField}
-                        name="nickname"
-                        type="text"
-                        placeholder="Nickname"
-                        className={classes.inputField}
-                      />
-                    </Box>
-                    <Box display="flex" marginY={4} className={classes.buttonContainer}>
-                      <Button
-                        color="inherit"
-                        disabled={isSubmitting}
-                        onClick={onReturnToLanding}
-                        className={classes.backButton}
-                      >
-                        <ArrowBackIosIcon />
-                      </Button>
-                      <CustomButton
-                        size={BUTTONSIZE.MEDIUM}
-                        buttonType={BUTTONTYPE.SECONDARY}
-                        disabled={isSubmitting}
-                        onClick={submitForm}
-                      >
-                        Next
-                      </CustomButton>
-                    </Box>
-                  </Form>
-                )
-              }}
-            </Formik>
+              Join Party
+            </CustomButton>
           </Box>
-        )}
-        {conferenceData && currentSection === Section.AVSetup && (
-          <Box className={classes.mediaSetupContainer}>
-            <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>
-              Choose your camera and microphone preferences
-            </Typography>
-            <MediaSetup selfCleanup={false} />
-            <Box className={classes.mediaSetupButtons}>
-              <Button
-                color="inherit"
-                onClick={onReturnToNickname}
-                className={classes.backButton}
-                sx={{ position: 'absolute', left: 0 }}
-              >
-                <ArrowBackIosIcon />
-              </Button>
-              <CustomButton
-                disabled={!mediaContext?.mediaStream}
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.SECONDARY}
-                onClick={onJoin}
-              >
-                Join
-              </CustomButton>
-            </Box>
+        </Box>
+      )}
+      {conferenceData && currentSection === Section.Nickname && (
+        <Box className={classes.nicknameContainer}>
+          <p>TODO: Episode/Series Info?</p>
+          <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>Event 1</Typography>
+          <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>08 July - 09:00 PM</Typography>
+          <Typography marginTop={2} sx={{ fontSize: '36px', fontWeight: 600 }}>
+            {conferenceData.displayName}
+          </Typography>
+          <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{conferenceData.welcomeMessage}</Typography>
+          <Typography paddingTop={2} sx={{ fontSize: '12px', fontWeight: 500 }}>
+            {getParticipantText(conferenceData.participants)}
+          </Typography>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(values) => onStartSetup(values)}
+            enableReinitialize
+          >
+            {(props: any) => {
+              const { submitForm, isSubmitting, setFieldValue } = props
+
+              const nicknameChange = (e: any) => {
+                const value = e?.target?.value
+                // TODO: Store name somewhere?
+              }
+
+              return (
+                <Form autoComplete="off" className={classes.nicknameForm}>
+                  <Typography sx={{ fontSize: '16px', fontWeight: 600 }}>Choose a Nickname</Typography>
+                  <Box display="flex" width="30%" margin="auto" className={classes.formContainer}>
+                    <Field
+                      component={TextField}
+                      name="nickname"
+                      type="text"
+                      placeholder="Nickname"
+                      className={classes.inputField}
+                    />
+                  </Box>
+                  <Box display="flex" marginY={4} className={classes.buttonContainer}>
+                    <Button
+                      color="inherit"
+                      disabled={isSubmitting}
+                      onClick={onReturnToLanding}
+                      className={classes.backButton}
+                    >
+                      <ArrowBackIosIcon />
+                    </Button>
+                    <CustomButton
+                      size={BUTTONSIZE.MEDIUM}
+                      buttonType={BUTTONTYPE.SECONDARY}
+                      disabled={isSubmitting}
+                      onClick={submitForm}
+                    >
+                      Next
+                    </CustomButton>
+                  </Box>
+                </Form>
+              )
+            }}
+          </Formik>
+        </Box>
+      )}
+      {conferenceData && currentSection === Section.AVSetup && (
+        <Box className={classes.mediaSetupContainer}>
+          <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>
+            Choose your camera and microphone preferences
+          </Typography>
+          <MediaSetup selfCleanup={false} />
+          <Box className={classes.mediaSetupButtons}>
+            <Button
+              color="inherit"
+              onClick={onReturnToNickname}
+              className={classes.backButton}
+              sx={{ position: 'absolute', left: 0 }}
+            >
+              <ArrowBackIosIcon />
+            </Button>
+            <CustomButton
+              disabled={!mediaContext?.mediaStream}
+              size={BUTTONSIZE.MEDIUM}
+              buttonType={BUTTONTYPE.SECONDARY}
+              onClick={onJoin}
+            >
+              Join
+            </CustomButton>
           </Box>
-        )}
-      </Box>
-    </>
+        </Box>
+      )}
+    </Box>
   )
 }
 
