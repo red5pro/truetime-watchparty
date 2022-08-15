@@ -5,6 +5,7 @@ import AppRoutes from './routes/routes'
 import { CssBaseline, GlobalStyles } from '@mui/material'
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
 import { mergeThemes } from '../src/utils/theme'
+import MediaContext from './components/MediaContext/MediaContext'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
@@ -19,7 +20,9 @@ root.render(
         }}
       />
       <StyledEngineProvider injectFirst>
-        <AppRoutes />
+        <MediaContext.Provider>
+          <AppRoutes />
+        </MediaContext.Provider>
       </StyledEngineProvider>
     </ThemeProvider>
     {/* Footer here */}
