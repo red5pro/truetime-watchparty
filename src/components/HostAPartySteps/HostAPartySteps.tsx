@@ -1,14 +1,16 @@
 import * as React from 'react'
+import { useCookies } from 'react-cookie'
+
 import Box from '@mui/material/Box'
 import Stepper from '@mui/material/Stepper'
 import Button from '@mui/material/Button'
-import TemporaryHome from './TemporaryHome/TemporaryHome'
 import useStyles from './HostAPartySteps.module'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import StartParty from './StartParty/StartParty'
 import ViewEvents from './ViewEvents/ViewEvents'
+import Signin from '../Account/Signin/Signin'
 
-export enum EStepIdentify {
+enum EStepIdentify {
   LANDING = 0,
   START_PARTY = 1,
   SIGN_IN = 2,
@@ -36,14 +38,15 @@ const currentSerieMock = {
 
 export default function HostAPartySteps() {
   const { classes } = useStyles()
-  const [activeStep, setActiveStep] = React.useState(0)
+  const [cookies] = useCookies(['account'])
 
+  const [activeStep, setActiveStep] = React.useState(0)
   const [startPartyData, setStartPartyData] = React.useState<any>()
 
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: EStepIdentify.LANDING,
-      component: <ViewEvents onActions={actions} />,
+      component: <ViewEvents onActions={actions} account={cookies?.account} />,
     },
     {
       id: EStepIdentify.START_PARTY,
@@ -54,21 +57,40 @@ export default function HostAPartySteps() {
           currentSerie={currentSerieMock}
           data={startPartyData}
           setData={setStartPartyData}
+          account={cookies?.account}
         />
       ),
     },
     {
       id: EStepIdentify.SIGN_IN,
-      component: <TemporaryHome />,
+      component: <Signin onActions={actions} />,
+    },
+    {
+      id: EStepIdentify.SHARE,
+      component: <div>Share Link</div>,
     },
   ]
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1)
+    setActiveStep((prevActiveStep) => {
+      const nextStep = prevActiveStep + 1
+      if (nextStep === EStepIdentify.SIGN_IN && cookies && cookies.account) {
+        // skip sign in step if account is present
+        return nextStep + 1
+      }
+      return nextStep
+    })
   }
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+    setActiveStep((prevActiveStep) => {
+      const prevStep = prevActiveStep - 1
+      if (prevStep === EStepIdentify.SIGN_IN && cookies && cookies.account) {
+        // skip sign in step if account is present
+        return prevStep - 1
+      }
+      return prevStep
+    })
   }
 
   const actions = {
@@ -80,7 +102,7 @@ export default function HostAPartySteps() {
     <Box className={classes.container}>
       <Stepper activeStep={activeStep}></Stepper>
 
-      <Box>
+      <Box height="100%">
         {activeStep > 0 && activeStep < getSteps(actions).length && (
           <Button color="inherit" hidden={activeStep === 0} onClick={handleBack} className={classes.backButton}>
             <ArrowBackIosIcon />

@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
+import { IAccount } from '../../../models/Account'
 import { IStepActionsSubComponent } from '../HostAPartySteps'
 import SetupPartyForm, { IPartyData } from './SetupPartyForm'
 import useStyles from './StartParty.module'
@@ -10,10 +11,11 @@ interface IStartPartyProps {
   setData: (values: IPartyData) => void
   currentEpisode: any
   currentSerie: any
+  account?: IAccount | null
 }
 
 const StartParty = (props: IStartPartyProps) => {
-  const { onActions, currentEpisode, currentSerie, data, setData } = props
+  const { onActions, currentEpisode, currentSerie, data, setData, account } = props
 
   const { classes } = useStyles()
   const dateOptions: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' }
@@ -39,10 +41,11 @@ const StartParty = (props: IStartPartyProps) => {
         <Box display="flex">
           <Typography marginRight={2}>Set up your party</Typography>
 
-          {/* TODO: IF USER IS LOGGED IN, DO NOT DISPLAY THIS ? */}
-          <Link to="" className={classes.link}>
-            Returning host?
-          </Link>
+          {!account && (
+            <Link to="login" className={classes.link}>
+              Returning host?
+            </Link>
+          )}
         </Box>
         <SetupPartyForm onActions={onActions} data={data} setData={setData} />
       </Box>

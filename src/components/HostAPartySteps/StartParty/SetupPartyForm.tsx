@@ -122,7 +122,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
         }
 
         return (
-          <Form autoComplete="off">
+          <Form autoComplete="off" method="post">
             <Box display="flex" flexDirection="column" marginY={4} className={classes.formContainer}>
               <Field component={TextField} name="partyName" type="text" placeholder="Party Name" />
               <Field
@@ -195,7 +195,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
                   <InfoIcon fontSize="small" />
                 </Tooltip>
               </Box>
-              <Box display="flex" height="auto" alignItems="center" marginBottom={2}>
+              {/* <Box display="flex" height="auto" alignItems="center" marginBottom={2}>
                 <Checkbox
                   id="notifyMe"
                   name="notifyMe"
@@ -205,7 +205,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
                   onChange={(ev: any) => setFieldValue('notifyMe', ev?.target?.checked)}
                 />
                 <Typography marginX={2}>Notify me about upcoming fights in this series</Typography>
-              </Box>
+              </Box> */}
 
               <CustomButton
                 disabled={isSubmitting}
