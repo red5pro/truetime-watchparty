@@ -26,7 +26,7 @@ root.render(
           <MediaContext.Provider>
             <AppRoutes />
           </MediaContext.Provider>
-        <CookiesProvider>
+        </CookiesProvider>
       </StyledEngineProvider>
     </ThemeProvider>
     {/* Footer here */}
