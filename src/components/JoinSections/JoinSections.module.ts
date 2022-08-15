@@ -10,14 +10,7 @@ const useStyles = makeStyles()((theme: any) => {
       overflow: 'auto',
       display: 'flex',
       flexDirection: 'column',
-    },
-    joinSection: {
-      width: '100%',
-      height: '100%',
-      overflow: 'auto',
       padding: '0 75px 0 75px',
-      display: 'flex',
-      flexDirection: 'column',
     },
     landingContainer: {
       marginTop: '33px',

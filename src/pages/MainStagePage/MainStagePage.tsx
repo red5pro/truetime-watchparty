@@ -1,6 +1,5 @@
 import * as React from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import useWebSocket from 'react-use-websocket'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import useQueryParams from '../../hooks/useQueryParams'
 import MediaContext from '../../components/MediaContext/MediaContext'
@@ -8,11 +7,11 @@ import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import Loading from '../../components/Loading/Loading'
 import { Box } from '@mui/system'
-import Subscriber from '../../components/Subscriber/Subscriber'
-import { API_SERVER_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import useStyles from './MainStagePage.module'
-import { Typography } from '@mui/material'
+import MainStage from '../../components/MainStage/MainStage'
 
+// TODO: Mark for Deprecation?
+// MainStage Display should be accessed through Join + JoinContext?
 const MainStagePage = () => {
   const mediaContext = React.useContext(MediaContext.Context)
 
@@ -22,20 +21,9 @@ const MainStagePage = () => {
   const params = useParams()
   const navigate = useNavigate()
 
-  const [socketUrl, setSocketUrl] = React.useState<string | null>(null)
-  const { lastMessage, sendMessage, readyState, getWebSocket } = useWebSocket(socketUrl, {
-    onError: (event: any) => {
-      console.error('SOCKET ERROR', event)
-    },
-    onMessage: (event: any) => {
-      console.log('SOCKET MESSAGE', event)
-    },
-  })
-
   const [joinToken, setJoinToken] = React.useState<string | null>(null)
   const [participantId, setParticipantId] = React.useState<string | null>(null)
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | null>(null)
-  const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>(undefined)
 
   if (!mediaContext || !mediaContext.mediaStream) {
     // TODO: Navigate back to auth?
@@ -68,18 +56,9 @@ const MainStagePage = () => {
   }, [query])
 
   React.useEffect(() => {
-    // TODO: Got here without setting up media. Where to send them?
-    if (!mediaContext || !mediaContext.mediaStream) {
-      // navigate(`/join/${params.token}?u_id=${query.get('u_id')}`)
-    }
-    setPublishMediaStream(mediaContext?.mediaStream)
-  }, [mediaContext?.mediaStream])
-
-  React.useEffect(() => {
     if (joinToken && participantId) {
       // TODO: Get Party/Conference info for display
       getConferenceData(joinToken, participantId)
-      establishSocket(joinToken, participantId)
     }
   }, [joinToken, participantId])
 
@@ -102,33 +81,10 @@ const MainStagePage = () => {
     }
   }
 
-  const establishSocket = (joinToken: string, participantId: string) => {
-    const url = `wss:${API_SERVER_HOST}`
-  }
-
-  const clearMediaContext = () => {
-    if (mediaContext && mediaContext.mediaStream) {
-      mediaContext.mediaStream.getTracks().forEach((t: MediaStreamTrack) => t.stop())
-      mediaContext.setConstraints(undefined)
-      mediaContext.setMediaStream(undefined)
-    }
-  }
-
   return (
     <Box className={classes.rootContainer}>
-      {/* Main Video */}
-      {conferenceData && (
-        <Subscriber
-          useStreamManager={USE_STREAM_MANAGER}
-          host={STREAM_HOST}
-          streamGuid={conferenceData.streamGuid}
-          styles={classes.mainVideo}
-        />
-      )}
-      <Box className={classes.content}>
-        <Typography sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>Join WatchParty</Typography>
-        {!conferenceData && <Loading />}
-      </Box>
+      {!conferenceData && <Loading />}
+      {joinToken && conferenceData && <MainStage />}
     </Box>
   )
 }
