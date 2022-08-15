@@ -1,3 +1,5 @@
+import { Participant } from './Participant'
+
 export interface ConferenceDetails {
   conferenceId: number
   streamGuid: string // "context/name"
@@ -10,4 +12,5 @@ export interface ConferenceDetails {
   joinLocked: boolean
   vipOkay: boolean
   startTime: number
+  participants?: Participant[]
 }

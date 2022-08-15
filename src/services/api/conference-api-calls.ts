@@ -120,6 +120,35 @@ const getConferenceDetails = async (conferenceid: any, email: string, password: 
   } as AxiosResponse
 }
 
+const getJoinDetails = async (joinToken: string) => {
+  return {
+    data: {
+      displayName: 'My Conference',
+      welcomeMessage: 'Welcome to my conference! We\u0027re going to have a great time! You\u0027ll love it!',
+      thankYouMessage: 'Thanks for joining, see you next time!',
+      location: 'United States of America',
+      maxParticipants: 10,
+      joinLocked: false,
+      vipOkay: true,
+      startTime: 1660150337146,
+      participants: [
+        {
+          displayName: 'LynardMaffeus',
+          role: 'ORGANIZER',
+        },
+        {
+          displayName: 'RolindaWilken',
+          role: 'PARTICIPANT',
+        },
+        {
+          displayName: 'OxnardFrankenheel',
+          role: 'VIP',
+        },
+      ],
+    },
+  } as AxiosResponse
+}
+
 const createConference = async (conference: IConference, email: string, password: string) => {
   // try {
   //   const response: AxiosResponse = await axios.post(
@@ -150,5 +179,6 @@ export const CONFERENCE_API_CALLS = {
   getCurrentEpisode,
   getAllEpisodes,
   getConferenceDetails,
+  getJoinDetails,
   createConference,
 }

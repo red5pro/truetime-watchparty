@@ -28,7 +28,7 @@ const useStyles = makeStyles()((theme: any) => {
       marginTop: '75px',
     },
     landingJoin: {
-      marginTop: '50px',
+      marginTop: '80px',
     },
     nicknameForm: {
       marginTop: 'calc(100vh / 8)',

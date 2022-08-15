@@ -2,12 +2,12 @@ import { CardContent } from '@mui/material'
 import * as React from 'react'
 import useVideoStyles from './VideoElement.module'
 
-interface IMainVideoProps {
+interface IVideoElementProps {
   elementId: string
   styles: any
 }
 
-const VideoElement = ({ elementId, styles }: IMainVideoProps) => {
+const VideoElement = ({ elementId, styles }: IVideoElementProps) => {
   const videoRef: any = React.useRef(null)
   const { classes } = useVideoStyles()
 
