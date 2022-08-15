@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import useWebSocket from 'react-use-websocket'
 
 import useQueryParams from '../../hooks/useQueryParams'
 import MediaContext from '../../components/MediaContext/MediaContext'
@@ -8,11 +9,10 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import Loading from '../../components/Loading/Loading'
 import { Box } from '@mui/system'
 import Subscriber from '../../components/Subscriber/Subscriber'
-import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import { API_SERVER_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import useStyles from './MainStagePage.module'
 import { Typography } from '@mui/material'
 
-// TODO: How do we go from jointoken top conference id in flow?
 const MainStagePage = () => {
   const mediaContext = React.useContext(MediaContext.Context)
 
@@ -22,7 +22,17 @@ const MainStagePage = () => {
   const params = useParams()
   const navigate = useNavigate()
 
-  const [conferenceId, setConferenceId] = React.useState<string | null>(null)
+  const [socketUrl, setSocketUrl] = React.useState<string | null>(null)
+  const { lastMessage, sendMessage, readyState, getWebSocket } = useWebSocket(socketUrl, {
+    onError: (event: any) => {
+      console.error('SOCKET ERROR', event)
+    },
+    onMessage: (event: any) => {
+      console.log('SOCKET MESSAGE', event)
+    },
+  })
+
+  const [joinToken, setJoinToken] = React.useState<string | null>(null)
   const [participantId, setParticipantId] = React.useState<string | null>(null)
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | null>(null)
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>(undefined)
@@ -30,7 +40,7 @@ const MainStagePage = () => {
   if (!mediaContext || !mediaContext.mediaStream) {
     // TODO: Navigate back to auth?
     // TODO: If have auth context, navigate back to join?
-    navigate(`/join/${params.conferenceid}?u_id=${query.get('u_id')}`)
+    navigate(`/join/${params.token}?u_id=${query.get('u_id')}`)
   }
 
   React.useEffect(() => {
@@ -44,10 +54,10 @@ const MainStagePage = () => {
   }, [])
 
   React.useEffect(() => {
-    if (params && params.conferenceid) {
-      setConferenceId(params.conferenceid)
+    if (params && params.token) {
+      setJoinToken(params.token)
     } else {
-      setConferenceId('')
+      setJoinToken('')
     }
   }, [params])
 
@@ -60,17 +70,18 @@ const MainStagePage = () => {
   React.useEffect(() => {
     // TODO: Got here without setting up media. Where to send them?
     if (!mediaContext || !mediaContext.mediaStream) {
-      // navigate(`/join`)
+      // navigate(`/join/${params.token}?u_id=${query.get('u_id')}`)
     }
     setPublishMediaStream(mediaContext?.mediaStream)
   }, [mediaContext?.mediaStream])
 
   React.useEffect(() => {
-    if (conferenceId && participantId) {
+    if (joinToken && participantId) {
       // TODO: Get Party/Conference info for display
-      getConferenceData(conferenceId, participantId)
+      getConferenceData(joinToken, participantId)
+      establishSocket(joinToken, participantId)
     }
-  }, [conferenceId, participantId])
+  }, [joinToken, participantId])
 
   React.useEffect(() => {
     if (conferenceData) {
@@ -91,6 +102,10 @@ const MainStagePage = () => {
     }
   }
 
+  const establishSocket = (joinToken: string, participantId: string) => {
+    const url = `wss:${API_SERVER_HOST}`
+  }
+
   const clearMediaContext = () => {
     if (mediaContext && mediaContext.mediaStream) {
       mediaContext.mediaStream.getTracks().forEach((t: MediaStreamTrack) => t.stop())
@@ -101,6 +116,7 @@ const MainStagePage = () => {
 
   return (
     <Box className={classes.rootContainer}>
+      {/* Main Video */}
       {conferenceData && (
         <Subscriber
           useStreamManager={USE_STREAM_MANAGER}

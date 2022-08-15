@@ -6,6 +6,7 @@ import JoinPage from '../pages/JoinPage/JoinPage'
 import PublishEvent from '../pages/PublishEvent/PublishEvent'
 import Room from '../pages/Room/Room'
 import MainStagePage from '../pages/MainStagePage/MainStagePage'
+import WatchContext from '../components/WatchContext/WatchContext'
 
 const AppRoutes = () => (
   <BrowserRouter>
@@ -15,7 +16,7 @@ const AppRoutes = () => (
       <Route path="/faq" element={<About />} />
       <Route path="/create" element={<PublishEvent />} /> {/** Publish a new event */}
       <Route path="/join/:token" element={<JoinPage />} /> {/* WAT-70, WAT-73 */}
-      <Route path="/main/:conferenceid" element={<MainStagePage />} /> {/* WAT-74 */}
+      <Route path="/main/:token" element={<MainStagePage />} /> {/* WAT-74 */}
       <Route path="/:room" element={<Room />} /> {/** Subscribe to an event */}
     </Routes>
   </BrowserRouter>
