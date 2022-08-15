@@ -12,5 +12,5 @@ export interface ConferenceDetails {
   joinLocked: boolean
   vipOkay: boolean
   startTime: number
-  participants?: Participant[]
+  participants: Participant[]
 }
