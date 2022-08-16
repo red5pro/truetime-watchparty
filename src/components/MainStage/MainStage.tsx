@@ -111,6 +111,10 @@ const MainStage = () => {
     // TODO
   }
 
+  const onPublisherFail = () => {
+    // TODO
+  }
+
   const onLeave = () => {
     // TODO: Redirect to /bye/${joinToken}
   }
@@ -167,12 +171,13 @@ const MainStage = () => {
               stream={publishMediaStream}
               styles={layout.style.publisher}
               onStart={onPublisherBroadcast}
+              onFail={onPublisherFail}
               onInterrupt={onPublisherBroadcastInterrupt}
             />
           </Box>
         )}
         {!watchContext.conferenceStatus && (
-          <Box>
+          <Box className={classes.loadingContainer}>
             <Loading />
             <Typography>Loading Watch Party</Typography>
           </Box>

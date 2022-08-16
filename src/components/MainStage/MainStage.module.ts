@@ -9,6 +9,12 @@ const useStyles = makeStyles()((theme: any) => {
       top: 0,
       position: 'relative',
     },
+    loadingContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100%',
+      alignItems: 'center',
+    },
     mainVideo: {
       position: 'absolute',
       width: '100vw',
