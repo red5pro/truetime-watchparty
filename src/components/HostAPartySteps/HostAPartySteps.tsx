@@ -9,13 +9,15 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import StartParty from './StartParty/StartParty'
 import ViewEvents from './ViewEvents/ViewEvents'
 import Signin from '../Account/Signin/Signin'
+import ShareLink from './ShareLink/ShareLink'
+import { IConference } from '../../models/Conference'
 
 enum EStepIdentify {
   LANDING = 0,
   START_PARTY = 1,
   SIGN_IN = 2,
   SHARE = 3,
-  JOIN_PARTY = 4,
+  CHOOSE_NICKNAME = 4,
   WATCH_PARTY = 5,
 }
 
@@ -41,7 +43,7 @@ export default function HostAPartySteps() {
   const [cookies] = useCookies(['account'])
 
   const [activeStep, setActiveStep] = React.useState(0)
-  const [startPartyData, setStartPartyData] = React.useState<any>()
+  const [startPartyData, setStartPartyData] = React.useState<IConference | undefined>()
 
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
@@ -67,8 +69,9 @@ export default function HostAPartySteps() {
     },
     {
       id: EStepIdentify.SHARE,
-      component: <div>Share Link</div>,
+      component: <ShareLink onActions={actions} joinToken={startPartyData?.joinToken ?? ''} />,
     },
+    { id: EStepIdentify.CHOOSE_NICKNAME, component: <div>Chosee Nickname</div> },
   ]
 
   const handleNext = () => {

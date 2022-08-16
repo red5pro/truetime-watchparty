@@ -26,8 +26,8 @@ import { IConference } from '../../../models/Conference'
 
 interface ISetupPartyFormProps {
   onActions: IStepActionsSubComponent
-  data?: IPartyData
-  setData: (values: IPartyData) => void
+  data?: IConference
+  setData: (values: IConference) => void
 }
 
 export interface IPartyData {
@@ -58,12 +58,12 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
   const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string | undefined>()
 
   const initialValues = {
-    welcomeMsg: data?.welcomeMsg ?? '',
-    thankMsg: data?.thankMsg ?? '',
-    partyName: data?.partyName ?? '',
+    welcomeMsg: data?.welcomeMessage ?? '',
+    thankMsg: data?.thankYouMessage ?? '',
+    partyName: data?.displayName ?? '',
     vipOkay: data?.vipOkay ?? true,
-    notifyMe: data?.notifyMe ?? false,
-    country: data?.country ?? '',
+    notifyMe: false, //TODO
+    country: data?.location ?? '',
   }
 
   const handleReCaptchaVerify = React.useCallback(async () => {
@@ -95,7 +95,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
         joinLocked: false,
         vipOkay: values.vipOkay ?? true,
       }
-      setData(values)
+      setData(conference)
 
       const response = await CONFERENCE_API_CALLS.createConference(conference, email, password)
 
