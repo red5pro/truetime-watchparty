@@ -12,6 +12,7 @@ interface ISubscriberProps {
   host: string
   streamGuid: string
   useStreamManager: boolean
+  resubscribe: boolean
   styles: any
 }
 
@@ -19,7 +20,7 @@ const DELAY = 2000
 const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
 
 const Subscriber = (props: ISubscriberProps) => {
-  const { useStreamManager, host, streamGuid, styles } = props
+  const { useStreamManager, resubscribe, host, streamGuid, styles } = props
 
   let retryTimeout: any
 
@@ -114,6 +115,7 @@ const Subscriber = (props: ISubscriberProps) => {
   }
 
   const startRetry = () => {
+    if (!resubscribe) return
     stopRetry()
     retryTimeout = setTimeout(async () => {
       console.log(`[Red5ProSubscriber${streamName}]:: RETRY...`)

@@ -29,10 +29,13 @@ const MainStage = () => {
     // TODO: Where does username & password come from if registered?
 
     // Participant
-    const url = `wss://${API_SOCKET_HOST}?joinToken=${token}&displayName=${name}&fingerprint=123`
+    // const url = `wss://${API_SOCKET_HOST}?joinToken=${token}&displayName=${name}&fingerprint=123`
 
     // Registered User
     // const url = `wss://${API_SOCKET_HOST}?joinToken=${joinToken}&displayName=${displayName}&username=${username}&password=${password}`
+
+    // Local testing
+    const url = `ws://localhost:8001?joinToken=${token}`
 
     return url
   }
@@ -44,20 +47,24 @@ const MainStage = () => {
   }
 
   React.useEffect(() => {
-    watchContext.join(getSocketUrl(joinContext.joinToken, joinContext.nickname))
-    return () => {
-      watchContext.leave()
-    }
-  }, [])
-
-  React.useEffect(() => {
     // TODO: Got here without setting up media. Where to send them?
     if (!mediaContext || !mediaContext.mediaStream) {
       // navigate(`/join/${params.token}?u_id=${query.get('u_id')}`)
+    } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
+      setPublishMediaStream(mediaContext?.mediaStream)
+      console.log('MEDIA', mediaContext?.mediaStream)
     }
-    setPublishMediaStream(mediaContext?.mediaStream)
-    console.log('MEDIA', mediaContext?.mediaStream)
   }, [mediaContext?.mediaStream])
+
+  React.useEffect(() => {
+    if (publishMediaStream) {
+      // TODO: Move to post publishing...
+      watchContext.join(getSocketUrl(joinContext.joinToken, joinContext.nickname))
+    }
+    return () => {
+      watchContext.leave()
+    }
+  }, [publishMediaStream])
 
   React.useEffect(() => {
     if (watchContext.conferenceStatus) {
@@ -84,6 +91,7 @@ const MainStage = () => {
           useStreamManager={USE_STREAM_MANAGER}
           host={STREAM_HOST}
           streamGuid={mainStreamGuid}
+          resubscribe={false}
           styles={classes.mainVideo}
         />
       )}
