@@ -37,6 +37,10 @@ const useStyles = makeStyles()((theme: any) => {
         flexDirection: 'column',
       },
     },
+    linkToJoin: {
+      color: '#303030',
+      textDecoration: 'none',
+    },
   }
 })
 

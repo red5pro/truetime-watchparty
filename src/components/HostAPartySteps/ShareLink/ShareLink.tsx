@@ -1,17 +1,17 @@
 import * as React from 'react'
+import { Link as LinkTo } from 'react-router-dom'
 import { Box, Input, Link, Typography } from '@mui/material'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
-import { IStepActionsSubComponent } from '../HostAPartySteps'
 import useStyles from './ShareLink.module'
 
 interface IShareLinkProps {
-  onActions?: IStepActionsSubComponent
+  account: any
   joinToken: string
 }
 
 const ShareLink = (props: IShareLinkProps) => {
-  const { onActions, joinToken } = props
+  const { account, joinToken } = props
 
   const [textCopied, setTextCopied] = React.useState<boolean>(false)
   const { classes } = useStyles()
@@ -46,7 +46,6 @@ const ShareLink = (props: IShareLinkProps) => {
             startIcon={<FacebookIcon />}
             size={BUTTONSIZE.MEDIUM}
             buttonType={BUTTONTYPE.FACEBOOK}
-            onClick={() => console.log('share on FB')}
           >
             <Link href={`https://www.facebook.com/sharer/sharer.php?u=${linkToCopy}&display=page`} target="_blank">
               Share on Facebook
@@ -57,13 +56,10 @@ const ShareLink = (props: IShareLinkProps) => {
             Copy link
           </CustomButton>
         </Box>
-        <CustomButton
-          fullWidth
-          size={BUTTONSIZE.MEDIUM}
-          buttonType={BUTTONTYPE.SECONDARY}
-          onClick={() => onActions?.onNextStep()}
-        >
-          Continue to WatchParty
+        <CustomButton fullWidth size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
+          <LinkTo className={classes.linkToJoin} to={`/join/${joinToken}?u_id=${account.email ?? ''}`}>
+            Continue to WatchParty
+          </LinkTo>
         </CustomButton>
 
         <Box display={textCopied ? 'block' : 'none'} marginY={2}>

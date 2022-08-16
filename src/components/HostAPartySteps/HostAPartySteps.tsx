@@ -69,7 +69,7 @@ export default function HostAPartySteps() {
     },
     {
       id: EStepIdentify.SHARE,
-      component: <ShareLink onActions={actions} joinToken={startPartyData?.joinToken ?? ''} />,
+      component: <ShareLink account={cookies?.account} joinToken={startPartyData?.joinToken ?? ''} />,
     },
     { id: EStepIdentify.CHOOSE_NICKNAME, component: <div>Chosee Nickname</div> },
   ]
