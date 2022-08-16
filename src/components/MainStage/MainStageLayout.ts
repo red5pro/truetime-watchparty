@@ -29,6 +29,19 @@ const styles = {
       height: '100%',
       transform: 'scaleX(-1)',
     },
+    subscriberContainer: {
+      position: 'absolute',
+      left: '24px',
+      top: '24px',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    subscriber: {
+      borderRadius: '20px',
+      backgroundColor: 'black',
+      width: '150px',
+      height: '150px',
+    },
   },
   fullscreen: {
     button: {

@@ -38,7 +38,6 @@ const getParticipantText = (participants: Participant[] | undefined) => {
   } other(s) are already here.`
 }
 
-// TODO: How is episode/series info accessed from this page? Wrapped in a Context Provider?
 // Preferrably wrapped in a ParticipantContext/AuthContext with user/participant record?
 const JoinPage = () => {
   const joinContext = React.useContext(JoinContext.Context)

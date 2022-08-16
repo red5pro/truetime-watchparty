@@ -4,7 +4,7 @@ import useQueryParams from '../../hooks/useQueryParams'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { Serie } from '../../models/Serie'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
-import { generateFingerprint } from '../../utils/commonUtils'
+import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
 import { SessionStorage } from '../../utils/sessionStorageUtils'
 
 const cannedSeries = { displayName: 'Accessing...' }
@@ -31,6 +31,9 @@ const JoinProvider = (props: JoinContextProps) => {
 
   const [joinToken, setJoinToken] = React.useState<string | null>(null)
 
+  // TODO: Update this based on User record / Auth ?
+  // TODO: Does this belong here or in an overarching Context ?
+  const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT)
   const [fingerprint, setFingerprint] = React.useState<string | undefined>(SessionStorage.get('wp_fingerorint'))
   const [nickname, setNickname] = React.useState<string | undefined>(SessionStorage.get('wp_nickname' || undefined)) // TODO: get from participant context or session storage?
   // ConferenceDetails access from the server API.
