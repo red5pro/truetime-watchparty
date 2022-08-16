@@ -1,14 +1,18 @@
 import { makeStyles } from 'tss-react/mui'
 
-const usePublisherStyles = makeStyles()(() => {
+const useStyles = makeStyles()((theme: any) => {
   return {
-    hangOff: {
-      position: 'fixed',
-      bottom: '5px',
-      right: '5px',
-      cursor: 'pointer',
+    container: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+    },
+    loading: {
+      position: 'absolute',
+      zIndex: 10,
     },
   }
 })
 
-export default usePublisherStyles
+export default useStyles

@@ -13,6 +13,7 @@ import JoinContext from '../JoinContext/JoinContext'
 import WatchContext from '../WatchContext/WatchContext'
 
 import styles from './MainStageLayout'
+import Publisher from '../Publisher/Publisher'
 
 enum Layout {
   STAGE = 1,
@@ -40,19 +41,19 @@ const MainStage = () => {
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
 
-  const getSocketUrl = (token: string, name: string) => {
+  const getSocketUrl = (token: string, name: string, guid: string) => {
     // TODO: Determine if Participant or Registered User?
     // TODO: Where does fingerprint come from if participant?
     // TODO: Where does username & password come from if registered?
 
     // Participant
-    // const url = `wss://${API_SOCKET_HOST}?joinToken=${token}&displayName=${name}&fingerprint=123`
+    // const url = `wss://${API_SOCKET_HOST}?joinToken=${token}&displayName=${name}&streamGuid=${guid}&fingerprint=123`
 
     // Registered User
-    // const url = `wss://${API_SOCKET_HOST}?joinToken=${joinToken}&displayName=${displayName}&username=${username}&password=${password}`
+    // const url = `wss://${API_SOCKET_HOST}?joinToken=${joinToken}&displayName=${displayName}&streamGuid=${guid}&username=${username}&password=${password}`
 
     // Local testing
-    const url = `ws://localhost:8001?joinToken=${token}`
+    const url = `ws://localhost:8001?joinToken=${token}&displayName=${name}&streamGuid=${guid}`
 
     return url
   }
@@ -76,7 +77,8 @@ const MainStage = () => {
   React.useEffect(() => {
     if (publishMediaStream) {
       // TODO: Move to post publishing...
-      watchContext.join(getSocketUrl(joinContext.joinToken, joinContext.nickname))
+      // const streamGuid = joinContext.getStreamGuid()
+      // watchContext.join(getSocketUrl(joinContext.joinToken, joinContext.nickname, streamGuid))
     }
     return () => {
       watchContext.leave()
@@ -100,6 +102,27 @@ const MainStage = () => {
     }
   }
 
+  const onPublisherBroadcast = () => {
+    const streamGuid = joinContext.getStreamGuid()
+    watchContext.join(getSocketUrl(joinContext.joinToken, joinContext.nickname, streamGuid))
+  }
+
+  const onPublisherBroadcastInterrupt = () => {
+    // TODO
+  }
+
+  const onLeave = () => {
+    // TODO: Redirect to /bye/${joinToken}
+  }
+
+  const onLock = () => {
+    // TODO: Make service request to lock?
+  }
+
+  const onLink = () => {
+    // TODO: Show modal with share link
+  }
+
   const toggleLayout = () => {
     const newLayout = layout.layout === Layout.STAGE ? Layout.FULLSCREEN : Layout.STAGE
     const newStyle = layout.layout === Layout.STAGE ? styles.fullscreen : styles.stage
@@ -117,6 +140,8 @@ const MainStage = () => {
             streamGuid={mainStreamGuid}
             resubscribe={false}
             styles={layout.style.mainVideo}
+            mute={true}
+            showControls={true}
           />
         </Box>
       )}
@@ -126,12 +151,32 @@ const MainStage = () => {
             <Typography className={classes.header}>{watchContext.conferenceStatus.displayName}</Typography>
             <Box className={classes.topControls}>
               <Box sx={layout.style.button}>{watchContext.message}</Box>
+              <button onClick={onLink}>add</button>
               <button onClick={toggleLayout}>layout</button>
-              <button>leave</button>
+              <button onClick={onLock}>lock</button>
+              <button onClick={onLeave}>leave</button>
             </Box>
           </Box>
         )}
-        {!watchContext.conferenceStatus && <Loading />}
+        {publishMediaStream && (
+          <Box sx={layout.style.publisherContainer}>
+            <Publisher
+              useStreamManager={USE_STREAM_MANAGER}
+              host={STREAM_HOST}
+              streamGuid={joinContext.getStreamGuid()}
+              stream={publishMediaStream}
+              styles={layout.style.publisher}
+              onStart={onPublisherBroadcast}
+              onInterrupt={onPublisherBroadcastInterrupt}
+            />
+          </Box>
+        )}
+        {!watchContext.conferenceStatus && (
+          <Box>
+            <Loading />
+            <Typography>Loading Watch Party</Typography>
+          </Box>
+        )}
       </Box>
     </Box>
   )

@@ -15,17 +15,17 @@ interface ISubscriberProps {
   useStreamManager: boolean
   resubscribe: boolean
   styles: any
+  mute: boolean
+  showControls: boolean
 }
 
 const DELAY = 2000
 const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
 
 const Subscriber = (props: ISubscriberProps) => {
-  const { useStreamManager, resubscribe, host, streamGuid, styles } = props
+  const { useStreamManager, resubscribe, host, streamGuid, styles, mute, showControls } = props
 
   const { classes } = useStyles()
-
-  console.log('STYLES', styles)
 
   let retryTimeout: any
 
@@ -40,12 +40,12 @@ const Subscriber = (props: ISubscriberProps) => {
   const [retryId, setRetryId] = React.useState<number>(-1)
 
   React.useEffect(() => {
-    const elemId = `${streamName}-subscriber`
-    setElementId(elemId)
-
     const { context, name } = getContextAndNameFromGuid(streamGuid)
     setContext(context)
+
     if (name) {
+      const elemId = `${name}-subscriber`
+      setElementId(elemId)
       setStreamName(name)
     }
 
@@ -59,7 +59,9 @@ const Subscriber = (props: ISubscriberProps) => {
 
   React.useEffect(() => {
     if (elementId.length > 0 && streamName?.length > 0 && context.length > 0) {
-      start()
+      if (!isSubscribed) {
+        start()
+      }
     }
   }, [elementId, streamName, context])
 
@@ -100,6 +102,9 @@ const Subscriber = (props: ISubscriberProps) => {
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error(`[Red5ProSubscriber(${streamName})] :: Error in subscribing -  ${jsonError}`)
       console.error(error)
+      setIsSubscribed(false)
+      setIsSubscribing(false)
+      setSubscriber(undefined)
       startRetry()
     }
   }
@@ -115,7 +120,6 @@ const Subscriber = (props: ISubscriberProps) => {
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error(`[Red5ProSubscriber(${streamName})] :: Error in unsubscribing -  ${jsonError}`)
       console.error(error)
-      startRetry()
     }
   }
 
@@ -147,7 +151,7 @@ const Subscriber = (props: ISubscriberProps) => {
           <Loading />
         </Box>
       )}
-      {(isSubscribing || isSubscribed) && <VideoElement elementId={elementId} styles={styles || {}} />}
+      <VideoElement elementId={elementId} muted={mute} controls={showControls} styles={styles} />
     </Box>
   )
 }
