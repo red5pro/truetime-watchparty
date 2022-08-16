@@ -119,8 +119,15 @@ const getConferenceDetails = async (conferenceid: any, email: string, password: 
 }
 
 const getJoinDetails = async (joinToken: string) => {
+  // try {
+  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}?joinToken=${joinToken}`)
+  // } catch (e: any) {
+  //   console.log(e)
+  // }
+
   return {
     data: {
+      conferenceId: 1,
       displayName: 'My Conference',
       welcomeMessage: 'Welcome to my conference! We\u0027re going to have a great time! You\u0027ll love it!',
       thankYouMessage: 'Thanks for joining, see you next time!',

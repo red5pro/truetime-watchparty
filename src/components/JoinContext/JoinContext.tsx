@@ -40,10 +40,10 @@ const JoinProvider = (props: JoinContextProps) => {
   }, [query])
 
   React.useEffect(() => {
-    if (joinToken && participantId) {
+    if (joinToken) {
       getConferenceData(joinToken)
     }
-  }, [joinToken, participantId])
+  }, [joinToken])
 
   const getConferenceData = async (token: string) => {
     try {
