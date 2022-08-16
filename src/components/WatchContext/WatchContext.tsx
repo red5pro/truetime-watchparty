@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { ConferenceStatusEvent } from '../../models/ConferenceStatusEvent'
+import { Participant } from '../../models/Participant'
 import { removeFromArray } from '../../utils/commonUtils'
 
 interface IWatchProviderProps {
@@ -14,19 +15,29 @@ const WatchProvider = (props: IWatchProviderProps) => {
 
   const [message, setMessage] = React.useState<string>('')
   const [hostSocket, setHostSocket] = React.useState<any>()
-  const [streamsList, setStreamsList] = React.useState<string[]>([])
+  const [streamsList, setStreamsList] = React.useState<Participant[]>([])
+  const [connectionResult, setConnectionResult] = React.useState<any>()
   const [conferenceStatus, setConferenceStatus] = React.useState<ConferenceStatusEvent | undefined>()
 
-  const addSubscriber = (name: string) => {
-    const list = [...streamsList, name]
-    setStreamsList(list)
-    return list
-  }
-
-  const removeSubscribers = (items: string[]) => {
-    const updatedList = removeFromArray(streamsList, items)
-    setStreamsList(updatedList)
-    return updatedList
+  const updateStreamsList = (participants: Participant[]) => {
+    const tempList = [...streamsList]
+    const toAdd = participants.filter((p: Participant) => {
+      const match = tempList.find((s: Participant) => p.participantId === s.participantId)
+      if (!match) {
+        return p
+      }
+      return undefined
+    })
+    const toRemove = tempList.filter((s: Participant) => {
+      const match = participants.find((p: Participant) => s.participantId === p.participantId)
+      if (!match) {
+        return s
+      }
+      return undefined
+    })
+    console.log('ADD', toAdd)
+    console.log('REMOVE', toRemove)
+    setStreamsList(participants)
   }
 
   const join = (url: string) => {
@@ -39,10 +50,18 @@ const WatchProvider = (props: IWatchProviderProps) => {
     socket.onmessage = (message) => {
       console.log('SOCKET', message)
       const payload = JSON.parse(message.data)
+      if (payload.result) {
+        setConnectionResult(payload)
+      } else if (payload.error) {
+        setConnectionResult(payload)
+      } else if (payload.conferenceId) {
+        const details = payload as ConferenceStatusEvent
+        setConferenceStatus(details)
+        updateStreamsList(details.participants)
+      }
     }
     socket.onerror = (error) => {
       console.error('SOCKET', error)
-      fakeData()
     }
     setHostSocket(socket)
     setMessage('Hi!')
@@ -56,46 +75,6 @@ const WatchProvider = (props: IWatchProviderProps) => {
     }
   }
 
-  const fakeData = () => {
-    const data = {
-      conferenceId: 1,
-      streamGuid: 'live/mainscreen',
-      displayName: 'My Conference',
-      maxParticipants: 10,
-      focusParticipantId: 0,
-      joinToken: 'kXQu9dEH',
-      joinLocked: false,
-      vipOkay: true,
-      startTime: 1659632463712,
-      participants: [
-        {
-          participantId: 2,
-          conferenceId: 1,
-          displayName: 'LynardMaffeus',
-          role: 'PARTICIPANT',
-          muteState: {
-            audio: true,
-            video: true,
-            chat: true,
-          },
-        },
-        {
-          participantId: 3,
-          conferenceId: 1,
-          streamGuid: 'live/stream1',
-          displayName: 'LynardMaffeus',
-          role: 'PARTICIPANT',
-          muteState: {
-            audio: true,
-            video: true,
-            chat: true,
-          },
-        },
-      ],
-    } as ConferenceStatusEvent
-    setConferenceStatus(data)
-  }
-
   const exportedValues = {
     message,
     hostSocket,
@@ -103,8 +82,6 @@ const WatchProvider = (props: IWatchProviderProps) => {
     conferenceStatus,
     join,
     leave,
-    addSubscriber,
-    removeSubscribers,
   }
 
   return <WatchContext.Provider value={exportedValues}>{children}</WatchContext.Provider>
