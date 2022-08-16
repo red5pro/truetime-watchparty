@@ -17,6 +17,7 @@ export const getStartTimeFromTimestamp = (ts: number) => {
 }
 
 export enum UserRoles {
+  PARTICIPANT = 'PARTICIPANT',
   ORGANIZER = 'ORGANIZER',
   VIP = 'VIP',
   ADMIN = 'ADMIN',

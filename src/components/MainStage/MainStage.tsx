@@ -15,6 +15,7 @@ import WatchContext from '../WatchContext/WatchContext'
 import styles from './MainStageLayout'
 import Publisher from '../Publisher/Publisher'
 import { Participant } from '../../models/Participant'
+import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 
 enum Layout {
   STAGE = 1,
@@ -166,7 +167,15 @@ const MainStage = () => {
         {watchContext.streamsList && (
           <Box sx={layout.style.subscriberContainer}>
             {watchContext.streamsList.map((s: Participant) => {
-              return <Typography key={s.participantId}>{s.displayName}</Typography>
+              return (
+                <MainStageSubscriber
+                  key={s.participantId}
+                  participant={s}
+                  styles={layout.style.subscriber}
+                  host={STREAM_HOST}
+                  useStreamManager={USE_STREAM_MANAGER}
+                />
+              )
             })}
           </Box>
         )}
