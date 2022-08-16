@@ -1,9 +1,20 @@
-import React from 'react'
+import React, { useReducer } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import useQueryParams from '../../hooks/useQueryParams'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
+import { Serie } from '../../models/Serie'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
+import { generateFingerprint } from '../../utils/commonUtils'
 import { SessionStorage } from '../../utils/sessionStorageUtils'
+
+const cannedSeries = { displayName: 'Accessing...' }
+const cannedEpisode = { displayName: 'Accessing...', startTime: new Date().getTime() }
+const episodeReducer = (state: any, action: any) => {
+  switch (action.type) {
+    case 'UPDATE':
+      return { ...state, loaded: true, series: action.series, episode: action.episode }
+  }
+}
 
 interface JoinContextProps {
   children: any
@@ -19,10 +30,15 @@ const JoinProvider = (props: JoinContextProps) => {
   const navigate = useNavigate()
 
   const [joinToken, setJoinToken] = React.useState<string | null>(null)
-  const [participantId, setParticipantId] = React.useState<string | null>(null)
 
+  const [fingerprint, setFingerprint] = React.useState<string | undefined>(SessionStorage.get('wp_fingerorint'))
   const [nickname, setNickname] = React.useState<string | undefined>(SessionStorage.get('wp_nickname' || undefined)) // TODO: get from participant context or session storage?
   // ConferenceDetails access from the server API.
+  const [seriesEpisode, dispatch] = useReducer(episodeReducer, {
+    loaded: false,
+    series: cannedSeries,
+    episode: cannedEpisode,
+  })
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
 
   React.useEffect(() => {
@@ -34,10 +50,12 @@ const JoinProvider = (props: JoinContextProps) => {
   }, [params])
 
   React.useEffect(() => {
-    if (query.get('u_id')) {
-      setParticipantId(query.get('u_id')) // TODO: All users are participants. Need to find out if organizer or not.
+    if (!fingerprint) {
+      const fp = generateFingerprint()
+      SessionStorage.set('wp_fingeprint', fp)
+      setFingerprint(fp)
     }
-  }, [query])
+  }, [fingerprint])
 
   React.useEffect(() => {
     if (joinToken) {
@@ -45,10 +63,31 @@ const JoinProvider = (props: JoinContextProps) => {
     }
   }, [joinToken])
 
+  React.useEffect(() => {
+    if (!seriesEpisode.loaded) {
+      getCurrentSeriesEpisodeData()
+    }
+  }, [seriesEpisode])
+
   const getConferenceData = async (token: string) => {
     try {
       const details = await CONFERENCE_API_CALLS.getJoinDetails(token)
       setConferenceData(details.data)
+    } catch (e) {
+      // TODO: Display alert
+      console.error(e)
+    }
+  }
+
+  const getCurrentSeriesEpisodeData = async () => {
+    try {
+      const serieResponse = await CONFERENCE_API_CALLS.getSeriesList('email', 'password')
+      const currentSeries = serieResponse.data.series[0]
+      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(currentSeries.seriesId, 'email', 'password')
+      const currentEpisode = episodeResponse.data.episode
+      if (currentSeries && currentEpisode) {
+        dispatch({ type: 'UPDATE', series: currentSeries, episode: currentEpisode })
+      }
     } catch (e) {
       // TODO: Display alert
       console.error(e)
@@ -64,6 +103,8 @@ const JoinProvider = (props: JoinContextProps) => {
   const exportedValues = {
     nickname,
     joinToken,
+    fingerprint,
+    seriesEpisode,
     conferenceData,
     updateNickname: (value: string) => {
       setNickname(value)
