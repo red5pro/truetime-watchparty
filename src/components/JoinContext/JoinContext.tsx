@@ -3,6 +3,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import useQueryParams from '../../hooks/useQueryParams'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
+import { SessionStorage } from '../../utils/sessionStorageUtils'
 
 interface JoinContextProps {
   children: any
@@ -20,7 +21,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const [joinToken, setJoinToken] = React.useState<string | null>(null)
   const [participantId, setParticipantId] = React.useState<string | null>(null)
 
-  const [nickname, setNickname] = React.useState<string | undefined>('larry') // TODO: get from participant context or session storage?
+  const [nickname, setNickname] = React.useState<string | undefined>(SessionStorage.get('wp_nickname' || undefined)) // TODO: get from participant context or session storage?
   // ConferenceDetails access from the server API.
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
 
@@ -58,7 +59,10 @@ const JoinProvider = (props: JoinContextProps) => {
     nickname,
     joinToken,
     conferenceData,
-    setNickname,
+    updateNickname: (value: string) => {
+      setNickname(value)
+      SessionStorage.set('wp_nickname', value)
+    },
   }
 
   return <JoinContext.Provider value={exportedValues}>{children}</JoinContext.Provider>

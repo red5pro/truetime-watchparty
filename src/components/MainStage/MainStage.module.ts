@@ -20,6 +20,26 @@ const useStyles = makeStyles()((theme: any) => {
     content: {
       zIndex: 1,
     },
+    topBar: {
+      padding: '20px',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+    },
+    header: {
+      fontSize: '16px',
+      fontWeight: 400,
+      width: '100%',
+      textAlign: 'center',
+      position: 'absolute',
+      top: 20,
+      zIndex: 0,
+    },
+    topControls: {
+      zIndex: 1,
+      display: 'flex',
+      flexDirection: 'row',
+    },
   }
 })
 

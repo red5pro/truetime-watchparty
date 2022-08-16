@@ -7,6 +7,7 @@ import { Box } from '@mui/material'
 import { SERVER_HOST } from '../../settings/variables'
 import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import { getEdge } from '../../utils/streamManagerUtils'
+import useStyles from './Subscriber.module'
 
 interface ISubscriberProps {
   host: string
@@ -21,6 +22,10 @@ const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidNam
 
 const Subscriber = (props: ISubscriberProps) => {
   const { useStreamManager, resubscribe, host, streamGuid, styles } = props
+
+  const { classes } = useStyles()
+
+  console.log('STYLES', styles)
 
   let retryTimeout: any
 
@@ -136,8 +141,12 @@ const Subscriber = (props: ISubscriberProps) => {
   }
 
   return (
-    <Box>
-      {!isSubscribed && <Loading />}
+    <Box className={classes.container} sx={styles}>
+      {!isSubscribed && (
+        <Box className={classes.loading}>
+          <Loading />
+        </Box>
+      )}
       {(isSubscribing || isSubscribed) && <VideoElement elementId={elementId} styles={styles || {}} />}
     </Box>
   )
