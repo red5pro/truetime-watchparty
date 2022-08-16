@@ -74,6 +74,15 @@ const useStyles = makeStyles()((theme: any) => {
         margin: '0 2px 0 8px',
       },
     },
+    joinControls: {
+      display: 'flex',
+      alignItems: 'flex-end',
+    },
+    link: {
+      fontWeight: 600,
+      fontSize: '14px',
+      textDecoration: 'underline',
+    },
   }
 })
 

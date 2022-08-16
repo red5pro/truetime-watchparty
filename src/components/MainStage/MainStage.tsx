@@ -14,6 +14,7 @@ import WatchContext from '../WatchContext/WatchContext'
 
 import styles from './MainStageLayout'
 import Publisher from '../Publisher/Publisher'
+import { Participant } from '../../models/Participant'
 
 enum Layout {
   STAGE = 1,
@@ -162,6 +163,13 @@ const MainStage = () => {
             </Box>
           </Box>
         )}
+        {watchContext.streamsList && (
+          <Box sx={layout.style.subscriberContainer}>
+            {watchContext.streamsList.map((s: Participant) => {
+              return <Typography key={s.participantId}>{s.displayName}</Typography>
+            })}
+          </Box>
+        )}
         {publishMediaStream && (
           <Box sx={layout.style.publisherContainer}>
             <Publisher
@@ -177,7 +185,7 @@ const MainStage = () => {
           </Box>
         )}
         {!watchContext.conferenceStatus && (
-          <Box className={classes.loadingContainer}>
+          <Box top={2} className={classes.loadingContainer}>
             <Loading />
             <Typography>Loading Watch Party</Typography>
           </Box>

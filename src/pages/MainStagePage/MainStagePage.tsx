@@ -9,10 +9,12 @@ import Loading from '../../components/Loading/Loading'
 import { Box } from '@mui/system'
 import useStyles from './MainStagePage.module'
 import MainStage from '../../components/MainStage/MainStage'
+import JoinContext from '../../components/JoinContext/JoinContext'
 
 // TODO: Mark for Deprecation?
 // MainStage Display should be accessed through Join + JoinContext?
 const MainStagePage = () => {
+  const joinContext = React.useContext(JoinContext.Context)
   const mediaContext = React.useContext(MediaContext.Context)
 
   const { classes } = useStyles()

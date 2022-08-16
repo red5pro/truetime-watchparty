@@ -1,3 +1,4 @@
+// TODO: Mark for deprecation
 import { SessionStorage } from './sessionStorageUtils'
 
 export const getConfiguration = () => {

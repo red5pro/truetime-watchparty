@@ -78,7 +78,7 @@ const JoinPage = () => {
     // TODO: Define and Store media settings... in a MediaContext? in Session storage?
     // TODO: Navigate to new party page.
     // If Own Page?
-    // navigate(`/main/${joinToken}?u_id=${participantId}`)
+    // navigate(`/main/${joinToken}`)
     setCurrentSection(Section.WatchParty)
   }
 
@@ -101,6 +101,7 @@ const JoinPage = () => {
             Join WatchParty
           </Typography>
           <JoinSectionLanding
+            seriesEpisode={joinContext.seriesEpisode}
             conferenceData={joinContext.conferenceData}
             conferenceParticipantsStringBuilder={getParticipantText}
             onStartJoin={onStartJoin}
@@ -114,6 +115,7 @@ const JoinPage = () => {
           </Typography>
           <JoinSectionNicknameInput
             nickname={joinContext.nickname}
+            seriesEpisode={joinContext.seriesEpisode}
             conferenceData={joinContext.conferenceData}
             conferenceParticipantsStringBuilder={getParticipantText}
             onBack={onReturnToLanding}

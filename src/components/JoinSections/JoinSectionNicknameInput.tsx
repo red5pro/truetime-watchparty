@@ -9,6 +9,7 @@ import useStyles from './JoinSections.module'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import { Participant } from '../../models/Participant'
+import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
 
 const validationSchema = Yup.object().shape({
   nickname: Yup.string().max(50).required('Nickname field is required'),
@@ -16,6 +17,7 @@ const validationSchema = Yup.object().shape({
 
 interface JoinNickNameProps {
   nickname: string
+  seriesEpisode: any
   conferenceData: ConferenceDetails
   conferenceParticipantsStringBuilder(participants: Participant[]): string
   onBack(): any
@@ -23,7 +25,7 @@ interface JoinNickNameProps {
 }
 
 const JoinSectionNicknameInput = (props: JoinNickNameProps) => {
-  const { nickname, conferenceData, conferenceParticipantsStringBuilder, onBack, onStartSetup } = props
+  const { nickname, seriesEpisode, conferenceData, conferenceParticipantsStringBuilder, onBack, onStartSetup } = props
 
   const { classes } = useStyles()
 
@@ -33,9 +35,10 @@ const JoinSectionNicknameInput = (props: JoinNickNameProps) => {
 
   return (
     <Box className={classes.nicknameContainer}>
-      <p>TODO: Episode/Series Info?</p>
-      <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>Event 1</Typography>
-      <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>08 July - 09:00 PM</Typography>
+      <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{seriesEpisode.episode.displayName}</Typography>
+      <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>
+        {getStartTimeFromTimestamp(seriesEpisode.episode.startTime)}
+      </Typography>
       <Typography marginTop={2} sx={{ fontSize: '36px', fontWeight: 600 }}>
         {conferenceData.displayName}
       </Typography>
