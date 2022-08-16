@@ -1,3 +1,4 @@
+// TODO: Mark for deprecation
 import { Box } from '@mui/material'
 
 import useStyles from './Room.module'
@@ -14,7 +15,15 @@ const Room = () => {
   return (
     <Box className={classes.classes.container}>
       <RoomContext.Provider room={params.room ?? ''}>
-        <Subscriber useStreamManager={false} resubscribe={false} host="" streamGuid="" styles={{}} />
+        <Subscriber
+          useStreamManager={false}
+          resubscribe={false}
+          host=""
+          streamGuid=""
+          styles={{}}
+          mute={false}
+          showControls={true}
+        />
       </RoomContext.Provider>
     </Box>
   )

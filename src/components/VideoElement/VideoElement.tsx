@@ -5,9 +5,11 @@ import useVideoStyles from './VideoElement.module'
 interface IVideoElementProps {
   elementId: string
   styles: any
+  muted: boolean
+  controls: boolean
 }
 
-const VideoElement = ({ elementId, styles }: IVideoElementProps) => {
+const VideoElement = ({ elementId, styles, muted, controls }: IVideoElementProps) => {
   const videoRef: any = React.useRef(null)
   const { classes } = useVideoStyles()
 
@@ -18,7 +20,8 @@ const VideoElement = ({ elementId, styles }: IVideoElementProps) => {
         id={elementId}
         width="100%"
         height="100%"
-        controls
+        muted={muted}
+        controls={controls}
         autoPlay
         playsInline
         onContextMenu={() => false}

@@ -55,6 +55,12 @@ const JoinProvider = (props: JoinContextProps) => {
     }
   }
 
+  // Returns stream guid (context + name) of the current participant to broadcast on.
+  const getStreamGuid = () => {
+    // TODO: Strip special characters.
+    return `live/${joinToken}_${nickname}`
+  }
+
   const exportedValues = {
     nickname,
     joinToken,
@@ -63,6 +69,7 @@ const JoinProvider = (props: JoinContextProps) => {
       setNickname(value)
       SessionStorage.set('wp_nickname', value)
     },
+    getStreamGuid,
   }
 
   return <JoinContext.Provider value={exportedValues}>{children}</JoinContext.Provider>
