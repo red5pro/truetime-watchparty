@@ -70,7 +70,7 @@ const JoinPage = () => {
 
   const onStartSetup = (values: any) => {
     // TODO: Store nickname... in API call? in Session Storage?
-    joinContext.setNickname(values.nickname)
+    joinContext.updateNickname(values.nickname)
     setCurrentSection(Section.AVSetup)
   }
 

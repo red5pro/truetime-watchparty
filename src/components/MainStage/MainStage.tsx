@@ -12,6 +12,20 @@ import MediaContext from '../MediaContext/MediaContext'
 import JoinContext from '../JoinContext/JoinContext'
 import WatchContext from '../WatchContext/WatchContext'
 
+import styles from './MainStageLayout'
+
+enum Layout {
+  STAGE = 1,
+  FULLSCREEN,
+}
+
+const layoutReducer = (state: any, action: any) => {
+  switch (action.type) {
+    case 'TOGGLE':
+      return { ...state, layout: action.layout, style: action.style }
+  }
+}
+
 const MainStage = () => {
   const joinContext = React.useContext(JoinContext.Context)
   const watchContext = React.useContext(WatchContext.Context)
@@ -20,6 +34,9 @@ const MainStage = () => {
   const { classes } = useStyles()
   const navigate = useNavigate()
 
+  const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
+
+  // const [layout, setLayout] = React.useState<Layout>(Layout.STAGE)
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
 
@@ -83,21 +100,38 @@ const MainStage = () => {
     }
   }
 
+  const toggleLayout = () => {
+    const newLayout = layout.layout === Layout.STAGE ? Layout.FULLSCREEN : Layout.STAGE
+    const newStyle = layout.layout === Layout.STAGE ? styles.fullscreen : styles.stage
+    dispatch({ type: 'TOGGLE', layout: newLayout, style: newStyle })
+  }
+
   return (
     <Box className={classes.rootContainer}>
       {/* Main Video */}
       {mainStreamGuid && (
-        <Subscriber
-          useStreamManager={USE_STREAM_MANAGER}
-          host={STREAM_HOST}
-          streamGuid={mainStreamGuid}
-          resubscribe={false}
-          styles={classes.mainVideo}
-        />
+        <Box sx={layout.style.mainVideoContainer}>
+          <Subscriber
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            streamGuid={mainStreamGuid}
+            resubscribe={false}
+            styles={layout.style.mainVideo}
+          />
+        </Box>
       )}
       <Box className={classes.content}>
+        {watchContext.conferenceStatus && (
+          <Box className={classes.topBar}>
+            <Typography className={classes.header}>{watchContext.conferenceStatus.displayName}</Typography>
+            <Box className={classes.topControls}>
+              <Box sx={layout.style.button}>{watchContext.message}</Box>
+              <button onClick={toggleLayout}>layout</button>
+              <button>leave</button>
+            </Box>
+          </Box>
+        )}
         {!watchContext.conferenceStatus && <Loading />}
-        <p>{watchContext.message}</p>
       </Box>
     </Box>
   )

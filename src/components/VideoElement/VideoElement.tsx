@@ -1,4 +1,4 @@
-import { CardContent } from '@mui/material'
+import { Box } from '@mui/material'
 import * as React from 'react'
 import useVideoStyles from './VideoElement.module'
 
@@ -12,7 +12,7 @@ const VideoElement = ({ elementId, styles }: IVideoElementProps) => {
   const { classes } = useVideoStyles()
 
   return (
-    <CardContent className={classes.container}>
+    <Box className={classes.container}>
       <video
         ref={videoRef}
         id={elementId}
@@ -22,9 +22,10 @@ const VideoElement = ({ elementId, styles }: IVideoElementProps) => {
         autoPlay
         playsInline
         onContextMenu={() => false}
-        className={`${classes.video} ${styles}`}
+        style={styles}
+        className={`${classes.video}`}
       />
-    </CardContent>
+    </Box>
   )
 }
 
