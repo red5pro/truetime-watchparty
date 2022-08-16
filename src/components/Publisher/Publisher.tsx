@@ -15,10 +15,11 @@ interface PublisherProps {
   styles: any
   onStart(): any
   onInterrupt(): any
+  onFail(): any
 }
 
 const Publisher = (props: PublisherProps) => {
-  const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt } = props
+  const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt, onFail } = props
   const { classes } = useStyles()
 
   const [elementId, setElementId] = React.useState<string>('')
@@ -97,6 +98,7 @@ const Publisher = (props: PublisherProps) => {
       setIsPublishing(false)
       setIsPublished(false)
       setPublisher(undefined)
+      onFail()
       //      startRetry()
     }
   }
