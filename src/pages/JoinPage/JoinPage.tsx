@@ -82,10 +82,7 @@ const JoinPage = () => {
 
   const getConferenceData = async (c_id: string, p_id: string) => {
     try {
-      // TODO: Get credentials from somewhere?
-      const username = 'user'
-      const password = 'pass'
-      const details = await CONFERENCE_API_CALLS.getConferenceDetails(c_id, username, password)
+      const details = await CONFERENCE_API_CALLS.getConferenceDetails(c_id)
       setConferenceData(details.data)
     } catch (e) {
       // TODO: Display alert

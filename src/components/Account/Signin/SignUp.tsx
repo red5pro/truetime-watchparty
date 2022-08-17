@@ -54,7 +54,7 @@ const SignUp = (props: ISignUpProps) => {
     const response = await USER_API_CALLS.createUser(values.email, values.password)
 
     if (response?.status === 201) {
-      setCookie('account', { email: values.email, password: values.password })
+      setCookie('account', { email: values.email, password: values.password }, { httpOnly: true, secure: true })
       setEmail(values.email)
       setShouldVerifyEmail(true)
     } else {
