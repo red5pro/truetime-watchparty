@@ -1,6 +1,7 @@
 import * as React from 'react'
 import * as Yup from 'yup'
 import { useCookies } from 'react-cookie'
+import { useNavigate } from 'react-router-dom'
 import { Box, LinearProgress, Link, Typography } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
@@ -8,6 +9,7 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/
 import useStyles from './Signin.module'
 import { IStepActionsSubComponent } from '../../HostAPartySteps/HostAPartySteps'
 import SignUp from './SignUp'
+import { UserRoles } from '../../../utils/commonUtils'
 
 const initialValues = {
   email: '',
@@ -39,6 +41,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
   const { classes } = useStyles()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cookies, setCookie] = useCookies(['account'])
+  const navigate = useNavigate()
 
   const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<boolean>(false)
   const [createNewAccount, setCreateAccount] = React.useState<boolean>(false)
@@ -46,15 +49,22 @@ const SignInEmail = (props: ISignInEmailProps) => {
 
   const handleSubmit = async (values: any) => {
     // const response = await API_REQUEST
+    const response = { ...values, role: UserRoles.VIP }
+
+    setCookie('account', response)
 
     // if (response.data) {
     if (onActions) {
       onActions.onNextStep()
-      setCookie('account', values)
+      return
       // }
-    } else {
-      // setErrorAfterSubmit(response.statusText)
+    } else if (response.role === UserRoles.VIP) {
+      navigate('/join/guest')
+
+      return
     }
+
+    // setErrorAfterSubmit(response.statusText)
   }
 
   if (createNewAccount) {
@@ -74,6 +84,8 @@ const SignInEmail = (props: ISignInEmailProps) => {
     >
       {(props: any) => {
         const { submitForm, isSubmitting } = props
+
+        console.log({ props })
 
         return (
           <Form autoComplete="off" method="post">
