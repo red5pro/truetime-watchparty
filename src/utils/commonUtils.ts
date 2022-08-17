@@ -13,7 +13,7 @@ export const generateFingerprint = () => {
 }
 
 export const getStartTimeFromTimestamp = (ts: number) => {
-  return moment(ts).format('MMMM Do YYYY, h:mm:ss a')
+  return moment(ts).format('MMMM Do, h:mm a')
 }
 
 export enum UserRoles {

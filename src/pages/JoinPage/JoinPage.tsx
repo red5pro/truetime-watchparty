@@ -14,6 +14,9 @@ import JoinSectionNicknameInput from '../../components/JoinSections/JoinSectionN
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
 import MainStage from '../../components/MainStage/MainStage'
 
+const useJoinContext = () => React.useContext(JoinContext.Context)
+const useMediaContext = () => React.useContext(MediaContext.Context)
+
 enum Section {
   Landing = 1,
   Nickname,
@@ -40,8 +43,8 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 
 // Preferrably wrapped in a ParticipantContext/AuthContext with user/participant record?
 const JoinPage = () => {
-  const joinContext = React.useContext(JoinContext.Context)
-  const mediaContext = React.useContext(MediaContext.Context)
+  const joinContext = useJoinContext()
+  const mediaContext = useMediaContext()
 
   const { classes } = useStyles()
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)

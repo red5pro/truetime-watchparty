@@ -30,7 +30,7 @@ const JoinSectionNicknameInput = (props: JoinNickNameProps) => {
   const { classes } = useStyles()
 
   const initialValues = {
-    nickname: nickname,
+    nickname: nickname || '',
   }
 
   return (

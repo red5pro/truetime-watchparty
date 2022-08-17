@@ -17,6 +17,10 @@ import Publisher from '../Publisher/Publisher'
 import { Participant } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 
+const useJoinContext = () => React.useContext(JoinContext.Context)
+const useWatchContext = () => React.useContext(WatchContext.Context)
+const useMediaContext = () => React.useContext(MediaContext.Context)
+
 enum Layout {
   STAGE = 1,
   FULLSCREEN,
@@ -30,9 +34,9 @@ const layoutReducer = (state: any, action: any) => {
 }
 
 const MainStage = () => {
-  const joinContext = React.useContext(JoinContext.Context)
-  const watchContext = React.useContext(WatchContext.Context)
-  const mediaContext = React.useContext(MediaContext.Context)
+  const joinContext = useJoinContext()
+  const watchContext = useWatchContext()
+  const mediaContext = useMediaContext()
 
   const { classes } = useStyles()
   const navigate = useNavigate()
@@ -45,8 +49,9 @@ const MainStage = () => {
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     // TODO: Determine if Participant or Registered User?
-    // TODO: Where does fingerprint come from if participant?
     // TODO: Where does username & password come from if registered?
+
+    const fp = joinContext.fingerprint
 
     // Participant
     // const url = `wss://${API_SOCKET_HOST}?joinToken=${token}&displayName=${name}&streamGuid=${guid}&fingerprint=123`
@@ -55,7 +60,7 @@ const MainStage = () => {
     // const url = `wss://${API_SOCKET_HOST}?joinToken=${joinToken}&displayName=${displayName}&streamGuid=${guid}&username=${username}&password=${password}`
 
     // Local testing
-    const url = `ws://localhost:8001?joinToken=${token}&displayName=${name}&streamGuid=${guid}`
+    const url = `ws://localhost:8001?joinToken=${token}&displayName=${name}&streamGuid=${guid}&fingerprint=${fp}`
 
     return url
   }
@@ -69,7 +74,7 @@ const MainStage = () => {
   React.useEffect(() => {
     // TODO: Got here without setting up media. Where to send them?
     if (!mediaContext || !mediaContext.mediaStream) {
-      // navigate(`/join/${params.token}?u_id=${query.get('u_id')}`)
+      // navigate(`/join/${params.token}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
       setPublishMediaStream(mediaContext?.mediaStream)
       console.log('MEDIA', mediaContext?.mediaStream)
@@ -96,6 +101,15 @@ const MainStage = () => {
     }
   }, [watchContext.conferenceStatus])
 
+  React.useEffect(() => {
+    // TODO: Handle VIP coming and going
+    if (!watchContext.vipParticipant) {
+      // left
+    } else {
+      // entered
+    }
+  }, [watchContext?.vipParticipant])
+
   const clearMediaContext = () => {
     if (mediaContext && mediaContext.mediaStream) {
       mediaContext.mediaStream.getTracks().forEach((t: MediaStreamTrack) => t.stop())
@@ -119,6 +133,7 @@ const MainStage = () => {
 
   const onLeave = () => {
     // TODO: Redirect to /bye/${joinToken}
+    navigate('/')
   }
 
   const onLock = () => {
@@ -152,18 +167,18 @@ const MainStage = () => {
         </Box>
       )}
       <Box className={classes.content}>
-        {watchContext.conferenceStatus && (
-          <Box className={classes.topBar}>
-            <Typography className={classes.header}>{watchContext.conferenceStatus.displayName}</Typography>
-            <Box className={classes.topControls}>
-              <Box sx={layout.style.button}>{watchContext.message}</Box>
-              <button onClick={onLink}>add</button>
-              <button onClick={toggleLayout}>layout</button>
-              <button onClick={onLock}>lock</button>
-              <button onClick={onLeave}>leave</button>
-            </Box>
+        {/* {watchContext.conferenceStatus && ( */}
+        <Box className={classes.topBar}>
+          {/* <Typography className={classes.header}>{watchContext.conferenceStatus.displayName}</Typography> */}
+          <Box className={classes.topControls}>
+            {/* <Box sx={layout.style.button}>{watchContext.message}</Box> */}
+            <button onClick={onLink}>add</button>
+            <button onClick={toggleLayout}>layout</button>
+            <button onClick={onLock}>lock</button>
+            <button onClick={onLeave}>leave</button>
           </Box>
-        )}
+        </Box>
+        {/* )} */}
         {watchContext.streamsList && (
           <Box sx={layout.style.subscriberContainer}>
             {watchContext.streamsList.map((s: Participant) => {
@@ -182,6 +197,7 @@ const MainStage = () => {
         {publishMediaStream && (
           <Box sx={layout.style.publisherContainer}>
             <Publisher
+              key="publisher"
               useStreamManager={USE_STREAM_MANAGER}
               host={STREAM_HOST}
               streamGuid={joinContext.getStreamGuid()}
