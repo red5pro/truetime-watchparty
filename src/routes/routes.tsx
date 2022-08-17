@@ -18,6 +18,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Home />} />
         <Route path="/404" element={<Landing />} />
         <Route path="/faq" element={<About />} />
+        <Route path="/login" element={<Signin />} />
         <Route path="/create" element={<PublishEvent />} /> {/** Publish a new event */}
         <Route
           path="/join/:token"
