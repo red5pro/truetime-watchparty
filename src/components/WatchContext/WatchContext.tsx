@@ -2,7 +2,7 @@ import * as React from 'react'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { ConferenceStatusEvent } from '../../models/ConferenceStatusEvent'
 import { Participant } from '../../models/Participant'
-import { removeFromArray } from '../../utils/commonUtils'
+import { removeFromArray, UserRoles } from '../../utils/commonUtils'
 
 interface IWatchProviderProps {
   children: any
@@ -13,6 +13,20 @@ interface IConnectionResult {
   particpantId: number
   username?: string
   error?: string
+}
+
+const listReducer = (state: any, action: any) => {
+  const pid = state.connection ? state.connection.participantId : undefined
+  switch (action.type) {
+    case 'UPDATE_LIST':
+      console.log('PAYLOAD', action.payload)
+      console.log('STATE', state)
+      return { ...state, list: action.payload.filter((p: Participant) => p.participantId !== pid), vip: action.vip }
+    case 'SET_CONNECTION_DATA':
+      return { ...state, connection: action.payload }
+    case 'SET_CONFERENCE_DATA':
+      return { ...state, conference: action.payload }
+  }
 }
 
 const WatchContext = React.createContext<any>(null)
@@ -29,6 +43,14 @@ const WatchProvider = (props: IWatchProviderProps) => {
   const [connectionResult, setConnectionResult] = React.useState<any | undefined>()
   const [conferenceStatus, setConferenceStatus] = React.useState<ConferenceStatusEvent | undefined>()
   const [vipParticipant, setVipParticipant] = React.useState<Participant | undefined>()
+
+  const [data, dispatch] = React.useReducer(listReducer, {
+    connection: undefined,
+    conference: undefined,
+    status: undefined,
+    vip: undefined,
+    list: [],
+  })
 
   React.useEffect(() => {
     socketRef.current = hostSocket
@@ -55,10 +77,11 @@ const WatchProvider = (props: IWatchProviderProps) => {
       }
       return undefined
     })
-    console.log('ADD', toAdd)
-    console.log('REMOVE', toRemove)
-    // TODO: Check add and remove for VIP role
-    setStreamsList(participants)
+    //    console.log('ADD', toAdd)
+    //    console.log('REMOVE', toRemove)
+    //    setStreamsList(participants)
+    const vip = participants.find((s: Participant) => (s.role as string).toLowerCase() === UserRoles.VIP.toLowerCase())
+    dispatch({ type: 'UPDATE_LIST', payload: participants, vip })
   }
 
   const join = (url: string) => {
@@ -73,12 +96,15 @@ const WatchProvider = (props: IWatchProviderProps) => {
       console.log('SOCKET', event)
       const payload = JSON.parse(event.data)
       if (payload.result) {
-        setConnectionResult(payload)
+        //        setConnectionResult(payload)
+        dispatch({ type: 'SET_CONNECTION_DATA', payload: payload })
       } else if (payload.error) {
-        setConnectionResult(payload)
+        //        setConnectionResult(payload)
+        dispatch({ type: 'SET_CONNECTION_DATA', payload: payload })
       } else if (payload.conferenceId) {
         const details = payload as ConferenceStatusEvent
-        setConferenceStatus(details)
+        //setConferenceStatus(details)
+        dispatch({ type: 'SET_CONFERENCE_DATA', payload: details })
         updateStreamsList(details.participants)
       }
     }
@@ -109,6 +135,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
     conferenceStatus,
     connectionResult,
     vipParticipant,
+    data,
     join,
     leave,
   }

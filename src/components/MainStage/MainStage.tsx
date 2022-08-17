@@ -35,7 +35,7 @@ const layoutReducer = (state: any, action: any) => {
 
 const MainStage = () => {
   const joinContext = useJoinContext()
-  const watchContext = useWatchContext()
+  const { data, message, join } = useWatchContext()
   const mediaContext = useMediaContext()
 
   const { classes } = useStyles()
@@ -82,32 +82,23 @@ const MainStage = () => {
     }
   }, [mediaContext?.mediaStream])
 
-  // React.useEffect(() => {
-  //   // Anything?
-  //   const c = watchContext
-  //   return () => {
-  //     c.leave()
-  //     watchContext.leave()
-  //   }
-  // }, [watchContext])
-
   React.useEffect(() => {
-    if (watchContext.conferenceStatus) {
-      const { streamGuid } = watchContext.conferenceStatus
+    if (data.conference) {
+      const { streamGuid } = data.conference
       if (streamGuid !== mainStreamGuid) {
         setMainStreamGuid(streamGuid)
       }
     }
-  }, [watchContext.conferenceStatus])
+  }, [data.conference])
 
   React.useEffect(() => {
     // TODO: Handle VIP coming and going
-    if (!watchContext.vipParticipant) {
+    if (!data.vip) {
       // left
     } else {
       // entered
     }
-  }, [watchContext?.vipParticipant])
+  }, [data.vip])
 
   const clearMediaContext = () => {
     if (mediaContext && mediaContext.mediaStream) {
@@ -119,7 +110,7 @@ const MainStage = () => {
 
   const onPublisherBroadcast = () => {
     const streamGuid = joinContext.getStreamGuid()
-    watchContext.join(getSocketUrl(joinContext.joinToken, joinContext.nickname, streamGuid))
+    join(getSocketUrl(joinContext.joinToken, joinContext.nickname, streamGuid))
   }
 
   const onPublisherBroadcastInterrupt = () => {
@@ -166,11 +157,11 @@ const MainStage = () => {
         </Box>
       )}
       <Box className={classes.content}>
-        {watchContext.conferenceStatus && (
+        {data.conference && (
           <Box className={classes.topBar}>
-            <Typography className={classes.header}>{watchContext.conferenceStatus.displayName}</Typography>
+            <Typography className={classes.header}>{data.conference.displayName}</Typography>
             <Box className={classes.topControls}>
-              <Box sx={layout.style.button}>{watchContext.message}</Box>
+              <Box sx={layout.style.button}>{message}</Box>
               <button onClick={onLink}>add</button>
               <button onClick={toggleLayout}>layout</button>
               <button onClick={onLock}>lock</button>
@@ -178,9 +169,9 @@ const MainStage = () => {
             </Box>
           </Box>
         )}
-        {watchContext.streamsList && (
+        {data.list && (
           <Box sx={layout.style.subscriberContainer}>
-            {watchContext.streamsList.map((s: Participant) => {
+            {data.list.map((s: Participant) => {
               return (
                 <MainStageSubscriber
                   key={s.participantId}
@@ -208,7 +199,7 @@ const MainStage = () => {
             />
           </Box>
         )}
-        {!watchContext.conferenceStatus && (
+        {!data.conference && (
           <Box top={2} className={classes.loadingContainer}>
             <Loading />
             <Typography>Loading Watch Party</Typography>
