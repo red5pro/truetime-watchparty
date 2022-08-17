@@ -54,7 +54,7 @@ const Subscriber = (props: ISubscriberProps) => {
       stopRetry()
       isCancelled = true
       if (subRef.current) {
-        console.warn(`[Red5ProSubscriber${streamName})] - OUT`)
+        console.warn(`[Red5ProSubscriber${streamName})] - STOP`)
         stop()
       }
     }

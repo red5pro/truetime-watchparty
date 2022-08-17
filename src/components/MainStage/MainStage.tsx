@@ -65,7 +65,7 @@ const MainStage = () => {
     return url
   }
 
-  if (!mediaContext || !mediaContext.mediaStream) {
+  if (!mediaContext?.mediaStream) {
     // TODO: Navigate back to auth?
     // TODO: If have auth context, navigate back to join?
     navigate(`/join/${joinContext.joinToken}`)
@@ -73,24 +73,23 @@ const MainStage = () => {
 
   React.useEffect(() => {
     // TODO: Got here without setting up media. Where to send them?
-    if (!mediaContext || !mediaContext.mediaStream) {
+    if (!mediaContext?.mediaStream) {
       // navigate(`/join/${params.token}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
-      setPublishMediaStream(mediaContext?.mediaStream)
-      console.log('MEDIA', mediaContext?.mediaStream)
+      const { mediaStream } = mediaContext
+      setPublishMediaStream(mediaStream)
+      console.log('MEDIA', mediaStream)
     }
   }, [mediaContext?.mediaStream])
 
-  React.useEffect(() => {
-    if (publishMediaStream) {
-      // TODO: Move to post publishing...
-      // const streamGuid = joinContext.getStreamGuid()
-      // watchContext.join(getSocketUrl(joinContext.joinToken, joinContext.nickname, streamGuid))
-    }
-    return () => {
-      watchContext.leave()
-    }
-  }, [publishMediaStream])
+  // React.useEffect(() => {
+  //   // Anything?
+  //   const c = watchContext
+  //   return () => {
+  //     c.leave()
+  //     watchContext.leave()
+  //   }
+  // }, [watchContext])
 
   React.useEffect(() => {
     if (watchContext.conferenceStatus) {
@@ -167,18 +166,18 @@ const MainStage = () => {
         </Box>
       )}
       <Box className={classes.content}>
-        {/* {watchContext.conferenceStatus && ( */}
-        <Box className={classes.topBar}>
-          {/* <Typography className={classes.header}>{watchContext.conferenceStatus.displayName}</Typography> */}
-          <Box className={classes.topControls}>
-            {/* <Box sx={layout.style.button}>{watchContext.message}</Box> */}
-            <button onClick={onLink}>add</button>
-            <button onClick={toggleLayout}>layout</button>
-            <button onClick={onLock}>lock</button>
-            <button onClick={onLeave}>leave</button>
+        {watchContext.conferenceStatus && (
+          <Box className={classes.topBar}>
+            <Typography className={classes.header}>{watchContext.conferenceStatus.displayName}</Typography>
+            <Box className={classes.topControls}>
+              <Box sx={layout.style.button}>{watchContext.message}</Box>
+              <button onClick={onLink}>add</button>
+              <button onClick={toggleLayout}>layout</button>
+              <button onClick={onLock}>lock</button>
+              <button onClick={onLeave}>leave</button>
+            </Box>
           </Box>
-        </Box>
-        {/* )} */}
+        )}
         {watchContext.streamsList && (
           <Box sx={layout.style.subscriberContainer}>
             {watchContext.streamsList.map((s: Participant) => {

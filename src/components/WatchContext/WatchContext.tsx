@@ -21,12 +21,21 @@ const WatchProvider = (props: IWatchProviderProps) => {
   console.log('WATCH PROVIDER')
   const { children } = props
 
+  const socketRef = React.useRef()
+
   const [message, setMessage] = React.useState<string>('')
   const [hostSocket, setHostSocket] = React.useState<any>()
   const [streamsList, setStreamsList] = React.useState<Participant[]>([])
   const [connectionResult, setConnectionResult] = React.useState<any | undefined>()
   const [conferenceStatus, setConferenceStatus] = React.useState<ConferenceStatusEvent | undefined>()
   const [vipParticipant, setVipParticipant] = React.useState<Participant | undefined>()
+
+  React.useEffect(() => {
+    socketRef.current = hostSocket
+    return () => {
+      leave()
+    }
+  }, [hostSocket])
 
   const updateStreamsList = (participants: Participant[]) => {
     // TODO: Check if VIP has entered!
@@ -76,21 +85,26 @@ const WatchProvider = (props: IWatchProviderProps) => {
     socket.onerror = (error) => {
       console.error('SOCKET', error)
     }
-    setHostSocket(socket)
     setMessage('Hi!')
+    setHostSocket(socket)
   }
 
   const leave = () => {
     // TODO: Teardown socket host
-    if (hostSocket) {
-      hostSocket.close()
+    if (socketRef.current) {
+      try {
+        ;(socketRef.current as WebSocket).close(1000)
+      } catch (e) {
+        console.error(e)
+      }
+      socketRef.current = undefined
       setMessage('BYE')
+      setHostSocket(undefined)
     }
   }
 
   const exportedValues = {
     message,
-    hostSocket,
     streamsList,
     conferenceStatus,
     connectionResult,

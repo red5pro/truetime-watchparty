@@ -44,14 +44,13 @@ const Publisher = (props: PublisherProps) => {
     return () => {
       //      stopRetry()
       if (pubRef.current) {
-        console.warn(`[Red5ProPublisher(${streamName})] - OUT`)
+        console.warn(`[Red5ProPublisher(${streamName})] - STOP`)
         stop()
       }
     }
   }, [])
 
   React.useEffect(() => {
-    console.log('PUBLISHER', publisher)
     pubRef.current = publisher
   }, [publisher])
 
