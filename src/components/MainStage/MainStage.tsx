@@ -169,6 +169,7 @@ const MainStage = () => {
             </Box>
           </Box>
         )}
+        {data.vip && <Typography>{data.vip.displayName}</Typography>}
         {data.list && (
           <Box sx={layout.style.subscriberContainer}>
             {data.list.map((s: Participant) => {
