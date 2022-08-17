@@ -38,6 +38,7 @@ const Subscriber = (props: ISubscriberProps) => {
 
   const [subscriber, setSubscriber] = React.useState<any | undefined>()
   const subRef = React.useRef()
+  const retryRef = React.useRef()
 
   React.useEffect(() => {
     const { context, name } = getContextAndNameFromGuid(streamGuid)
@@ -139,12 +140,18 @@ const Subscriber = (props: ISubscriberProps) => {
       } catch (e: any) {
         console.error(e)
       } finally {
-        start()
+        if (!isCancelled) {
+          start()
+        }
       }
     }, DELAY)
+    retryRef.current = retryTimeout
   }
 
   const stopRetry = () => {
+    if (retryRef.current) {
+      clearTimeout(retryRef.current)
+    }
     if (retryTimeout) {
       clearTimeout(retryTimeout)
     }
