@@ -29,6 +29,8 @@ const Publisher = (props: PublisherProps) => {
   const [isPublishing, setIsPublishing] = React.useState<boolean>(false)
   const [publisher, setPublisher] = React.useState<any>()
 
+  const pubRef = React.useRef()
+
   React.useEffect(() => {
     const { context, name } = getContextAndNameFromGuid(streamGuid)
     setContext(context)
@@ -41,11 +43,17 @@ const Publisher = (props: PublisherProps) => {
 
     return () => {
       //      stopRetry()
-      if (publisher) {
+      if (pubRef.current) {
+        console.warn(`[Red5ProPublisher(${streamName})] - OUT`)
         stop()
       }
     }
   }, [])
+
+  React.useEffect(() => {
+    console.log('PUBLISHER', publisher)
+    pubRef.current = publisher
+  }, [publisher])
 
   React.useEffect(() => {
     if (elementId.length > 0 && streamName?.length > 0 && context.length > 0) {
@@ -77,6 +85,7 @@ const Publisher = (props: PublisherProps) => {
         host: host,
         streamName: streamName,
         mediaElementId: elementId,
+        clearMediaOnUnpublish: true,
         connectionParams: {
           /* username, password, token? */
         },
@@ -105,9 +114,9 @@ const Publisher = (props: PublisherProps) => {
 
   const stop = async () => {
     try {
-      if (publisher) {
-        publisher.off('*', onPublisherEvent)
-        await publisher.unpublish()
+      if (pubRef.current) {
+        ;(pubRef.current as any).off('*', onPublisherEvent)
+        await (pubRef.current as any).unpublish()
       }
       setPublisher(undefined)
     } catch (error: any) {

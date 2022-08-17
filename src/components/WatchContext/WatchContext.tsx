@@ -8,19 +8,30 @@ interface IWatchProviderProps {
   children: any
 }
 
+interface IConnectionResult {
+  result: string
+  particpantId: number
+  username?: string
+  error?: string
+}
+
 const WatchContext = React.createContext<any>(null)
 
 const WatchProvider = (props: IWatchProviderProps) => {
+  console.log('WATCH PROVIDER')
   const { children } = props
 
   const [message, setMessage] = React.useState<string>('')
   const [hostSocket, setHostSocket] = React.useState<any>()
   const [streamsList, setStreamsList] = React.useState<Participant[]>([])
-  const [connectionResult, setConnectionResult] = React.useState<any>()
+  const [connectionResult, setConnectionResult] = React.useState<any | undefined>()
   const [conferenceStatus, setConferenceStatus] = React.useState<ConferenceStatusEvent | undefined>()
+  const [vipParticipant, setVipParticipant] = React.useState<Participant | undefined>()
 
   const updateStreamsList = (participants: Participant[]) => {
-    const tempList = [...streamsList]
+    // TODO: Check if VIP has entered!
+    const exclude = connectionResult?.particpantId
+    const tempList = [...streamsList].filter((p: Participant) => p.participantId !== exclude)
     const toAdd = participants.filter((p: Participant) => {
       const match = tempList.find((s: Participant) => p.participantId === s.participantId)
       if (!match) {
@@ -37,19 +48,21 @@ const WatchProvider = (props: IWatchProviderProps) => {
     })
     console.log('ADD', toAdd)
     console.log('REMOVE', toRemove)
+    // TODO: Check add and remove for VIP role
     setStreamsList(participants)
   }
 
   const join = (url: string) => {
-    // TODO: Setup socket host
     leave()
+    console.log('RESULT', connectionResult)
+    console.log('STREAMS', streamsList)
     const socket = new WebSocket(url)
     socket.onopen = () => {
       console.log('SOCKET', 'open')
     }
-    socket.onmessage = (message) => {
-      console.log('SOCKET', message)
-      const payload = JSON.parse(message.data)
+    socket.onmessage = (event) => {
+      console.log('SOCKET', event)
+      const payload = JSON.parse(event.data)
       if (payload.result) {
         setConnectionResult(payload)
       } else if (payload.error) {
@@ -80,6 +93,8 @@ const WatchProvider = (props: IWatchProviderProps) => {
     hostSocket,
     streamsList,
     conferenceStatus,
+    connectionResult,
+    vipParticipant,
     join,
     leave,
   }

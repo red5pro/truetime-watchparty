@@ -28,6 +28,7 @@ const Subscriber = (props: ISubscriberProps) => {
   const { classes } = useStyles()
 
   let retryTimeout: any
+  let isCancelled: boolean
 
   const [elementId, setElementId] = React.useState<string>('')
   const [context, setContext] = React.useState<string>('')
@@ -36,8 +37,7 @@ const Subscriber = (props: ISubscriberProps) => {
   const [isSubscribing, setIsSubscribing] = React.useState<boolean>(false)
 
   const [subscriber, setSubscriber] = React.useState<any | undefined>()
-
-  const [retryId, setRetryId] = React.useState<number>(-1)
+  const subRef = React.useRef()
 
   React.useEffect(() => {
     const { context, name } = getContextAndNameFromGuid(streamGuid)
@@ -51,11 +51,17 @@ const Subscriber = (props: ISubscriberProps) => {
 
     return () => {
       stopRetry()
-      if (subscriber) {
+      isCancelled = true
+      if (subRef.current) {
+        console.warn(`[Red5ProSubscriber${streamName})] - OUT`)
         stop()
       }
     }
   }, [])
+
+  React.useEffect(() => {
+    subRef.current = subscriber
+  }, [subscriber])
 
   React.useEffect(() => {
     if (elementId.length > 0 && streamName?.length > 0 && context.length > 0) {
@@ -111,9 +117,9 @@ const Subscriber = (props: ISubscriberProps) => {
 
   const stop = async () => {
     try {
-      if (subscriber) {
-        subscriber.off('*', onSubscribeEvent)
-        await subscriber.unsubscribe()
+      if (subRef.current) {
+        ;(subRef.current as any).off('*', onSubscribeEvent)
+        await (subRef.current as any).unsubscribe()
       }
       setSubscriber(undefined)
     } catch (error: any) {
@@ -124,7 +130,7 @@ const Subscriber = (props: ISubscriberProps) => {
   }
 
   const startRetry = () => {
-    if (!resubscribe) return
+    if (!resubscribe || isCancelled) return
     stopRetry()
     retryTimeout = setTimeout(async () => {
       console.log(`[Red5ProSubscriber${streamName}]:: RETRY...`)
