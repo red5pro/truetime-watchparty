@@ -1,14 +1,15 @@
 import { Box, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { IAccount } from '../../../models/Account'
+import { IConference } from '../../../models/Conference'
 import { IStepActionsSubComponent } from '../HostAPartySteps'
-import SetupPartyForm, { IPartyData } from './SetupPartyForm'
+import SetupPartyForm from './SetupPartyForm'
 import useStyles from './StartParty.module'
 
 interface IStartPartyProps {
   onActions: IStepActionsSubComponent
-  data?: IPartyData
-  setData: (values: IPartyData) => void
+  data?: IConference
+  setData: (values: IConference) => void
   currentEpisode: any
   currentSerie: any
   account?: IAccount | null
