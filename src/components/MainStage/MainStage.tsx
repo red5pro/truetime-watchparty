@@ -19,6 +19,7 @@ import { Participant } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 import ShareLink from '../HostAPartySteps/ShareLink/ShareLink'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
+import { UserRoles } from '../../utils/commonUtils'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -48,6 +49,8 @@ const MainStage = () => {
   const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
 
   const [showLink, setShowLink] = React.useState<boolean>(false)
+  const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
+  const [maxParticipants, setMaxParticipants] = React.useState<number>(0)
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
   const [requiresSubscriberScroll, setRequiresSubscriberScroll] = React.useState<boolean>(false)
@@ -95,12 +98,23 @@ const MainStage = () => {
 
   React.useEffect(() => {
     if (joinContext.seriesEpisode && joinContext.seriesEpisode.loaded) {
+      const { maxParticipants } = joinContext.seriesEpisode.series
       const { streamGuid } = joinContext.seriesEpisode.episode
       if (streamGuid !== mainStreamGuid) {
         setMainStreamGuid(streamGuid)
       }
+      setMaxParticipants(maxParticipants)
     }
   }, [joinContext.seriesEpisode])
+
+  React.useEffect(() => {
+    if (data.connection) {
+      const { connection } = data
+      if (connection && connection.role) {
+        setUserRole(connection.role.toLowerCase())
+      }
+    }
+  }, [data.connection])
 
   React.useEffect(() => {
     // TODO: Handle VIP coming and going
@@ -186,12 +200,14 @@ const MainStage = () => {
         {showLink && <ShareLink joinToken={joinContext.joinToken} account={cookies.account} />}
         {data.conference && (
           <Box className={classes.topBar}>
-            <Typography className={classes.header}>{data.conference.displayName}</Typography>
+            <Typography className={classes.header}>
+              Max {maxParticipants} - {data.conference.displayName}
+            </Typography>
             <Box className={classes.topControls}>
               <Box sx={layout.style.button}>{message}</Box>
-              <button onClick={onLink}>add</button>
+              {userRole === UserRoles.ORGANIZER.toLowerCase() && <button onClick={onLink}>add</button>}
               <button onClick={toggleLayout}>layout</button>
-              <button onClick={onLock}>lock</button>
+              {userRole === UserRoles.ORGANIZER.toLowerCase() && <button onClick={onLock}>lock</button>}
               <button onClick={onLeave}>leave</button>
             </Box>
           </Box>
