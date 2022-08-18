@@ -18,8 +18,6 @@ const VipJoinPage = () => {
     if (cookies.account) {
       setAccount(cookies.account)
       getCurrentEvent()
-
-      setCurrentEpisode(currentEpisode)
     }
   }, [cookies])
 
@@ -28,8 +26,6 @@ const VipJoinPage = () => {
 
     setCurrentEpisode(currentEpisode)
   }
-
-  console.log({ currentEpisode })
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="center" paddingX={8} className={classes.root}>
