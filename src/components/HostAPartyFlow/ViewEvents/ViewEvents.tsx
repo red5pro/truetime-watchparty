@@ -4,13 +4,12 @@ import { Link } from 'react-router-dom'
 
 import { Episode } from '../../../models/Episode'
 import { Serie } from '../../../models/Serie'
-import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
 import useStyles from './ViewEvents.module'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import ElementList from '../../Common/ElementList/ElementList'
-import { IStepActionsSubComponent } from '../HostAPartySteps'
 import { IAccount } from '../../../models/Account'
 import { getCurrentEpisode } from '../../../services/conference/conference'
+import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 
 interface IViewEventsProps {
   onActions: IStepActionsSubComponent

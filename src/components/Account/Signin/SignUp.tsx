@@ -6,9 +6,10 @@ import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './Signin.module'
-import { IStepActionsSubComponent } from '../../HostAPartySteps/HostAPartySteps'
+
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import VerifyEmail from './VerifyEmail'
+import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 
 const initialValues = {
   email: '',

@@ -1,10 +1,15 @@
-export const removeFromArray = (arr: any[], args: any[]) => arr.filter((val) => !args.includes(val))
+export interface IStepActionsSubComponent {
+  onNextStep: () => void
+  onBackStep: () => void
+}
 
 export enum UserRoles {
   ORGANIZER = 'ORGANIZER',
   VIP = 'VIP',
   ADMIN = 'ADMIN',
 }
+
+export const removeFromArray = (arr: any[], args: any[]) => arr.filter((val) => !args.includes(val))
 
 export const parseQueryParamToObject = (query: string) => {
   let obj = {}
