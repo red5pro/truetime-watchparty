@@ -9,13 +9,14 @@ import { IStepActionsSubComponent } from '../../HostAPartySteps/HostAPartySteps'
 
 interface ISignInProps {
   onActions?: IStepActionsSubComponent
+  emailSignin?: boolean
 }
 
 const Signin = (props: ISignInProps) => {
-  const { onActions } = props
+  const { onActions, emailSignin } = props
   const { classes } = useStyles()
 
-  const [signInEmail, setSignInEmail] = React.useState<boolean>(false)
+  const [signInEmail, setSignInEmail] = React.useState<boolean>(emailSignin ?? false)
   const [signInFacebook, setSignInFacebook] = React.useState<boolean>(false)
 
   return (
