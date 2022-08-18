@@ -15,6 +15,7 @@ interface ISubscriberProps {
   useStreamManager: boolean
   resubscribe: boolean
   styles: any
+  videoStyles: AnalyserOptions
   mute: boolean
   showControls: boolean
 }
@@ -23,7 +24,7 @@ const DELAY = 2000
 const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
 
 const Subscriber = (props: ISubscriberProps) => {
-  const { useStreamManager, resubscribe, host, streamGuid, styles, mute, showControls } = props
+  const { useStreamManager, resubscribe, host, streamGuid, styles, videoStyles, mute, showControls } = props
 
   const { classes } = useStyles()
 
@@ -164,7 +165,7 @@ const Subscriber = (props: ISubscriberProps) => {
           <Loading />
         </Box>
       )}
-      <VideoElement elementId={elementId} muted={mute} controls={showControls} styles={styles} />
+      <VideoElement elementId={elementId} muted={mute} controls={showControls} styles={videoStyles} />
     </Box>
   )
 }

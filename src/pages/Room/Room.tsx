@@ -21,6 +21,7 @@ const Room = () => {
           host=""
           streamGuid=""
           styles={{}}
+          videoStyles={{}}
           mute={false}
           showControls={true}
         />

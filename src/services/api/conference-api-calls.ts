@@ -49,6 +49,7 @@ const getCurrentEpisode = async (serieId: string, email: string, password: strin
         displayName: 'Event 1',
         startTime: 1658677171000,
         endTime: 1658691571000,
+        streamGuid: 'live/mainscreen',
       },
       status: 200,
     },

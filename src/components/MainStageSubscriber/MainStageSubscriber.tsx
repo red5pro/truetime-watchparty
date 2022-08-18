@@ -6,10 +6,11 @@ interface MainStageSubscriberProps {
   host: string
   useStreamManager: boolean
   styles: any
+  videoStyles: any
 }
 
 const MainStageSubscriber = (props: MainStageSubscriberProps) => {
-  const { participant, host, useStreamManager, styles } = props
+  const { participant, host, useStreamManager, styles, videoStyles } = props
 
   return (
     <Subscriber
@@ -18,8 +19,9 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
       mute={false}
       showControls={false}
       streamGuid={participant.streamGuid}
-      resubscribe={true}
+      resubscribe={false}
       styles={styles}
+      videoStyles={videoStyles}
     />
   )
 }
