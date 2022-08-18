@@ -23,11 +23,14 @@ import { ICountry } from '../../../models/Country'
 import InfoIcon from '@mui/icons-material/Info'
 import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
 import { IConference } from '../../../models/Conference'
+import { IAccount } from '../../../models/Account'
+import { generateJoinToken } from '../../../utils/commonUtils'
 
 interface ISetupPartyFormProps {
   onActions: IStepActionsSubComponent
   data?: IConference
   setData: (values: IConference) => void
+  account?: IAccount
 }
 
 export interface IPartyData {
@@ -51,7 +54,7 @@ const validationSchema = Yup.object().shape({
 const SELECT_COUNTRIES = [{ label: 'Select Country', code: '' }, ...COUNTRIES]
 
 const SetupPartyForm = (props: ISetupPartyFormProps) => {
-  const { onActions, data, setData } = props
+  const { onActions, data, setData, account } = props
   const { classes } = useStyles()
   const { executeRecaptcha } = useGoogleReCaptcha()
 
@@ -80,11 +83,8 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
   const handleSubmit = async (values: IPartyData) => {
     const token = await handleReCaptchaVerify()
     if (token) {
-      const joinToken = (Math.random() + 1).toString(36).substring(2)
+      const joinToken = generateJoinToken()
 
-      // TODO GET EMAIL & PASS FROM ACCOUNT AFTER LOGIN
-      const email = 'lou@red5pro.com'
-      const password = 'abc123'
       const conference: IConference = {
         displayName: values.partyName,
         welcomeMessage: values.welcomeMsg,
@@ -97,7 +97,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
       }
       setData(conference)
 
-      const response = await CONFERENCE_API_CALLS.createConference(conference, email, password)
+      const response = await CONFERENCE_API_CALLS.createConference(conference, account)
 
       if (response.data) {
         onActions.onNextStep()
