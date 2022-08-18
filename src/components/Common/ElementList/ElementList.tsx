@@ -20,8 +20,8 @@ const ElementList = (props: IElementListProps) => {
       {items.map((value: Episode) => {
         const date = new Date(value.startTime)
         return (
-          <Fragment key={value.serieId}>
-            <ListItem disablePadding key={value.serieId}>
+          <Fragment key={value.seriesId}>
+            <ListItem disablePadding key={value.seriesId}>
               <ListItemButton className={classes.itemButton} component="a" href="#simple-list">
                 <Box marginRight={2}>
                   <ListItemText primary={date.toLocaleDateString('en-US', dateOptions)} />
