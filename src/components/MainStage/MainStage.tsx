@@ -20,6 +20,7 @@ import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 import ShareLink from '../HostAPartySteps/ShareLink/ShareLink'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 import { UserRoles } from '../../utils/commonUtils'
+import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -53,6 +54,7 @@ const MainStage = () => {
   const [maxParticipants, setMaxParticipants] = React.useState<number>(0)
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
+  const [availableVipParticipant, setAvailableVipParticipant] = React.useState<Participant | undefined>()
   const [requiresSubscriberScroll, setRequiresSubscriberScroll] = React.useState<boolean>(false)
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
@@ -117,11 +119,8 @@ const MainStage = () => {
   }, [data.connection])
 
   React.useEffect(() => {
-    // TODO: Handle VIP coming and going
-    if (!data.vip) {
-      // left
-    } else {
-      // entered
+    if (data.vip && data.vip.participantId !== availableVipParticipant?.participantId) {
+      setAvailableVipParticipant(data.vip)
     }
   }, [data.vip])
 
@@ -212,8 +211,18 @@ const MainStage = () => {
             </Box>
           </Box>
         )}
-        {data.vip && <Typography>{data.vip.displayName}</Typography>}
-        {data.list && (
+        {availableVipParticipant && (
+          <Box sx={layout.style.vipContainer}>
+            <VIPSubscriber
+              participant={availableVipParticipant}
+              styles={layout.style.vipsubscriber}
+              videoStyles={layout.style.vipsubscriberVideo}
+              host={STREAM_HOST}
+              useStreamManager={USE_STREAM_MANAGER}
+            />
+          </Box>
+        )}
+        {data.list && layout.layout === Layout.STAGE && (
           <Box sx={layout.style.subscriberList}>
             <Box sx={layout.style.subscriberContainer}>
               {data.list.map((s: Participant) => {
@@ -230,6 +239,43 @@ const MainStage = () => {
               })}
             </Box>
             {requiresSubscriberScroll && <Button>More...</Button>}
+          </Box>
+        )}
+        {data.list && layout.layout === Layout.FULLSCREEN && (
+          <Box sx={layout.style.subscriberList}>
+            {/* Two Rows */}
+            <Box sx={layout.style.subscriberContainer}>
+              {data.list.map((s: Participant, i: number) => {
+                if (i + 1 > maxParticipants / 2) return undefined
+                return (
+                  <MainStageSubscriber
+                    key={s.participantId}
+                    participant={s}
+                    styles={layout.style.subscriber}
+                    videoStyles={layout.style.subscriberVideo}
+                    host={STREAM_HOST}
+                    useStreamManager={USE_STREAM_MANAGER}
+                  />
+                )
+              })}
+            </Box>
+            {data.list.length > maxParticipants / 2 && (
+              <Box sx={layout.style.subscriberContainer}>
+                {data.list.map((s: Participant, i: number) => {
+                  if (i < maxParticipants / 2) return undefined
+                  return (
+                    <MainStageSubscriber
+                      key={s.participantId}
+                      participant={s}
+                      styles={layout.style.subscriber}
+                      videoStyles={layout.style.subscriberVideo}
+                      host={STREAM_HOST}
+                      useStreamManager={USE_STREAM_MANAGER}
+                    />
+                  )
+                })}
+              </Box>
+            )}
           </Box>
         )}
         {publishMediaStream && (

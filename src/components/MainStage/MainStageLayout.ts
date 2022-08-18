@@ -56,6 +56,21 @@ const styles = {
       width: '100%',
       aspectRatio: '1 / 1',
     },
+    vipContainer: {
+      position: 'absolute',
+      right: '24px',
+      top: '80px',
+    },
+    vipsubscriber: {
+      height: 'calc(100vh / 3)',
+      aspectRatio: '1 / 1',
+    },
+    vipsubscriberVideo: {
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'black',
+      borderRadius: '20px',
+    },
   },
   fullscreen: {
     button: {
@@ -86,6 +101,50 @@ const styles = {
       width: '100%',
       height: '100%',
       transform: 'scaleX(-1)',
+    },
+    subscriberList: {
+      position: 'absolute',
+      top: '80px',
+      width: '100%',
+      height: 'calc(100vh - 460px)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignContent: 'center',
+      justifyContent: 'center',
+    },
+    subscriberContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      width: '100%',
+      height: '50%',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      marginBottom: '18px',
+    },
+    subscriber: {
+      marginRight: '9px',
+      marginLeft: '9px',
+      height: '100%',
+    },
+    subscriberVideo: {
+      borderRadius: '20px',
+      backgroundColor: 'black',
+      aspectRatio: '1 / 1',
+    },
+    vipContainer: {
+      position: 'absolute',
+      bottom: '80px',
+      left: '24px',
+    },
+    vipsubscriber: {
+      height: '250px',
+      aspectRatio: '1 / 1',
+    },
+    vipsubscriberVideo: {
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'black',
+      borderRadius: '20px',
     },
   },
 }
