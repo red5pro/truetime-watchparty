@@ -51,7 +51,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
     // const response = await API_REQUEST
     const response = { ...values, role: UserRoles.VIP }
 
-    setCookie('account', response)
+    setCookie('account', response, { httpOnly: true, secure: true })
 
     // if (response.data) {
     if (onActions) {
@@ -84,8 +84,6 @@ const SignInEmail = (props: ISignInEmailProps) => {
     >
       {(props: any) => {
         const { submitForm, isSubmitting } = props
-
-        console.log({ props })
 
         return (
           <Form autoComplete="off" method="post">
