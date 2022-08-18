@@ -11,7 +11,13 @@ const listReducer = (state: any, action: any) => {
   const pid = state.connection ? state.connection.participantId : undefined
   switch (action.type) {
     case 'UPDATE_LIST':
-      return { ...state, list: action.payload.filter((p: Participant) => p.participantId !== pid), vip: action.vip }
+      return {
+        ...state,
+        list: action.payload.filter(
+          (p: Participant) => p.participantId !== pid && p.role.toLowerCase() !== UserRoles.VIP.toLowerCase()
+        ),
+        vip: action.vip,
+      }
     case 'SET_CONNECTION_DATA':
       return { ...state, connection: action.payload }
     case 'SET_CONFERENCE_DATA':
