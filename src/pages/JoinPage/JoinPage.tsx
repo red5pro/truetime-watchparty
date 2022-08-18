@@ -13,6 +13,7 @@ import JoinSectionLanding from '../../components/JoinSections/JoinSectionLanding
 import JoinSectionNicknameInput from '../../components/JoinSections/JoinSectionNicknameInput'
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
 import MainStage from '../../components/MainStage/MainStage'
+import useQueryParams from '../../hooks/useQueryParams'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -47,6 +48,8 @@ const JoinPage = () => {
   const mediaContext = useMediaContext()
 
   const { classes } = useStyles()
+  const query = useQueryParams()
+
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
 
   React.useEffect(() => {
@@ -55,6 +58,16 @@ const JoinPage = () => {
       console.log('JOIN OUT')
     }
   }, [])
+
+  React.useEffect(() => {
+    if (query.get('s_id')) {
+      const s_id: string = query.get('s_id') as string
+      const id = parseInt(s_id, 10)
+      if (!isNaN(id)) {
+        setCurrentSection(id)
+      }
+    }
+  }, [query])
 
   React.useEffect(() => {
     if (currentSection !== Section.AVSetup && currentSection !== Section.WatchParty) {

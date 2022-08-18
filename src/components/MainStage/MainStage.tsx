@@ -1,6 +1,7 @@
 import React from 'react'
+import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
-import { Typography } from '@mui/material'
+import { Button, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
@@ -16,6 +17,8 @@ import styles from './MainStageLayout'
 import Publisher from '../Publisher/Publisher'
 import { Participant } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
+import ShareLink from '../HostAPartySteps/ShareLink/ShareLink'
+import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -40,40 +43,48 @@ const MainStage = () => {
 
   const { classes } = useStyles()
   const navigate = useNavigate()
+  const [cookies] = useCookies(['account'])
 
   const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
 
-  // const [layout, setLayout] = React.useState<Layout>(Layout.STAGE)
+  const [showLink, setShowLink] = React.useState<boolean>(false)
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
+  const [requiresSubscriberScroll, setRequiresSubscriberScroll] = React.useState<boolean>(false)
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     // TODO: Determine if Participant or Registered User?
     // TODO: Where does username & password come from if registered?
 
-    const fp = joinContext.fingerprint
+    const request: ConnectionRequest = {
+      displayName: name,
+      joinToken: token,
+      streamGuid: guid,
+    } as ConnectionRequest
 
     // Participant
-    // const url = `wss://${API_SOCKET_HOST}?joinToken=${token}&displayName=${name}&streamGuid=${guid}&fingerprint=123`
+    const fp = joinContext.fingerprint
+    request.fingerprint = fp
 
     // Registered User
-    // const url = `wss://${API_SOCKET_HOST}?joinToken=${joinToken}&displayName=${displayName}&streamGuid=${guid}&username=${username}&password=${password}`
+    // set u/p
 
     // Local testing
-    const url = `ws://localhost:8001?joinToken=${token}&displayName=${name}&streamGuid=${guid}&fingerprint=${fp}`
-
-    return url
+    const url = `ws://localhost:8001`
+    return { url, request }
   }
 
   if (!mediaContext?.mediaStream) {
     // TODO: Navigate back to auth?
     // TODO: If have auth context, navigate back to join?
-    navigate(`/join/${joinContext.joinToken}`)
+    // navigate(`/join/${joinContext.joinToken}`)
   }
 
   React.useEffect(() => {
     // TODO: Got here without setting up media. Where to send them?
     if (!mediaContext?.mediaStream) {
+      // TODO: Remove for testing
+      onPublisherBroadcast()
       // navigate(`/join/${params.token}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
       const { mediaStream } = mediaContext
@@ -83,13 +94,13 @@ const MainStage = () => {
   }, [mediaContext?.mediaStream])
 
   React.useEffect(() => {
-    if (data.conference) {
-      const { streamGuid } = data.conference
+    if (joinContext.seriesEpisode && joinContext.seriesEpisode.loaded) {
+      const { streamGuid } = joinContext.seriesEpisode.episode
       if (streamGuid !== mainStreamGuid) {
         setMainStreamGuid(streamGuid)
       }
     }
-  }, [data.conference])
+  }, [joinContext.seriesEpisode])
 
   React.useEffect(() => {
     // TODO: Handle VIP coming and going
@@ -99,6 +110,18 @@ const MainStage = () => {
       // entered
     }
   }, [data.vip])
+
+  React.useEffect(() => {
+    if (layout.layout === Layout.STAGE) {
+      const vh = window.innerHeight
+      const ch = vh - 320 // css subscriberContainer height
+      const sh = 124 // css height
+      const needsScroll = ch < sh * data.list.length
+      setRequiresSubscriberScroll(needsScroll)
+    } else {
+      setRequiresSubscriberScroll(false)
+    }
+  }, [data.list, layout])
 
   const clearMediaContext = () => {
     if (mediaContext && mediaContext.mediaStream) {
@@ -110,7 +133,8 @@ const MainStage = () => {
 
   const onPublisherBroadcast = () => {
     const streamGuid = joinContext.getStreamGuid()
-    join(getSocketUrl(joinContext.joinToken, joinContext.nickname, streamGuid))
+    const { url, request } = getSocketUrl(joinContext.joinToken, joinContext.nickname, streamGuid)
+    join(url, request)
   }
 
   const onPublisherBroadcastInterrupt = () => {
@@ -132,6 +156,7 @@ const MainStage = () => {
 
   const onLink = () => {
     // TODO: Show modal with share link
+    setShowLink(!showLink)
   }
 
   const toggleLayout = () => {
@@ -151,12 +176,14 @@ const MainStage = () => {
             streamGuid={mainStreamGuid}
             resubscribe={false}
             styles={layout.style.mainVideo}
+            videoStyles={layout.style.mainVideo}
             mute={true}
             showControls={true}
           />
         </Box>
       )}
       <Box className={classes.content}>
+        {showLink && <ShareLink joinToken={joinContext.joinToken} account={cookies.account} />}
         {data.conference && (
           <Box className={classes.topBar}>
             <Typography className={classes.header}>{data.conference.displayName}</Typography>
@@ -171,18 +198,22 @@ const MainStage = () => {
         )}
         {data.vip && <Typography>{data.vip.displayName}</Typography>}
         {data.list && (
-          <Box sx={layout.style.subscriberContainer}>
-            {data.list.map((s: Participant) => {
-              return (
-                <MainStageSubscriber
-                  key={s.participantId}
-                  participant={s}
-                  styles={layout.style.subscriber}
-                  host={STREAM_HOST}
-                  useStreamManager={USE_STREAM_MANAGER}
-                />
-              )
-            })}
+          <Box sx={layout.style.subscriberList}>
+            <Box sx={layout.style.subscriberContainer}>
+              {data.list.map((s: Participant) => {
+                return (
+                  <MainStageSubscriber
+                    key={s.participantId}
+                    participant={s}
+                    styles={layout.style.subscriber}
+                    videoStyles={layout.style.subscriberVideo}
+                    host={STREAM_HOST}
+                    useStreamManager={USE_STREAM_MANAGER}
+                  />
+                )
+              })}
+            </Box>
+            {requiresSubscriberScroll && <Button>More...</Button>}
           </Box>
         )}
         {publishMediaStream && (

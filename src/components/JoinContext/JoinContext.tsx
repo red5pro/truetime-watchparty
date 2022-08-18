@@ -103,6 +103,11 @@ const JoinProvider = (props: JoinContextProps) => {
     return `live/${joinToken}_${nickname}`
   }
 
+  const getMainStreamGuid = () => {
+    const { episode } = seriesEpisode
+    return episode.streamGuid
+  }
+
   const exportedValues = {
     nickname,
     joinToken,
@@ -114,6 +119,7 @@ const JoinProvider = (props: JoinContextProps) => {
       SessionStorage.set('wp_nickname', value)
     },
     getStreamGuid,
+    getMainStreamGuid,
   }
 
   return <JoinContext.Provider value={exportedValues}>{children}</JoinContext.Provider>

@@ -22,3 +22,9 @@ export enum UserRoles {
   VIP = 'VIP',
   ADMIN = 'ADMIN',
 }
+
+export enum MessageTypes {
+  ERROR = 'ConferenceError',
+  JOIN_RESPONSE = 'JoinConferenceResponse',
+  STATE_EVENT = 'ConferenceStateEvent',
+}
