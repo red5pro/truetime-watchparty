@@ -1,3 +1,4 @@
+// TODO: Mark for deprecation
 import { Box } from '@mui/material'
 
 import { useParams } from 'react-router-dom'
@@ -14,9 +15,7 @@ const PublishEvent = () => {
   return (
     <Box className={classes.classes.container}>
       <RoomContext.Provider>
-        <WatchContext.Provider>
-          <Publisher />
-        </WatchContext.Provider>
+        <WatchContext.Provider>{/* <Publisher /> */}</WatchContext.Provider>
       </RoomContext.Provider>
     </Box>
   )

@@ -1,3 +1,5 @@
+// TODO Mark for Deprecation?
+
 import * as React from 'react'
 import { startAdapter } from '../../utils/adapterConfig'
 

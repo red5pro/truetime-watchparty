@@ -1,7 +1,9 @@
 export interface Episode {
   episodeId: number
-  serieId: number
+  seriesId: number
   displayName: string
+  description: string
+  streamGuid: string
   startTime: number
   endTime: number
 }

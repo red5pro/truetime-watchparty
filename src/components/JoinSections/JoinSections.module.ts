@@ -10,14 +10,7 @@ const useStyles = makeStyles()((theme: any) => {
       overflow: 'auto',
       display: 'flex',
       flexDirection: 'column',
-    },
-    joinSection: {
-      width: '100%',
-      height: '100%',
-      overflow: 'auto',
       padding: '0 75px 0 75px',
-      display: 'flex',
-      flexDirection: 'column',
     },
     landingContainer: {
       marginTop: '33px',
@@ -35,7 +28,7 @@ const useStyles = makeStyles()((theme: any) => {
       marginTop: '75px',
     },
     landingJoin: {
-      marginTop: '80px',
+      marginTop: '60px!important',
     },
     nicknameForm: {
       marginTop: 'calc(100vh / 8)',
@@ -80,6 +73,15 @@ const useStyles = makeStyles()((theme: any) => {
         display: 'block',
         margin: '0 2px 0 8px',
       },
+    },
+    joinControls: {
+      display: 'flex',
+      alignItems: 'flex-end',
+    },
+    link: {
+      fontWeight: 600,
+      fontSize: '14px',
+      textDecoration: 'underline',
     },
   }
 })
