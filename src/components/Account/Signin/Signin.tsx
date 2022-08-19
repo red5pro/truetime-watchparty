@@ -5,7 +5,7 @@ import FacebookIcon from '@mui/icons-material/Facebook'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './Signin.module'
 import SignInEmail from './SignInEmail'
-import { IStepActionsSubComponent } from '../../HostAPartySteps/HostAPartySteps'
+import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 
 interface ISignInProps {
   onActions?: IStepActionsSubComponent

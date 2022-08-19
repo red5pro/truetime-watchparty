@@ -16,20 +16,20 @@ import {
 import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
-import { IStepActionsSubComponent } from '../HostAPartySteps'
+
 import useStyles from './StartParty.module'
 import { COUNTRIES } from '../../../utils/countryUtils'
 import { ICountry } from '../../../models/Country'
 import InfoIcon from '@mui/icons-material/Info'
 import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
-import { IConference } from '../../../models/Conference'
+import { ConferenceDetails } from '../../../models/ConferenceDetails'
 import { IAccount } from '../../../models/Account'
-import { generateJoinToken } from '../../../utils/commonUtils'
+import { generateJoinToken, IStepActionsSubComponent } from '../../../utils/commonUtils'
 
 interface ISetupPartyFormProps {
   onActions: IStepActionsSubComponent
-  data?: IConference
-  setData: (values: IConference) => void
+  data?: ConferenceDetails
+  setData: (values: ConferenceDetails) => void
   account?: IAccount
 }
 
@@ -85,7 +85,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
     if (token) {
       const joinToken = generateJoinToken()
 
-      const conference: IConference = {
+      const conference: ConferenceDetails = {
         displayName: values.partyName,
         welcomeMessage: values.welcomeMsg,
         thankYouMessage: values.thankMsg,
@@ -94,6 +94,11 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
         joinToken,
         joinLocked: false,
         vipOkay: values.vipOkay ?? true,
+
+        // TODO CHECK THIS
+        conferenceId: 0,
+        streamGuid: '',
+        startTime: 0,
       }
       setData(conference)
 
