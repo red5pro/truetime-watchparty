@@ -1,0 +1,34 @@
+import { makeStyles } from 'tss-react/mui'
+
+const useStyles = makeStyles()((theme: any) => {
+  return {
+    container: {
+      width: '25rem',
+      borderRadius: '20px',
+      background: '#303030 60%',
+      padding: '32px',
+
+      [theme.breakpoints.down('md')]: {
+        width: '75%',
+      },
+    },
+    title: {
+      fontSize: '18px',
+      fontWeight: 600,
+    },
+    timer: {
+      width: '85px',
+      height: '85px',
+      border: '3px solid #2864FF',
+      borderRadius: '50%',
+      margin: '0 20px',
+      '& p': {
+        color: '#ffffff',
+        fontSize: '20px',
+        fontWeight: 700,
+      },
+    },
+  }
+})
+
+export default useStyles

@@ -5,18 +5,17 @@ import Home from '../pages/Home/Home'
 import Landing from '../pages/Landing/Landing'
 import JoinPage from '../pages/JoinPage/JoinPage'
 import PublishEvent from '../pages/PublishEvent/PublishEvent'
-import Room from '../pages/Room/Room'
 import MainStagePage from '../pages/MainStagePage/MainStagePage'
 import MediaContext from '../components/MediaContext/MediaContext'
 import JoinContext from '../components/JoinContext/JoinContext'
 import WatchContext from '../components/WatchContext/WatchContext'
+import VipJoinPage from '../pages/VipJoinPage/VipJoinPage'
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/404" element={<Landing />} />
         <Route path="/faq" element={<About />} />
         <Route path="/login" element={<Signin />} />
         <Route path="/create" element={<PublishEvent />} /> {/** Publish a new event */}
@@ -35,6 +34,8 @@ const AppRoutes = () => {
         {/* WAT-70, WAT-73 */}
         {/*<Route path="/main/:token" element={<MainStagePage />} /> {/* WAT-74 */}
         <Route path="/:room" element={<Room />} /> {/** Subscribe to an event */}
+        <Route path="/join/guest" element={<VipJoinPage />} />
+        <Route path="*" element={<Landing />} />
       </Routes>
     </BrowserRouter>
   )

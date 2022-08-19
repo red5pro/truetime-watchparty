@@ -9,6 +9,7 @@ const getRootStyles = (size: BUTTONSIZE, theme: any) =>
         margin: theme.spacing(1),
         fontSize: '14px',
         lineHeight: '18',
+        maxWidth: '139px',
         minWidth: '139px',
         padding: '8px',
         boxShadow: 'none',
