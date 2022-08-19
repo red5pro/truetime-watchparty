@@ -7,6 +7,7 @@ const useStyles = makeStyles()((theme: any) => {
       alignItems: 'center',
       justifyContent: 'center',
       position: 'relative',
+      transform: 'scaleX(-1)',
     },
     loading: {
       position: 'absolute',

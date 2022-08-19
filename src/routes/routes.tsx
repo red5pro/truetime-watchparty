@@ -33,7 +33,6 @@ const AppRoutes = () => {
         />{' '}
         {/* WAT-70, WAT-73 */}
         {/*<Route path="/main/:token" element={<MainStagePage />} /> {/* WAT-74 */}
-        <Route path="/:room" element={<Room />} /> {/** Subscribe to an event */}
         <Route path="/join/guest" element={<VipJoinPage />} />
         <Route path="*" element={<Landing />} />
       </Routes>

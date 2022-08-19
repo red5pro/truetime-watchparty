@@ -97,9 +97,8 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
 
         // TODO CHECK THIS
         conferenceId: 0,
-        streamGuid: '',
         startTime: 0,
-      }
+      } as ConferenceDetails
       setData(conference)
 
       if (account) {

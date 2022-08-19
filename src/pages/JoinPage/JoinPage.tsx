@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Box, Typography } from '@mui/material'
 
 import Loading from '../../components/Loading/Loading'
@@ -48,7 +48,8 @@ const JoinPage = () => {
   const mediaContext = useMediaContext()
 
   const { classes } = useStyles()
-  const query = useQueryParams()
+  // const query = useQueryParams()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
 
@@ -60,14 +61,16 @@ const JoinPage = () => {
   }, [])
 
   React.useEffect(() => {
-    if (query.get('s_id')) {
-      const s_id: string = query.get('s_id') as string
+    if (searchParams.get('s_id')) {
+      const s_id: string = searchParams.get('s_id') as string
       const id = parseInt(s_id, 10)
       if (!isNaN(id)) {
+        searchParams.delete('s_id')
+        setSearchParams(searchParams)
         setCurrentSection(id)
       }
     }
-  }, [query])
+  }, [searchParams])
 
   React.useEffect(() => {
     if (currentSection !== Section.AVSetup && currentSection !== Section.WatchParty) {

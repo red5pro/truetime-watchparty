@@ -27,7 +27,6 @@ const styles = {
       borderRadius: '20px',
       width: '100%',
       height: '100%',
-      transform: 'scaleX(-1)',
     },
     subscriberList: {
       position: 'absolute',
@@ -100,7 +99,6 @@ const styles = {
       borderRadius: '20px',
       width: '100%',
       height: '100%',
-      transform: 'scaleX(-1)',
     },
     subscriberList: {
       position: 'absolute',
@@ -127,6 +125,12 @@ const styles = {
       height: '100%',
     },
     subscriberVideo: {
+      borderRadius: '20px',
+      backgroundColor: 'black',
+      aspectRatio: '1 / 1',
+    },
+    publisherVideo: {
+      height: '100%',
       borderRadius: '20px',
       backgroundColor: 'black',
       aspectRatio: '1 / 1',
