@@ -22,14 +22,17 @@ const getSeriesList = async () => {
         {
           seriesId: 9991,
           displayName: 'Series 1',
+          maxParticipants: 8,
         },
         {
           seriesId: 9992,
           displayName: 'Series 2',
+          maxParticipants: 8,
         },
         {
           seriesId: 9993,
           displayName: 'Series 3',
+          maxParticipants: 8,
         },
       ],
       status: 200,
@@ -49,8 +52,10 @@ const getCurrentEpisode = async (serieId: string, account?: IAccount) => {
       episode: {
         episodeId: 9991,
         displayName: 'Event 1',
+        description: 'Event1',
         startTime: 1658677171000,
         endTime: 1658691571000,
+        streamGuid: 'live/mainscreen',
       },
       status: 200,
     },
@@ -71,22 +76,28 @@ const getAllEpisodes = async (serieId: string, account?: IAccount) => {
           episodeId: 1001,
           seriesId: 9991,
           displayName: 'Event 1',
+          description: 'Event1',
           startTime: 1658763571000,
           endTime: 1658777971000,
+          streamGuid: 'live/mainscreen',
         },
         {
           episodeId: 1002,
           seriesId: 9991,
           displayName: 'Event 2',
+          description: 'Event2',
           startTime: 1658849971000,
           endTime: 1658864371000,
+          streamGuid: 'live/mainscreen',
         },
         {
           episodeId: 1003,
           seriesId: 9991,
           displayName: 'Event 3',
+          description: 'Event3',
           startTime: 1658936371000,
           endTime: 1658950771000,
+          streamGuid: 'live/mainscreen',
         },
       ],
       status: 200,
@@ -106,16 +117,49 @@ const getConferenceDetails = async (conferenceid: string, account?: IAccount) =>
   return {
     data: {
       conferenceId: id,
-      streamGuid: 'live/mainscreen',
       displayName: 'My Conference',
       welcomeMessage: "Welcome to my conference! We're going to have a great time! You'll love it!",
       thankYouMessage: 'Thanks for joining, see you next time!',
       location: 'United States of America',
-      maxParticipants: 8,
       joinToken: 'kXQu9dEH',
       joinLocked: false,
       vipOkay: true,
       startTime: 1660150337146,
+    },
+  } as AxiosResponse
+}
+
+const getJoinDetails = async (joinToken: string) => {
+  // try {
+  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}?joinToken=${joinToken}`)
+  // } catch (e: any) {
+  //   console.log(e)
+  // }
+
+  return {
+    data: {
+      conferenceId: 1,
+      displayName: 'My Conference',
+      welcomeMessage: 'Welcome to my conference! We\u0027re going to have a great time! You\u0027ll love it!',
+      thankYouMessage: 'Thanks for joining, see you next time!',
+      location: 'United States of America',
+      joinLocked: false,
+      vipOkay: true,
+      startTime: 1660150337146,
+      participants: [
+        {
+          displayName: 'LynardMaffeus',
+          role: 'ORGANIZER',
+        },
+        {
+          displayName: 'RolindaWilken',
+          role: 'PARTICIPANT',
+        },
+        {
+          displayName: 'OxnardFrankenheel',
+          role: 'VIP',
+        },
+      ],
     },
   } as AxiosResponse
 }
@@ -182,6 +226,7 @@ export const CONFERENCE_API_CALLS = {
   getCurrentEpisode,
   getAllEpisodes,
   getConferenceDetails,
+  getJoinDetails,
   createConference,
   getAllConferences,
   getConferenceParticipants,

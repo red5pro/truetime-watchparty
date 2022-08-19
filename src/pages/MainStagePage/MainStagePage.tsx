@@ -7,9 +7,18 @@ import MediaContext from '../../components/MediaContext/MediaContext'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import Loading from '../../components/Loading/Loading'
+import { Box } from '@mui/system'
+import useStyles from './MainStagePage.module'
+import MainStage from '../../components/MainStage/MainStage'
+import JoinContext from '../../components/JoinContext/JoinContext'
 
+// TODO: Mark for Deprecation?
+// MainStage Display should be accessed through Join + JoinContext?
 const MainStagePage = () => {
+  const joinContext = React.useContext(JoinContext.Context)
   const mediaContext = React.useContext(MediaContext.Context)
+
+  const { classes } = useStyles()
 
   const query = useQueryParams()
   const params = useParams()
@@ -51,10 +60,6 @@ const MainStagePage = () => {
   }, [query])
 
   React.useEffect(() => {
-    console.log('MEDIA', mediaContext?.mediaStream)
-  }, [mediaContext?.mediaStream])
-
-  React.useEffect(() => {
     if (joinToken && participantId) {
       // TODO: Get Party/Conference info for display
       getConferenceData(joinToken, participantId)
@@ -77,18 +82,11 @@ const MainStagePage = () => {
     }
   }
 
-  const clearMediaContext = () => {
-    if (mediaContext && mediaContext.mediaStream) {
-      mediaContext.mediaStream.getTracks().forEach((t: MediaStreamTrack) => t.stop())
-      mediaContext.setConstraints(undefined)
-      mediaContext.setMediaStream(undefined)
-    }
-  }
-
   return (
-    <>
-      <p>Main Stage</p>
-    </>
+    <Box className={classes.rootContainer}>
+      {!conferenceData && <Loading />}
+      {joinToken && conferenceData && <MainStage />}
+    </Box>
   )
 }
 

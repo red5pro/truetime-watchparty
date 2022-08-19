@@ -2,16 +2,12 @@ import { makeStyles } from 'tss-react/mui'
 
 const useStyles = makeStyles()((theme: any) => {
   return {
-    container: {
+    rootContainer: {
+      width: '100vw',
+      height: '100vh',
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      flexDirection: 'column',
       position: 'relative',
-      transform: 'scaleX(-1)',
-    },
-    loading: {
-      position: 'absolute',
-      zIndex: 10,
     },
   }
 })

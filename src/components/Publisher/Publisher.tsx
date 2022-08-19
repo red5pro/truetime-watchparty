@@ -1,272 +1,140 @@
-import VideoPreview, { IRoomFormValues } from '../VideoPreview/VideoPreview'
 import { RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
-import { getAuthenticationParams, getConfiguration, getServerSettings } from '../../utils/publishUtils'
-import WatchContext from '../WatchContext/WatchContext'
-import RoomContext from '../RoomContext/RoomContext'
 import Loading from '../Loading/Loading'
-import MainVideo from '../MainVideo/MainVideo'
+import VideoElement from '../VideoElement/VideoElement'
 import { Box, Typography } from '@mui/material'
-import { SERVER_HOST } from '../../settings/variables'
-import SubscribersPanel from '../SubscribersPanel/SubscribersPanel'
-import PhoneDisabledIcon from '@mui/icons-material/PhoneDisabled'
-import usePublisherStyles from './Publisher.module'
+import { getContextAndNameFromGuid } from '../../utils/commonUtils'
+import useStyles from './Publisher.module'
+import { getOrigin } from '../../utils/streamManagerUtils'
 
-const Publisher = () => {
-  const watchContext = React.useContext(WatchContext.Context)
-  const roomContext = React.useContext(RoomContext.Context)
+interface PublisherProps {
+  useStreamManager: boolean
+  stream?: MediaStream
+  host: string
+  streamGuid: string
+  styles: any
+  onStart(): any
+  onInterrupt(): any
+  onFail(): any
+}
+
+const Publisher = (props: PublisherProps) => {
+  const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt, onFail } = props
+  const { classes } = useStyles()
 
   const [elementId, setElementId] = React.useState<string>('')
+  const [context, setContext] = React.useState<string>('')
+  const [streamName, setStreamName] = React.useState<string>('')
   const [isPublished, setIsPublished] = React.useState<boolean>(false)
   const [isPublishing, setIsPublishing] = React.useState<boolean>(false)
   const [publisher, setPublisher] = React.useState<any>()
 
-  const { classes } = usePublisherStyles()
-
-  const getUserMediaConfiguration = (configuration: any) => {
-    return {
-      mediaConstraints: {
-        audio: configuration.useAudio ? configuration.mediaConstraints.audio : false,
-        // video: configuration.useVideo ? configuration.mediaConstraints.video : false,
-        video: {
-          width: {
-            exact: 640,
-          },
-          height: {
-            exact: 480,
-          },
-          frameRate: {
-            min: 8,
-            max: 24,
-          },
-        },
-      },
-    }
-  }
-
-  const getSocketLocationFromProtocol = () => {
-    const settings = getServerSettings()
-    const isSecure = window.location.protocol.includes('https')
-
-    return !isSecure
-      ? { protocol: 'ws', port: settings?.wsport ?? '' }
-      : { protocol: 'wss', port: settings?.wssport ?? '' }
-  }
-
-  const processStreams = (list: any[], previousList: any, roomName: string, exclusion: string) => {
-    const nonPublishers = list.filter((name: string) => {
-      return name !== exclusion
-    })
-
-    const [existing, toAdd, toRemove] = nonPublishers.filter((name: string, index: number, self: any[]) => {
-      const existing = self.indexOf(name) && previousList.indexOf(name) !== -1
-      const toAdd = self.indexOf(name) && previousList.indexOf(name) === -1
-      const toRemove = self.indexOf(name) && list.indexOf(name) === -1
-
-      return [existing, toAdd, toRemove]
-    })
-
-    watchContext.removeSubscribers(toRemove)
-    const configuration = getConfiguration()
-    const authParams = getAuthenticationParams(configuration)
-
-    // positionExisting(existing)
-    // let lastIndex = existing.length
-    // const subscribers = toAdd.map((name: string, index: number) => {
-    //   // const parent = lastIndex++ < bottomRowLimit ? bottomSubscribersEl : sideSubscribersEl
-    //   return new window.ConferenceSubscriberItem(name, parent, index, relayout)
-    // })
-    // relayout()
-
-    const baseSubscriberConfig = Object.assign(
-      {},
-      configuration,
-      {
-        protocol: getSocketLocationFromProtocol().protocol,
-        port: getSocketLocationFromProtocol().port,
-      },
-      authParams,
-      {
-        app: `live/${roomName}`,
-      }
-    )
-
-    // if (subscribers.length > 0) {
-    //   //subscribers[0].execute(baseSubscriberConfig)
-    //   subscribers.forEach((sub) => {
-    //     sub.execute(baseSubscriberConfig)
-    //   })
-    // }
-  }
-
-  const establishSocketHost = (roomName: string) => {
-    const { streamsList, hostSocket, setHostSocket } = watchContext
-    const streamName = roomContext?.streamName ?? ''
-
-    if (hostSocket) return
-
-    const isSecure = window.location.protocol.includes('https')
-    const wsProtocol = isSecure ? 'wss' : 'ws'
-
-    // hacked to support remote server while doing local development
-    const url = `${wsProtocol}://${SERVER_HOST}:8443?room=${roomName}&streamName=${streamName}`
-    const newHostSocket = new WebSocket(url)
-
-    newHostSocket.onmessage = function (message) {
-      const payload = JSON.parse(message.data)
-      if (roomName === payload.room) {
-        processStreams(payload.streams, streamsList, roomName, streamName)
-      }
-    }
-
-    setHostSocket(newHostSocket)
-  }
-
-  const onResolutionUpdate = (frameWidth: number, frameHeight: number) => {
-    // updateStatistics(bitrate, packetsSent, frameWidth, frameHeight);
-  }
-
-  const onPublishSuccess = (publisher: any, roomName: string) => {
-    setPublisher(publisher)
-
-    if (publisher.getType().toUpperCase() !== 'RTC') {
-      establishSocketHost(roomName)
-    }
-    try {
-      const connection = publisher.getPeerConnection()
-      const senders = connection.getSenders()
-      const sender = senders.find((s: RTCRtpSender) => s.track && s.track.kind === 'video')
-      const broadcastTrack = sender.track.clone()
-      broadcastTrack.enabled = true
-      sender.replaceTrack(broadcastTrack)
-
-      const stream = publisher.getMediaStream()
-      // bitrateTrackingTicket = window.trackBitrate(pc, onBitrateUpdate, null, null, true)
-      stream.getVideoTracks().forEach((track: any) => {
-        const settings = track.getSettings()
-        onResolutionUpdate(settings.width, settings.height)
-      })
-    } catch (e) {
-      console.log('error', e)
-    }
-  }
-
-  const determinePublisher = async () => {
-    const configuration = { ...getConfiguration(), mediaElementId: elementId }
-    const authParams = getAuthenticationParams(configuration)
-    const userMediaConf = getUserMediaConfiguration(configuration)
-
-    const config = Object.assign(
-      {},
-      configuration,
-      {
-        streamMode: configuration.recordBroadcast ? 'record' : 'live',
-      },
-      authParams,
-      userMediaConf
-    )
-
-    const rtcConfig = Object.assign({}, config, {
-      protocol: getSocketLocationFromProtocol().protocol,
-      port: getSocketLocationFromProtocol().port,
-      host: SERVER_HOST,
-      bandwidth: {
-        video: 256,
-      },
-      app: `live`,
-      streamName: roomContext?.streamName ?? '',
-    })
-
-    const publisher = new RTCPublisher()
-    const publisherInit = await publisher.init(rtcConfig)
-
-    return publisherInit
-  }
-
-  const onPublisherEvent = (event: any) => {
-    console.log('[Red5ProPublisher]: PublisherEvent ' + event.type + '.')
-    if (event.type === 'WebSocket.Message.Unhandled') {
-      console.log(event)
-    } else if (event.type === RTCPublisherEventTypes.MEDIA_STREAM_AVAILABLE) {
-      //      window.allowMediaStreamSwap(targetPublisher, targetPublisher.getOptions().mediaConstraints, document.getElementById('red5pro-publisher'));
-    } else if (event.type === 'Publisher.Connection.Closed') {
-      // notifyOfPublishFailure();
-    }
-    // updateStatusFromEvent(event);
-    return
-  }
-
-  const doPublish = async (room: string, name: string) => {
-    try {
-      const targetPublisher = await determinePublisher()
-      targetPublisher.on('*', onPublisherEvent)
-      await targetPublisher.publish() // targetPublisher.publish(name)
-
-      onPublishSuccess(targetPublisher, room)
-
-      setIsPublishing(false)
-      setIsPublished(true)
-
-      window.history.replaceState(null, '', room)
-    } catch (error) {
-      const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
-      console.error('[Red5ProPublisher] :: Error in publishing - ' + jsonError)
-      console.error(error)
-
-      // onPublishFail(jsonError)
-    }
-  }
+  const pubRef = React.useRef()
 
   React.useEffect(() => {
-    const streamNameField = Math.floor(Math.random() * 0x10000).toString(16)
+    const { context, name } = getContextAndNameFromGuid(streamGuid)
+    setContext(context)
 
-    setElementId(`${streamNameField}-publisher`)
+    if (name) {
+      const elemId = `${name}-publisher`
+      setElementId(elemId)
+      setStreamName(name)
+    }
+
+    return () => {
+      //      stopRetry()
+      if (pubRef.current) {
+        console.warn(`[Red5ProPublisher(${streamName})] - STOP`)
+        stop()
+      }
+    }
   }, [])
 
-  const createEvent = async (values: IRoomFormValues) => {
-    setIsPublishing(true)
+  React.useEffect(() => {
+    pubRef.current = publisher
+  }, [publisher])
 
-    if (roomContext?.mediaStream) {
-      doPublish(values.room, values.name)
+  React.useEffect(() => {
+    if (elementId.length > 0 && streamName?.length > 0 && context.length > 0) {
+      if (!isPublished) {
+        start()
+      }
+    }
+  }, [elementId, streamName, context])
+
+  const onPublisherEvent = (event: any) => {
+    console.log(`[Red5ProPublisher(${streamName})]: PublisherEvent - ${event.type}.`)
+    // if (event.type === 'WebSocket.Message.Unhandled') {
+    //   console.log(event)
+    // } else if (event.type === RTCPublisherEventTypes.MEDIA_STREAM_AVAILABLE) {
+    // } else if (event.type === 'Publisher.Connection.Closed') {
+    // }
+    // TODO: Handle events for onStart and onInterrupt
+    if (event.type === 'Publish.Available') {
+      onStart()
     }
   }
 
-  const hangOff = async () => {
+  const start = async () => {
+    setIsPublishing(true)
     try {
-      const { hostSocket, setHostSocket } = watchContext
+      const pub = new RTCPublisher()
+      const config = {
+        app: useStreamManager ? 'streammanager' : context,
+        host: host,
+        streamName: streamName,
+        mediaElementId: elementId,
+        clearMediaOnUnpublish: true,
+        connectionParams: {
+          /* username, password, token? */
+        },
+      }
+      if (useStreamManager) {
+        const payload = await getOrigin(host, context, streamName)
+        config.connectionParams = { ...config.connectionParams, host: payload.serverAddress, app: payload.scope }
+      }
+      pub.on('*', onPublisherEvent)
+      await pub.initWithStream(config, stream)
+      await pub.publish()
+      setPublisher(pub)
+      setIsPublishing(false)
+      setIsPublished(true)
+    } catch (error: any) {
+      const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
+      console.error(`[Red5ProPublisher(${streamName})] :: Error in publishing -  ${jsonError}`)
+      console.error(error)
+      setIsPublishing(false)
+      setIsPublished(false)
+      setPublisher(undefined)
+      onFail()
+      //      startRetry()
+    }
+  }
 
-      setHostSocket(hostSocket.close())
-
-      publisher.unpublish().then(() => {
-        publisher.off('*', onPublisherEvent)
-        window.location.href = '/'
-      })
-    } catch (error) {
-      console.log(error)
-      window.location.href = '/'
+  const stop = async () => {
+    try {
+      if (pubRef.current) {
+        ;(pubRef.current as any).off('*', onPublisherEvent)
+        await (pubRef.current as any).unpublish()
+      }
+      setPublisher(undefined)
+    } catch (error: any) {
+      const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
+      console.error(`[Red5ProPublisher(${streamName})] :: Error in unpublishing -  ${jsonError}`)
+      console.error(error)
+      // startRetry()
     }
   }
 
   return (
-    <>
-      <Typography component="h5" variant="h5" textAlign="center" margin={3}>
-        Create a New Party!
-      </Typography>
-      {!isPublished && !isPublishing && <VideoPreview room={''} onJoinRoom={createEvent} />}
-      {isPublishing && <Loading />}
-
-      <Box display={isPublished ? 'flex' : 'none'}>
-        <Box width="75%">
-          <MainVideo elementId={elementId} />
+    <Box className={classes.container} sx={styles}>
+      {!isPublished && (
+        <Box className={classes.loading}>
+          <Loading />
         </Box>
-        <Box width="25%">
-          <SubscribersPanel isPublisher />
-        </Box>
-        <Box className={classes.hangOff}>
-          <PhoneDisabledIcon fontSize="large" onClick={hangOff} />
-        </Box>
-      </Box>
-    </>
+      )}
+      <VideoElement elementId={elementId} muted={true} controls={false} styles={styles} />
+    </Box>
   )
 }
 
