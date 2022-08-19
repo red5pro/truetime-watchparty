@@ -48,7 +48,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
   const handleSubmit = async (values: any) => {
     // const response = await API_REQUEST
 
-    setCookie('account', values)
+    setCookie('account', values, { secure: true })
 
     // if (response.data) {
     if (onActions) {
