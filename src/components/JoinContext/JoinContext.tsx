@@ -1,4 +1,5 @@
 import React, { useReducer } from 'react'
+import { useCookies } from 'react-cookie'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import useQueryParams from '../../hooks/useQueryParams'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
@@ -28,6 +29,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const query = useQueryParams()
   const params = useParams()
   const navigate = useNavigate()
+  const [cookies] = useCookies(['account'])
 
   const [joinToken, setJoinToken] = React.useState<string | null>(null)
 
@@ -84,9 +86,9 @@ const JoinProvider = (props: JoinContextProps) => {
 
   const getCurrentSeriesEpisodeData = async () => {
     try {
-      const serieResponse = await CONFERENCE_API_CALLS.getSeriesList('email', 'password')
+      const serieResponse = await CONFERENCE_API_CALLS.getSeriesList()
       const currentSeries = serieResponse.data.series[0]
-      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(currentSeries.seriesId, 'email', 'password')
+      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(currentSeries.seriesId, cookies.account)
       const currentEpisode = episodeResponse.data.episode
       if (currentSeries && currentEpisode) {
         dispatch({ type: 'UPDATE', series: currentSeries, episode: currentEpisode })

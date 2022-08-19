@@ -1,4 +1,5 @@
 import React from 'react'
+import * as portals from 'react-reverse-portal'
 import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
 import { Button, Typography } from '@mui/material'
@@ -17,10 +18,12 @@ import styles from './MainStageLayout'
 import Publisher from '../Publisher/Publisher'
 import { Participant } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
-import ShareLink from '../HostAPartySteps/ShareLink/ShareLink'
+import ShareLink from '../HostAPartyFlow/ShareLink/ShareLink'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 import { UserRoles } from '../../utils/commonUtils'
 import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
+import PublisherPortalStage from './PublisherPortalStage'
+import PublisherPortalFullscreen from './PublisherPortalFullscreen'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -46,6 +49,7 @@ const MainStage = () => {
   const { classes } = useStyles()
   const navigate = useNavigate()
   const [cookies] = useCookies(['account'])
+  const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
   const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
 
@@ -259,40 +263,25 @@ const MainStage = () => {
                 )
               })}
             </Box>
-            {data.list.length > maxParticipants / 2 && (
-              <Box sx={layout.style.subscriberContainer}>
-                {data.list.map((s: Participant, i: number) => {
-                  if (i < maxParticipants / 2) return undefined
-                  return (
-                    <MainStageSubscriber
-                      key={s.participantId}
-                      participant={s}
-                      styles={layout.style.subscriber}
-                      videoStyles={layout.style.subscriberVideo}
-                      host={STREAM_HOST}
-                      useStreamManager={USE_STREAM_MANAGER}
-                    />
-                  )
-                })}
-              </Box>
-            )}
+            <Box sx={layout.style.subscriberContainer}>
+              {data.list.map((s: Participant, i: number) => {
+                if (i < maxParticipants / 2) return undefined
+                return (
+                  <MainStageSubscriber
+                    key={s.participantId}
+                    participant={s}
+                    styles={layout.style.subscriber}
+                    videoStyles={layout.style.subscriberVideo}
+                    host={STREAM_HOST}
+                    useStreamManager={USE_STREAM_MANAGER}
+                  />
+                )
+              })}
+              <PublisherPortalFullscreen portalNode={portalNode} />
+            </Box>
           </Box>
         )}
-        {publishMediaStream && (
-          <Box sx={layout.style.publisherContainer}>
-            <Publisher
-              key="publisher"
-              useStreamManager={USE_STREAM_MANAGER}
-              host={STREAM_HOST}
-              streamGuid={joinContext.getStreamGuid()}
-              stream={publishMediaStream}
-              styles={layout.style.publisher}
-              onStart={onPublisherBroadcast}
-              onFail={onPublisherFail}
-              onInterrupt={onPublisherBroadcastInterrupt}
-            />
-          </Box>
-        )}
+        {publishMediaStream && layout.layout === Layout.STAGE && <PublisherPortalStage portalNode={portalNode} />}
         {!data.conference && (
           <Box top={2} className={classes.loadingContainer}>
             <Loading />
@@ -300,6 +289,21 @@ const MainStage = () => {
           </Box>
         )}
       </Box>
+      <portals.InPortal node={portalNode}>
+        <Box sx={layout.layout === Layout.STAGE ? layout.style.publisherContainer : layout.style.subscriber}>
+          <Publisher
+            key="publisher"
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            streamGuid={joinContext.getStreamGuid()}
+            stream={mediaContext?.mediaStream}
+            styles={layout.layout === Layout.STAGE ? layout.style.publisher : layout.style.publisherVideo}
+            onStart={onPublisherBroadcast}
+            onFail={onPublisherFail}
+            onInterrupt={onPublisherBroadcastInterrupt}
+          />
+        </Box>
+      </portals.InPortal>
     </Box>
   )
 }

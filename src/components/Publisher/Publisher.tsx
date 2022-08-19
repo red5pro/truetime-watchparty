@@ -9,7 +9,7 @@ import { getOrigin } from '../../utils/streamManagerUtils'
 
 interface PublisherProps {
   useStreamManager: boolean
-  stream: MediaStream
+  stream?: MediaStream
   host: string
   streamGuid: string
   styles: any
