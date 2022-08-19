@@ -15,8 +15,8 @@ import { IStepActionsSubComponent } from '../../utils/commonUtils'
 
 enum EStepIdentify {
   LANDING = 0,
-  START_PARTY = 1,
-  SIGN_IN = 2,
+  SIGN_IN = 1,
+  START_PARTY = 2,
   SHARE = 3,
   CHOOSE_NICKNAME = 4,
   WATCH_PARTY = 5,
@@ -47,6 +47,10 @@ export default function HostAPartySteps() {
       component: <ViewEvents onActions={actions} account={cookies?.account} />,
     },
     {
+      id: EStepIdentify.SIGN_IN,
+      component: <Signin onActions={actions} />,
+    },
+    {
       id: EStepIdentify.START_PARTY,
       component: (
         <StartParty
@@ -58,10 +62,6 @@ export default function HostAPartySteps() {
           account={cookies?.account}
         />
       ),
-    },
-    {
-      id: EStepIdentify.SIGN_IN,
-      component: <Signin onActions={actions} />,
     },
     {
       id: EStepIdentify.SHARE,

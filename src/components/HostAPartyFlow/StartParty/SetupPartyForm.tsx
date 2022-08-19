@@ -102,12 +102,14 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
       }
       setData(conference)
 
-      const response = await CONFERENCE_API_CALLS.createConference(conference, account)
+      if (account) {
+        const response = await CONFERENCE_API_CALLS.createConference(conference, account)
 
-      if (response.data) {
-        onActions.onNextStep()
-      } else {
-        setErrorAfterSubmit(response.statusText)
+        if (response.data) {
+          onActions.onNextStep()
+        } else {
+          setErrorAfterSubmit(response.statusText)
+        }
       }
     }
   }

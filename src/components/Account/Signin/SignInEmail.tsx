@@ -79,7 +79,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
         const { submitForm, isSubmitting } = props
 
         return (
-          <Form autoComplete="off" method="post">
+          <Form method="post">
             <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
               <Typography className={classes.title}>Sign In</Typography>
               <Typography>Please verify your account before creating a watchparty</Typography>
