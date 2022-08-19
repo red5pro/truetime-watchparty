@@ -120,7 +120,7 @@ const getConferenceDetails = async (conferenceid: string, account?: IAccount) =>
   } as AxiosResponse
 }
 
-const createConference = async (conference: ConferenceDetails, account?: IAccount) => {
+const createConference = async (conference: ConferenceDetails, account: IAccount) => {
   // try {
   //   const response: AxiosResponse = await axios.post(
   //     `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`,

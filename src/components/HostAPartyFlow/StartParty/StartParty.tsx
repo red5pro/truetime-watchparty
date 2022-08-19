@@ -12,7 +12,7 @@ interface IStartPartyProps {
   setData: (values: ConferenceDetails) => void
   currentEpisode: any
   currentSerie: any
-  account?: IAccount | null
+  account: IAccount
 }
 
 const StartParty = (props: IStartPartyProps) => {
@@ -48,7 +48,7 @@ const StartParty = (props: IStartPartyProps) => {
             </Link>
           )}
         </Box>
-        <SetupPartyForm onActions={onActions} data={data} setData={setData} />
+        <SetupPartyForm onActions={onActions} data={data} setData={setData} account={account} />
       </Box>
     </Box>
   )
