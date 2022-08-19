@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3'
-import HostAPartySteps from '../../components/HostAPartySteps/HostAPartySteps'
+import HostAPartySteps from '../../components/HostAPartyFlow/HostAPartySteps'
 
 import { RECAPTCHA_SITE_KEY } from '../../settings/variables'
 
