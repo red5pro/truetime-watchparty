@@ -30,7 +30,7 @@ interface ISetupPartyFormProps {
   onActions: IStepActionsSubComponent
   data?: IConference
   setData: (values: IConference) => void
-  account?: IAccount
+  account: IAccount
 }
 
 export interface IPartyData {
@@ -96,13 +96,17 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
         vipOkay: values.vipOkay ?? true,
       }
       setData(conference)
+      debugger
 
-      const response = await CONFERENCE_API_CALLS.createConference(conference, account)
+      if (account) {
+        debugger
+        const response = await CONFERENCE_API_CALLS.createConference(conference, account)
 
-      if (response.data) {
-        onActions.onNextStep()
-      } else {
-        setErrorAfterSubmit(response.statusText)
+        if (response.data) {
+          onActions.onNextStep()
+        } else {
+          setErrorAfterSubmit(response.statusText)
+        }
       }
     }
   }

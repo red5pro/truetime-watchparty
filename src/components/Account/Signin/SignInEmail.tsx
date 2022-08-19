@@ -49,9 +49,11 @@ const SignInEmail = (props: ISignInEmailProps) => {
 
   const handleSubmit = async (values: any) => {
     // const response = await API_REQUEST
-    const response = { ...values, role: UserRoles.VIP }
+    const response = { ...values }
 
-    setCookie('account', response, { httpOnly: true, secure: true })
+    debugger
+
+    setCookie('account', response, { secure: true })
 
     // if (response.data) {
     if (onActions) {
@@ -86,7 +88,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
         const { submitForm, isSubmitting } = props
 
         return (
-          <Form autoComplete="off" method="post">
+          <Form method="post">
             <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
               <Typography className={classes.title}>Sign In</Typography>
               <Typography>Please verify your account before creating a watchparty</Typography>
