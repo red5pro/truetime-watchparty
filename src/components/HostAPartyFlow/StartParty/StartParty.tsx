@@ -1,18 +1,18 @@
 import { Box, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { IAccount } from '../../../models/Account'
-import { IConference } from '../../../models/Conference'
-import { IStepActionsSubComponent } from '../HostAPartySteps'
+import { ConferenceDetails } from '../../../models/ConferenceDetails'
+import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 import SetupPartyForm from './SetupPartyForm'
 import useStyles from './StartParty.module'
 
 interface IStartPartyProps {
   onActions: IStepActionsSubComponent
-  data?: IConference
-  setData: (values: IConference) => void
+  data?: ConferenceDetails
+  setData: (values: ConferenceDetails) => void
   currentEpisode: any
   currentSerie: any
-  account?: IAccount | null
+  account: IAccount
 }
 
 const StartParty = (props: IStartPartyProps) => {
@@ -48,7 +48,7 @@ const StartParty = (props: IStartPartyProps) => {
             </Link>
           )}
         </Box>
-        <SetupPartyForm onActions={onActions} data={data} setData={setData} />
+        <SetupPartyForm onActions={onActions} data={data} setData={setData} account={account} />
       </Box>
     </Box>
   )

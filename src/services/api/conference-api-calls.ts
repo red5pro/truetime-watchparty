@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios'
-import { IConference } from '../../models/Conference'
+import { IAccount } from '../../models/Account'
+import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
 
 const ENDPOINT = {
@@ -7,9 +8,10 @@ const ENDPOINT = {
   CONFERENCE: `${MAIN_ENDPOINT}/conference`,
 }
 
-const getSeriesList = async (email: string, password: string) => {
+const getSeriesList = async () => {
   // try {
-  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}?user=${email}&password=${password}`)
+  //
+  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}`)
   // } catch (e: any) {
   //   console.log(e)
   // }
@@ -38,9 +40,9 @@ const getSeriesList = async (email: string, password: string) => {
   } as AxiosResponse
 }
 
-const getCurrentEpisode = async (seriesId: string, email: string, password: string) => {
+const getCurrentEpisode = async (serieId: string, account?: IAccount) => {
   // try {
-  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}/${seriesId}/episode/current?user=${email}&password=${password}`)
+  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}/${serieId}/episode/current?user=${account.email}&password=${account.password}`)
   // } catch (e: any) {
   //   console.log(e)
   // }
@@ -60,9 +62,9 @@ const getCurrentEpisode = async (seriesId: string, email: string, password: stri
   } as AxiosResponse
 }
 
-const getAllEpisodes = async (seriesId: string, email: string, password: string) => {
+const getAllEpisodes = async (serieId: string, account?: IAccount) => {
   // try {
-  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}/${seriesId}/episode?user=${email}&password=${password}`)
+  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}/${serieId}/episode?user=${account.email}&password=${account.password}`)
   // } catch (e: any) {
   //   console.log(e)
   // }
@@ -103,9 +105,9 @@ const getAllEpisodes = async (seriesId: string, email: string, password: string)
   } as AxiosResponse
 }
 
-const getConferenceDetails = async (conferenceid: any, email: string, password: string) => {
+const getConferenceDetails = async (conferenceid: string, account?: IAccount) => {
   // try {
-  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/${conferenceid}?user=${email}&password=${password}`)
+  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/${conferenceid}?user=${account.email}&password=${account.password}`)
   // } catch (e: any) {
   //   console.log(e)
   // }
@@ -162,10 +164,10 @@ const getJoinDetails = async (joinToken: string) => {
   } as AxiosResponse
 }
 
-const createConference = async (conference: IConference, email: string, password: string) => {
+const createConference = async (conference: ConferenceDetails, account: IAccount) => {
   // try {
   //   const response: AxiosResponse = await axios.post(
-  //     `${ENDPOINT.CONFERENCE}?user=${email}&password=${password}`,
+  //     `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`,
   //     conference
   //   )
 
@@ -187,6 +189,38 @@ const createConference = async (conference: IConference, email: string, password
   } as AxiosResponse
 }
 
+const getAllConferences = async (account: IAccount) => {
+  try {
+    const response: AxiosResponse = await axios.get(
+      `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
+const getConferenceParticipants = async (conferenceId: string, account: IAccount) => {
+  try {
+    const response: AxiosResponse = await axios.get(
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants?user=${account.email}&password=${account.password}`
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
 export const CONFERENCE_API_CALLS = {
   getSeriesList,
   getCurrentEpisode,
@@ -194,4 +228,6 @@ export const CONFERENCE_API_CALLS = {
   getConferenceDetails,
   getJoinDetails,
   createConference,
+  getAllConferences,
+  getConferenceParticipants,
 }

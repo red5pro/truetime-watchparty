@@ -10,20 +10,16 @@ import StartParty from './StartParty/StartParty'
 import ViewEvents from './ViewEvents/ViewEvents'
 import Signin from '../Account/Signin/Signin'
 import ShareLink from './ShareLink/ShareLink'
-import { IConference } from '../../models/Conference'
+import { ConferenceDetails } from '../../models/ConferenceDetails'
+import { IStepActionsSubComponent } from '../../utils/commonUtils'
 
 enum EStepIdentify {
   LANDING = 0,
-  START_PARTY = 1,
-  SIGN_IN = 2,
+  SIGN_IN = 1,
+  START_PARTY = 2,
   SHARE = 3,
   CHOOSE_NICKNAME = 4,
   WATCH_PARTY = 5,
-}
-
-export interface IStepActionsSubComponent {
-  onNextStep: () => void
-  onBackStep: () => void
 }
 
 const currentEpisodeMock = {
@@ -43,12 +39,16 @@ export default function HostAPartySteps() {
   const [cookies] = useCookies(['account'])
 
   const [activeStep, setActiveStep] = React.useState(0)
-  const [startPartyData, setStartPartyData] = React.useState<IConference | undefined>()
+  const [startPartyData, setStartPartyData] = React.useState<ConferenceDetails | undefined>()
 
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: EStepIdentify.LANDING,
       component: <ViewEvents onActions={actions} account={cookies?.account} />,
+    },
+    {
+      id: EStepIdentify.SIGN_IN,
+      component: <Signin onActions={actions} />,
     },
     {
       id: EStepIdentify.START_PARTY,
@@ -62,10 +62,6 @@ export default function HostAPartySteps() {
           account={cookies?.account}
         />
       ),
-    },
-    {
-      id: EStepIdentify.SIGN_IN,
-      component: <Signin onActions={actions} />,
     },
     {
       id: EStepIdentify.SHARE,

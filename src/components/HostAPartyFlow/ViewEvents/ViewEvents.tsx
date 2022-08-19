@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom'
 
 import { Episode } from '../../../models/Episode'
 import { Serie } from '../../../models/Serie'
-import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
 import useStyles from './ViewEvents.module'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import ElementList from '../../Common/ElementList/ElementList'
-import { IStepActionsSubComponent } from '../HostAPartySteps'
 import { IAccount } from '../../../models/Account'
+import { getCurrentEpisode } from '../../../services/conference/conference'
+import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 
 interface IViewEventsProps {
   onActions: IStepActionsSubComponent
@@ -32,31 +32,11 @@ const ViewEvents = (props: IViewEventsProps) => {
   }, [])
 
   const getCurrentEvent = async () => {
-    const response = await CONFERENCE_API_CALLS.getSeriesList('email', 'password')
+    const [currentEpisode, currentSerie, nextEpisodes] = await getCurrentEpisode()
 
-    if (response.data.status === 200 && response.data.series) {
-      const seriesList = response.data.series
-
-      // check this
-      setCurrentSerie(seriesList[0])
-
-      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(seriesList[0].seriesId, 'email', 'password')
-      const allEpisodesResponse = await CONFERENCE_API_CALLS.getAllEpisodes(seriesList[0].seriesId, 'email', 'password')
-
-      if (episodeResponse.data.episode && episodeResponse.data.status === 200) {
-        const currentEpisode = episodeResponse.data.episode
-
-        setCurrentEpisode(currentEpisode)
-      }
-
-      if (allEpisodesResponse.data.episodes && allEpisodesResponse.data.status === 200) {
-        const allEpisodes = allEpisodesResponse.data.episodes
-
-        if (allEpisodes.length) {
-          setNextEpisodes(allEpisodes)
-        }
-      }
-    }
+    setCurrentSerie(currentSerie)
+    setNextEpisodes(nextEpisodes)
+    setCurrentEpisode(currentEpisode)
   }
 
   const onCreateAParty = () => {

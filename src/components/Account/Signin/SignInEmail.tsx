@@ -6,8 +6,9 @@ import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './Signin.module'
-import { IStepActionsSubComponent } from '../../HostAPartySteps/HostAPartySteps'
+
 import SignUp from './SignUp'
+import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 
 const initialValues = {
   email: '',
@@ -47,14 +48,16 @@ const SignInEmail = (props: ISignInEmailProps) => {
   const handleSubmit = async (values: any) => {
     // const response = await API_REQUEST
 
+    setCookie('account', values, { secure: true })
+
     // if (response.data) {
     if (onActions) {
       onActions.onNextStep()
-      setCookie('account', values)
+      return
       // }
-    } else {
-      // setErrorAfterSubmit(response.statusText)
     }
+
+    // setErrorAfterSubmit(response.statusText)
   }
 
   if (createNewAccount) {
@@ -76,7 +79,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
         const { submitForm, isSubmitting } = props
 
         return (
-          <Form autoComplete="off" method="post">
+          <Form method="post">
             <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
               <Typography className={classes.title}>Sign In</Typography>
               <Typography>Please verify your account before creating a watchparty</Typography>

@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
 
 import useQueryParams from '../../hooks/useQueryParams'
 import MediaContext from '../../components/MediaContext/MediaContext'
@@ -22,6 +23,7 @@ const MainStagePage = () => {
   const query = useQueryParams()
   const params = useParams()
   const navigate = useNavigate()
+  const [cookies] = useCookies(['account'])
 
   const [joinToken, setJoinToken] = React.useState<string | null>(null)
   const [participantId, setParticipantId] = React.useState<string | null>(null)
@@ -72,10 +74,7 @@ const MainStagePage = () => {
 
   const getConferenceData = async (c_id: string, p_id: string) => {
     try {
-      // TODO: Get credentials from somewhere?
-      const username = 'user'
-      const password = 'pass'
-      const details = await CONFERENCE_API_CALLS.getConferenceDetails(c_id, username, password)
+      const details = await CONFERENCE_API_CALLS.getConferenceDetails(c_id, cookies.account)
       setConferenceData(details.data)
     } catch (e) {
       // TODO: Display alert

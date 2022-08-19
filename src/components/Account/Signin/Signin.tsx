@@ -5,17 +5,18 @@ import FacebookIcon from '@mui/icons-material/Facebook'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './Signin.module'
 import SignInEmail from './SignInEmail'
-import { IStepActionsSubComponent } from '../../HostAPartySteps/HostAPartySteps'
+import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 
 interface ISignInProps {
   onActions?: IStepActionsSubComponent
+  emailSignin?: boolean
 }
 
 const Signin = (props: ISignInProps) => {
-  const { onActions } = props
+  const { onActions, emailSignin } = props
   const { classes } = useStyles()
 
-  const [signInEmail, setSignInEmail] = React.useState<boolean>(false)
+  const [signInEmail, setSignInEmail] = React.useState<boolean>(emailSignin ?? false)
   const [signInFacebook, setSignInFacebook] = React.useState<boolean>(false)
 
   return (
