@@ -10,7 +10,7 @@ const useStyles = makeStyles()((theme: any) => {
       overflow: 'auto',
     },
     container: {
-      width: '30rem',
+      width: '25rem',
       borderRadius: '20px',
       background: '#303030 60%',
       padding: '32px',

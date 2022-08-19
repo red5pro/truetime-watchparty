@@ -1,10 +1,15 @@
-export const removeFromArray = (arr: any[], args: any[]) => arr.filter((val) => !args.includes(val))
+export interface IStepActionsSubComponent {
+  onNextStep: () => void
+  onBackStep: () => void
+}
 
 export enum UserRoles {
   ORGANIZER = 'ORGANIZER',
   VIP = 'VIP',
   ADMIN = 'ADMIN',
 }
+
+export const removeFromArray = (arr: any[], args: any[]) => arr.filter((val) => !args.includes(val))
 
 export const parseQueryParamToObject = (query: string) => {
   let obj = {}
@@ -22,7 +27,7 @@ export const parseQueryParamToObject = (query: string) => {
 const CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789'
 
 export const generateJoinToken = (length = 16) => {
-  let result = ' '
+  let result = ''
   const charactersLength = CHARS.length
   for (let i = 0; i < length; i++) {
     if (i === 4 || i === 8 || i === 12) {
