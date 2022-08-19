@@ -96,10 +96,8 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
         vipOkay: values.vipOkay ?? true,
       }
       setData(conference)
-      debugger
 
       if (account) {
-        debugger
         const response = await CONFERENCE_API_CALLS.createConference(conference, account)
 
         if (response.data) {
