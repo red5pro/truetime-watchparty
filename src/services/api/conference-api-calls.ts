@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios'
 import { IAccount } from '../../models/Account'
-import { IConference } from '../../models/Conference'
+import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
 
 const ENDPOINT = {
@@ -94,7 +94,7 @@ const getAllEpisodes = async (serieId: string, account?: IAccount) => {
   } as AxiosResponse
 }
 
-const getConferenceDetails = async (conferenceid: any, account?: IAccount) => {
+const getConferenceDetails = async (conferenceid: string, account?: IAccount) => {
   // try {
   //   const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/${conferenceid}?user=${account.email}&password=${account.password}`)
   // } catch (e: any) {
@@ -120,7 +120,7 @@ const getConferenceDetails = async (conferenceid: any, account?: IAccount) => {
   } as AxiosResponse
 }
 
-const createConference = async (conference: IConference, account: IAccount) => {
+const createConference = async (conference: ConferenceDetails, account: IAccount) => {
   // try {
   //   const response: AxiosResponse = await axios.post(
   //     `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`,
@@ -145,10 +145,44 @@ const createConference = async (conference: IConference, account: IAccount) => {
   } as AxiosResponse
 }
 
+const getAllConferences = async (account: IAccount) => {
+  try {
+    const response: AxiosResponse = await axios.get(
+      `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
+const getConferenceParticipants = async (conferenceId: string, account: IAccount) => {
+  try {
+    const response: AxiosResponse = await axios.get(
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants?user=${account.email}&password=${account.password}`
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
 export const CONFERENCE_API_CALLS = {
   getSeriesList,
   getCurrentEpisode,
   getAllEpisodes,
   getConferenceDetails,
   createConference,
+  getAllConferences,
+  getConferenceParticipants,
 }
