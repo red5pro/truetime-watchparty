@@ -7,6 +7,11 @@ import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import useStyles from './Publisher.module'
 import { getOrigin } from '../../utils/streamManagerUtils'
 
+interface PublisherRef {
+  toggleCamera(on: boolean): any
+  toggleMicrophone(on: boolean): any
+}
+
 interface PublisherProps {
   useStreamManager: boolean
   stream?: MediaStream
@@ -18,17 +23,21 @@ interface PublisherProps {
   onFail(): any
 }
 
-const Publisher = (props: PublisherProps) => {
+const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<PublisherRef>) => {
   const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt, onFail } = props
   const { classes } = useStyles()
+
+  React.useImperativeHandle(ref, () => ({ toggleCamera, toggleMicrophone }))
 
   const [elementId, setElementId] = React.useState<string>('')
   const [context, setContext] = React.useState<string>('')
   const [streamName, setStreamName] = React.useState<string>('')
   const [isPublished, setIsPublished] = React.useState<boolean>(false)
   const [isPublishing, setIsPublishing] = React.useState<boolean>(false)
-  const [publisher, setPublisher] = React.useState<any>()
+  const [micOn, setMicOn] = React.useState<boolean>(true)
+  const [cameraOn, setCameraOn] = React.useState<boolean>(true)
 
+  const [publisher, setPublisher] = React.useState<any>()
   const pubRef = React.useRef()
 
   React.useEffect(() => {
@@ -126,6 +135,28 @@ const Publisher = (props: PublisherProps) => {
     }
   }
 
+  const toggleCamera = (on: boolean) => {
+    if (pubRef.current) {
+      if (on) {
+        ;(pubRef.current as any).unmuteVideo()
+      } else {
+        ;(pubRef.current as any).muteVideo()
+      }
+    }
+    setCameraOn(on)
+  }
+
+  const toggleMicrophone = (on: boolean) => {
+    if (pubRef.current) {
+      if (on) {
+        ;(pubRef.current as any).unmuteAudio()
+      } else {
+        ;(pubRef.current as any).muteAudio()
+      }
+    }
+    setMicOn(on)
+  }
+
   return (
     <Box className={classes.container} sx={styles}>
       {!isPublished && (
@@ -136,6 +167,7 @@ const Publisher = (props: PublisherProps) => {
       <VideoElement elementId={elementId} muted={true} controls={false} styles={styles} />
     </Box>
   )
-}
+})
 
+Publisher.displayName = 'Publisher'
 export default Publisher

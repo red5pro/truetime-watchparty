@@ -29,6 +29,7 @@ import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
 import PublisherPortalStage from './PublisherPortalStage'
 import PublisherPortalFullscreen from './PublisherPortalFullscreen'
 import VolumeControl from '../VolumeControl/VolumeControl'
+import PublisherControls from '../PublisherControls/PublisherControls'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -50,6 +51,11 @@ interface SubscriberRef {
   setVolume(value: number): any
 }
 
+interface PublisherRef {
+  toggleCamera(on: boolean): any
+  toggleMicrophone(on: boolean): any
+}
+
 const MainStage = () => {
   const joinContext = useJoinContext()
   const { data, message, join } = useWatchContext()
@@ -61,6 +67,7 @@ const MainStage = () => {
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
   const mainVideoRef = React.useRef<SubscriberRef>(null)
+  const publisherRef = React.useRef<PublisherRef>(null)
 
   const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
 
@@ -193,8 +200,20 @@ const MainStage = () => {
   }
 
   const onVolumeChange = (value: number) => {
-    if (mainVideoRef.current) {
+    if (mainVideoRef && mainVideoRef.current) {
       mainVideoRef.current.setVolume(value / 100)
+    }
+  }
+
+  const onPublisherCameraToggle = (isOn: boolean) => {
+    if (publisherRef && publisherRef.current) {
+      publisherRef.current.toggleCamera(isOn)
+    }
+  }
+
+  const onPublisherMicrophoneToggle = (isOn: boolean) => {
+    if (publisherRef && publisherRef.current) {
+      publisherRef.current.toggleMicrophone(isOn)
     }
   }
 
@@ -332,7 +351,14 @@ const MainStage = () => {
         {data.conference && (
           <Box className={classes.bottomBar}>
             <Stack direction="row" alignItems="bottom" className={classes.bottomControls}>
-              {publishMediaStream && <Box className={classes.publishControls}>Publish</Box>}
+              {publishMediaStream && (
+                <PublisherControls
+                  cameraOn={true}
+                  microphoneOn={true}
+                  onCameraToggle={onPublisherCameraToggle}
+                  onMicrophoneToggle={onPublisherMicrophoneToggle}
+                />
+              )}
               {data.conference && (
                 <Box className={classes.partyControls}>
                   <VolumeControl
@@ -374,6 +400,7 @@ const MainStage = () => {
         <Box sx={layout.layout === Layout.STAGE ? layout.style.publisherContainer : layout.style.subscriber}>
           <Publisher
             key="publisher"
+            ref={publisherRef}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
             streamGuid={joinContext.getStreamGuid()}
