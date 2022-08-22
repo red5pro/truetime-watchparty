@@ -9,6 +9,10 @@ import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import { getEdge } from '../../utils/streamManagerUtils'
 import useStyles from './Subscriber.module'
 
+interface SubscriberRef {
+  setVolume(value: number): any
+}
+
 interface ISubscriberProps {
   host: string
   streamGuid: string
@@ -23,8 +27,10 @@ interface ISubscriberProps {
 const DELAY = 2000
 const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
 
-const Subscriber = (props: ISubscriberProps) => {
+const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<SubscriberRef>) => {
   const { useStreamManager, resubscribe, host, streamGuid, styles, videoStyles, mute, showControls } = props
+
+  React.useImperativeHandle(ref, () => ({ setVolume }))
 
   const { classes } = useStyles()
 
@@ -36,6 +42,8 @@ const Subscriber = (props: ISubscriberProps) => {
   const [streamName, setStreamName] = React.useState<string>('')
   const [isSubscribed, setIsSubscribed] = React.useState<boolean>(false)
   const [isSubscribing, setIsSubscribing] = React.useState<boolean>(false)
+
+  const [playbackVolume, setPlaybackVolume] = React.useState<number>(1.0)
 
   const [subscriber, setSubscriber] = React.useState<any | undefined>()
   const subRef = React.useRef()
@@ -72,6 +80,11 @@ const Subscriber = (props: ISubscriberProps) => {
       }
     }
   }, [elementId, streamName, context])
+
+  const setVolume = (value: number) => {
+    console.log('VOLUME', value)
+    setPlaybackVolume(value)
+  }
 
   const onSubscribeEvent = (event: any) => {
     if (event.type !== 'Subscribe.Time.Update') {
@@ -165,9 +178,16 @@ const Subscriber = (props: ISubscriberProps) => {
           <Loading />
         </Box>
       )}
-      <VideoElement elementId={elementId} muted={mute} controls={showControls} styles={videoStyles} />
+      <VideoElement
+        elementId={elementId}
+        muted={mute}
+        controls={showControls}
+        styles={videoStyles}
+        volume={playbackVolume}
+      />
     </Box>
   )
-}
+})
 
+Subscriber.displayName = 'Subscriber'
 export default Subscriber
