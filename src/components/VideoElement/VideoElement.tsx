@@ -7,11 +7,22 @@ interface IVideoElementProps {
   styles: any
   muted: boolean
   controls: boolean
+  volume?: number
 }
 
-const VideoElement = ({ elementId, styles, muted, controls }: IVideoElementProps) => {
+const VideoElement = ({ elementId, styles, muted, controls, volume }: IVideoElementProps) => {
+  console.log('MUTED', elementId, muted)
   const videoRef: any = React.useRef(null)
   const { classes } = useVideoStyles()
+
+  React.useEffect(() => {
+    if (typeof volume === 'number') {
+      videoRef.current.volume = volume
+      if (volume > 0) {
+        videoRef.current.muted = false
+      }
+    }
+  }, [volume])
 
   return (
     <Box className={classes.container}>

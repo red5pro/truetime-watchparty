@@ -46,6 +46,24 @@ const useStyles = makeStyles()((theme: any) => {
       display: 'flex',
       flexDirection: 'row',
     },
+    bottomBar: {
+      position: 'absolute',
+      left: 0,
+      bottom: 0,
+      padding: '20px',
+      display: 'flex',
+      flexDirection: 'row',
+      width: '100%',
+    },
+    bottomControls: {
+      position: 'relative',
+      width: '100%',
+    },
+    publishControls: { position: 'absolute', left: '24px' },
+    partyControls: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+    },
   }
 })
 

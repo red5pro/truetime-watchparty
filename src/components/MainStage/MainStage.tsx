@@ -2,8 +2,12 @@ import React from 'react'
 import * as portals from 'react-reverse-portal'
 import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
-import { Button, Typography } from '@mui/material'
+import { IconButton, Button, Typography, Stack } from '@mui/material'
+import LogOutIcon from '@mui/icons-material/Logout'
 import { Box } from '@mui/system'
+import Lock from '@mui/icons-material/Lock'
+import GroupAdd from '@mui/icons-material/GroupAdd'
+import ChatBubble from '@mui/icons-material/ChatBubble'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Loading/Loading'
@@ -24,6 +28,7 @@ import { UserRoles } from '../../utils/commonUtils'
 import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
 import PublisherPortalStage from './PublisherPortalStage'
 import PublisherPortalFullscreen from './PublisherPortalFullscreen'
+import VolumeControl from '../VolumeControl/VolumeControl'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -41,6 +46,10 @@ const layoutReducer = (state: any, action: any) => {
   }
 }
 
+interface SubscriberRef {
+  setVolume(value: number): any
+}
+
 const MainStage = () => {
   const joinContext = useJoinContext()
   const { data, message, join } = useWatchContext()
@@ -51,6 +60,8 @@ const MainStage = () => {
   const [cookies] = useCookies(['account'])
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
+  const mainVideoRef = React.useRef<SubscriberRef>(null)
+
   const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
 
   const [showLink, setShowLink] = React.useState<boolean>(false)
@@ -60,6 +71,7 @@ const MainStage = () => {
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
   const [availableVipParticipant, setAvailableVipParticipant] = React.useState<Participant | undefined>()
   const [requiresSubscriberScroll, setRequiresSubscriberScroll] = React.useState<boolean>(false)
+  const [chatIsHidden, setChatIsHidden] = React.useState<boolean>(false)
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     // TODO: Determine if Participant or Registered User?
@@ -176,6 +188,16 @@ const MainStage = () => {
     setShowLink(!showLink)
   }
 
+  const toggleChat = () => {
+    setChatIsHidden(!chatIsHidden)
+  }
+
+  const onVolumeChange = (value: number) => {
+    if (mainVideoRef.current) {
+      mainVideoRef.current.setVolume(value / 100)
+    }
+  }
+
   const toggleLayout = () => {
     const newLayout = layout.layout === Layout.STAGE ? Layout.FULLSCREEN : Layout.STAGE
     const newStyle = layout.layout === Layout.STAGE ? styles.fullscreen : styles.stage
@@ -188,33 +210,54 @@ const MainStage = () => {
       {mainStreamGuid && (
         <Box sx={layout.style.mainVideoContainer}>
           <Subscriber
+            ref={mainVideoRef}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
             streamGuid={mainStreamGuid}
             resubscribe={false}
             styles={layout.style.mainVideo}
             videoStyles={layout.style.mainVideo}
-            mute={true}
-            showControls={true}
+            mute={false}
+            showControls={false}
           />
         </Box>
       )}
       <Box className={classes.content}>
+        {/* Add / Share Modal */}
         {showLink && <ShareLink joinToken={joinContext.joinToken} account={cookies.account} />}
+        {/* Role-based Controls */}
         {data.conference && (
           <Box className={classes.topBar}>
-            <Typography className={classes.header}>
-              Max {maxParticipants} - {data.conference.displayName}
-            </Typography>
+            <Typography className={classes.header}>{data.conference.displayName}</Typography>
             <Box className={classes.topControls}>
-              <Box sx={layout.style.button}>{message}</Box>
-              {userRole === UserRoles.ORGANIZER.toLowerCase() && <button onClick={onLink}>add</button>}
-              <button onClick={toggleLayout}>layout</button>
-              {userRole === UserRoles.ORGANIZER.toLowerCase() && <button onClick={onLock}>lock</button>}
-              <button onClick={onLeave}>leave</button>
+              {userRole === UserRoles.ORGANIZER.toLowerCase() && (
+                <IconButton color="primary" aria-label="upload picture" component="label" onClick={onLink}>
+                  <GroupAdd />
+                </IconButton>
+              )}
+              {userRole === UserRoles.ORGANIZER.toLowerCase() && (
+                <IconButton color="primary" aria-label="upload picture" component="label" onClick={onLock}>
+                  <Lock />
+                </IconButton>
+              )}
+              <Button
+                variant="contained"
+                startIcon={<LogOutIcon />}
+                onClick={onLeave}
+                sx={{
+                  padding: '6px 12px',
+                  color: 'white',
+                  backgroundColor: '#FF474799',
+                  textTransform: 'unset',
+                  fontSize: '14px',
+                }}
+              >
+                Leave
+              </Button>
             </Box>
           </Box>
         )}
+        {/* VIP Video Playback */}
         {availableVipParticipant && (
           <Box sx={layout.style.vipContainer}>
             <VIPSubscriber
@@ -226,6 +269,7 @@ const MainStage = () => {
             />
           </Box>
         )}
+        {/* Other Participants Video Playback - STAGE LAYOUT */}
         {data.list && layout.layout === Layout.STAGE && (
           <Box sx={layout.style.subscriberList}>
             <Box sx={layout.style.subscriberContainer}>
@@ -245,6 +289,7 @@ const MainStage = () => {
             {requiresSubscriberScroll && <Button>More...</Button>}
           </Box>
         )}
+        {/* Participants Video Playback - FULLSCREEN LAYOUT */}
         {data.list && layout.layout === Layout.FULLSCREEN && (
           <Box sx={layout.style.subscriberList}>
             {/* Two Rows */}
@@ -281,7 +326,42 @@ const MainStage = () => {
             </Box>
           </Box>
         )}
+        {/* Publisher View - STAGE LAYOUT */}
         {publishMediaStream && layout.layout === Layout.STAGE && <PublisherPortalStage portalNode={portalNode} />}
+        {/* Bottom Controls / Chat */}
+        {data.conference && (
+          <Box className={classes.bottomBar}>
+            <Stack direction="row" alignItems="bottom" className={classes.bottomControls}>
+              {publishMediaStream && <Box className={classes.publishControls}>Publish</Box>}
+              {data.conference && (
+                <Box className={classes.partyControls}>
+                  <VolumeControl
+                    isOpen={false}
+                    min={0}
+                    max={100}
+                    step={1}
+                    currentValue={50}
+                    onVolumeChange={onVolumeChange}
+                  />
+                  <Button
+                    variant="contained"
+                    startIcon={<ChatBubble />}
+                    onClick={toggleChat}
+                    sx={{
+                      padding: '6px 12px',
+                      textTransform: 'unset',
+                      fontSize: '14px',
+                      marginLeft: '10px',
+                    }}
+                  >
+                    {chatIsHidden ? 'Show' : 'Hide'} Chat
+                  </Button>
+                </Box>
+              )}
+            </Stack>
+          </Box>
+        )}
+        {/* Loading Message */}
         {!data.conference && (
           <Box top={2} className={classes.loadingContainer}>
             <Loading />
@@ -289,6 +369,7 @@ const MainStage = () => {
           </Box>
         )}
       </Box>
+      {/* Publisher Portal to be moved from one view layout state to another */}
       <portals.InPortal node={portalNode}>
         <Box sx={layout.layout === Layout.STAGE ? layout.style.publisherContainer : layout.style.subscriber}>
           <Publisher
@@ -298,8 +379,8 @@ const MainStage = () => {
             streamGuid={joinContext.getStreamGuid()}
             stream={mediaContext?.mediaStream}
             styles={layout.layout === Layout.STAGE ? layout.style.publisher : layout.style.publisherVideo}
-            onStart={onPublisherBroadcast}
             onFail={onPublisherFail}
+            onStart={onPublisherBroadcast}
             onInterrupt={onPublisherBroadcastInterrupt}
           />
         </Box>
