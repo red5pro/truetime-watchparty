@@ -11,7 +11,6 @@ interface IVideoElementProps {
 }
 
 const VideoElement = ({ elementId, styles, muted, controls, volume }: IVideoElementProps) => {
-  console.log('MUTED', elementId, muted)
   const videoRef: any = React.useRef(null)
   const { classes } = useVideoStyles()
 

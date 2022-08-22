@@ -63,6 +63,7 @@ const useStyles = makeStyles()((theme: any) => {
     partyControls: {
       display: 'flex',
       justifyContent: 'flex-end',
+      width: '100%',
     },
   }
 })
