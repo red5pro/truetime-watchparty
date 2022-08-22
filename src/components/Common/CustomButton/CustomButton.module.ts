@@ -146,6 +146,22 @@ const useStyles = (size: BUTTONSIZE) =>
         backgroundColor: '#2050CC',
       },
     },
+    leave: {
+      padding: '0 15px',
+      boxSizing: 'border-box',
+      backgroundColor: 'rgba(255, 71, 71, 0.6)',
+      borderRadius: '24px',
+      border: '1px solid rgba(255, 255, 255, 0.15)',
+      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
+      backdropFilter: 'blur(24px)',
+      color: '#FFFFFF',
+      '& > *': {
+        fill: '#FFFFFF',
+      },
+      '&:hover': {
+        backgroundColor: 'rgba(255, 71, 71, 0.6)',
+      },
+    },
   }))
 
 export default useStyles
