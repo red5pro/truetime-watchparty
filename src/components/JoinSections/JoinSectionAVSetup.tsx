@@ -10,13 +10,14 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/Cu
 import MediaContext from '../MediaContext/MediaContext'
 
 interface JoinSectionAVSetupProps {
-  conferenceData: ConferenceDetails
-  onBack(): any
-  onJoin(): any
+  conferenceData?: ConferenceDetails
+  onBack?: () => void
+  onJoin?: () => void
+  shouldDisplayBackButton?: boolean
 }
 
 const JoinSectionAVSetup = (props: JoinSectionAVSetupProps) => {
-  const { conferenceData, onBack, onJoin } = props
+  const { conferenceData, onBack, onJoin, shouldDisplayBackButton = true } = props
   const mediaContext = React.useContext(MediaContext.Context)
 
   const { classes } = useStyles()
@@ -26,9 +27,16 @@ const JoinSectionAVSetup = (props: JoinSectionAVSetupProps) => {
       <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>Choose your camera and microphone preferences</Typography>
       <MediaSetup selfCleanup={false} />
       <Box className={classes.mediaSetupButtons}>
-        <Button color="inherit" onClick={onBack} className={classes.backButton} sx={{ position: 'absolute', left: 0 }}>
-          <ArrowBackIosIcon />
-        </Button>
+        {shouldDisplayBackButton && (
+          <Button
+            color="inherit"
+            onClick={onBack}
+            className={classes.backButton}
+            sx={{ position: 'absolute', left: 0 }}
+          >
+            <ArrowBackIosIcon />
+          </Button>
+        )}
         <CustomButton
           disabled={!mediaContext?.mediaStream}
           size={BUTTONSIZE.MEDIUM}

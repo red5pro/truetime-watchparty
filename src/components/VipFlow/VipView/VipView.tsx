@@ -1,18 +1,20 @@
 import { Box, Typography } from '@mui/material'
+import { IAccount } from '../../../models/Account'
 import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './VipView.module'
 
 interface IVipViewProps {
   onActions: IStepActionsSubComponent
+  account?: IAccount
 }
 
 const VipView = (props: IVipViewProps) => {
-  const { onActions } = props
+  const { onActions, account } = props
   const { classes } = useStyles()
 
   return (
-    <Box display="flex" flexDirection="column" width="45%">
+    <Box paddingX={8} display="flex" flexDirection="column" width="65%">
       <Typography variant="h1">
         Welcome To WBC`S <br /> Watch Parties
       </Typography>
@@ -22,7 +24,7 @@ const VipView = (props: IVipViewProps) => {
       </Typography>
       {/* <Link className={classes.link} to="/login?spg=1"> */}
       <CustomButton onClick={onActions.onNextStep} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
-        Sign In
+        {account ? 'Join Party' : 'Sign In'}
       </CustomButton>
       {/* </Link> */}
     </Box>
