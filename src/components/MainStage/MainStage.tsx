@@ -22,7 +22,7 @@ import styles from './MainStageLayout'
 import Publisher from '../Publisher/Publisher'
 import { Participant } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
-import ShareLink from '../HostAPartyFlow/ShareLink/ShareLink'
+import ShareLinkModal from '../Modal/ShareLinkModal'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 import { UserRoles } from '../../utils/commonUtils'
 import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
@@ -260,7 +260,7 @@ const MainStage = () => {
       )}
       <Box className={classes.content}>
         {/* Add / Share Modal */}
-        {showLink && <ShareLink joinToken={joinContext.joinToken} account={cookies.account} />}
+        <ShareLinkModal joinToken={joinContext.joinToken} open={showLink} onDismiss={() => setShowLink(false)} />
         {/* Role-based Controls */}
         {data.conference && (
           <Box className={classes.topBar}>
