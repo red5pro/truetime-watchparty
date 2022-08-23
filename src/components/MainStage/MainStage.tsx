@@ -6,6 +6,7 @@ import { IconButton, Button, Typography, Stack } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
 import { Box } from '@mui/system'
 import Lock from '@mui/icons-material/Lock'
+import LockOpen from '@mui/icons-material/LockOpen'
 import GroupAdd from '@mui/icons-material/GroupAdd'
 import ChatBubble from '@mui/icons-material/ChatBubble'
 import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
@@ -186,11 +187,27 @@ const MainStage = () => {
     navigate('/')
   }
 
-  const onLock = () => {
-    // TODO: Make service request to lock?
+  const toggleLock = async () => {
+    if (joinContext.conferenceLocked) {
+      try {
+        const result = await joinContext.lock()
+        console.log('LOCK', result)
+      } catch (e) {
+        // TODO:
+        console.error(e)
+      }
+    } else {
+      try {
+        const result = await joinContext.unlock()
+        console.log('UNLOCK', result)
+      } catch (e) {
+        // TODO:
+        console.error(e)
+      }
+    }
   }
 
-  const onLink = () => {
+  const toggleLink = () => {
     // TODO: Show modal with share link
     setShowLink(!showLink)
   }
@@ -250,13 +267,13 @@ const MainStage = () => {
             <Typography className={classes.header}>{data.conference.displayName}</Typography>
             <Box className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
-                <IconButton color="primary" aria-label="upload picture" component="label" onClick={onLink}>
+                <IconButton color="primary" aria-label="share link" component="label" onClick={toggleLink}>
                   <GroupAdd />
                 </IconButton>
               )}
-              {userRole === UserRoles.ORGANIZER.toLowerCase() && (
-                <IconButton color="primary" aria-label="upload picture" component="label" onClick={onLock}>
-                  <Lock />
+              {joinContext && userRole === UserRoles.ORGANIZER.toLowerCase() && (
+                <IconButton color="primary" aria-label="lock unlock watch party" component="label" onClick={toggleLock}>
+                  {joinContext.conferenceLocked ? <LockOpen /> : <Lock />}
                 </IconButton>
               )}
               <CustomButton

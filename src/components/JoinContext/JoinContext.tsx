@@ -45,6 +45,7 @@ const JoinProvider = (props: JoinContextProps) => {
     episode: cannedEpisode,
   })
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
+  const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     if (params && params.token) {
@@ -80,6 +81,7 @@ const JoinProvider = (props: JoinContextProps) => {
     try {
       const details = await CONFERENCE_API_CALLS.getJoinDetails(token)
       setConferenceData(details.data)
+      setConferenceLocked(details.data.joinLocked)
     } catch (e) {
       // TODO: Display alert
       console.error(e)
@@ -112,12 +114,39 @@ const JoinProvider = (props: JoinContextProps) => {
     return episode.streamGuid
   }
 
+  const lock = async () => {
+    if (conferenceData) {
+      const { conferenceId } = conferenceData
+      try {
+        const result = await CONFERENCE_API_CALLS.lockConference(conferenceId, cookies.account)
+        return result
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    return null
+  }
+
+  const unlock = async () => {
+    if (conferenceData) {
+      const { conferenceId } = conferenceData
+      try {
+        const result = await CONFERENCE_API_CALLS.unlockConference(conferenceId, cookies.account)
+        return result
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    return null
+  }
+
   const exportedValues = {
     nickname,
     joinToken,
     fingerprint,
     seriesEpisode,
     conferenceData,
+    conferenceLocked,
     updateNickname: (value: string) => {
       setNickname(value)
       LocalStorage.set('wp_nickname', value)
@@ -125,6 +154,8 @@ const JoinProvider = (props: JoinContextProps) => {
     getStreamGuid,
     getMainStreamGuid,
     setJoinToken,
+    lock,
+    unlock,
   }
 
   return <JoinContext.Provider value={exportedValues}>{children}</JoinContext.Provider>

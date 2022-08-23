@@ -230,6 +230,38 @@ const getConferenceParticipants = async (conferenceId: string, account: IAccount
   }
 }
 
+const lockConference = async (conferenceId: string | number, account: IAccount) => {
+  try {
+    const response: AxiosResponse = await axios.get(
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/lock?user=${account.email}&password=${account.password}`
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
+const unlockConference = async (conferenceId: string | number, account: IAccount) => {
+  try {
+    const response: AxiosResponse = await axios.get(
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/unlock?user=${account.email}&password=${account.password}`
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
 export const CONFERENCE_API_CALLS = {
   getSeriesList,
   getCurrentEpisode,
@@ -239,4 +271,6 @@ export const CONFERENCE_API_CALLS = {
   createConference,
   getAllConferences,
   getConferenceParticipants,
+  lockConference,
+  unlockConference,
 }
