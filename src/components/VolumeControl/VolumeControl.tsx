@@ -38,7 +38,7 @@ const VolumeControl = (props: VolumeControlProps) => {
   }
 
   return (
-    <Stack spacing={2} direction="column" alignItems="center" sx={{ position: 'relative' }}>
+    <Stack spacing={2} direction="column" alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
       {isSliderShown && (
         <Box sx={{ height: 120, position: 'absolute', bottom: 60 }}>
           <Slider
@@ -60,7 +60,13 @@ const VolumeControl = (props: VolumeControlProps) => {
           />
         </Box>
       )}
-      <IconButton color="primary" aria-label="upload picture" component="label" onClick={toggleOpen}>
+      <IconButton
+        sx={{ marginTop: '0!important' }}
+        color="primary"
+        aria-label="change volume"
+        component="label"
+        onClick={toggleOpen}
+      >
         <VolumeUp />
       </IconButton>
     </Stack>
