@@ -9,6 +9,7 @@ export enum BUTTONTYPE {
   TERTIARY = 'tertiary',
   FACEBOOK = 'facebook',
   LEAVE = 'leave',
+  TRANSPARENT = 'transparent',
 }
 
 export enum BUTTONSIZE {
@@ -57,6 +58,8 @@ const CustomButton = (props: ICustomButtonProps): JSX.Element => {
         return classes.facebook
       case BUTTONTYPE.LEAVE:
         return classes.leave
+      case BUTTONTYPE.TRANSPARENT:
+        return classes.transparent
     }
   }
 
