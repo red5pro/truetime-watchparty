@@ -10,10 +10,8 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'relative',
     },
     loadingContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      width: '100%',
       alignItems: 'center',
+      marginTop: '10%',
     },
     mainVideo: {
       position: 'absolute',

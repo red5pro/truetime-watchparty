@@ -8,8 +8,7 @@ import { Box } from '@mui/system'
 import Lock from '@mui/icons-material/Lock'
 import GroupAdd from '@mui/icons-material/GroupAdd'
 import ChatBubble from '@mui/icons-material/ChatBubble'
-import { ConferenceDetails } from '../../models/ConferenceDetails'
-import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
 
@@ -30,6 +29,7 @@ import PublisherPortalStage from './PublisherPortalStage'
 import PublisherPortalFullscreen from './PublisherPortalFullscreen'
 import VolumeControl from '../VolumeControl/VolumeControl'
 import PublisherControls from '../PublisherControls/PublisherControls'
+import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -259,20 +259,14 @@ const MainStage = () => {
                   <Lock />
                 </IconButton>
               )}
-              <Button
-                variant="contained"
+              <CustomButton
+                size={BUTTONSIZE.SMALL}
+                buttonType={BUTTONTYPE.LEAVE}
                 startIcon={<LogOutIcon />}
                 onClick={onLeave}
-                sx={{
-                  padding: '6px 12px',
-                  color: 'white',
-                  backgroundColor: '#FF474799',
-                  textTransform: 'unset',
-                  fontSize: '14px',
-                }}
               >
                 Leave
-              </Button>
+              </CustomButton>
             </Box>
           </Box>
         )}
@@ -369,19 +363,14 @@ const MainStage = () => {
                     currentValue={50}
                     onVolumeChange={onVolumeChange}
                   />
-                  <Button
-                    variant="contained"
-                    startIcon={<ChatBubble />}
+                  <CustomButton
+                    size={BUTTONSIZE.SMALL}
+                    buttonType={BUTTONTYPE.TRANSPARENT}
+                    startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
                     onClick={toggleChat}
-                    sx={{
-                      padding: '6px 12px',
-                      textTransform: 'unset',
-                      fontSize: '14px',
-                      marginLeft: '10px',
-                    }}
                   >
                     {chatIsHidden ? 'Show' : 'Hide'} Chat
-                  </Button>
+                  </CustomButton>
                 </Box>
               )}
             </Stack>
@@ -389,10 +378,10 @@ const MainStage = () => {
         )}
         {/* Loading Message */}
         {!data.conference && (
-          <Box top={2} className={classes.loadingContainer}>
+          <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
             <Loading />
             <Typography>Loading Watch Party</Typography>
-          </Box>
+          </Stack>
         )}
       </Box>
       {/* Publisher Portal to be moved from one view layout state to another */}
