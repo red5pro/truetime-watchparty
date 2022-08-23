@@ -1,4 +1,4 @@
-import { Button, Tooltip, Typography } from '@mui/material'
+import { Button, IconButton, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import InfoIcon from '@mui/icons-material/Info'
 
@@ -7,6 +7,10 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import { Participant } from '../../models/Participant'
 import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
+import LayoutIconEmpty from '../Common/MainStageLayoutIcon/LayoutIconEmpty'
+import LayoutIconStage from '../Common/MainStageLayoutIcon/LayoutIconStage'
+import LayoutIconFullscreen from '../Common/MainStageLayoutIcon/LayoutIconFullscreen'
+import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
 
 interface JoinLandingProps {
   seriesEpisode: any
@@ -26,6 +30,7 @@ const JoinSectionLanding = (props: JoinLandingProps) => {
 
   return (
     <Box className={classes.landingContainer}>
+      <MainStageLayoutSelect layout={1} onSelect={(layout: number) => console.log('layout')} />
       <Typography sx={{ fontSize: '24px' }}>{seriesEpisode.series.displayName}</Typography>
       <Typography variant="h1">{seriesEpisode.episode.displayName}</Typography>
       <Box display="flex" alignItems="center" sx={{ marginTop: '24px' }}>
