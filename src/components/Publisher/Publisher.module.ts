@@ -7,11 +7,20 @@ const useStyles = makeStyles()((theme: any) => {
       alignItems: 'center',
       justifyContent: 'center',
       position: 'relative',
-      transform: 'scaleX(-1)',
+      backgroundColor: 'black',
+      borderRadius: '20px',
     },
     loading: {
       position: 'absolute',
       zIndex: 10,
+    },
+    iconBar: {
+      position: 'absolute',
+      top: 10,
+      right: 10,
+    },
+    accountIcon: {
+      margin: '50%',
     },
   }
 })
