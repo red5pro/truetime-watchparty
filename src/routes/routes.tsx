@@ -30,7 +30,7 @@ const AppRoutes = () => {
               </MediaContext.Provider>
             </JoinContext.Provider>
           }
-        />{' '}
+        />
         {/* WAT-70, WAT-73 */}
         {/*<Route path="/main/:token" element={<MainStagePage />} /> {/* WAT-74 */}
         <Route path="/join/guest" element={<VipJoinPage />} />

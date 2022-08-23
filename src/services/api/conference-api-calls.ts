@@ -105,14 +105,23 @@ const getAllEpisodes = async (serieId: string, account?: IAccount) => {
   } as AxiosResponse
 }
 
-const getConferenceDetails = async (conferenceid: string, account?: IAccount) => {
-  // try {
-  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/${conferenceid}?user=${account.email}&password=${account.password}`)
-  // } catch (e: any) {
-  //   console.log(e)
-  // }
+const getConferenceDetails = async (conferenceId: string, account?: IAccount) => {
+  const id = parseInt(conferenceId) // Can come in as an integer or string
 
-  const id = parseInt(conferenceid) // Can come in as an integer or string
+  try {
+    let params = {}
+    if (account) {
+      params = {
+        user: account.email,
+        password: account.password,
+      }
+    }
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/${id}`, { params })
+
+    return response
+  } catch (e: any) {
+    console.log(e)
+  }
 
   return {
     data: {
