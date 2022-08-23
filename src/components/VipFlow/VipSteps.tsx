@@ -8,7 +8,10 @@ import { getAllConferences, getCurrentEpisode } from '../../services/conference/
 
 import { IStepActionsSubComponent } from '../../utils/commonUtils'
 import Signin from '../Account/Signin/Signin'
-import VipSeeParticipants from './VipSeeParticipants/VipSeeParticipants'
+import JoinContext from '../JoinContext/JoinContext'
+import MediaContext from '../MediaContext/MediaContext'
+import WatchContext from '../WatchContext/WatchContext'
+import VipJoinWatchparty from './VipJoinWatchparty/VipJoinWatchparty'
 import useStyles from './VipSteps.module'
 import VipTimer from './VipTimer/VipTimer'
 import VipView from './VipView/VipView'
@@ -17,8 +20,7 @@ enum VipStepIdentify {
   LANDING = 0,
   SIGN_IN = 1,
   TIMER = 2,
-  SEE_PARTICIPANTS = 3,
-  JOIN_WATCH_PARTY = 4,
+  JOIN_WATCH_PARTY = 3,
 }
 
 const VipSteps = () => {
@@ -33,9 +35,10 @@ const VipSteps = () => {
   const { classes } = useStyles()
 
   React.useEffect(() => {
+    getCurrentEvent()
+
     if (cookies.account) {
       setAccount(cookies.account)
-      getCurrentEvent()
       getConferences(cookies.account)
     }
   }, [cookies])
@@ -72,7 +75,7 @@ const VipSteps = () => {
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: VipStepIdentify.LANDING,
-      component: <VipView onActions={actions} />,
+      component: <VipView onActions={actions} account={account} />,
     },
     {
       id: VipStepIdentify.SIGN_IN,
@@ -83,19 +86,22 @@ const VipSteps = () => {
       component: <VipTimer onActions={actions} startedCountdown={startedCountdown} />,
     },
     {
-      id: VipStepIdentify.SEE_PARTICIPANTS,
-      component: (
-        <VipSeeParticipants
-          onActions={actions}
-          currentConference={currentConference}
-          account={account}
-          joinNextConference={joinNextConference}
-        />
-      ),
-    },
-    {
       id: VipStepIdentify.JOIN_WATCH_PARTY,
-      component: <div>join watch party</div>,
+      component: (
+        <JoinContext.Provider>
+          <WatchContext.Provider>
+            <MediaContext.Provider>
+              <VipJoinWatchparty
+                onActions={actions}
+                currentConference={currentConference}
+                account={account}
+                joinNextConference={joinNextConference}
+                currentEpisode={currentEpisode}
+              />
+            </MediaContext.Provider>
+          </WatchContext.Provider>
+        </JoinContext.Provider>
+      ),
     },
   ]
 
@@ -127,7 +133,7 @@ const VipSteps = () => {
   }
 
   return (
-    <Box paddingX={8} className={classes.root}>
+    <Box className={classes.root}>
       <Stepper activeStep={activeStep}></Stepper>
 
       <Box display="flex" flexDirection="column" justifyContent="center" height="100%">
