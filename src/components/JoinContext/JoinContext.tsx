@@ -49,6 +49,8 @@ const JoinProvider = (props: JoinContextProps) => {
   React.useEffect(() => {
     if (params && params.token) {
       setJoinToken(params.token)
+    } else if (location.pathname === '/join/guest') {
+      setJoinToken('')
     } else {
       navigate('/')
     }
@@ -122,6 +124,7 @@ const JoinProvider = (props: JoinContextProps) => {
     },
     getStreamGuid,
     getMainStreamGuid,
+    setJoinToken,
   }
 
   return <JoinContext.Provider value={exportedValues}>{children}</JoinContext.Provider>
