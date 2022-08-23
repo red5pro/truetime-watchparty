@@ -19,7 +19,7 @@ interface ISubscriberProps {
   useStreamManager: boolean
   resubscribe: boolean
   styles: any
-  videoStyles: AnalyserOptions
+  videoStyles: AnalyserOptions | any
   mute: boolean
   showControls: boolean
 }
