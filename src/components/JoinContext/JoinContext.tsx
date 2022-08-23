@@ -6,7 +6,7 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { Serie } from '../../models/Serie'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
-import { SessionStorage } from '../../utils/sessionStorageUtils'
+import { LocalStorage } from '../../utils/localStorageUtils'
 
 const cannedSeries = { displayName: 'Accessing...' }
 const cannedEpisode = { displayName: 'Accessing...', startTime: new Date().getTime() }
@@ -36,8 +36,8 @@ const JoinProvider = (props: JoinContextProps) => {
   // TODO: Update this based on User record / Auth ?
   // TODO: Does this belong here or in an overarching Context ?
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT)
-  const [fingerprint, setFingerprint] = React.useState<string | undefined>(SessionStorage.get('wp_fingerorint'))
-  const [nickname, setNickname] = React.useState<string | undefined>(SessionStorage.get('wp_nickname' || undefined)) // TODO: get from participant context or session storage?
+  const [fingerprint, setFingerprint] = React.useState<string | undefined>(LocalStorage.get('wp_fingerorint'))
+  const [nickname, setNickname] = React.useState<string | undefined>(LocalStorage.get('wp_nickname' || undefined)) // TODO: get from participant context or session storage?
   // ConferenceDetails access from the server API.
   const [seriesEpisode, dispatch] = useReducer(episodeReducer, {
     loaded: false,
@@ -59,7 +59,7 @@ const JoinProvider = (props: JoinContextProps) => {
   React.useEffect(() => {
     if (!fingerprint) {
       const fp = generateFingerprint()
-      SessionStorage.set('wp_fingeprint', fp)
+      LocalStorage.set('wp_fingeprint', fp)
       setFingerprint(fp)
     }
   }, [fingerprint])
@@ -120,7 +120,7 @@ const JoinProvider = (props: JoinContextProps) => {
     conferenceData,
     updateNickname: (value: string) => {
       setNickname(value)
-      SessionStorage.set('wp_nickname', value)
+      LocalStorage.set('wp_nickname', value)
     },
     getStreamGuid,
     getMainStreamGuid,
