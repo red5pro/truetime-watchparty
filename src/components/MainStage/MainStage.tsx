@@ -31,6 +31,7 @@ import PublisherPortalFullscreen from './PublisherPortalFullscreen'
 import VolumeControl from '../VolumeControl/VolumeControl'
 import PublisherControls from '../PublisherControls/PublisherControls'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
+import LayoutIconEmpty from '../Common/MainStageLayoutIcon/LayoutIconEmpty'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -39,6 +40,7 @@ const useMediaContext = () => React.useContext(MediaContext.Context)
 enum Layout {
   STAGE = 1,
   FULLSCREEN,
+  EMPTY,
 }
 
 const layoutReducer = (state: any, action: any) => {
