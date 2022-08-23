@@ -2,10 +2,24 @@ import { RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
 import Loading from '../Loading/Loading'
 import VideoElement from '../VideoElement/VideoElement'
-import { Box, Typography } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
+import { MicOff, VideocamOff, AccountBox } from '@mui/icons-material'
 import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import useStyles from './Publisher.module'
 import { getOrigin } from '../../utils/streamManagerUtils'
+
+const getSenderFromConnection = (connection: RTCPeerConnection, type: string) => {
+  return connection.getSenders().find((s: RTCRtpSender) => s.track?.kind === type)
+}
+
+const activateMedia = (sender: RTCRtpSender, active: boolean) => {
+  const params = sender.getParameters()
+  const encodings = params.encodings
+  if (encodings && encodings.length > 0) {
+    params.encodings[0].active = active
+    sender.setParameters(params)
+  }
+}
 
 interface PublisherRef {
   toggleCamera(on: boolean): any
@@ -70,6 +84,10 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
       }
     }
   }, [elementId, streamName, context])
+
+  React.useEffect(() => {
+    // TODO: Icons?
+  }, [cameraOn])
 
   const onPublisherEvent = (event: any) => {
     console.log(`[Red5ProPublisher(${streamName})]: PublisherEvent - ${event.type}.`)
@@ -136,22 +154,30 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
   }
 
   const toggleCamera = (on: boolean) => {
-    if (pubRef.current) {
+    if (pubRef && pubRef.current) {
+      const connection = (pubRef.current as any).getPeerConnection()
+      const sender = getSenderFromConnection(connection, 'video')
       if (on) {
         ;(pubRef.current as any).unmuteVideo()
+        if (sender) activateMedia(sender, true)
       } else {
         ;(pubRef.current as any).muteVideo()
+        if (sender) activateMedia(sender, false)
       }
     }
     setCameraOn(on)
   }
 
   const toggleMicrophone = (on: boolean) => {
-    if (pubRef.current) {
+    if (pubRef && pubRef.current) {
+      const connection = (pubRef.current as any).getPeerConnection()
+      const sender = getSenderFromConnection(connection, 'audio')
       if (on) {
         ;(pubRef.current as any).unmuteAudio()
+        if (sender) activateMedia(sender, true)
       } else {
         ;(pubRef.current as any).muteAudio()
+        if (sender) activateMedia(sender, false)
       }
     }
     setMicOn(on)
@@ -164,7 +190,17 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
           <Loading />
         </Box>
       )}
-      <VideoElement elementId={elementId} muted={true} controls={false} styles={styles} />
+      {!cameraOn && <AccountBox fontSize="large" className={classes.accountIcon} />}
+      <VideoElement
+        elementId={elementId}
+        muted={true}
+        controls={false}
+        styles={{ ...styles, transform: 'scaleX(-1)', display: cameraOn ? 'unset' : 'none' }}
+      />
+      <Stack direction="row" spacing={1} className={classes.iconBar}>
+        {!micOn && <MicOff />}
+        {!cameraOn && <VideocamOff />}
+      </Stack>
     </Box>
   )
 })
