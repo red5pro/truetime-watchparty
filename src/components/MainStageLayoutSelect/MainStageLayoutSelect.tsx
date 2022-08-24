@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconButton, Stack } from '@mui/material'
+import { Fade, IconButton, Stack } from '@mui/material'
 import LayoutIconEmpty from '../Common/MainStageLayoutIcon/LayoutIconEmpty'
 import LayoutIconFullscreen from '../Common/MainStageLayoutIcon/LayoutIconFullscreen'
 import LayoutIconStage from '../Common/MainStageLayoutIcon/LayoutIconStage'
@@ -19,9 +19,19 @@ enum Layout {
 const MainStageLayoutSelect = (props: MainStageLayoutSelectProps) => {
   const { layout, onSelect } = props
 
+  let closeTimeout: any
+  const closeRef = React.useRef(null)
+
   const { classes } = useStyles()
 
   const [isOpen, setIsOpen] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    stopCloseTimeout()
+    if (isOpen) {
+      resetCloseTimeout()
+    }
+  }, [isOpen])
 
   const toggleSelect = () => {
     setIsOpen(!isOpen)
@@ -33,9 +43,24 @@ const MainStageLayoutSelect = (props: MainStageLayoutSelectProps) => {
     onSelect(selection)
   }
 
+  const stopCloseTimeout = () => {
+    if (closeRef.current) {
+      clearTimeout(closeRef.current)
+    }
+    clearTimeout(closeTimeout)
+  }
+
+  const resetCloseTimeout = () => {
+    stopCloseTimeout()
+    closeTimeout = setTimeout(() => {
+      toggleSelect()
+    }, 4000)
+    closeRef.current = closeTimeout
+  }
+
   return (
     <Stack direction="column" alignItems="center" sx={{ position: 'relative' }}>
-      {isOpen && (
+      <Fade in={isOpen}>
         <Stack spacing={2} direction="row" className={classes.selectContainer}>
           <IconButton
             color="primary"
@@ -62,7 +87,7 @@ const MainStageLayoutSelect = (props: MainStageLayoutSelectProps) => {
             <LayoutIconEmpty />
           </IconButton>
         </Stack>
-      )}
+      </Fade>
       {layout === Layout.STAGE && (
         <IconButton color="primary" aria-label="stage layout" component="label" onClick={toggleSelect}>
           <LayoutIconStage />

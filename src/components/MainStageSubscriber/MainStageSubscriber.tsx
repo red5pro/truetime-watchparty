@@ -16,7 +16,7 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
     <Subscriber
       host={host}
       useStreamManager={useStreamManager}
-      mute={false}
+      mute={true}
       showControls={false}
       streamGuid={participant.streamGuid}
       resubscribe={false}

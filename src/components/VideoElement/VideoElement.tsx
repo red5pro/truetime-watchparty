@@ -15,13 +15,19 @@ const VideoElement = ({ elementId, styles, muted, controls, volume }: IVideoElem
   const { classes } = useVideoStyles()
 
   React.useEffect(() => {
-    if (typeof volume === 'number') {
+    if (typeof volume === 'number' && videoRef && videoRef.current) {
       videoRef.current.volume = volume
       if (volume > 0) {
         videoRef.current.muted = false
       }
     }
   }, [volume])
+
+  React.useEffect(() => {
+    if (videoRef && videoRef.current) {
+      videoRef.current.muted = muted
+    }
+  }, [muted])
 
   return (
     <Box className={classes.container}>

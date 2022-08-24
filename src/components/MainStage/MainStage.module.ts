@@ -56,8 +56,23 @@ const useStyles = makeStyles()((theme: any) => {
     bottomControls: {
       position: 'relative',
       width: '100%',
+      alignItems: 'center',
     },
-    publishControls: { position: 'absolute', left: '24px' },
+    layoutContainer: {
+      position: 'absolute',
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    chatInput: {
+      width: '45%',
+      maxWidth: '240px',
+    },
+    publishControls: {
+      position: 'absolute',
+      left: '24px',
+    },
     partyControls: {
       display: 'flex',
       justifyContent: 'flex-end',

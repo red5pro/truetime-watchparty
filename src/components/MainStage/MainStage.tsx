@@ -1,10 +1,8 @@
 import React from 'react'
 import * as portals from 'react-reverse-portal'
-import { useCookies } from 'react-cookie'
 import { useNavigate } from 'react-router-dom'
-import { IconButton, Button, Typography, Stack } from '@mui/material'
+import { IconButton, Box, Button, Typography, Stack, Input } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
-import { Box } from '@mui/system'
 import Lock from '@mui/icons-material/Lock'
 import LockOpen from '@mui/icons-material/LockOpen'
 import GroupAdd from '@mui/icons-material/GroupAdd'
@@ -66,7 +64,6 @@ const MainStage = () => {
 
   const { classes } = useStyles()
   const navigate = useNavigate()
-  const [cookies] = useCookies(['account'])
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
   const mainVideoRef = React.useRef<SubscriberRef>(null)
@@ -372,8 +369,14 @@ const MainStage = () => {
               />
             )}
             {data.conference && (
-              <Stack direction="row" spacing={2}>
+              <Stack direction="row" spacing={1} className={classes.layoutContainer}>
                 <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+                {/* TODO: Chat? */}
+                <Input
+                  placeholder="Chat Message"
+                  inputProps={{ 'arial-label': 'enter chat message' }}
+                  className={classes.chatInput}
+                />
               </Stack>
             )}
             <Box className={classes.partyControls}>
@@ -388,6 +391,7 @@ const MainStage = () => {
                 />
               )}
               {data.conference && (
+                // TODO: Chat?
                 <CustomButton
                   size={BUTTONSIZE.SMALL}
                   buttonType={BUTTONTYPE.TRANSPARENT}
