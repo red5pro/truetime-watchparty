@@ -25,3 +25,16 @@ location / {
 ```
 
 The reason that we need to route all page requests to `index.html` is because the React app is a Single-Page-Application (SPA) that has internal routing. As such, all page routes are really accessed through the index file.
+
+Basic example of nginx conf:
+
+```
+server {
+   listen 80;
+   server_name red5-watchparty.red5.net;
+   root /var/www/red5-watchparty;
+   index index.html;
+   location / {
+   try_files $uri /index.html;
+   }
+}
