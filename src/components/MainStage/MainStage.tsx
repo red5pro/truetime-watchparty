@@ -79,6 +79,10 @@ const MainStage = () => {
   const [availableVipParticipant, setAvailableVipParticipant] = React.useState<Participant | undefined>()
   const [requiresSubscriberScroll, setRequiresSubscriberScroll] = React.useState<boolean>(false)
   const [chatIsHidden, setChatIsHidden] = React.useState<boolean>(false)
+  const [maxParticipantGridColumnStyle, setMaxParticipantGridColumnStyle] = React.useState<any>({
+    gridTemplateColumns:
+      'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
+  })
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     // TODO: Determine if Participant or Registered User?
@@ -131,6 +135,18 @@ const MainStage = () => {
       setMaxParticipants(maxParticipants)
     }
   }, [joinContext.seriesEpisode])
+
+  React.useEffect(() => {
+    if (maxParticipants > 0) {
+      const half = maxParticipants / 2
+      const column = `fit-content(230px)`
+      //      const column = `calc((100% / ${half}) - 12px)`
+      const style = Array(half).fill(column).join(' ')
+      setMaxParticipantGridColumnStyle({
+        gridTemplateColumns: style,
+      })
+    }
+  }, [maxParticipants])
 
   React.useEffect(() => {
     if (data.connection) {
@@ -298,63 +314,25 @@ const MainStage = () => {
             />
           </Box>
         )}
-        {/* Other Participants Video Playback - STAGE LAYOUT */}
-        {data.list && layout.layout !== Layout.FULLSCREEN && (
-          <Box sx={layout.style.subscriberList}>
-            <Box sx={layout.style.subscriberContainer}>
-              {data.list.map((s: Participant) => {
-                return (
-                  <MainStageSubscriber
-                    key={s.participantId}
-                    participant={s}
-                    styles={layout.style.subscriber}
-                    videoStyles={layout.style.subscriberVideo}
-                    host={STREAM_HOST}
-                    useStreamManager={USE_STREAM_MANAGER}
-                  />
-                )
-              })}
-            </Box>
-            {requiresSubscriberScroll && <Button>More...</Button>}
+        {/* Other Participants Video Playback */}
+        <Box sx={layout.style.subscriberList}>
+          <Box sx={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}>
+            {data.list.map((s: Participant) => {
+              return (
+                <MainStageSubscriber
+                  key={s.participantId}
+                  participant={s}
+                  styles={layout.style.subscriber}
+                  videoStyles={layout.style.subscriberVideo}
+                  host={STREAM_HOST}
+                  useStreamManager={USE_STREAM_MANAGER}
+                />
+              )
+            })}
+            {layout.layout === Layout.FULLSCREEN && <PublisherPortalFullscreen portalNode={portalNode} />}
           </Box>
-        )}
-        {/* Participants Video Playback - FULLSCREEN LAYOUT */}
-        {data.list && layout.layout === Layout.FULLSCREEN && (
-          <Box sx={layout.style.subscriberList}>
-            {/* Two Rows */}
-            <Box sx={layout.style.subscriberContainer}>
-              {data.list.map((s: Participant, i: number) => {
-                if (i + 1 > maxParticipants / 2) return undefined
-                return (
-                  <MainStageSubscriber
-                    key={s.participantId}
-                    participant={s}
-                    styles={layout.style.subscriber}
-                    videoStyles={layout.style.subscriberVideo}
-                    host={STREAM_HOST}
-                    useStreamManager={USE_STREAM_MANAGER}
-                  />
-                )
-              })}
-            </Box>
-            <Box sx={layout.style.subscriberContainer}>
-              {data.list.map((s: Participant, i: number) => {
-                if (i < maxParticipants / 2) return undefined
-                return (
-                  <MainStageSubscriber
-                    key={s.participantId}
-                    participant={s}
-                    styles={layout.style.subscriber}
-                    videoStyles={layout.style.subscriberVideo}
-                    host={STREAM_HOST}
-                    useStreamManager={USE_STREAM_MANAGER}
-                  />
-                )
-              })}
-              <PublisherPortalFullscreen portalNode={portalNode} />
-            </Box>
-          </Box>
-        )}
+          {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && <Button>More...</Button>}
+        </Box>
         {/* Publisher View - STAGE LAYOUT */}
         {publishMediaStream && layout.layout !== Layout.FULLSCREEN && <PublisherPortalStage portalNode={portalNode} />}
         {/* Bottom Controls / Chat */}
