@@ -1,15 +1,17 @@
-The deployment of the React Single-Page-Application requires to first create a bundled build of the site:
+# Deployment of WatchParty SPA
+
+The deployment of the React Single-Page-Application (SPA) requires to first create a bundled build of the site:
 
 ```sh
 npm install
 npm build
 ```
 
-This will produce a deployment files in a `build` directory of the root of this repository. All the files produced from the `build` need to be deployed to a remote location.
+This will produce deployment files in a `build` directory of the root of this repository. All the files produced from the `build` need to be deployed to a remote location.
 
-By convention - for the purposes of this document - all the files from within the `build` directory can be deployed to a remote server within a directory on the remote server setup at `/var/www/red5-watchparty`.
+By convention all the files from within the `build` directory can be deployed to a remote server within a directory on the remote server setup to define the root of a site; for the purposes of this documentation, that will be `/var/www/red5-watchparty`.
 
-Additionally on the remote server hosting the deploy files, `nginx` will be setup to:
+Additionally, on the remote server hosting the deploy files, `nginx` will be setup to:
 
 1. Point all requests to the `/var/www/red5-watchparty` directory as the root site.
 2. Have rule(s) that specify that any requests are redirected to `index.html` from the root of the site files.
