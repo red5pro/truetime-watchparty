@@ -73,7 +73,7 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
       stopRetry()
       isCancelled = true
       if (subRef.current) {
-        console.warn(`[Red5ProSubscriber${streamName})] - STOP`)
+        console.warn(`[Red5ProSubscriber(${streamName})] - STOP`)
         stop()
       }
     }
@@ -155,6 +155,7 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
       setSubscriber(sub)
       setIsSubscribing(false)
       setIsSubscribed(true)
+      console.log(`[Red5ProSubscriber(${streamName})]:: Muted(${mute}).`)
     } catch (error: any) {
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error(`[Red5ProSubscriber(${streamName})] :: Error in subscribing -  ${jsonError}`)
