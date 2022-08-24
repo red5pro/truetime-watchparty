@@ -9,7 +9,7 @@ import Lock from '@mui/icons-material/Lock'
 import LockOpen from '@mui/icons-material/LockOpen'
 import GroupAdd from '@mui/icons-material/GroupAdd'
 import ChatBubble from '@mui/icons-material/ChatBubble'
-import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import { ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
 
@@ -31,7 +31,7 @@ import PublisherPortalFullscreen from './PublisherPortalFullscreen'
 import VolumeControl from '../VolumeControl/VolumeControl'
 import PublisherControls from '../PublisherControls/PublisherControls'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
-import LayoutIconEmpty from '../Common/MainStageLayoutIcon/LayoutIconEmpty'
+import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -45,7 +45,7 @@ enum Layout {
 
 const layoutReducer = (state: any, action: any) => {
   switch (action.type) {
-    case 'TOGGLE':
+    case 'LAYOUT':
       return { ...state, layout: action.layout, style: action.style }
   }
 }
@@ -236,10 +236,10 @@ const MainStage = () => {
     }
   }
 
-  const toggleLayout = () => {
-    const newLayout = layout.layout === Layout.STAGE ? Layout.FULLSCREEN : Layout.STAGE
-    const newStyle = layout.layout === Layout.STAGE ? styles.fullscreen : styles.stage
-    dispatch({ type: 'TOGGLE', layout: newLayout, style: newStyle })
+  const onLayoutSelect = (layout: number) => {
+    const newStyle =
+      layout === Layout.FULLSCREEN ? styles.fullscreen : layout === Layout.EMPTY ? styles.empty : styles.stage
+    dispatch({ type: 'LAYOUT', layout: layout, style: newStyle })
   }
 
   return (
@@ -252,7 +252,7 @@ const MainStage = () => {
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
             streamGuid={mainStreamGuid}
-            resubscribe={false}
+            resubscribe={true}
             styles={layout.style.mainVideo}
             videoStyles={layout.style.mainVideo}
             mute={false}
@@ -265,7 +265,7 @@ const MainStage = () => {
         <ShareLinkModal joinToken={joinContext.joinToken} open={showLink} onDismiss={() => setShowLink(false)} />
         {/* Role-based Controls */}
         {data.conference && (
-          <Box className={classes.topBar}>
+          <Box className={classes.topBar} sx={layout.style.topBar}>
             <Typography className={classes.header}>{data.conference.displayName}</Typography>
             <Box className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
@@ -302,7 +302,7 @@ const MainStage = () => {
           </Box>
         )}
         {/* Other Participants Video Playback - STAGE LAYOUT */}
-        {data.list && layout.layout === Layout.STAGE && (
+        {data.list && layout.layout !== Layout.FULLSCREEN && (
           <Box sx={layout.style.subscriberList}>
             <Box sx={layout.style.subscriberContainer}>
               {data.list.map((s: Participant) => {
@@ -359,42 +359,47 @@ const MainStage = () => {
           </Box>
         )}
         {/* Publisher View - STAGE LAYOUT */}
-        {publishMediaStream && layout.layout === Layout.STAGE && <PublisherPortalStage portalNode={portalNode} />}
+        {publishMediaStream && layout.layout !== Layout.FULLSCREEN && <PublisherPortalStage portalNode={portalNode} />}
         {/* Bottom Controls / Chat */}
-        {data.conference && (
-          <Box className={classes.bottomBar}>
-            <Stack direction="row" alignItems="bottom" className={classes.bottomControls}>
-              {publishMediaStream && (
-                <PublisherControls
-                  cameraOn={true}
-                  microphoneOn={true}
-                  onCameraToggle={onPublisherCameraToggle}
-                  onMicrophoneToggle={onPublisherMicrophoneToggle}
+        <Box className={classes.bottomBar}>
+          <Stack direction="row" alignItems="bottom" className={classes.bottomControls}>
+            {publishMediaStream && ENABLE_MUTE_API && (
+              <PublisherControls
+                cameraOn={true}
+                microphoneOn={true}
+                onCameraToggle={onPublisherCameraToggle}
+                onMicrophoneToggle={onPublisherMicrophoneToggle}
+              />
+            )}
+            {data.conference && (
+              <Stack direction="row" spacing={2}>
+                <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+              </Stack>
+            )}
+            <Box className={classes.partyControls}>
+              {mainStreamGuid && (
+                <VolumeControl
+                  isOpen={false}
+                  min={0}
+                  max={100}
+                  step={1}
+                  currentValue={50}
+                  onVolumeChange={onVolumeChange}
                 />
               )}
               {data.conference && (
-                <Box className={classes.partyControls}>
-                  <VolumeControl
-                    isOpen={false}
-                    min={0}
-                    max={100}
-                    step={1}
-                    currentValue={50}
-                    onVolumeChange={onVolumeChange}
-                  />
-                  <CustomButton
-                    size={BUTTONSIZE.SMALL}
-                    buttonType={BUTTONTYPE.TRANSPARENT}
-                    startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
-                    onClick={toggleChat}
-                  >
-                    {chatIsHidden ? 'Show' : 'Hide'} Chat
-                  </CustomButton>
-                </Box>
+                <CustomButton
+                  size={BUTTONSIZE.SMALL}
+                  buttonType={BUTTONTYPE.TRANSPARENT}
+                  startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
+                  onClick={toggleChat}
+                >
+                  {chatIsHidden ? 'Show' : 'Hide'} Chat
+                </CustomButton>
               )}
-            </Stack>
-          </Box>
-        )}
+            </Box>
+          </Stack>
+        </Box>
         {/* Loading Message */}
         {!data.conference && (
           <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
@@ -405,7 +410,7 @@ const MainStage = () => {
       </Box>
       {/* Publisher Portal to be moved from one view layout state to another */}
       <portals.InPortal node={portalNode}>
-        <Box sx={layout.layout === Layout.STAGE ? layout.style.publisherContainer : layout.style.subscriber}>
+        <Box sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}>
           <Publisher
             key="publisher"
             ref={publisherRef}
@@ -413,7 +418,7 @@ const MainStage = () => {
             host={STREAM_HOST}
             streamGuid={joinContext.getStreamGuid()}
             stream={mediaContext?.mediaStream}
-            styles={layout.layout === Layout.STAGE ? layout.style.publisher : layout.style.publisherVideo}
+            styles={layout.layout !== Layout.FULLSCREEN ? layout.style.publisher : layout.style.publisherVideo}
             onFail={onPublisherFail}
             onStart={onPublisherBroadcast}
             onInterrupt={onPublisherBroadcastInterrupt}

@@ -1,8 +1,21 @@
+const base = {
+  topBar: {},
+  mainVideoContainer: {},
+  mainVideo: {},
+  publisherContainer: {},
+  publisher: {},
+  subscriberList: {},
+  subscriberContainer: {},
+  subscriber: {},
+  subscriberVideo: {},
+  vipContainer: {},
+  vipsubscriber: {},
+  vipsubscriberVideo: {},
+}
+
 const styles = {
   stage: {
-    button: {
-      color: 'red',
-    },
+    ...base,
     mainVideoContainer: {
       position: 'absolute',
       width: '100vw',
@@ -72,9 +85,7 @@ const styles = {
     },
   },
   fullscreen: {
-    button: {
-      color: 'green',
-    },
+    ...base,
     mainVideoContainer: {
       position: 'absolute',
       right: 24,
@@ -142,6 +153,81 @@ const styles = {
     },
     vipsubscriber: {
       height: '250px',
+      aspectRatio: '1 / 1',
+    },
+    vipsubscriberVideo: {
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'black',
+      borderRadius: '20px',
+    },
+  },
+  empty: {
+    ...base,
+    topBar: {
+      display: 'none!important',
+    },
+    mainVideoContainer: {
+      position: 'absolute',
+      width: '100vw',
+      height: '100vh',
+      left: 0,
+      top: 0,
+      zIndex: -100,
+    },
+    mainVideo: {
+      width: '100%',
+      height: '100%',
+      borderRadius: 'unset',
+    },
+    publisherContainer: {
+      opacity: 0.5,
+      position: 'absolute',
+      bottom: '73px',
+      left: '24px',
+      width: '176px',
+      height: '176px',
+    },
+    publisher: {
+      borderRadius: '20px',
+      width: '100%',
+      height: '100%',
+    },
+    subscriberList: {
+      opacity: 0.5,
+      position: 'absolute',
+      left: '24px',
+      top: '6px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      height: 'calc(100vh - 290px)',
+    },
+    subscriberContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      width: '144px',
+      paddingRight: '20px',
+      paddingBottom: '30px',
+      alignItems: 'center',
+      overflow: 'scroll',
+    },
+    subscriber: {
+      marginTop: '18px',
+    },
+    subscriberVideo: {
+      borderRadius: '20px',
+      backgroundColor: 'black',
+      width: '100%',
+      aspectRatio: '1 / 1',
+    },
+    vipContainer: {
+      position: 'absolute',
+      right: '24px',
+      top: '80px',
+    },
+    vipsubscriber: {
+      height: 'calc(100vh / 3)',
       aspectRatio: '1 / 1',
     },
     vipsubscriberVideo: {

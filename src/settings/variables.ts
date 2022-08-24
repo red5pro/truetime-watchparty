@@ -11,3 +11,4 @@ export const DEFAULT_CONSTRAINTS = {
   audio: true,
   video: true,
 }
+export const ENABLE_MUTE_API = true

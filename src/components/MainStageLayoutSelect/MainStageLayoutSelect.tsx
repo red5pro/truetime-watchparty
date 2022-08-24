@@ -57,7 +57,7 @@ const MainStageLayoutSelect = (props: MainStageLayoutSelectProps) => {
             color="primary"
             aria-label="empty layout"
             component="label"
-            onClick={() => onMenuSelect(Layout.FULLSCREEN)}
+            onClick={() => onMenuSelect(Layout.EMPTY)}
           >
             <LayoutIconEmpty />
           </IconButton>
