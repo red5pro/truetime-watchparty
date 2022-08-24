@@ -30,7 +30,6 @@ const JoinSectionLanding = (props: JoinLandingProps) => {
 
   return (
     <Box className={classes.landingContainer}>
-      <MainStageLayoutSelect layout={1} onSelect={(layout: number) => console.log('layout')} />
       <Typography sx={{ fontSize: '24px' }}>{seriesEpisode.series.displayName}</Typography>
       <Typography variant="h1">{seriesEpisode.episode.displayName}</Typography>
       <Box display="flex" alignItems="center" sx={{ marginTop: '24px' }}>

@@ -65,7 +65,7 @@ const ShareLinkModal = (props: ShareLinkModalProps) => {
         <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" className={classes.root}>
           <Box display="flex" flexDirection="column" className={classes.container}>
             <Typography textAlign="center" marginY={1} className={classes.title}>
-              Invite your friends!
+              Share with your friends!
             </Typography>
             <Box display="flex" className={classes.buttonsContainer}>
               <CustomButton

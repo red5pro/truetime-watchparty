@@ -92,7 +92,6 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
   }, [elementId, streamName, context])
 
   const setVolume = (value: number) => {
-    console.log('VOLUME', value)
     setPlaybackVolume(value)
   }
 
@@ -120,16 +119,15 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
   }
 
   const onSubscribeEvent = (event: any) => {
-    if (event.type !== 'Subscribe.Time.Update') {
-      const { type } = event
-      console.log(`[Red5ProSubscriber(${streamName})] :: ${type}`)
-      if (RETRY_EVENTS.indexOf(type) > -1) {
-        startRetry()
-      }
-      if (type === 'Subscribe.Metadata') {
-        const { streamingMode } = event.data
-        handleMediaActiveFromMode(streamingMode)
-      }
+    const { type } = event
+    if (type === 'Subscribe.Time.Update' || type === 'Subscribe.Volume.Change') return
+    console.log(`[Red5ProSubscriber(${streamName})] :: ${type}`)
+    if (RETRY_EVENTS.indexOf(type) > -1) {
+      startRetry()
+    }
+    if (type === 'Subscribe.Metadata') {
+      const { streamingMode } = event.data
+      handleMediaActiveFromMode(streamingMode)
     }
   }
 
