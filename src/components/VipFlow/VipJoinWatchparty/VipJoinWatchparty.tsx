@@ -13,6 +13,9 @@ import { Episode } from '../../../models/Episode'
 import VipMainStage from '../VipMainStage/VipMainStage'
 import WatchpartyParticipants from '../WatchpartyParticipants/WatchpartyParticipants'
 import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
+import { ConnectionRequest } from '../../../models/ConferenceStatusEvent'
+import WatchContext from '../../WatchContext/WatchContext'
+import { UserAccount } from '../../../models/UserAccount'
 
 interface IVipSeeParticipantsProps {
   onActions: IStepActionsSubComponent
@@ -20,10 +23,11 @@ interface IVipSeeParticipantsProps {
   currentEpisode?: Episode
   joinNextConference: () => boolean
   currentConference?: Conference
+  userAccount?: UserAccount
 }
 
 const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
-  const { onActions, account, currentConference, currentEpisode, joinNextConference } = props
+  const { onActions, account, userAccount, currentConference, currentEpisode, joinNextConference } = props
 
   const [participants, setParticipants] = React.useState<Participant[]>([])
   const [conferenceDetails, setConferenceDetails] = React.useState<ConferenceDetails>()
@@ -33,8 +37,46 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
 
   const { classes } = useStyles()
   const joinContext = React.useContext(JoinContext.Context)
+  const watchContext = React.useContext(WatchContext.Context)
 
   const isMobile = isMobileScreen()
+
+  // TODO: THIS CAN GO INTO A UTILS
+  const getSocketUrl = (token: string, name: string, guid: string) => {
+    // TODO: Determine if Participant or Registered User?
+    // TODO: Where does username & password come from if registered?
+
+    const request: ConnectionRequest = {
+      displayName: name,
+      joinToken: token,
+      streamGuid: guid,
+      username: account?.email,
+      password: account?.password,
+    } as ConnectionRequest
+
+    // Participant
+    const fp = joinContext.fingerprint
+    request.fingerprint = fp
+
+    // Registered User
+    // set u/p
+
+    // Local testing
+    const url = `ws://localhost:8001`
+    return { url, request }
+  }
+
+  React.useEffect(() => {
+    const streamGuid = joinContext.getStreamGuid()
+    const { url, request } = getSocketUrl(joinContext.joinToken, userAccount?.username ?? '', streamGuid)
+    watchContext.join(url, request)
+  }, [])
+
+  React.useEffect(() => {
+    if (watchContext.data?.conference?.participants?.length) {
+      setParticipants(watchContext.data.conference.participants)
+    }
+  }, [watchContext.data?.conference?.participants])
 
   React.useEffect(() => {
     const getCurrentConference = async () => {
@@ -47,8 +89,6 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
           setConferenceDetails(confDetails.data)
           joinContext.setConferenceData(confDetails.data)
           joinContext.setJoinToken(currConf.data.joinToken)
-          setParticipants(currConf.data.participants)
-          // setJoinToken(currConf.data.joinToken)
         }
       }
     }

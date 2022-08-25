@@ -103,6 +103,7 @@ const VipSteps = () => {
             <VipJoinWatchparty
               onActions={actions}
               account={accountCredentials}
+              userAccount={account}
               joinNextConference={joinNextConference}
               currentEpisode={currentEpisode}
               currentConference={currentConference}

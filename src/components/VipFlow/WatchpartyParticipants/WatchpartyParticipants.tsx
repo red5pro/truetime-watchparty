@@ -1,12 +1,11 @@
 import * as React from 'react'
-import { Box, Typography } from '@mui/material'
+import { Box, Grid, Typography } from '@mui/material'
 import { Participant } from '../../../models/Participant'
 import MainStageSubscriber from '../../MainStageSubscriber/MainStageSubscriber'
 import { STREAM_HOST, USE_STREAM_MANAGER } from '../../../settings/variables'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
-import useStyles from './WatchpartyParticipants.module'
+import useStyles, { styles } from './WatchpartyParticipants.module'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
-import WatchContext from '../../WatchContext/WatchContext'
 
 interface IWatchpartyParticipantsProps {
   conferenceDetails?: ConferenceDetails
@@ -19,10 +18,7 @@ interface IWatchpartyParticipantsProps {
 const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
   const { conferenceDetails, participants, skipCurrentConference, onJoinNextParty, buttonPrimary = false } = props
 
-  const useWatchContext = React.useContext(WatchContext.Context)
-
   const { classes } = useStyles()
-  const { data } = useWatchContext
 
   return (
     <Box
@@ -36,26 +32,23 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
       <Typography className={classes.title}>{conferenceDetails?.displayName}</Typography>
       <Typography>{`${participants.length} Attendees`}</Typography>
       <Box>
-        {/* THIS SHOULD RENDER PARTICIPANTS FEED */}
-        {data.list && (
-          <Box>
-            <Box>
-              {data.list.map((participant: Participant) => {
-                return (
-                  <React.Fragment key={participant.participantId}>
-                    <MainStageSubscriber
-                      key={participant.participantId}
-                      participant={participant}
-                      styles={{}}
-                      videoStyles={{}}
-                      host={STREAM_HOST}
-                      useStreamManager={USE_STREAM_MANAGER}
-                    />
-                  </React.Fragment>
-                )
-              })}
-            </Box>
-          </Box>
+        {participants && (
+          <Grid container spacing={2} marginY={2}>
+            {participants.map((participant: Participant) => {
+              return (
+                <Grid key={participant.participantId} item xs={3}>
+                  <MainStageSubscriber
+                    key={participant.participantId}
+                    participant={participant}
+                    styles={styles.stage.participantVideoFeedContainer}
+                    videoStyles={styles.stage.participantVideoFeed}
+                    host={STREAM_HOST}
+                    useStreamManager={USE_STREAM_MANAGER}
+                  />
+                </Grid>
+              )
+            })}
+          </Grid>
         )}
       </Box>
       <Box display="flex" justifyContent="space-evenly" className={classes.buttonContainer}>
