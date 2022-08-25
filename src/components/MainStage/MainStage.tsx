@@ -94,11 +94,9 @@ const MainStage = () => {
       streamGuid: guid,
     } as ConnectionRequest
 
-    if (!cookies?.account) {
-      // Participant
-      const fp = joinContext.fingerprint
-      request.fingerprint = fp
-    } else {
+    const fp = joinContext.fingerprint
+    request.fingerprint = fp
+    if (cookies?.account) {
       // Registered User
       const { email, password } = cookies.account
       request.username = email
@@ -258,6 +256,18 @@ const MainStage = () => {
     dispatch({ type: 'LAYOUT', layout: layout, style: newStyle })
   }
 
+  const subscriberMenuActions = {
+    onMuteAudio: (participant: Participant) => {
+      console.log('MUTE AUDIO', participant)
+    },
+    onMuteVideo: (participant: Participant) => {
+      console.log('MUTE VIDEO', participant)
+    },
+    onBan: (participant: Participant) => {
+      console.log('BAN', participant)
+    },
+  }
+
   return (
     <Box className={classes.rootContainer}>
       {/* Main Video */}
@@ -319,7 +329,7 @@ const MainStage = () => {
         )}
         {/* Other Participants Video Playback */}
         <Box sx={layout.style.subscriberList}>
-          <Box sx={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}>
+          <Stack spacing={2} sx={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}>
             {data.list.map((s: Participant) => {
               return (
                 <MainStageSubscriber
@@ -329,12 +339,13 @@ const MainStage = () => {
                   videoStyles={layout.style.subscriberVideo}
                   host={STREAM_HOST}
                   useStreamManager={USE_STREAM_MANAGER}
+                  menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
                 />
               )
             })}
             {layout.layout === Layout.FULLSCREEN && <PublisherPortalFullscreen portalNode={portalNode} />}
-          </Box>
-          {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && <Button>More...</Button>}
+          </Stack>
+          {/* {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && <Button>More...</Button>} */}
         </Box>
         {/* Publisher View - STAGE LAYOUT */}
         {publishMediaStream && layout.layout !== Layout.FULLSCREEN && <PublisherPortalStage portalNode={portalNode} />}
