@@ -15,7 +15,9 @@ interface MainStageSubscriberProps {
 const MainStageSubscriber = (props: MainStageSubscriberProps) => {
   const { participant, host, useStreamManager, styles, videoStyles, menuActions } = props
 
+  console.log(participant?.muteState)
   return (
+    // TODO: Set `mute` to false for production
     <Box sx={menuActions ? { ...styles, position: 'relative' } : {}}>
       <Subscriber
         host={host}
@@ -26,6 +28,8 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
         resubscribe={false}
         styles={styles}
         videoStyles={videoStyles}
+        isAudioOff={participant?.muteState.audioMuted}
+        isVideoOff={participant?.muteState.videoMuted}
       />
       {participant && menuActions && (
         <Box sx={{ position: 'absolute', top: 4, right: 4 }}>

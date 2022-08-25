@@ -352,14 +352,6 @@ const MainStage = () => {
         {/* Bottom Controls / Chat */}
         <Box className={classes.bottomBar}>
           <Stack direction="row" alignItems="bottom" className={classes.bottomControls}>
-            {publishMediaStream && ENABLE_MUTE_API && (
-              <PublisherControls
-                cameraOn={true}
-                microphoneOn={true}
-                onCameraToggle={onPublisherCameraToggle}
-                onMicrophoneToggle={onPublisherMicrophoneToggle}
-              />
-            )}
             {data.conference && (
               <Stack direction="row" spacing={1} className={classes.layoutContainer}>
                 <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
@@ -370,6 +362,14 @@ const MainStage = () => {
                   className={classes.chatInput}
                 />
               </Stack>
+            )}
+            {publishMediaStream && ENABLE_MUTE_API && (
+              <PublisherControls
+                cameraOn={true}
+                microphoneOn={true}
+                onCameraToggle={onPublisherCameraToggle}
+                onMicrophoneToggle={onPublisherMicrophoneToggle}
+              />
             )}
             <Box className={classes.partyControls}>
               {mainStreamGuid && (
