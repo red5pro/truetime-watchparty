@@ -214,12 +214,12 @@ const VipMainStage = (props: IVipMainStageProps) => {
         )} */}
 
         {publishMediaStream && <PublisherPortalStage portalNode={portalNode} />}
-        {!data.conference && (
+        {/* {!data.conference && (
           <Box top={2} className={classes.loadingContainer}>
             <Loading />
             <Typography>Loading Watch Party</Typography>
           </Box>
-        )}
+        )} */}
       </Box>
 
       <Box className={classes.vipOwnVideo} display="flex">
