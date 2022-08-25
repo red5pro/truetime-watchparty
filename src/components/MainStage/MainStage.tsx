@@ -293,15 +293,27 @@ const MainStage = () => {
         {data.conference && (
           <Box className={classes.topBar} sx={layout.style.topBar}>
             <Typography className={classes.header}>{data.conference.displayName}</Typography>
-            <Box className={classes.topControls}>
+            <Stack direction="row" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
-                <IconButton color="primary" aria-label="share link" component="label" onClick={toggleLink}>
-                  <GroupAdd />
+                <IconButton
+                  sx={{ backdropFilter: 'contrast(0.5)' }}
+                  color="primary"
+                  aria-label="share link"
+                  component="label"
+                  onClick={toggleLink}
+                >
+                  <GroupAdd fontSize="small" />
                 </IconButton>
               )}
               {joinContext && userRole === UserRoles.ORGANIZER.toLowerCase() && (
-                <IconButton color="primary" aria-label="lock unlock watch party" component="label" onClick={toggleLock}>
-                  {joinContext.conferenceLocked ? <LockOpen /> : <Lock />}
+                <IconButton
+                  sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
+                  color="primary"
+                  aria-label="lock unlock watch party"
+                  component="label"
+                  onClick={toggleLock}
+                >
+                  {joinContext.conferenceLocked ? <LockOpen fontSize="small" /> : <Lock fontSize="small" />}
                 </IconButton>
               )}
               <CustomButton
@@ -312,7 +324,7 @@ const MainStage = () => {
               >
                 Leave
               </CustomButton>
-            </Box>
+            </Stack>
           </Box>
         )}
         {/* VIP Video Playback */}

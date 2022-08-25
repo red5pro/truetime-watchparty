@@ -88,7 +88,7 @@ const VolumeControl = (props: VolumeControlProps) => {
         </Box>
       </Fade>
       <IconButton
-        sx={{ marginTop: '0!important' }}
+        sx={{ marginTop: '0!important', backdropFilter: 'contrast(0.5)' }}
         color="primary"
         aria-label="change volume"
         component="label"
