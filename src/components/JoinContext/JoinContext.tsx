@@ -36,7 +36,7 @@ const JoinProvider = (props: JoinContextProps) => {
   // TODO: Update this based on User record / Auth ?
   // TODO: Does this belong here or in an overarching Context ?
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT)
-  const [fingerprint, setFingerprint] = React.useState<string | undefined>(SessionStorage.get('wp_fingerorint'))
+  const [fingerprint, setFingerprint] = React.useState<string | undefined>(SessionStorage.get('wp_fingeprint'))
   const [nickname, setNickname] = React.useState<string | undefined>(SessionStorage.get('wp_nickname' || undefined)) // TODO: get from participant context or session storage?
   // ConferenceDetails access from the server API.
   const [seriesEpisode, dispatch] = useReducer(episodeReducer, {
@@ -65,7 +65,7 @@ const JoinProvider = (props: JoinContextProps) => {
   }, [fingerprint])
 
   React.useEffect(() => {
-    if (joinToken) {
+    if (joinToken && !conferenceData) {
       getConferenceData(joinToken)
     }
   }, [joinToken])
@@ -118,6 +118,7 @@ const JoinProvider = (props: JoinContextProps) => {
     fingerprint,
     seriesEpisode,
     conferenceData,
+    setConferenceData,
     updateNickname: (value: string) => {
       setNickname(value)
       SessionStorage.set('wp_nickname', value)

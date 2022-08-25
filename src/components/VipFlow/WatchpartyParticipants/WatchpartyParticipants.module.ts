@@ -10,6 +10,12 @@ const useStyles = makeStyles()((theme: any) => {
 
       [theme.breakpoints.down('md')]: {
         width: '75%',
+        flexDirection: 'column',
+      },
+    },
+    buttonContainer: {
+      [theme.breakpoints.down('sm')]: {
+        flexDirection: 'column',
       },
     },
     title: {
@@ -20,3 +26,18 @@ const useStyles = makeStyles()((theme: any) => {
 })
 
 export default useStyles
+
+export const styles = {
+  stage: {
+    button: {
+      color: 'red',
+    },
+    participantVideoFeedContainer: {
+      width: '80px',
+      height: '80px',
+    },
+    participantVideoFeed: {
+      borderRadius: '18px',
+    },
+  },
+}

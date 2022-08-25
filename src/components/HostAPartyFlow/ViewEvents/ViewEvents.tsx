@@ -7,13 +7,13 @@ import { Serie } from '../../../models/Serie'
 import useStyles from './ViewEvents.module'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import ElementList from '../../Common/ElementList/ElementList'
-import { IAccount } from '../../../models/Account'
+import { AccountCredentials } from '../../../models/AccountCredentials'
 import { getCurrentEpisode } from '../../../services/conference/conference'
 import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 
 interface IViewEventsProps {
   onActions: IStepActionsSubComponent
-  account?: IAccount | null
+  account?: AccountCredentials | null
 }
 
 const ViewEvents = (props: IViewEventsProps) => {

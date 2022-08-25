@@ -1,66 +1,105 @@
-import { Typography } from '@mui/material'
-import { Box } from '@mui/system'
 import * as React from 'react'
-import { IStepActionsSubComponent } from '../../../utils/commonUtils'
-import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
+import { Box, CircularProgress, CircularProgressProps, Typography } from '@mui/material'
 import useStyles from './VipTimer.module'
 
-interface IVipTimerProps {
-  onActions: IStepActionsSubComponent
+interface IVipTimerStepProps {
   startedCountdown: boolean
+  finishedCountdown?: boolean
+  setFinishedCountdown?: (value: boolean) => void
 }
 
-const VipTimer = (props: IVipTimerProps) => {
-  const { onActions, startedCountdown } = props
+const VipTimer = (props: IVipTimerStepProps) => {
+  const { startedCountdown, setFinishedCountdown, finishedCountdown = false } = props
 
-  const [minutes, setMinutes] = React.useState<number>(0)
+  const [minutes, setMinutes] = React.useState<number>(30)
   const [seconds, setSeconds] = React.useState<number>(0)
-  const [finishedCountdown, setFinishedCountdown] = React.useState<boolean>(false)
+  // const [finishedCountdown, setFinishedCountdown] = React.useState<boolean>(false)
+  const [progressBar, setProgressBar] = React.useState<number>(0)
 
   const { classes } = useStyles()
 
   React.useEffect(() => {
-    const countDownDate = new Date()
-    countDownDate.setMinutes(countDownDate.getMinutes() + 30)
+    if (startedCountdown) {
+      const date = new Date()
+      date.setMinutes(date.getMinutes() + 30)
 
-    const time = setInterval(() => {
-      if (!finishedCountdown) {
+      const countDownDate = date.getTime()
+
+      const time = setInterval(() => {
         const now = new Date().getTime()
-        const distance = now - countDownDate.getTime()
+        const distance = countDownDate - now
 
-        setMinutes(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)))
-        setSeconds(Math.floor((distance % (1000 * 60)) / 1000))
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000)
 
-        if (distance > 0) {
+        setMinutes(minutes)
+        setSeconds(seconds)
+        setProgressBar((prevProgress: number) => (prevProgress >= 100 ? 0 : prevProgress + 0.05555))
+
+        // VER ESTO ESTA DURANDO 2 MINUTOS
+
+        if (distance < 0) {
           clearInterval(time)
-          setFinishedCountdown(true)
+
+          if (setFinishedCountdown) {
+            setFinishedCountdown(true)
+          }
         }
+      }, 1000)
+
+      return () => {
+        clearInterval(time)
       }
-    }, 1000)
-  }, [])
+    }
+
+    return
+  }, [startedCountdown])
 
   return (
-    <Box display="flex" justifyContent="flex-end" alignItems="center">
-      <Box display="flex" flexDirection="column" justifyContent="center" className={classes.container}>
-        <Typography className={classes.title}>Let’s get started!</Typography>
-        <Typography>This is the total time you have to visit watch parties</Typography>
-
-        <Box marginTop={2}>
-          <CustomButton onClick={onActions.onNextStep} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
-            Got it!
-          </CustomButton>
-        </Box>
-      </Box>
-      <Box display="flex" justifyContent="center" alignItems="center" className={classes.timer}>
-        <Typography>
-          {!startedCountdown && !finishedCountdown
-            ? '30:00'
-            : `${minutes}:${seconds.toLocaleString('en-US', { minimumIntegerDigits: 2 })}`}
-          {finishedCountdown && '0:00'}
-        </Typography>
-      </Box>
+    <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" className={classes.timer}>
+      <CircularProgressWithLabel
+        minutes={minutes}
+        seconds={seconds}
+        progress={progressBar}
+        finishedCountdown={finishedCountdown}
+        className={classes.timer}
+      />
     </Box>
   )
 }
 
 export default VipTimer
+
+const CircularProgressWithLabel = (
+  props: CircularProgressProps & { minutes: number; seconds: number; progress: number; finishedCountdown: boolean }
+) => {
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress variant="determinate" value={props.progress} {...props} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography variant="caption" component="p" color="white">
+          {props.finishedCountdown
+            ? '0:00'
+            : `${props.minutes.toLocaleString('en-US', {
+                maximumSignificantDigits: 2,
+                minimumIntegerDigits: 2,
+              })}:${props.seconds.toLocaleString('en-US', {
+                maximumSignificantDigits: 2,
+                minimumIntegerDigits: 2,
+              })}`}
+        </Typography>
+      </Box>
+    </Box>
+  )
+}

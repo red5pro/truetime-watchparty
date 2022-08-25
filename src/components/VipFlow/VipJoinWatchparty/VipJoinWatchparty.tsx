@@ -1,10 +1,9 @@
 import * as React from 'react'
 import { Box, Typography } from '@mui/material'
-import { IAccount } from '../../../models/Account'
+import { AccountCredentials } from '../../../models/AccountCredentials'
 import { Conference } from '../../../models/Conference'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
-import { getConferenceDetails, getConferenceParticipants } from '../../../services/conference/conference'
-import { IStepActionsSubComponent } from '../../../utils/commonUtils'
+import { isMobileScreen, IStepActionsSubComponent } from '../../../utils/commonUtils'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './VipJoinWatchparty.module'
 import { Participant } from '../../../models/Participant'
@@ -13,19 +12,22 @@ import JoinSectionAVSetup from '../../JoinSections/JoinSectionAVSetup'
 import { Episode } from '../../../models/Episode'
 import VipMainStage from '../VipMainStage/VipMainStage'
 import WatchpartyParticipants from '../WatchpartyParticipants/WatchpartyParticipants'
-
-const useJoinContext = () => React.useContext(JoinContext.Context)
+import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
+import { ConnectionRequest } from '../../../models/ConferenceStatusEvent'
+import WatchContext from '../../WatchContext/WatchContext'
+import { UserAccount } from '../../../models/UserAccount'
 
 interface IVipSeeParticipantsProps {
   onActions: IStepActionsSubComponent
-  currentConference?: Conference
-  account?: IAccount
+  account?: AccountCredentials
   currentEpisode?: Episode
   joinNextConference: () => boolean
+  currentConference?: Conference
+  userAccount?: UserAccount
 }
 
 const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
-  const { onActions, currentConference, account, currentEpisode, joinNextConference } = props
+  const { onActions, account, userAccount, currentConference, currentEpisode, joinNextConference } = props
 
   const [participants, setParticipants] = React.useState<Participant[]>([])
   const [conferenceDetails, setConferenceDetails] = React.useState<ConferenceDetails>()
@@ -34,35 +36,67 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   const [showMediaStream, setShowMediaStream] = React.useState<boolean>(false)
 
   const { classes } = useStyles()
-  const { setJoinToken } = useJoinContext()
+  const joinContext = React.useContext(JoinContext.Context)
+  const watchContext = React.useContext(WatchContext.Context)
+
+  const isMobile = isMobileScreen()
+
+  // TODO: THIS CAN GO INTO A UTILS
+  const getSocketUrl = (token: string, name: string, guid: string) => {
+    // TODO: Determine if Participant or Registered User?
+    // TODO: Where does username & password come from if registered?
+
+    const request: ConnectionRequest = {
+      displayName: name,
+      joinToken: token,
+      streamGuid: guid,
+      username: account?.email,
+      password: account?.password,
+    } as ConnectionRequest
+
+    // Participant
+    const fp = joinContext.fingerprint
+    request.fingerprint = fp
+
+    // Registered User
+    // set u/p
+
+    // Local testing
+    const url = `ws://localhost:8001`
+    return { url, request }
+  }
 
   React.useEffect(() => {
+    const streamGuid = joinContext.getStreamGuid()
+    const { url, request } = getSocketUrl(joinContext.joinToken, userAccount?.username ?? '', streamGuid)
+    watchContext.join(url, request)
+  }, [])
+
+  React.useEffect(() => {
+    if (watchContext.data?.conference?.participants?.length) {
+      setParticipants(watchContext.data.conference.participants)
+    }
+  }, [watchContext.data?.conference?.participants])
+
+  React.useEffect(() => {
+    const getCurrentConference = async () => {
+      if (currentConference?.conferenceId && account) {
+        // REMOVE THIS WHEN /vipnext ENDPOINT IS READY
+        const confDetails = await CONFERENCE_API_CALLS.getConferenceDetails(currentConference?.conferenceId, account)
+        const currConf = await CONFERENCE_API_CALLS.getConferenceLoby(confDetails.data.joinToken)
+
+        if (currConf.data && confDetails.data) {
+          setConferenceDetails(confDetails.data)
+          joinContext.setConferenceData(confDetails.data)
+          joinContext.setJoinToken(currConf.data.joinToken)
+        }
+      }
+    }
+
     if (currentConference) {
       getCurrentConference()
-      getParticipants()
     }
   }, [currentConference])
-
-  const getCurrentConference = async () => {
-    if (currentConference?.conferenceId && account) {
-      const currConf = await getConferenceDetails(currentConference?.conferenceId, account)
-
-      if (currConf.data) {
-        setConferenceDetails(currConf.data)
-        setJoinToken(currConf.data.joinToken)
-      }
-    }
-  }
-
-  const getParticipants = async () => {
-    if (currentConference?.conferenceId && account) {
-      const response = await getConferenceParticipants(currentConference?.conferenceId, account)
-
-      if (response.data?.participants && response.status === 200) {
-        setParticipants(response.data?.participants)
-      }
-    }
-  }
 
   const skipCurrentConference = () => {
     setJoinConference(false)
@@ -82,7 +116,6 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
         conferenceDetails={conferenceDetails}
         participants={participants}
         skipCurrentConference={skipCurrentConference}
-        setShowMediaStream={setShowMediaStream}
       />
     )
   }
@@ -91,16 +124,22 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     return (
       <Box className={classes.avSetup}>
         <JoinSectionAVSetup onJoin={() => setJoinConference(true)} shouldDisplayBackButton={false} />
-        {/* <MediaSetup selfCleanup={false} /> */}
       </Box>
     )
   }
 
   return (
     <Box padding={4} height="100%" width="100%">
-      <Box display="flex" justifyContent="flex-end" alignItems="end" height="100%" marginBottom={4}>
+      <Box
+        display="flex"
+        flexDirection={isMobile ? 'column' : 'row'}
+        justifyContent="flex-end"
+        alignItems="end"
+        height="100%"
+        marginBottom={4}
+      >
         {showDisclaimer && (
-          <Box display="flex" justifyContent="center" className={classes.container}>
+          <Box display="flex" justifyContent="center" flexDirection="column" className={classes.container}>
             <Typography>You can join this party or skip into another one</Typography>
             <Box marginTop={2}>
               <CustomButton
@@ -117,7 +156,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
           conferenceDetails={conferenceDetails}
           participants={participants}
           skipCurrentConference={skipCurrentConference}
-          setShowMediaStream={setShowMediaStream}
+          onJoinNextParty={() => setShowMediaStream(true)}
         />
       </Box>
     </Box>
