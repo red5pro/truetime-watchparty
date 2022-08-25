@@ -1,8 +1,6 @@
 import { createTheme, Theme } from '@mui/material'
 import '../assets/styles/index.css'
 
-export const THEME_WRAPPER = 'emw'
-
 export interface DefaultAppTheme extends Theme {
   button: {
     primaryColor: string
@@ -25,23 +23,6 @@ export interface DefaultAppTheme extends Theme {
   }
 }
 
-const fontFamily = [
-  'GeneralSans-Variable',
-  'GeneralSans-VariableItalic',
-  'GeneralSans-Extralight',
-  'GeneralSans-ExtralightItalic',
-  'GeneralSans-Light',
-  'GeneralSans-LightItalic',
-  'GeneralSans-Regular',
-  'GeneralSans-Italic',
-  'GeneralSans-Medium',
-  'GeneralSans-MediumItalic',
-  'GeneralSans-Semibold',
-  'GeneralSans-SemiboldItalic',
-  'GeneralSans-Bold',
-  'GeneralSans-BoldItalic',
-].join(',')
-
 export const mergeThemes = () => {
   const theme = createTheme({
     palette: {
@@ -61,21 +42,33 @@ export const mergeThemes = () => {
         fontFamily: 'GeneralSans-Regular',
         fontWeight: 600,
         fontStyle: 'normal',
+        '@media (max-width:600px)': {
+          fontSize: '60px !important',
+        },
       },
       h2: {
         color: '#FBFBFB',
         fontWeight: 600,
         fontSize: '60px !important',
+        '@media (max-width:600px)': {
+          fontSize: '40px !important',
+        },
       },
       h3: {
         color: '#FBFBFB',
         fontWeight: 600,
         fontSize: '40px !important',
+        '@media (max-width:600px)': {
+          fontSize: '30px !important',
+        },
       },
       h4: {
         color: '#FBFBFB',
         fontWeight: 500,
         fontSize: '30px !important',
+        '@media (max-width:600px)': {
+          fontSize: '20px !important',
+        },
       },
       h5: {
         color: '#FBFBFB',
@@ -209,5 +202,6 @@ export const mergeThemes = () => {
       },
     },
   })
+
   return theme
 }

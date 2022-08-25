@@ -12,12 +12,12 @@ interface IWatchpartyParticipantsProps {
   conferenceDetails?: ConferenceDetails
   participants: Participant[]
   skipCurrentConference: () => void
-  setShowMediaStream: (value: boolean) => void
   buttonPrimary?: boolean
+  onJoinNextParty: any
 }
 
 const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
-  const { conferenceDetails, participants, skipCurrentConference, setShowMediaStream, buttonPrimary = false } = props
+  const { conferenceDetails, participants, skipCurrentConference, onJoinNextParty, buttonPrimary = false } = props
 
   const useWatchContext = React.useContext(WatchContext.Context)
 
@@ -58,9 +58,9 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
           </Box>
         )}
       </Box>
-      <Box display="flex" justifyContent="space-evenly">
+      <Box display="flex" justifyContent="space-evenly" className={classes.buttonContainer}>
         <CustomButton
-          onClick={() => setShowMediaStream(true)}
+          onClick={onJoinNextParty}
           size={BUTTONSIZE.SMALL}
           buttonType={buttonPrimary ? BUTTONTYPE.SECONDARY : BUTTONTYPE.TERTIARY}
         >

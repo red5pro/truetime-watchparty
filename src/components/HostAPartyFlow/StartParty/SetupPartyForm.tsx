@@ -23,14 +23,14 @@ import { ICountry } from '../../../models/Country'
 import InfoIcon from '@mui/icons-material/Info'
 import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
-import { IAccount } from '../../../models/Account'
+import { AccountCredentials } from '../../../models/AccountCredentials'
 import { generateJoinToken, IStepActionsSubComponent } from '../../../utils/commonUtils'
 
 interface ISetupPartyFormProps {
   onActions: IStepActionsSubComponent
   data?: ConferenceDetails
   setData: (values: ConferenceDetails) => void
-  account?: IAccount
+  account?: AccountCredentials
 }
 
 export interface IPartyData {
@@ -170,7 +170,6 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
                   },
                 }}
                 value={values.country}
-                {...props}
               >
                 {SELECT_COUNTRIES.map((country: ICountry) => {
                   return (

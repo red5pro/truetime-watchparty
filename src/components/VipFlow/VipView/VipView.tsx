@@ -1,20 +1,22 @@
 import { Box, Typography } from '@mui/material'
-import { IAccount } from '../../../models/Account'
-import { IStepActionsSubComponent } from '../../../utils/commonUtils'
+import { AccountCredentials } from '../../../models/AccountCredentials'
+import { isMobileScreen, IStepActionsSubComponent } from '../../../utils/commonUtils'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './VipView.module'
 
 interface IVipViewProps {
   onActions: IStepActionsSubComponent
-  account?: IAccount
+  account?: AccountCredentials
 }
 
 const VipView = (props: IVipViewProps) => {
   const { onActions, account } = props
   const { classes } = useStyles()
 
+  const isMobile = isMobileScreen()
+
   return (
-    <Box paddingX={8} display="flex" flexDirection="column" width="65%">
+    <Box paddingX={isMobile ? 2 : 8} display="flex" flexDirection="column" width={isMobile ? '100%' : '65%'}>
       <Typography variant="h1">
         Welcome To WBC`S <br /> Watch Parties
       </Typography>
