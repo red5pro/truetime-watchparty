@@ -89,17 +89,35 @@ const MainStageLayoutSelect = (props: MainStageLayoutSelectProps) => {
         </Stack>
       </Fade>
       {layout === Layout.STAGE && (
-        <IconButton color="primary" aria-label="stage layout" component="label" onClick={toggleSelect}>
+        <IconButton
+          sx={{ backdropFilter: 'contrast(0.3)' }}
+          color="primary"
+          aria-label="stage layout"
+          component="label"
+          onClick={toggleSelect}
+        >
           <LayoutIconStage />
         </IconButton>
       )}
       {layout === Layout.FULLSCREEN && (
-        <IconButton color="primary" aria-label="stage layout" component="label" onClick={toggleSelect}>
+        <IconButton
+          sx={{ backdropFilter: 'contrast(0.3)' }}
+          color="primary"
+          aria-label="stage layout"
+          component="label"
+          onClick={toggleSelect}
+        >
           <LayoutIconFullscreen />
         </IconButton>
       )}
       {layout === Layout.EMPTY && (
-        <IconButton color="primary" aria-label="stage layout" component="label" onClick={toggleSelect}>
+        <IconButton
+          sx={{ backdropFilter: 'contrast(0.3)' }}
+          color="primary"
+          aria-label="stage layout"
+          component="label"
+          onClick={toggleSelect}
+        >
           <LayoutIconEmpty />
         </IconButton>
       )}

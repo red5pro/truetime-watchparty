@@ -38,11 +38,10 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'absolute',
       top: 20,
       zIndex: 0,
+      filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
     },
     topControls: {
       zIndex: 1,
-      display: 'flex',
-      flexDirection: 'row',
     },
     bottomBar: {
       position: 'absolute',

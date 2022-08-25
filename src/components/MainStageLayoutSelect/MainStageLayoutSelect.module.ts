@@ -4,7 +4,7 @@ const useStyles = makeStyles()((theme: any) => {
   return {
     selectContainer: {
       position: 'absolute',
-      bottom: '40px',
+      bottom: '50px',
       padding: '10px 20px',
       boxSizing: 'border-box',
       backgroundColor: 'rgba(71, 71, 71, 0.6)',
