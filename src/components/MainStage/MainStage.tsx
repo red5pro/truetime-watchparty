@@ -30,6 +30,7 @@ import VolumeControl from '../VolumeControl/VolumeControl'
 import PublisherControls from '../PublisherControls/PublisherControls'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
+import { useCookies } from 'react-cookie'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -64,6 +65,8 @@ const MainStage = () => {
 
   const { classes } = useStyles()
   const navigate = useNavigate()
+  const [cookies, setCookie] = useCookies(['account'])
+
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
   const mainVideoRef = React.useRef<SubscriberRef>(null)
@@ -85,21 +88,22 @@ const MainStage = () => {
   })
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
-    // TODO: Determine if Participant or Registered User?
-    // TODO: Where does username & password come from if registered?
-
     const request: ConnectionRequest = {
       displayName: name,
       joinToken: token,
       streamGuid: guid,
     } as ConnectionRequest
 
-    // Participant
-    const fp = joinContext.fingerprint
-    request.fingerprint = fp
-
-    // Registered User
-    // set u/p
+    if (!cookies?.account) {
+      // Participant
+      const fp = joinContext.fingerprint
+      request.fingerprint = fp
+    } else {
+      // Registered User
+      const { email, password } = cookies.account
+      request.username = email
+      request.password = password
+    }
 
     // Local testing
     const url = `ws://localhost:8001`
@@ -223,7 +227,6 @@ const MainStage = () => {
   }
 
   const toggleLink = () => {
-    // TODO: Show modal with share link
     setShowLink(!showLink)
   }
 

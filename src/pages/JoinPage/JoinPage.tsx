@@ -54,13 +54,6 @@ const JoinPage = () => {
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
 
   React.useEffect(() => {
-    console.log('JOIN RENDER')
-    return () => {
-      console.log('JOIN OUT')
-    }
-  }, [])
-
-  React.useEffect(() => {
     if (searchParams.get('s_id')) {
       const s_id: string = searchParams.get('s_id') as string
       const id = parseInt(s_id, 10)
