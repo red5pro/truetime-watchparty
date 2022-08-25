@@ -61,3 +61,5 @@ export const generateJoinToken = (length = 16) => {
 
   return result
 }
+
+export const isMobileScreen = () => (window && window.innerWidth <= 600 ? true : false)

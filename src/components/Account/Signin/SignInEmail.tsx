@@ -6,9 +6,9 @@ import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './Signin.module'
-
-import SignUp from './SignUp'
 import { IStepActionsSubComponent } from '../../../utils/commonUtils'
+import { USER_API_CALLS } from '../../../services/api/user-api-calls'
+import { UserAccount } from '../../../models/UserAccount'
 
 const initialValues = {
   email: '',
@@ -39,33 +39,41 @@ const SignInEmail = (props: ISignInEmailProps) => {
   const { onActions } = props
   const { classes } = useStyles()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [cookies, setCookie] = useCookies(['account'])
+  const [cookies, setCookie] = useCookies(['userAccount', 'account'])
 
-  const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<boolean>(false)
-  const [createNewAccount, setCreateAccount] = React.useState<boolean>(false)
+  const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string>()
   const [forgotPassword, setForgotPassword] = React.useState<boolean>(false)
+  const [accountUnverified, setAccountUnverified] = React.useState<boolean>(false)
 
   const handleSubmit = async (values: any) => {
-    // const response = await API_REQUEST
+    const response = await USER_API_CALLS.signin(values.email, values.password)
 
-    setCookie('account', values, { secure: true })
+    if (response.status === 200 && response.data) {
+      const account: UserAccount = response.data
+      if (account.isVerified) {
+        setCookie('account', values, { secure: true })
+        setCookie('userAccount', response.data, { secure: true })
 
-    // if (response.data) {
-    if (onActions) {
-      onActions.onNextStep()
-      return
-      // }
+        if (onActions) {
+          onActions.onNextStep()
+          return
+        }
+      } else {
+        setAccountUnverified(true)
+      }
+    } else {
+      setErrorAfterSubmit(response.statusText)
     }
-
-    // setErrorAfterSubmit(response.statusText)
   }
 
-  if (createNewAccount) {
-    return <SignUp />
-  }
-
+  // TODO
   if (forgotPassword) {
     return <Box>Forgot Password</Box>
+  }
+
+  // TODO
+  if (accountUnverified) {
+    return <Box>Verify Account</Box>
   }
 
   return (
@@ -96,9 +104,6 @@ const SignInEmail = (props: ISignInEmailProps) => {
               {/* TODO IMPLEMENT FORGOT PASSWORD */}
               <Link textAlign="end" onClick={() => setForgotPassword(true)}>
                 Forgot your password?
-              </Link>
-              <Link textAlign="end" onClick={() => setCreateAccount(true)}>
-                <strong>Need to create a new account?</strong>
               </Link>
 
               <CustomButton
