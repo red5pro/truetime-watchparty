@@ -5,6 +5,20 @@ const useStyles = makeStyles()((theme: any) => {
     avSetup: {
       position: 'relative',
       top: -50,
+
+      '& > div': {
+        marginTop: '3rem',
+      },
+
+      [theme.breakpoints.down('sm')]: {
+        '& > div': {
+          margin: '0 12px',
+        },
+
+        '& video': {
+          width: '100%',
+        },
+      },
     },
     container: {
       width: '25rem',
@@ -12,8 +26,10 @@ const useStyles = makeStyles()((theme: any) => {
       background: '#303030 60%',
       padding: '32px',
 
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down('sm')]: {
         width: '75%',
+        marginBottom: '16px',
+        flexDirection: 'column',
       },
     },
     title: {

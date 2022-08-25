@@ -25,6 +25,8 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/
 import { Episode } from '../../../models/Episode'
 import WatchpartyParticipants from '../WatchpartyParticipants/WatchpartyParticipants'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
+import VipTimer from '../VipTimer/VipTimer'
+import LeaveMessage from './LeaveMessage/LeaveMessage'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -34,12 +36,11 @@ interface IVipMainStageProps {
   currentEpisode: Episode
   participants: Participant[]
   skipCurrentConference: () => void
-  setShowMediaStream: (value: boolean) => void
   conferenceDetails: ConferenceDetails
 }
 
 const VipMainStage = (props: IVipMainStageProps) => {
-  const { currentEpisode, participants, skipCurrentConference, setShowMediaStream, conferenceDetails } = props
+  const { currentEpisode, participants, skipCurrentConference, conferenceDetails } = props
 
   const joinContext = useJoinContext()
   const { data, message, join } = useWatchContext()
@@ -54,8 +55,10 @@ const VipMainStage = (props: IVipMainStageProps) => {
   const [maxParticipants, setMaxParticipants] = React.useState<number>(0)
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
-  const [vipParticipant, setVipParticipant] = React.useState<Participant>()
+  // const [vipParticipant, setVipParticipant] = React.useState<Participant>()
   const [requiresSubscriberScroll, setRequiresSubscriberScroll] = React.useState<boolean>(false)
+  const [finishedCountdown, setFinishedCountdown] = React.useState<boolean>(false)
+  const [startedCountdown, setStartedCountdown] = React.useState<boolean>(false)
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     // TODO: Determine if Participant or Registered User?
@@ -118,12 +121,6 @@ const VipMainStage = (props: IVipMainStageProps) => {
     }
   }, [data.connection])
 
-  React.useEffect(() => {
-    if (data.vip && data.vip.participantId !== vipParticipant?.participantId) {
-      setVipParticipant(data.vip)
-    }
-  }, [data.vip])
-
   const clearMediaContext = () => {
     if (mediaContext && mediaContext.mediaStream) {
       mediaContext.mediaStream.getTracks().forEach((t: MediaStreamTrack) => t.stop())
@@ -135,6 +132,7 @@ const VipMainStage = (props: IVipMainStageProps) => {
   const onPublisherBroadcast = () => {
     const streamGuid = joinContext.getStreamGuid()
     const { url, request } = getSocketUrl(joinContext.joinToken, joinContext.nickname, streamGuid)
+    setStartedCountdown(true)
     join(url, request)
   }
 
@@ -166,7 +164,7 @@ const VipMainStage = (props: IVipMainStageProps) => {
         <Box display="flex" justifyContent="flex-end" width="50%">
           <Typography textAlign="center">{currentEpisode.displayName}</Typography>
         </Box>
-        <Box display="flex" justifyContent="flex-end" width="50%">
+        <Box display="flex" justifyContent="flex-end" width="50%" marginRight="20px">
           <CustomButton
             size={BUTTONSIZE.SMALL}
             buttonType={BUTTONTYPE.LEAVE}
@@ -177,6 +175,12 @@ const VipMainStage = (props: IVipMainStageProps) => {
           </CustomButton>
         </Box>
       </Box>
+      {!data.conference && !mainStreamGuid && (
+        <Box top={2} className={classes.loadingContainer}>
+          <Loading />
+          <Typography>Loading Watch Party</Typography>
+        </Box>
+      )}
       {/* Main Video */}
       {mainStreamGuid && (
         <Box height="100%">
@@ -218,7 +222,7 @@ const VipMainStage = (props: IVipMainStageProps) => {
         )}
       </Box>
 
-      <Box className={classes.vipOwnVideo}>
+      <Box className={classes.vipOwnVideo} display="flex">
         <Publisher
           key="publisher"
           useStreamManager={USE_STREAM_MANAGER}
@@ -232,14 +236,26 @@ const VipMainStage = (props: IVipMainStageProps) => {
         />
       </Box>
       <Box className={classes.participantsView}>
-        <WatchpartyParticipants
-          skipCurrentConference={skipCurrentConference}
-          // NOTE: CHECK IF conferenceDetails IS NEEDED
-          conferenceDetails={data.conference ?? conferenceDetails}
-          participants={participants}
-          setShowMediaStream={setShowMediaStream}
-          buttonPrimary
-        />
+        {/* CHECK WHEN WE SHOULD DISPLAY THIS */}
+        {finishedCountdown ? (
+          <LeaveMessage />
+        ) : (
+          <>
+            <VipTimer
+              startedCountdown={startedCountdown}
+              setFinishedCountdown={setFinishedCountdown}
+              finishedCountdown={finishedCountdown}
+            />
+            <WatchpartyParticipants
+              skipCurrentConference={skipCurrentConference}
+              // NOTE: CHECK IF conferenceDetails IS NEEDED
+              conferenceDetails={data.conference ?? conferenceDetails}
+              participants={participants}
+              onJoinNextParty={() => console.log('join next party here')}
+              buttonPrimary
+            />
+          </>
+        )}
       </Box>
     </Box>
   )

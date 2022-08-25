@@ -59,11 +59,34 @@ const useStyles = makeStyles()((theme: any) => {
       top: '4rem',
       maxWidth: '350px',
     },
+
+    ownVideoContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      width: '100%',
+      height: '100%',
+      '& video': {
+        borderRadius: '20px',
+        backgroundColor: 'black',
+        width: '260px',
+        objectFit: 'cover',
+        height: '260px',
+        transform: 'rotateY(180deg)',
+      },
+    },
+
     participantsView: {
       position: 'absolute',
       bottom: 0,
       right: 0,
       margin: '20px',
+
+      '& > div:first-child': {
+        margin: 'auto',
+        position: 'relative',
+        top: 16,
+        backgroundColor: '#303030',
+      },
     },
   }
 })

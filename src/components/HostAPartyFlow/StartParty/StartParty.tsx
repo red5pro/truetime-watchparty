@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
-import { IAccount } from '../../../models/Account'
+import { AccountCredentials } from '../../../models/AccountCredentials'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
 import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 import SetupPartyForm from './SetupPartyForm'
@@ -12,7 +12,7 @@ interface IStartPartyProps {
   setData: (values: ConferenceDetails) => void
   currentEpisode: any
   currentSerie: any
-  account: IAccount
+  account: AccountCredentials
 }
 
 const StartParty = (props: IStartPartyProps) => {
