@@ -79,14 +79,10 @@ const JoinPage = () => {
   }
 
   const onStartSetup = (values: any) => {
+    clearMediaContext()
     joinContext.updateNickname(values.nickname)
     setCurrentSection(Section.AVSetup)
   }
-
-  const onJoin = () => {
-    setCurrentSection(Section.WatchParty)
-  }
-
   const onReturnToLanding = () => {
     clearMediaContext()
     setCurrentSection(Section.Landing)
@@ -95,7 +91,13 @@ const JoinPage = () => {
     clearMediaContext()
     setCurrentSection(Section.Nickname)
   }
-  const onStartJoin = () => setCurrentSection(Section.Nickname)
+  const onStartJoin = () => {
+    clearMediaContext()
+    setCurrentSection(Section.Nickname)
+  }
+  const onJoin = () => {
+    setCurrentSection(Section.WatchParty)
+  }
 
   return (
     <Box className={classes.root}>
