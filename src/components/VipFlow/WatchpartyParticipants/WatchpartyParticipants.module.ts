@@ -26,3 +26,18 @@ const useStyles = makeStyles()((theme: any) => {
 })
 
 export default useStyles
+
+export const styles = {
+  stage: {
+    button: {
+      color: 'red',
+    },
+    participantVideoFeedContainer: {
+      width: '80px',
+      height: '80px',
+    },
+    participantVideoFeed: {
+      borderRadius: '18px',
+    },
+  },
+}

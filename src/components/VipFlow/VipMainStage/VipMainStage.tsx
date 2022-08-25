@@ -60,28 +60,6 @@ const VipMainStage = (props: IVipMainStageProps) => {
   const [finishedCountdown, setFinishedCountdown] = React.useState<boolean>(false)
   const [startedCountdown, setStartedCountdown] = React.useState<boolean>(false)
 
-  const getSocketUrl = (token: string, name: string, guid: string) => {
-    // TODO: Determine if Participant or Registered User?
-    // TODO: Where does username & password come from if registered?
-
-    const request: ConnectionRequest = {
-      displayName: name,
-      joinToken: token,
-      streamGuid: guid,
-    } as ConnectionRequest
-
-    // Participant
-    const fp = joinContext.fingerprint
-    request.fingerprint = fp
-
-    // Registered User
-    // set u/p
-
-    // Local testing
-    const url = `ws://localhost:8001`
-    return { url, request }
-  }
-
   if (!mediaContext?.mediaStream) {
     // TODO: Navigate back to auth?
     // TODO: If have auth context, navigate back to join?
@@ -130,10 +108,7 @@ const VipMainStage = (props: IVipMainStageProps) => {
   }
 
   const onPublisherBroadcast = () => {
-    const streamGuid = joinContext.getStreamGuid()
-    const { url, request } = getSocketUrl(joinContext.joinToken, joinContext.nickname, streamGuid)
     setStartedCountdown(true)
-    join(url, request)
   }
 
   const onPublisherBroadcastInterrupt = () => {
