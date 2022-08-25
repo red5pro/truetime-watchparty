@@ -5,7 +5,6 @@ import { Box, Typography } from '@mui/material'
 import Loading from '../../components/Loading/Loading'
 import useStyles from './JoinPage.module'
 import { Participant } from '../../models/Participant'
-import MainStagePage from '../MainStagePage/MainStagePage'
 
 import JoinContext from '../../components/JoinContext/JoinContext'
 import MediaContext from '../../components/MediaContext/MediaContext'
