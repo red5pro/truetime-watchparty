@@ -7,7 +7,7 @@ import Lock from '@mui/icons-material/Lock'
 import LockOpen from '@mui/icons-material/LockOpen'
 import GroupAdd from '@mui/icons-material/GroupAdd'
 import ChatBubble from '@mui/icons-material/ChatBubble'
-import { ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
 
@@ -104,8 +104,12 @@ const MainStage = () => {
       request.password = password
     }
 
-    // Local testing
-    const url = `ws://localhost:8001`
+    const host = API_SOCKET_HOST
+    let url = `wss:${host}`
+    if (host === 'localhost') {
+      // Local testing
+      url = `ws://localhost:8001`
+    }
     return { url, request }
   }
 
