@@ -18,7 +18,7 @@ const useStyles = makeStyles()((theme: any) => {
       right: 10,
     },
     accountIcon: {
-      margin: '50%',
+      position: 'absolute',
     },
   }
 })

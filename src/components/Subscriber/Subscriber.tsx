@@ -28,13 +28,26 @@ interface ISubscriberProps {
   videoStyles: AnalyserOptions | any
   mute: boolean
   showControls: boolean
+  isAudioOff?: boolean
+  isVideoOff?: boolean
 }
 
 const DELAY = 2000
 const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
 
 const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<SubscriberRef>) => {
-  const { useStreamManager, resubscribe, host, streamGuid, styles, videoStyles, mute, showControls } = props
+  const {
+    useStreamManager,
+    resubscribe,
+    host,
+    streamGuid,
+    styles,
+    videoStyles,
+    mute,
+    showControls,
+    isAudioOff, // from organizer mute
+    isVideoOff, // from organizer mute
+  } = props
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 
@@ -48,8 +61,8 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
   const [streamName, setStreamName] = React.useState<string>('')
   const [isSubscribed, setIsSubscribed] = React.useState<boolean>(false)
   const [isSubscribing, setIsSubscribing] = React.useState<boolean>(false)
-  const [audioOn, setAudioOn] = React.useState<boolean>(true)
-  const [videoOn, setVideoOn] = React.useState<boolean>(true)
+  const [audioOn, setAudioOn] = React.useState<boolean>(!isAudioOff)
+  const [videoOn, setVideoOn] = React.useState<boolean>(!isVideoOff)
 
   const [playbackVolume, setPlaybackVolume] = React.useState<number>(1.0)
 
@@ -213,7 +226,7 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
           <Loading />
         </Box>
       )}
-      {!videoOn && <AccountBox fontSize="large" className={classes.accountIcon} />}
+      {(!videoOn || isVideoOff) && <AccountBox fontSize="large" className={classes.accountIcon} />}
       <VideoElement
         elementId={elementId}
         muted={mute}
@@ -222,8 +235,8 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
         volume={playbackVolume}
       />
       <Stack direction="row" spacing={1} className={classes.iconBar}>
-        {!audioOn && <MicOff />}
-        {!videoOn && <VideocamOff />}
+        {(!audioOn || isAudioOff) && <MicOff />}
+        {(!videoOn || isVideoOff) && <VideocamOff />}
       </Stack>
     </Box>
   )
