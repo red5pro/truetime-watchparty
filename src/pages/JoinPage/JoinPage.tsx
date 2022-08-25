@@ -80,16 +80,11 @@ const JoinPage = () => {
   }
 
   const onStartSetup = (values: any) => {
-    // TODO: Store nickname... in API call? in Session Storage?
     joinContext.updateNickname(values.nickname)
     setCurrentSection(Section.AVSetup)
   }
 
   const onJoin = () => {
-    // TODO: Define and Store media settings... in a MediaContext? in Session storage?
-    // TODO: Navigate to new party page.
-    // If Own Page?
-    // navigate(`/main/${joinToken}`)
     setCurrentSection(Section.WatchParty)
   }
 

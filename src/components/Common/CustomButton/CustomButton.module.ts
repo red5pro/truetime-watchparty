@@ -45,7 +45,6 @@ const getRootStyles = (size: BUTTONSIZE, theme: any) =>
         height: '40px',
         [theme.breakpoints.down('md')]: {
           fontSize: '14px',
-          minWidth: 'auto',
         },
       },
       '& p': {

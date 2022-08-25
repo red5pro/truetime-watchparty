@@ -26,6 +26,27 @@ const createUser = async (email: string, password: string, role?: string) => {
   }
 }
 
+const signin = async (email: string, password: string) => {
+  try {
+    const params = {
+      user: email,
+      password: password,
+    }
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.USER}/whoami`, { params })
+
+    return response
+  } catch (e: any) {
+    console.log(e)
+
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
 export const USER_API_CALLS = {
   createUser,
+  signin,
 }
