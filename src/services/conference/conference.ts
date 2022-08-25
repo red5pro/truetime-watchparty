@@ -1,4 +1,4 @@
-import { IAccount } from './../../models/Account'
+import { AccountCredentials } from '../../models/AccountCredentials'
 import { CONFERENCE_API_CALLS } from '../api/conference-api-calls'
 
 export const getCurrentEpisode = async () => {
@@ -29,14 +29,14 @@ export const getCurrentEpisode = async () => {
   return [currentEpisode, currentSerie, nextEpisodes]
 }
 
-export const getAllConferences = async (account: IAccount) => {
+export const getAllConferences = async (account: AccountCredentials) => {
   return await CONFERENCE_API_CALLS.getAllConferences(account)
 }
 
-export const getConferenceDetails = async (conferenceId: string, account: IAccount) => {
+export const getConferenceDetails = async (conferenceId: string, account: AccountCredentials) => {
   return await CONFERENCE_API_CALLS.getConferenceDetails(conferenceId, account)
 }
 
-export const getConferenceParticipants = async (conferenceId: string, account: IAccount) => {
+export const getConferenceParticipants = async (conferenceId: string, account: AccountCredentials) => {
   return await CONFERENCE_API_CALLS.getConferenceParticipants(conferenceId, account)
 }

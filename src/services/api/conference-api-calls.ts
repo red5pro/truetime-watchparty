@@ -1,6 +1,6 @@
 import { ParticipantMuteState } from './../../models/Participant'
 import axios, { AxiosResponse } from 'axios'
-import { IAccount } from '../../models/Account'
+import { AccountCredentials } from '../../models/AccountCredentials'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
 
@@ -41,7 +41,7 @@ const getSeriesList = async () => {
   } as AxiosResponse
 }
 
-const getCurrentEpisode = async (serieId: string, account?: IAccount) => {
+const getCurrentEpisode = async (serieId: string, account?: AccountCredentials) => {
   // try {
   //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}/${serieId}/episode/current?user=${account.email}&password=${account.password}`)
   // } catch (e: any) {
@@ -63,7 +63,7 @@ const getCurrentEpisode = async (serieId: string, account?: IAccount) => {
   } as AxiosResponse
 }
 
-const getAllEpisodes = async (serieId: string, account?: IAccount) => {
+const getAllEpisodes = async (serieId: string, account?: AccountCredentials) => {
   // try {
   //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}/${serieId}/episode?user=${account.email}&password=${account.password}`)
   // } catch (e: any) {
@@ -106,7 +106,7 @@ const getAllEpisodes = async (serieId: string, account?: IAccount) => {
   } as AxiosResponse
 }
 
-const getConferenceDetails = async (conferenceId: string, account?: IAccount) => {
+const getConferenceDetails = async (conferenceId: string, account?: AccountCredentials) => {
   const id = parseInt(conferenceId) // Can come in as an integer or string
 
   try {
@@ -174,7 +174,7 @@ const getJoinDetails = async (joinToken: string) => {
   } as AxiosResponse
 }
 
-const createConference = async (conference: ConferenceDetails, account: IAccount) => {
+const createConference = async (conference: ConferenceDetails, account: AccountCredentials) => {
   // try {
   //   const response: AxiosResponse = await axios.post(
   //     `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`,
@@ -199,7 +199,7 @@ const createConference = async (conference: ConferenceDetails, account: IAccount
   } as AxiosResponse
 }
 
-const getAllConferences = async (account: IAccount) => {
+const getAllConferences = async (account: AccountCredentials) => {
   try {
     const response: AxiosResponse = await axios.get(
       `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`
@@ -215,7 +215,21 @@ const getAllConferences = async (account: IAccount) => {
   }
 }
 
-const getConferenceParticipants = async (conferenceId: string, account: IAccount) => {
+const getConferenceLoby = async (joinToken: string) => {
+  try {
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/lobby?joinToken=${joinToken}`)
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
+const getConferenceParticipants = async (conferenceId: string, account: AccountCredentials) => {
   try {
     const response: AxiosResponse = await axios.get(
       `${ENDPOINT.CONFERENCE}/${conferenceId}/participants?user=${account.email}&password=${account.password}`
@@ -231,7 +245,7 @@ const getConferenceParticipants = async (conferenceId: string, account: IAccount
   }
 }
 
-const lockConference = async (conferenceId: string | number, account: IAccount) => {
+const lockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
     const response: AxiosResponse = await axios.get(
       `${ENDPOINT.CONFERENCE}/${conferenceId}/lock?user=${account.email}&password=${account.password}`
@@ -247,7 +261,7 @@ const lockConference = async (conferenceId: string | number, account: IAccount) 
   }
 }
 
-const unlockConference = async (conferenceId: string | number, account: IAccount) => {
+const unlockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
     const response: AxiosResponse = await axios.put(
       `${ENDPOINT.CONFERENCE}/${conferenceId}/unlock?user=${account.email}&password=${account.password}`
@@ -265,7 +279,7 @@ const unlockConference = async (conferenceId: string | number, account: IAccount
 
 const muteParticipant = async (
   conferenceId: string | number,
-  account: IAccount,
+  account: AccountCredentials,
   participantId: string | number,
   participantMuteState: ParticipantMuteState
 ) => {
@@ -288,7 +302,11 @@ const muteParticipant = async (
   }
 }
 
-const banParticipant = async (conferenceId: string | number, account: IAccount, participantId: string | number) => {
+const banParticipant = async (
+  conferenceId: string | number,
+  account: AccountCredentials,
+  participantId: string | number
+) => {
   try {
     const id = '' + participantId
     const response: AxiosResponse = await axios.delete(
@@ -318,4 +336,5 @@ export const CONFERENCE_API_CALLS = {
   unlockConference,
   muteParticipant,
   banParticipant,
+  getConferenceLoby,
 }

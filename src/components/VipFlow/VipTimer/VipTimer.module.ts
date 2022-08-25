@@ -17,8 +17,8 @@ const useStyles = makeStyles()((theme: any) => {
       fontWeight: 600,
     },
     timer: {
-      width: '85px',
-      height: '85px',
+      width: '85px !important',
+      height: '85px !important',
       border: '3px solid #2864FF',
       borderRadius: '50%',
       margin: '0 20px',

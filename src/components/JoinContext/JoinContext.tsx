@@ -5,6 +5,7 @@ import useQueryParams from '../../hooks/useQueryParams'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { Serie } from '../../models/Serie'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
+import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
 import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 
@@ -36,7 +37,7 @@ const JoinProvider = (props: JoinContextProps) => {
   // TODO: Update this based on User record / Auth ?
   // TODO: Does this belong here or in an overarching Context ?
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT)
-  const [fingerprint, setFingerprint] = React.useState<string | undefined>(LocalStorage.get('wp_fingerorint'))
+  const [fingerprint, setFingerprint] = React.useState<string | undefined>(LocalStorage.get('wp_fingeprint'))
   const [nickname, setNickname] = React.useState<string | undefined>(LocalStorage.get('wp_nickname' || undefined)) // TODO: get from participant context or session storage?
   // ConferenceDetails access from the server API.
   const [seriesEpisode, dispatch] = useReducer(episodeReducer, {
@@ -66,7 +67,7 @@ const JoinProvider = (props: JoinContextProps) => {
   }, [fingerprint])
 
   React.useEffect(() => {
-    if (joinToken) {
+    if (joinToken && !conferenceData) {
       getConferenceData(joinToken)
     }
   }, [joinToken])
@@ -105,8 +106,14 @@ const JoinProvider = (props: JoinContextProps) => {
 
   // Returns stream guid (context + name) of the current participant to broadcast on.
   const getStreamGuid = () => {
-    // TODO: Strip special characters.
-    return `live/${joinToken}_${nickname}`
+    if (!nickname) return null
+
+    // Only keep numbers and letters, otherwise stream may break.
+    const stripped = nickname.replace(/[^a-zA-Z0-9]/g, '')
+    if (!FORCE_LIVE_CONTEXT && joinToken) {
+      return `${joinToken?.split('-').join('')}/${stripped}`
+    }
+    return `live/${joinToken}_${stripped}`
   }
 
   const getMainStreamGuid = () => {
@@ -147,6 +154,7 @@ const JoinProvider = (props: JoinContextProps) => {
     seriesEpisode,
     conferenceData,
     conferenceLocked,
+    setConferenceData,
     updateNickname: (value: string) => {
       setNickname(value)
       LocalStorage.set('wp_nickname', value)

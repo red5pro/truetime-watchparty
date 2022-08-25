@@ -109,9 +109,8 @@ const MainStage = () => {
     return { url, request }
   }
 
-  if (!mediaContext?.mediaStream) {
-    // TODO: Navigate back to auth?
-    // TODO: If have auth context, navigate back to join?
+  if (!mediaContext?.mediaStream || !joinContext?.getStreamGuid()) {
+    // TODO: Navigate back. This may happen on a refesh
     // navigate(`/join/${joinContext.joinToken}`)
   }
 
@@ -120,7 +119,7 @@ const MainStage = () => {
     if (!mediaContext?.mediaStream) {
       // TODO: Remove for testing
       onPublisherBroadcast()
-      // navigate(`/join/${params.token}`)
+      // navigate(`/join/${joinContext.joinToken}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
       const { mediaStream } = mediaContext
       setPublishMediaStream(mediaStream)
@@ -193,11 +192,11 @@ const MainStage = () => {
   }
 
   const onPublisherBroadcastInterrupt = () => {
-    // TODO
+    // TODO: Show Interrupe Error
   }
 
   const onPublisherFail = () => {
-    // TODO
+    // TODO: Show Alert
   }
 
   const onLeave = () => {
@@ -209,15 +208,13 @@ const MainStage = () => {
     if (joinContext.conferenceLocked) {
       try {
         const result = await joinContext.lock()
-        console.log('LOCK', result)
       } catch (e) {
-        // TODO:
+        // TODO: Show Error
         console.error(e)
       }
     } else {
       try {
         const result = await joinContext.unlock()
-        console.log('UNLOCK', result)
       } catch (e) {
         // TODO: Show Error
         console.error(e)
@@ -259,7 +256,6 @@ const MainStage = () => {
 
   const subscriberMenuActions = {
     onMuteAudio: async (participant: Participant, requestMute: boolean) => {
-      console.log('MUTE AUDIO', participant)
       const { muteState } = participant
       const requestState = { ...muteState!, audioMuted: requestMute }
       try {
@@ -275,7 +271,6 @@ const MainStage = () => {
       }
     },
     onMuteVideo: async (participant: Participant, requestMute: boolean) => {
-      console.log('MUTE VIDEO', participant)
       const { muteState } = participant
       const requestState = { ...muteState!, videoMuted: requestMute }
       try {
@@ -291,8 +286,7 @@ const MainStage = () => {
       }
     },
     onBan: async (participant: Participant) => {
-      // TODO: Show Confirmation?
-      console.log('BAN', participant)
+      // TODO: Show Confirmation before call?
       try {
         const result = await CONFERENCE_API_CALLS.banParticipant(
           data.conference.conferenceId,
