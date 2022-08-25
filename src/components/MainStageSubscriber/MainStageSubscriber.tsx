@@ -28,8 +28,8 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
         resubscribe={false}
         styles={styles}
         videoStyles={videoStyles}
-        isAudioOff={participant?.muteState.audioMuted}
-        isVideoOff={participant?.muteState.videoMuted}
+        isAudioOff={participant?.muteState?.audioMuted}
+        isVideoOff={participant?.muteState?.videoMuted}
       />
       {participant && menuActions && (
         <Box sx={{ position: 'absolute', top: 4, right: 4 }}>

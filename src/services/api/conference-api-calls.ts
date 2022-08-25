@@ -1,3 +1,4 @@
+import { ParticipantMuteState } from './../../models/Participant'
 import axios, { AxiosResponse } from 'axios'
 import { IAccount } from '../../models/Account'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
@@ -248,8 +249,50 @@ const lockConference = async (conferenceId: string | number, account: IAccount) 
 
 const unlockConference = async (conferenceId: string | number, account: IAccount) => {
   try {
-    const response: AxiosResponse = await axios.get(
+    const response: AxiosResponse = await axios.put(
       `${ENDPOINT.CONFERENCE}/${conferenceId}/unlock?user=${account.email}&password=${account.password}`
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
+const muteParticipant = async (
+  conferenceId: string | number,
+  account: IAccount,
+  participantId: string | number,
+  participantMuteState: ParticipantMuteState
+) => {
+  try {
+    const id = '' + participantId
+    const payload: any = {}
+    payload[id] = participantMuteState
+    const response: AxiosResponse = await axios.post(
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute?user=${account.email}&password=${account.password}`,
+      payload
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
+const banParticipant = async (conferenceId: string | number, account: IAccount, participantId: string | number) => {
+  try {
+    const id = '' + participantId
+    const response: AxiosResponse = await axios.delete(
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/${id}?user=${account.email}&password=${account.password}`
     )
     return response
   } catch (e: any) {
@@ -273,4 +316,6 @@ export const CONFERENCE_API_CALLS = {
   getConferenceParticipants,
   lockConference,
   unlockConference,
+  muteParticipant,
+  banParticipant,
 }

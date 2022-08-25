@@ -16,9 +16,15 @@ import MoreMenuIcon from '../Common/MoreMenuIcon/MoreMenuIcon'
 import useStyles from './SubscriberMenu.module'
 import { Block, Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material'
 
+interface SubscriberMenuActions {
+  onMuteAudio(participant: Participant, requestMute: boolean): any
+  onMuteVideo(participant: Participant, requestMute: boolean): any
+  onBan(participant: Participant): any
+}
+
 interface SubscriberMenuProps {
-  participant?: Participant
-  actions?: any
+  participant: Participant
+  actions: SubscriberMenuActions
 }
 
 const SubscriberMenu = (props: SubscriberMenuProps) => {
@@ -58,14 +64,19 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
   }
 
   const toggleMuteAudio = () => {
+    const muted = participant.muteState?.audioMuted
+    actions?.onMuteAudio(participant, !muted)
     onToggleMenu()
   }
 
   const toggleMuteVideo = () => {
+    const muted = participant.muteState?.audioMuted
+    actions?.onMuteVideo(participant, !muted)
     onToggleMenu()
   }
 
   const ban = () => {
+    actions?.onBan(participant)
     onToggleMenu()
   }
 
@@ -78,18 +89,18 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
         <List className={classes.listContainer}>
           <ListItemButton onClick={toggleMuteAudio}>
             <ListItemIcon className={classes.listItemIcon}>
-              {!participant?.muteState.audioMuted && <Mic sx={{ color: 'white' }} />}
-              {participant?.muteState.audioMuted && <MicOff sx={{ color: 'white' }} />}
+              {!participant.muteState?.audioMuted && <Mic sx={{ color: 'white' }} />}
+              {participant.muteState?.audioMuted && <MicOff sx={{ color: 'white' }} />}
             </ListItemIcon>
-            <ListItemText primary={!participant?.muteState.audioMuted ? 'Mute Audio' : 'Unmute Audio'} />
+            <ListItemText primary={!participant.muteState?.audioMuted ? 'Mute Audio' : 'Unmute Audio'} />
           </ListItemButton>
           <Divider className={classes.listDivider} />
           <ListItemButton onClick={toggleMuteVideo}>
             <ListItemIcon className={classes.listItemIcon}>
-              {!participant?.muteState.videoMuted && <Videocam sx={{ color: 'white' }} />}
-              {participant?.muteState.videoMuted && <VideocamOff sx={{ color: 'white' }} />}
+              {!participant.muteState?.videoMuted && <Videocam sx={{ color: 'white' }} />}
+              {participant.muteState?.videoMuted && <VideocamOff sx={{ color: 'white' }} />}
             </ListItemIcon>
-            <ListItemText primary={!participant?.muteState.videoMuted ? 'Mute Video' : 'Unmute Video'} />
+            <ListItemText primary={!participant.muteState?.videoMuted ? 'Mute Video' : 'Unmute Video'} />
           </ListItemButton>
           <Divider className={classes.listDivider} />
           <ListItemButton onClick={ban}>

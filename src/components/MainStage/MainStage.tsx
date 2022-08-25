@@ -31,6 +31,7 @@ import PublisherControls from '../PublisherControls/PublisherControls'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
 import { useCookies } from 'react-cookie'
+import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -218,7 +219,7 @@ const MainStage = () => {
         const result = await joinContext.unlock()
         console.log('UNLOCK', result)
       } catch (e) {
-        // TODO:
+        // TODO: Show Error
         console.error(e)
       }
     }
@@ -257,14 +258,51 @@ const MainStage = () => {
   }
 
   const subscriberMenuActions = {
-    onMuteAudio: (participant: Participant) => {
+    onMuteAudio: async (participant: Participant, requestMute: boolean) => {
       console.log('MUTE AUDIO', participant)
+      const { muteState } = participant
+      const requestState = { ...muteState!, audioMuted: requestMute }
+      try {
+        const result = await CONFERENCE_API_CALLS.muteParticipant(
+          data.conference.conferenceId,
+          cookies.account,
+          participant.participantId,
+          requestState
+        )
+      } catch (e) {
+        console.error(e)
+        // TODO: Show alert.
+      }
     },
-    onMuteVideo: (participant: Participant) => {
+    onMuteVideo: async (participant: Participant, requestMute: boolean) => {
       console.log('MUTE VIDEO', participant)
+      const { muteState } = participant
+      const requestState = { ...muteState!, videoMuted: requestMute }
+      try {
+        const result = await CONFERENCE_API_CALLS.muteParticipant(
+          data.conference.conferenceId,
+          cookies.account,
+          participant.participantId,
+          requestState
+        )
+      } catch (e) {
+        console.error(e)
+        // TODO: Show alert.
+      }
     },
-    onBan: (participant: Participant) => {
+    onBan: async (participant: Participant) => {
+      // TODO: Show Confirmation?
       console.log('BAN', participant)
+      try {
+        const result = await CONFERENCE_API_CALLS.banParticipant(
+          data.conference.conferenceId,
+          cookies.account,
+          participant.participantId
+        )
+      } catch (e) {
+        // TODO: Show alert.
+        console.error(e)
+      }
     },
   }
 
