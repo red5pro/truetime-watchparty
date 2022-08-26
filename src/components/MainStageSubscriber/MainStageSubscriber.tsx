@@ -1,5 +1,7 @@
+import { Box } from '@mui/material'
 import { Participant } from '../../models/Participant'
 import Subscriber from '../Subscriber/Subscriber'
+import SubscriberMenu from '../SubscriberMenu/SubscriberMenu'
 
 interface MainStageSubscriberProps {
   participant: Participant
@@ -7,22 +9,33 @@ interface MainStageSubscriberProps {
   useStreamManager: boolean
   styles: any
   videoStyles: any
+  menuActions?: any
 }
 
 const MainStageSubscriber = (props: MainStageSubscriberProps) => {
-  const { participant, host, useStreamManager, styles, videoStyles } = props
+  const { participant, host, useStreamManager, styles, videoStyles, menuActions } = props
 
   return (
-    <Subscriber
-      host={host}
-      useStreamManager={useStreamManager}
-      mute={false}
-      showControls={false}
-      streamGuid={participant.streamGuid}
-      resubscribe={false}
-      styles={styles}
-      videoStyles={videoStyles}
-    />
+    // TODO: Set `mute` to false for production
+    <Box sx={menuActions ? { ...styles, position: 'relative' } : {}}>
+      <Subscriber
+        host={host}
+        useStreamManager={useStreamManager}
+        mute={true}
+        showControls={false}
+        streamGuid={participant.streamGuid}
+        resubscribe={false}
+        styles={styles}
+        videoStyles={videoStyles}
+        isAudioOff={participant?.muteState?.audioMuted}
+        isVideoOff={participant?.muteState?.videoMuted}
+      />
+      {participant && menuActions && (
+        <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
+          <SubscriberMenu participant={participant} actions={menuActions} />
+        </Box>
+      )}
+    </Box>
   )
 }
 

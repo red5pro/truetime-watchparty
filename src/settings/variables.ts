@@ -5,9 +5,11 @@ export const RECAPTCHA_SITE_KEY = process.env.RECAPTCHA_SITE_KEY || '6LdnYWAhAAA
 export const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY || '6LdnYWAhAAAAABLHrGDm34M2M3gZE4Qy-3o0LMKJ'
 
 export const USE_STREAM_MANAGER = false
-export const API_SOCKET_HOST = API_SERVER_HOST
+export const API_SOCKET_HOST = 'localhost' // Should be API_SERVER_HOST, but for current testing purposes...
+export const FORCE_LIVE_CONTEXT = true
 export const STREAM_HOST = 'release-11.red5.net' // Should be SERVER_HOST, but for current testing purposes...
 export const DEFAULT_CONSTRAINTS = {
   audio: true,
   video: true,
 }
+export const ENABLE_MUTE_API = true

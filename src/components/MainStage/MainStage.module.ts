@@ -10,10 +10,8 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'relative',
     },
     loadingContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      width: '100%',
       alignItems: 'center',
+      marginTop: '10%',
     },
     mainVideo: {
       position: 'absolute',
@@ -40,11 +38,44 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'absolute',
       top: 20,
       zIndex: 0,
+      filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
     },
     topControls: {
       zIndex: 1,
+    },
+    bottomBar: {
+      position: 'absolute',
+      left: 0,
+      bottom: 0,
+      padding: '20px',
       display: 'flex',
       flexDirection: 'row',
+      width: '100%',
+    },
+    bottomControls: {
+      position: 'relative',
+      width: '100%',
+      alignItems: 'center',
+    },
+    layoutContainer: {
+      position: 'absolute',
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    chatInput: {
+      width: '45%',
+      maxWidth: '240px',
+    },
+    publishControls: {
+      position: 'absolute',
+      left: '24px',
+    },
+    partyControls: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      width: '100%',
     },
   }
 })
