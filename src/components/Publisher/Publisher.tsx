@@ -85,27 +85,26 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
     }
   }, [elementId, streamName, context])
 
-  React.useEffect(() => {
-    // TODO: Icons?
-  }, [cameraOn])
-
   const onPublisherEvent = (event: any) => {
     console.log(`[Red5ProPublisher(${streamName})]: PublisherEvent - ${event.type}.`)
     // if (event.type === 'WebSocket.Message.Unhandled') {
     //   console.log(event)
-    // } else if (event.type === RTCPublisherEventTypes.MEDIA_STREAM_AVAILABLE) {
-    // } else if (event.type === 'Publisher.Connection.Closed') {
     // }
-    // TODO: Handle events for onStart and onInterrupt
     if (event.type === 'Publish.Available') {
       onStart()
+    } else if (event.type === 'Publisher.Connection.Closed') {
+      // Unexpected close.
+      onInterrupt()
+    } else if (event.type === 'Connect.Failure') {
+      // Cannot establish connection.
+      onFail()
     }
   }
 
   const start = async () => {
     setIsPublishing(true)
+    const pub = new RTCPublisher()
     try {
-      const pub = new RTCPublisher()
       const config = {
         app: useStreamManager ? 'streammanager' : context,
         host: host,
@@ -130,6 +129,7 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error(`[Red5ProPublisher(${streamName})] :: Error in publishing -  ${jsonError}`)
       console.error(error)
+      pub.off('*', onPublisherEvent)
       setIsPublishing(false)
       setIsPublished(false)
       setPublisher(undefined)
