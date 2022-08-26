@@ -1,7 +1,7 @@
 import React from 'react'
 import * as portals from 'react-reverse-portal'
 import { useNavigate } from 'react-router-dom'
-import { IconButton, Box, Typography, Stack, Input } from '@mui/material'
+import { IconButton, Box, Typography, Stack, Input, Divider } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble } from '@mui/icons-material'
 import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
@@ -30,6 +30,7 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/Cus
 import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
+import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -358,7 +359,11 @@ const MainStage = () => {
         {/* Role-based Controls */}
         {data.conference && (
           <Box className={classes.topBar} sx={layout.style.topBar}>
-            <Typography className={classes.header}>{data.conference.displayName}</Typography>
+            <Stack direction="row" className={classes.header}>
+              <WbcLogoSmall />
+              <Divider orientation="vertical" flexItem className={classes.headerDivider} />
+              <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
+            </Stack>
             <Stack direction="row" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <IconButton
