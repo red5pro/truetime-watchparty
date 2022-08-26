@@ -5,7 +5,6 @@ import { Box, Typography } from '@mui/material'
 import Loading from '../../components/Loading/Loading'
 import useStyles from './JoinPage.module'
 import { Participant } from '../../models/Participant'
-import MainStagePage from '../MainStagePage/MainStagePage'
 
 import JoinContext from '../../components/JoinContext/JoinContext'
 import MediaContext from '../../components/MediaContext/MediaContext'
@@ -54,13 +53,6 @@ const JoinPage = () => {
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
 
   React.useEffect(() => {
-    console.log('JOIN RENDER')
-    return () => {
-      console.log('JOIN OUT')
-    }
-  }, [])
-
-  React.useEffect(() => {
     if (searchParams.get('s_id')) {
       const s_id: string = searchParams.get('s_id') as string
       const id = parseInt(s_id, 10)
@@ -87,19 +79,10 @@ const JoinPage = () => {
   }
 
   const onStartSetup = (values: any) => {
-    // TODO: Store nickname... in API call? in Session Storage?
+    clearMediaContext()
     joinContext.updateNickname(values.nickname)
     setCurrentSection(Section.AVSetup)
   }
-
-  const onJoin = () => {
-    // TODO: Define and Store media settings... in a MediaContext? in Session storage?
-    // TODO: Navigate to new party page.
-    // If Own Page?
-    // navigate(`/main/${joinToken}`)
-    setCurrentSection(Section.WatchParty)
-  }
-
   const onReturnToLanding = () => {
     clearMediaContext()
     setCurrentSection(Section.Landing)
@@ -108,7 +91,13 @@ const JoinPage = () => {
     clearMediaContext()
     setCurrentSection(Section.Nickname)
   }
-  const onStartJoin = () => setCurrentSection(Section.Nickname)
+  const onStartJoin = () => {
+    clearMediaContext()
+    setCurrentSection(Section.Nickname)
+  }
+  const onJoin = () => {
+    setCurrentSection(Section.WatchParty)
+  }
 
   return (
     <Box className={classes.root}>

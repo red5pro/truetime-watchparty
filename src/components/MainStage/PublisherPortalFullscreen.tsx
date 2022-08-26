@@ -1,3 +1,4 @@
+import React from 'react'
 import * as portals from 'react-reverse-portal'
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
 const PublisherPortalFullscreen = (props: Props) => {
   const { portalNode } = props
   return (
-    <div style={{ height: '100%' }}>
+    <div style={{ display: '-webkit-inline-box' }}>
       <portals.OutPortal node={portalNode} style={{ height: '100%' }} />
     </div>
   )

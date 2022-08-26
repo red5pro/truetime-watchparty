@@ -1,12 +1,14 @@
-import { Button, Tooltip, Typography } from '@mui/material'
+import React from 'react'
+import { Button, IconButton, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import InfoIcon from '@mui/icons-material/Info'
-
 import useStyles from './JoinSections.module'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import { Participant } from '../../models/Participant'
 import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
+import SignInModal from '../Modal/SignInModal'
+import { useCookies } from 'react-cookie'
 
 interface JoinLandingProps {
   seriesEpisode: any
@@ -17,11 +19,20 @@ interface JoinLandingProps {
 
 const JoinSectionLanding = (props: JoinLandingProps) => {
   const { seriesEpisode, conferenceData, conferenceParticipantsStringBuilder, onStartJoin } = props
+  const [showLogin, setShowLogin] = React.useState<boolean>(false)
 
   const { classes } = useStyles()
+  const [cookies, setCookie] = useCookies(['account'])
 
   const onHostLogin = () => {
-    // TODO: Show login modal?
+    setShowLogin(true)
+  }
+
+  const hideLogin = (account?: any) => {
+    setShowLogin(false)
+    if (account && account.email && account.password) {
+      onStartJoin()
+    }
   }
 
   return (
@@ -51,11 +62,14 @@ const JoinSectionLanding = (props: JoinLandingProps) => {
           >
             Join Party
           </CustomButton>
-          <Button variant="text" className={classes.link} onClick={onHostLogin}>
-            Are you the host?
-          </Button>
+          {!cookies?.account && (
+            <Button variant="text" className={classes.link} onClick={onHostLogin}>
+              Are you the host?
+            </Button>
+          )}
         </Box>
       </Box>
+      <SignInModal open={showLogin} onDismiss={hideLogin} />
     </Box>
   )
 }

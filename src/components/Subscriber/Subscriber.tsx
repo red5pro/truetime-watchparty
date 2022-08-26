@@ -1,13 +1,23 @@
 import * as React from 'react'
-import VideoPreview, { IRoomFormValues } from '../VideoPreview/VideoPreview'
 import { RTCSubscriber } from 'red5pro-webrtc-sdk'
 import VideoElement from '../VideoElement/VideoElement'
 import Loading from '../Loading/Loading'
-import { Box } from '@mui/material'
-import { SERVER_HOST } from '../../settings/variables'
+import { Box, Stack } from '@mui/material'
+import { MicOff, VideocamOff, AccountBox } from '@mui/icons-material'
 import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import { getEdge } from '../../utils/streamManagerUtils'
 import useStyles from './Subscriber.module'
+
+enum StreamingModes {
+  AV = 'Video/Audio',
+  Audio = 'Audio',
+  Video = 'Video',
+  Empty = 'Empty',
+}
+
+interface SubscriberRef {
+  setVolume(value: number): any
+}
 
 interface ISubscriberProps {
   host: string
@@ -18,13 +28,28 @@ interface ISubscriberProps {
   videoStyles: AnalyserOptions | any
   mute: boolean
   showControls: boolean
+  isAudioOff?: boolean
+  isVideoOff?: boolean
 }
 
 const DELAY = 2000
 const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
 
-const Subscriber = (props: ISubscriberProps) => {
-  const { useStreamManager, resubscribe, host, streamGuid, styles, videoStyles, mute, showControls } = props
+const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<SubscriberRef>) => {
+  const {
+    useStreamManager,
+    resubscribe,
+    host,
+    streamGuid,
+    styles,
+    videoStyles,
+    mute,
+    showControls,
+    isAudioOff, // from organizer mute
+    isVideoOff, // from organizer mute
+  } = props
+
+  React.useImperativeHandle(ref, () => ({ setVolume }))
 
   const { classes } = useStyles()
 
@@ -36,6 +61,10 @@ const Subscriber = (props: ISubscriberProps) => {
   const [streamName, setStreamName] = React.useState<string>('')
   const [isSubscribed, setIsSubscribed] = React.useState<boolean>(false)
   const [isSubscribing, setIsSubscribing] = React.useState<boolean>(false)
+  const [audioOn, setAudioOn] = React.useState<boolean>(!isAudioOff)
+  const [videoOn, setVideoOn] = React.useState<boolean>(!isVideoOff)
+
+  const [playbackVolume, setPlaybackVolume] = React.useState<number>(1.0)
 
   const [subscriber, setSubscriber] = React.useState<any | undefined>()
   const subRef = React.useRef()
@@ -55,7 +84,7 @@ const Subscriber = (props: ISubscriberProps) => {
       stopRetry()
       isCancelled = true
       if (subRef.current) {
-        console.warn(`[Red5ProSubscriber${streamName})] - STOP`)
+        console.warn(`[Red5ProSubscriber(${streamName})] - STOP`)
         stop()
       }
     }
@@ -73,12 +102,43 @@ const Subscriber = (props: ISubscriberProps) => {
     }
   }, [elementId, streamName, context])
 
+  const setVolume = (value: number) => {
+    setPlaybackVolume(value)
+  }
+
+  const handleMediaActiveFromMode = (mode: string) => {
+    console.log(`[Red5ProSubscriber(${streamName})] :: streamingMode=${mode}`)
+    switch (mode) {
+      case StreamingModes.Audio:
+        setAudioOn(true)
+        setVideoOn(false)
+        break
+      case StreamingModes.Video:
+        setAudioOn(false)
+        setVideoOn(true)
+        break
+      case StreamingModes.Empty:
+        setAudioOn(false)
+        setVideoOn(false)
+        break
+      case StreamingModes.AV:
+      default:
+        setAudioOn(true)
+        setVideoOn(true)
+        break
+    }
+  }
+
   const onSubscribeEvent = (event: any) => {
-    if (event.type !== 'Subscribe.Time.Update') {
-      console.log(`[Red5ProSubscriber(${streamName})] :: ${event.type}`)
-      if (RETRY_EVENTS.indexOf(event.type) > -1) {
-        startRetry()
-      }
+    const { type } = event
+    if (type === 'Subscribe.Time.Update' || type === 'Subscribe.Volume.Change') return
+    console.log(`[Red5ProSubscriber(${streamName})] :: ${type}`)
+    if (RETRY_EVENTS.indexOf(type) > -1) {
+      startRetry()
+    }
+    if (type === 'Subscribe.Metadata') {
+      const { streamingMode } = event.data
+      handleMediaActiveFromMode(streamingMode)
     }
   }
 
@@ -106,6 +166,7 @@ const Subscriber = (props: ISubscriberProps) => {
       setSubscriber(sub)
       setIsSubscribing(false)
       setIsSubscribed(true)
+      console.log(`[Red5ProSubscriber(${streamName})]:: Muted(${mute}).`)
     } catch (error: any) {
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error(`[Red5ProSubscriber(${streamName})] :: Error in subscribing -  ${jsonError}`)
@@ -165,9 +226,21 @@ const Subscriber = (props: ISubscriberProps) => {
           <Loading />
         </Box>
       )}
-      <VideoElement elementId={elementId} muted={mute} controls={showControls} styles={videoStyles} />
+      {(!videoOn || isVideoOff) && <AccountBox fontSize="large" className={classes.accountIcon} />}
+      <VideoElement
+        elementId={elementId}
+        muted={mute}
+        controls={showControls}
+        styles={videoStyles}
+        volume={playbackVolume}
+      />
+      <Stack direction="row" spacing={1} className={classes.iconBar}>
+        {(!audioOn || isAudioOff) && <MicOff />}
+        {(!videoOn || isVideoOff) && <VideocamOff />}
+      </Stack>
     </Box>
   )
-}
+})
 
+Subscriber.displayName = 'Subscriber'
 export default Subscriber

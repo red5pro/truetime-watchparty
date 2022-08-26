@@ -1,3 +1,4 @@
+import { ParticipantMuteState } from './../../models/Participant'
 import axios, { AxiosResponse } from 'axios'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
@@ -244,6 +245,84 @@ const getConferenceParticipants = async (conferenceId: string, account: AccountC
   }
 }
 
+const lockConference = async (conferenceId: string | number, account: AccountCredentials) => {
+  try {
+    const response: AxiosResponse = await axios.get(
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/lock?user=${account.email}&password=${account.password}`
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
+const unlockConference = async (conferenceId: string | number, account: AccountCredentials) => {
+  try {
+    const response: AxiosResponse = await axios.put(
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/unlock?user=${account.email}&password=${account.password}`
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
+const muteParticipant = async (
+  conferenceId: string | number,
+  account: AccountCredentials,
+  participantId: string | number,
+  participantMuteState: ParticipantMuteState
+) => {
+  try {
+    const id = '' + participantId
+    const payload: any = {}
+    payload[id] = participantMuteState
+    const response: AxiosResponse = await axios.post(
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute?user=${account.email}&password=${account.password}`,
+      payload
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
+const banParticipant = async (
+  conferenceId: string | number,
+  account: AccountCredentials,
+  participantId: string | number
+) => {
+  try {
+    const id = '' + participantId
+    const response: AxiosResponse = await axios.delete(
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/${id}?user=${account.email}&password=${account.password}`
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
 export const CONFERENCE_API_CALLS = {
   getSeriesList,
   getCurrentEpisode,
@@ -253,5 +332,9 @@ export const CONFERENCE_API_CALLS = {
   createConference,
   getAllConferences,
   getConferenceParticipants,
+  lockConference,
+  unlockConference,
+  muteParticipant,
+  banParticipant,
   getConferenceLoby,
 }

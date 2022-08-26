@@ -12,6 +12,14 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'absolute',
       zIndex: 10,
     },
+    iconBar: {
+      position: 'absolute',
+      bottom: 10,
+      right: 10,
+    },
+    accountIcon: {
+      position: 'absolute',
+    },
   }
 })
 
