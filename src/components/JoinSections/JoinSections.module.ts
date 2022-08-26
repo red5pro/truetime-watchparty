@@ -50,7 +50,7 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'relative',
       textAlign: 'center',
       width: 'calc(100vw * 2/3)',
-      maxWidth: '512px',
+      maxWidth: '480px',
       justifyContent: 'center',
     },
     backButton: {
@@ -62,6 +62,7 @@ const useStyles = makeStyles()((theme: any) => {
       minWidth: '40px',
       height: '40px',
       borderRadius: '20px',
+      marginRight: '20px',
       '& svg': {
         display: 'block',
         margin: '0 2px 0 8px',

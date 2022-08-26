@@ -29,6 +29,7 @@ import PublisherControls from '../PublisherControls/PublisherControls'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
+import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -58,8 +59,8 @@ interface PublisherRef {
 
 const MainStage = () => {
   const joinContext = useJoinContext()
-  const { data, message, join } = useWatchContext()
   const mediaContext = useMediaContext()
+  const { error, loading, data, join, retry } = useWatchContext()
 
   const { classes } = useStyles()
   const navigate = useNavigate()
@@ -84,6 +85,10 @@ const MainStage = () => {
     gridTemplateColumns:
       'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
   })
+
+  const [nonFatalError, setNonFatalError] = React.useState<any>()
+  const [fatalError, setFatalError] = React.useState<any>()
+  const [fatalPublisherError, setFatalPublisherError] = React.useState<any>()
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     const request: ConnectionRequest = {
@@ -116,6 +121,13 @@ const MainStage = () => {
   }
 
   React.useEffect(() => {
+    // Fatal Socket Error.
+    if (error) {
+      setFatalError(error)
+    }
+  }, [error])
+
+  React.useEffect(() => {
     // TODO: Got here without setting up media. Where to send them?
     if (!mediaContext?.mediaStream) {
       // TODO: Remove for testing
@@ -124,7 +136,6 @@ const MainStage = () => {
     } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
       const { mediaStream } = mediaContext
       setPublishMediaStream(mediaStream)
-      console.log('MEDIA', mediaStream)
     }
   }, [mediaContext?.mediaStream])
 
@@ -193,11 +204,17 @@ const MainStage = () => {
   }
 
   const onPublisherBroadcastInterrupt = () => {
-    // TODO: Show Interrupe Error
+    // TODO: Show Interrupt Error
+    setFatalPublisherError({
+      data: null,
+      status: 400,
+      statText: `Your broadcast session was interrupted expectedly. You are no longer streaming.`,
+    })
   }
 
   const onPublisherFail = () => {
     // TODO: Show Alert
+    setFatalPublisherError({ data: null, status: 404, statusText: `Could not start a broadcast.` })
   }
 
   const onLeave = () => {
@@ -209,16 +226,23 @@ const MainStage = () => {
     if (joinContext.conferenceLocked) {
       try {
         const result = await joinContext.lock()
+        if (result.status >= 300) {
+          throw result
+        }
       } catch (e) {
-        // TODO: Show Error
         console.error(e)
+        setNonFatalError({ ...(e as any), title: 'Error in locking party.' })
       }
     } else {
       try {
         const result = await joinContext.unlock()
+        if (result.status >= 300) {
+          throw result
+        }
       } catch (e) {
-        // TODO: Show Error
+        // TODO: Show Erro
         console.error(e)
+        setNonFatalError({ ...(e as any), title: 'Error in unlocking party.' })
       }
     }
   }
@@ -266,9 +290,12 @@ const MainStage = () => {
           participant.participantId,
           requestState
         )
+        if (result.status >= 300) {
+          throw result
+        }
       } catch (e) {
         console.error(e)
-        // TODO: Show alert.
+        setNonFatalError(e)
       }
     },
     onMuteVideo: async (participant: Participant, requestMute: boolean) => {
@@ -281,9 +308,12 @@ const MainStage = () => {
           participant.participantId,
           requestState
         )
+        if (result.status >= 300) {
+          throw result
+        }
       } catch (e) {
         console.error(e)
-        // TODO: Show alert.
+        setNonFatalError(e)
       }
     },
     onBan: async (participant: Participant) => {
@@ -294,9 +324,12 @@ const MainStage = () => {
           cookies.account,
           participant.participantId
         )
+        if (result.status >= 300) {
+          throw result
+        }
       } catch (e) {
-        // TODO: Show alert.
         console.error(e)
+        setNonFatalError(e)
       }
     },
   }
@@ -442,7 +475,7 @@ const MainStage = () => {
           </Stack>
         </Box>
         {/* Loading Message */}
-        {!data.conference && (
+        {(!data.conference || loading) && (
           <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
             <Loading />
             <Typography>Loading Watch Party</Typography>
@@ -466,6 +499,17 @@ const MainStage = () => {
           />
         </Box>
       </portals.InPortal>
+      {/* TODO: Fatal Error */}
+      {/* TODO: Non-Fatal Error */}
+      {nonFatalError && (
+        <SimpleAlertDialog
+          title={nonFatalError.title || 'Error'}
+          message={`${nonFatalError.status} - ${nonFatalError.statusText}`}
+          confirmLabel="OK"
+          onConfirm={() => setNonFatalError(undefined)}
+        />
+      )}
+      {/* TODO: Publisher Fatal Error */}
     </Box>
   )
 }
