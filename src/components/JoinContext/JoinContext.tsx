@@ -9,8 +9,8 @@ import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
 import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 
-const cannedSeries = { displayName: 'Accessing...' }
-const cannedEpisode = { displayName: 'Accessing...', startTime: new Date().getTime() }
+const cannedSeries = { displayName: 'Accessing Information...' }
+const cannedEpisode = { displayName: '...', startTime: new Date().getTime() }
 const episodeReducer = (state: any, action: any) => {
   switch (action.type) {
     case 'UPDATE':
@@ -32,13 +32,15 @@ const JoinProvider = (props: JoinContextProps) => {
   const navigate = useNavigate()
   const [cookies] = useCookies(['account'])
 
+  const [error, setError] = React.useState<any | undefined>()
+  const [loading, setLoading] = React.useState<boolean>(false)
   const [joinToken, setJoinToken] = React.useState<string | null>(null)
 
   // TODO: Update this based on User record / Auth ?
   // TODO: Does this belong here or in an overarching Context ?
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT)
   const [fingerprint, setFingerprint] = React.useState<string | undefined>(LocalStorage.get('wp_fingeprint'))
-  const [nickname, setNickname] = React.useState<string | undefined>(LocalStorage.get('wp_nickname' || undefined)) // TODO: get from participant context or session storage?
+  const [nickname, setNickname] = React.useState<string | undefined>(LocalStorage.get('wp_nickname' || undefined))
   // ConferenceDetails access from the server API.
   const [seriesEpisode, dispatch] = useReducer(episodeReducer, {
     loaded: false,
@@ -80,27 +82,41 @@ const JoinProvider = (props: JoinContextProps) => {
 
   const getConferenceData = async (token: string) => {
     try {
+      setLoading(true)
       const details = await CONFERENCE_API_CALLS.getJoinDetails(token)
-      setConferenceData(details.data)
-      setConferenceLocked(details.data.joinLocked)
+      const { data } = details
+      if (!data) throw details
+      setConferenceData(data)
+      setConferenceLocked(data.joinLocked)
+      setLoading(false)
     } catch (e) {
-      // TODO: Display alert
       console.error(e)
+      setLoading(false)
+      setError(e)
     }
   }
 
   const getCurrentSeriesEpisodeData = async () => {
     try {
+      setLoading(true)
       const serieResponse = await CONFERENCE_API_CALLS.getSeriesList()
+      if (!serieResponse.data) throw serieResponse
+
       const currentSeries = serieResponse.data.series[0]
       const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(currentSeries.seriesId, cookies.account)
+      if (!episodeResponse.data) throw episodeResponse
+
       const currentEpisode = episodeResponse.data.episode
       if (currentSeries && currentEpisode) {
         dispatch({ type: 'UPDATE', series: currentSeries, episode: currentEpisode })
+        setLoading(false)
+      } else {
+        throw { data: null, statusCode: 404, statusText: 'Could not locate Episode and Series information.' }
       }
     } catch (e) {
-      // TODO: Display alert
       console.error(e)
+      setLoading(false)
+      setError(e)
     }
   }
 
@@ -148,6 +164,8 @@ const JoinProvider = (props: JoinContextProps) => {
   }
 
   const exportedValues = {
+    loading,
+    error,
     nickname,
     joinToken,
     fingerprint,
