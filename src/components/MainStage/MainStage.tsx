@@ -19,6 +19,7 @@ import Publisher from '../Publisher/Publisher'
 import { Participant } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 import ShareLinkModal from '../Modal/ShareLinkModal'
+import ErrorModal from '../Modal/ErrorModal'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 import { UserRoles } from '../../utils/commonUtils'
 import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
@@ -31,6 +32,7 @@ import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelec
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import { FatalError } from '../../models/FatalError'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -88,8 +90,7 @@ const MainStage = () => {
   })
 
   const [nonFatalError, setNonFatalError] = React.useState<any>()
-  const [fatalError, setFatalError] = React.useState<any>()
-  const [fatalPublisherError, setFatalPublisherError] = React.useState<any>()
+  const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     const request: ConnectionRequest = {
@@ -124,7 +125,15 @@ const MainStage = () => {
   React.useEffect(() => {
     // Fatal Socket Error.
     if (error) {
-      setFatalError(error)
+      setFatalError({
+        ...(error as any),
+        title: 'Connection Error',
+        closeLabel: 'RETRY',
+        onClose: () => {
+          setFatalError(undefined)
+          window.location.reload()
+        },
+      } as FatalError)
     }
   }, [error])
 
@@ -205,17 +214,29 @@ const MainStage = () => {
   }
 
   const onPublisherBroadcastInterrupt = () => {
-    // TODO: Show Interrupt Error
-    setFatalPublisherError({
-      data: null,
+    setFatalError({
       status: 400,
-      statText: `Your broadcast session was interrupted expectedly. You are no longer streaming.`,
-    })
+      title: 'Broadcast Stream Error',
+      statusText: `Your broadcast session was interrupted expectedly. You are no longer streaming.`,
+      closeLabel: 'Restart',
+      onClose: () => {
+        setFatalError(undefined)
+        window.location.reload()
+      },
+    } as FatalError)
   }
 
   const onPublisherFail = () => {
-    // TODO: Show Alert
-    setFatalPublisherError({ data: null, status: 404, statusText: `Could not start a broadcast.` })
+    setFatalError({
+      status: 404,
+      title: 'Broadcast Stream Error',
+      statusText: `Could not start a broadcast.`,
+      closeLabel: 'Retry',
+      onClose: () => {
+        setFatalError(undefined)
+        window.location.reload()
+      },
+    } as FatalError)
   }
 
   const onLeave = () => {
@@ -241,7 +262,6 @@ const MainStage = () => {
           throw result
         }
       } catch (e) {
-        // TODO: Show Erro
         console.error(e)
         setNonFatalError({ ...(e as any), title: 'Error in unlocking party.' })
       }
@@ -359,7 +379,7 @@ const MainStage = () => {
         {/* Role-based Controls */}
         {data.conference && (
           <Box className={classes.topBar} sx={layout.style.topBar}>
-            <Stack direction="row" className={classes.header}>
+            <Stack direction="row" alignItems="center" justifyContent="center" className={classes.header}>
               <WbcLogoSmall />
               <Divider orientation="vertical" flexItem className={classes.headerDivider} />
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
@@ -504,8 +524,17 @@ const MainStage = () => {
           />
         </Box>
       </portals.InPortal>
-      {/* TODO: Fatal Error */}
-      {/* TODO: Non-Fatal Error */}
+      {/* Fatal Error */}
+      {fatalError && (
+        <ErrorModal
+          open={!!fatalError}
+          title={fatalError.title || 'Error'}
+          message={fatalError.statusText}
+          closeLabel={fatalError.closeLabel || 'OK'}
+          onClose={fatalError.onClose}
+        ></ErrorModal>
+      )}
+      {/* Non-Fatal Error */}
       {nonFatalError && (
         <SimpleAlertDialog
           title={nonFatalError.title || 'Error'}
@@ -514,7 +543,6 @@ const MainStage = () => {
           onConfirm={() => setNonFatalError(undefined)}
         />
       )}
-      {/* TODO: Publisher Fatal Error */}
     </Box>
   )
 }

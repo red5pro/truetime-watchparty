@@ -19,7 +19,7 @@ const VIPSubscriber = (props: VIPSubscriber) => {
       mute={false}
       showControls={false}
       streamGuid={participant.streamGuid}
-      resubscribe={false}
+      resubscribe={true}
       styles={styles}
       videoStyles={videoStyles}
     />
