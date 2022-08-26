@@ -142,9 +142,11 @@ const JoinProvider = (props: JoinContextProps) => {
       const { conferenceId } = conferenceData
       try {
         const result = await CONFERENCE_API_CALLS.lockConference(conferenceId, cookies.account)
+        setConferenceLocked(true)
         return result
       } catch (e) {
         console.error(e)
+        throw e
       }
     }
     return null
@@ -155,9 +157,11 @@ const JoinProvider = (props: JoinContextProps) => {
       const { conferenceId } = conferenceData
       try {
         const result = await CONFERENCE_API_CALLS.unlockConference(conferenceId, cookies.account)
+        setConferenceLocked(false)
         return result
       } catch (e) {
         console.error(e)
+        throw e
       }
     }
     return null

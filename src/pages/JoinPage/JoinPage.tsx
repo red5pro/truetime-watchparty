@@ -13,6 +13,7 @@ import JoinSectionNicknameInput from '../../components/JoinSections/JoinSectionN
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
 import MainStage from '../../components/MainStage/MainStage'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
+import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -70,6 +71,7 @@ const JoinPage = () => {
 
   const clearMediaContext = () => {
     if (mediaContext && mediaContext.mediaStream) {
+      console.log('~~CLEAR MEDIA~~')
       mediaContext.mediaStream.getTracks().forEach((t: MediaStreamTrack) => t.stop())
       mediaContext.setConstraints(undefined)
       mediaContext.setMediaStream(undefined)
@@ -105,9 +107,14 @@ const JoinPage = () => {
   return (
     <Box className={classes.root}>
       {loading && <Loading />}
+      {currentSection !== Section.WatchParty && (
+        <Box padding={2} className={classes.brandLogo}>
+          <WbcLogoSmall />
+        </Box>
+      )}
       {!loading && conferenceData && currentSection === Section.Landing && (
         <Box className={classes.joinSection}>
-          <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>
+          <Typography padding={2} className={classes.joinTitleLarge}>
             Join WatchParty
           </Typography>
           <JoinSectionLanding
@@ -120,7 +127,7 @@ const JoinPage = () => {
       )}
       {!loading && conferenceData && currentSection === Section.Nickname && (
         <Box className={classes.joinSection}>
-          <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>
+          <Typography padding={2} className={classes.joinTitleSmall}>
             Join WatchParty
           </Typography>
           <JoinSectionNicknameInput
@@ -135,7 +142,7 @@ const JoinPage = () => {
       )}
       {!loading && conferenceData && currentSection === Section.AVSetup && (
         <Box className={classes.joinSection}>
-          <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>
+          <Typography padding={2} className={classes.joinTitleSmall}>
             Join WatchParty
           </Typography>
           <JoinSectionAVSetup conferenceData={conferenceData} onBack={onReturnToNickname} onJoin={onJoin} />

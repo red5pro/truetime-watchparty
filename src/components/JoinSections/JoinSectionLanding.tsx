@@ -43,7 +43,7 @@ const JoinSectionLanding = (props: JoinLandingProps) => {
         <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>
           {getStartTimeFromTimestamp(seriesEpisode.episode.startTime)}
         </Typography>
-        <Tooltip title="TODO: What is this?" arrow sx={{ marginLeft: '12px' }}>
+        <Tooltip title="Additional Information..." arrow sx={{ marginLeft: '12px' }}>
           <InfoIcon fontSize="small" />
         </Tooltip>
       </Box>

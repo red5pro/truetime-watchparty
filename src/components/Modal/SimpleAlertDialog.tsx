@@ -12,8 +12,8 @@ interface SimpleAlertDialogProps {
   message: string
   confirmLabel?: string
   denyLabel?: string
-  onConfirm(): boolean | undefined
-  onDeny?(): boolean | undefined
+  onConfirm(): boolean | void
+  onDeny?(): boolean | void
 }
 
 const SimpleAlertDialog = (props: SimpleAlertDialogProps) => {

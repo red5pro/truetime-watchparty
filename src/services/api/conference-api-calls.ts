@@ -289,7 +289,7 @@ const lockConference = async (conferenceId: string | number, account: AccountCre
     console.log(e)
     return {
       data: null,
-      status: e.code,
+      status: e.code || 400,
       statusText: e.message,
     } as AxiosResponse
   }
@@ -305,7 +305,7 @@ const unlockConference = async (conferenceId: string | number, account: AccountC
     console.log(e)
     return {
       data: null,
-      status: e.code,
+      status: e.code || 400,
       statusText: e.message,
     } as AxiosResponse
   }
@@ -330,7 +330,7 @@ const muteParticipant = async (
     console.log(e)
     return {
       data: null,
-      status: e.code,
+      status: e.code || 400,
       statusText: e.message,
     } as AxiosResponse
   }
@@ -351,7 +351,7 @@ const banParticipant = async (
     console.log(e)
     return {
       data: null,
-      status: e.code,
+      status: e.code || 400,
       statusText: e.message,
     } as AxiosResponse
   }

@@ -7,6 +7,8 @@ interface IMediaProviderProps {
 }
 
 interface IMediaContextProps {
+  error: any | undefined
+  loading: boolean
   constraints: any | undefined
   mediaStream: MediaStream | undefined
   cameraSelected: string | undefined
@@ -15,13 +17,16 @@ interface IMediaContextProps {
   setMicrophoneSelected: (deviceId: string | undefined) => void
   setConstraints: (constraints: any) => void
   setMediaStream: (stream: MediaStream | undefined) => void
+  retry: () => void
 }
 
-const MediaContext = React.createContext<IMediaContextProps | null>(null)
+const MediaContext = React.createContext<any | null>(null)
 
 const MediaProvider = (props: IMediaProviderProps) => {
   const { children } = props
 
+  const [error, setError] = React.useState<any | undefined>()
+  const [loading, setLoading] = React.useState<boolean>(false)
   const [constraints, setConstraints] = React.useState<any | undefined>()
   const [mediaStream, setMediaStream] = React.useState<MediaStream | undefined>()
   const [cameraSelected, setCameraSelected] = React.useState<string | undefined>()
@@ -64,16 +69,29 @@ const MediaProvider = (props: IMediaProviderProps) => {
   }, [microphoneSelected])
 
   const getMediaStream = async () => {
+    setError(undefined)
+    setLoading(true)
     try {
       const mStream = await navigator.mediaDevices.getUserMedia(constraints)
       setMediaStream(mStream)
     } catch (e) {
-      // TODO: Set Alert?
       console.error(e)
+      setError({
+        status: 0,
+        statusText: `Could not instantiate media: ${(e as Error).message}`,
+      })
+    } finally {
+      setLoading(false)
     }
   }
 
+  const retry = () => {
+    getMediaStream()
+  }
+
   const values = {
+    error,
+    loading,
     mediaStream,
     constraints,
     cameraSelected,
@@ -82,6 +100,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
     setMicrophoneSelected,
     setConstraints,
     setMediaStream,
+    retry,
   }
 
   return <MediaContext.Provider value={values}>{children}</MediaContext.Provider>

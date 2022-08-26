@@ -10,6 +10,20 @@ const useStyles = makeStyles()((theme: any) => {
       overflow: 'auto',
       display: 'flex',
       flexDirection: 'column',
+      position: 'relative',
+    },
+    brandLogo: {
+      position: 'absolute',
+    },
+    joinTitleLarge: {
+      textAlign: 'center',
+      fontSize: '24px',
+      fontWeight: 400,
+    },
+    joinTitleSmall: {
+      textAlign: 'center',
+      fontSize: '16px',
+      fontWeight: 400,
     },
     joinSection: {
       width: '100%',
