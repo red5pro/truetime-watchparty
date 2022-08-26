@@ -1,8 +1,8 @@
 import React from 'react'
 import { Fade, IconButton, Stack } from '@mui/material'
-import LayoutIconEmpty from '../Common/MainStageLayoutIcon/LayoutIconEmpty'
-import LayoutIconFullscreen from '../Common/MainStageLayoutIcon/LayoutIconFullscreen'
-import LayoutIconStage from '../Common/MainStageLayoutIcon/LayoutIconStage'
+import LayoutIconEmpty from '../../assets/MainStageLayoutIcon/LayoutIconEmpty'
+import LayoutIconFullscreen from '../../assets/MainStageLayoutIcon/LayoutIconFullscreen'
+import LayoutIconStage from '../../assets/MainStageLayoutIcon/LayoutIconStage'
 import useStyles from './MainStageLayoutSelect.module'
 
 interface MainStageLayoutSelectProps {

@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material'
 import { Participant } from '../../models/Participant'
-import MoreMenuIcon from '../Common/MoreMenuIcon/MoreMenuIcon'
+import MoreMenuIcon from '../../assets/MoreMenuIcon/MoreMenuIcon'
 import useStyles from './SubscriberMenu.module'
 import { Block, Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material'
 
