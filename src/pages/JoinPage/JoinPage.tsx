@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { Box, Typography } from '@mui/material'
 
 import Loading from '../../components/Loading/Loading'
@@ -12,7 +12,7 @@ import JoinSectionLanding from '../../components/JoinSections/JoinSectionLanding
 import JoinSectionNicknameInput from '../../components/JoinSections/JoinSectionNicknameInput'
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
 import MainStage from '../../components/MainStage/MainStage'
-import useQueryParams from '../../hooks/useQueryParams'
+import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -41,13 +41,11 @@ const getParticipantText = (participants: Participant[] | undefined) => {
   } other(s) are already here.`
 }
 
-// Preferrably wrapped in a ParticipantContext/AuthContext with user/participant record?
 const JoinPage = () => {
-  const joinContext = useJoinContext()
+  const { loading, error, seriesEpisode, conferenceData, nickname, updateNickname } = useJoinContext()
   const mediaContext = useMediaContext()
 
   const { classes } = useStyles()
-  // const query = useQueryParams()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
@@ -80,7 +78,7 @@ const JoinPage = () => {
 
   const onStartSetup = (values: any) => {
     clearMediaContext()
-    joinContext.updateNickname(values.nickname)
+    updateNickname(values.nickname)
     setCurrentSection(Section.AVSetup)
   }
   const onReturnToLanding = () => {
@@ -99,46 +97,59 @@ const JoinPage = () => {
     setCurrentSection(Section.WatchParty)
   }
 
+  const onRetryRequest = () => {
+    window.location.reload()
+    return false
+  }
+
   return (
     <Box className={classes.root}>
-      {!joinContext.conferenceData && <Loading />}
-      {joinContext.conferenceData && currentSection === Section.Landing && (
+      {loading && <Loading />}
+      {!loading && conferenceData && currentSection === Section.Landing && (
         <Box className={classes.joinSection}>
           <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>
             Join WatchParty
           </Typography>
           <JoinSectionLanding
-            seriesEpisode={joinContext.seriesEpisode}
-            conferenceData={joinContext.conferenceData}
+            seriesEpisode={seriesEpisode}
+            conferenceData={conferenceData}
             conferenceParticipantsStringBuilder={getParticipantText}
             onStartJoin={onStartJoin}
           />
         </Box>
       )}
-      {joinContext.conferenceData && currentSection === Section.Nickname && (
+      {!loading && conferenceData && currentSection === Section.Nickname && (
         <Box className={classes.joinSection}>
           <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>
             Join WatchParty
           </Typography>
           <JoinSectionNicknameInput
-            nickname={joinContext.nickname}
-            seriesEpisode={joinContext.seriesEpisode}
-            conferenceData={joinContext.conferenceData}
+            nickname={nickname}
+            seriesEpisode={seriesEpisode}
+            conferenceData={conferenceData}
             conferenceParticipantsStringBuilder={getParticipantText}
             onBack={onReturnToLanding}
             onStartSetup={onStartSetup}
           />
         </Box>
       )}
-      {joinContext.conferenceData && currentSection === Section.AVSetup && (
+      {!loading && conferenceData && currentSection === Section.AVSetup && (
         <Box className={classes.joinSection}>
           <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px', fontWeight: 400 }}>
             Join WatchParty
           </Typography>
-          <JoinSectionAVSetup conferenceData={joinContext.conferenceData} onBack={onReturnToNickname} onJoin={onJoin} />
+          <JoinSectionAVSetup conferenceData={conferenceData} onBack={onReturnToNickname} onJoin={onJoin} />
         </Box>
       )}
-      {joinContext.conferenceData && currentSection === Section.WatchParty && <MainStage />}
+      {!loading && conferenceData && currentSection === Section.WatchParty && <MainStage />}
+      {error && (
+        <SimpleAlertDialog
+          title="Something went wrong"
+          message={`${error.status} - ${error.statusText}`}
+          confirmLabel="Retry"
+          onConfirm={onRetryRequest}
+        />
+      )}
     </Box>
   )
 }
