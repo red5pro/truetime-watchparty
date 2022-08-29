@@ -91,6 +91,7 @@ const MainStage = () => {
 
   const [nonFatalError, setNonFatalError] = React.useState<any>()
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
+  const [showBanConfirmation, setShowBanConfirmation] = React.useState<Participant | undefined>()
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     const request: ConnectionRequest = {
@@ -337,22 +338,27 @@ const MainStage = () => {
         setNonFatalError(e)
       }
     },
-    onBan: async (participant: Participant) => {
-      // TODO: Show Confirmation before call?
-      try {
-        const result = await CONFERENCE_API_CALLS.banParticipant(
-          data.conference.conferenceId,
-          cookies.account,
-          participant.participantId
-        )
-        if (result.status >= 300) {
-          throw result
-        }
-      } catch (e) {
-        console.error(e)
-        setNonFatalError(e)
-      }
+    onBan: (participant: Participant) => {
+      setShowBanConfirmation(participant)
     },
+  }
+
+  const onContinueBan = async (participant: Participant) => {
+    try {
+      const result = await CONFERENCE_API_CALLS.banParticipant(
+        data.conference.conferenceId,
+        cookies.account,
+        participant.participantId
+      )
+      if (result.status >= 300) {
+        throw result
+      }
+    } catch (e) {
+      console.error(e)
+      setNonFatalError(e)
+    } finally {
+      setShowBanConfirmation(undefined)
+    }
   }
 
   return (
@@ -541,6 +547,18 @@ const MainStage = () => {
           message={`${nonFatalError.status} - ${nonFatalError.statusText}`}
           confirmLabel="OK"
           onConfirm={() => setNonFatalError(undefined)}
+        />
+      )}
+      {showBanConfirmation && (
+        <SimpleAlertDialog
+          title="Ban Confirmation"
+          message={`Are you sure you want to ban ${showBanConfirmation.displayName}?`}
+          confirmLabel="YES"
+          denyLabel="NEVERMIND"
+          onConfirm={() => {
+            onContinueBan(showBanConfirmation)
+          }}
+          onDeny={() => setShowBanConfirmation(undefined)}
         />
       )}
     </Box>
