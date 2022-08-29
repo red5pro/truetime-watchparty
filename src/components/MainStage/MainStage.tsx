@@ -1,15 +1,13 @@
 import React from 'react'
 import * as portals from 'react-reverse-portal'
 import { useNavigate } from 'react-router-dom'
-import { IconButton, Box, Button, Typography, Stack, Input } from '@mui/material'
+import { IconButton, Box, Typography, Stack, Input, Divider } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
-import Lock from '@mui/icons-material/Lock'
-import LockOpen from '@mui/icons-material/LockOpen'
-import GroupAdd from '@mui/icons-material/GroupAdd'
-import ChatBubble from '@mui/icons-material/ChatBubble'
+import { Lock, LockOpen, GroupAdd, ChatBubble } from '@mui/icons-material'
 import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
+import { useCookies } from 'react-cookie'
 
 import useStyles from './MainStage.module'
 import MediaContext from '../MediaContext/MediaContext'
@@ -21,6 +19,7 @@ import Publisher from '../Publisher/Publisher'
 import { Participant } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 import ShareLinkModal from '../Modal/ShareLinkModal'
+import ErrorModal from '../Modal/ErrorModal'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 import { UserRoles } from '../../utils/commonUtils'
 import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
@@ -30,8 +29,10 @@ import VolumeControl from '../VolumeControl/VolumeControl'
 import PublisherControls from '../PublisherControls/PublisherControls'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
-import { useCookies } from 'react-cookie'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
+import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
+import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import { FatalError } from '../../models/FatalError'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -61,8 +62,8 @@ interface PublisherRef {
 
 const MainStage = () => {
   const joinContext = useJoinContext()
-  const { data, message, join } = useWatchContext()
   const mediaContext = useMediaContext()
+  const { error, loading, data, join, retry } = useWatchContext()
 
   const { classes } = useStyles()
   const navigate = useNavigate()
@@ -87,6 +88,10 @@ const MainStage = () => {
     gridTemplateColumns:
       'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
   })
+
+  const [nonFatalError, setNonFatalError] = React.useState<any>()
+  const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
+  const [showBanConfirmation, setShowBanConfirmation] = React.useState<Participant | undefined>()
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     const request: ConnectionRequest = {
@@ -119,6 +124,21 @@ const MainStage = () => {
   }
 
   React.useEffect(() => {
+    // Fatal Socket Error.
+    if (error) {
+      setFatalError({
+        ...(error as any),
+        title: 'Connection Error',
+        closeLabel: 'RETRY',
+        onClose: () => {
+          setFatalError(undefined)
+          window.location.reload()
+        },
+      } as FatalError)
+    }
+  }, [error])
+
+  React.useEffect(() => {
     // TODO: Got here without setting up media. Where to send them?
     if (!mediaContext?.mediaStream) {
       // TODO: Remove for testing
@@ -127,7 +147,6 @@ const MainStage = () => {
     } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
       const { mediaStream } = mediaContext
       setPublishMediaStream(mediaStream)
-      console.log('MEDIA', mediaStream)
     }
   }, [mediaContext?.mediaStream])
 
@@ -166,6 +185,8 @@ const MainStage = () => {
   React.useEffect(() => {
     if (data.vip && data.vip.participantId !== availableVipParticipant?.participantId) {
       setAvailableVipParticipant(data.vip)
+    } else if (!data.vip) {
+      setAvailableVipParticipant(undefined)
     }
   }, [data.vip])
 
@@ -196,11 +217,29 @@ const MainStage = () => {
   }
 
   const onPublisherBroadcastInterrupt = () => {
-    // TODO: Show Interrupe Error
+    setFatalError({
+      status: 400,
+      title: 'Broadcast Stream Error',
+      statusText: `Your broadcast session was interrupted expectedly. You are no longer streaming.`,
+      closeLabel: 'Restart',
+      onClose: () => {
+        setFatalError(undefined)
+        window.location.reload()
+      },
+    } as FatalError)
   }
 
   const onPublisherFail = () => {
-    // TODO: Show Alert
+    setFatalError({
+      status: 404,
+      title: 'Broadcast Stream Error',
+      statusText: `Could not start a broadcast.`,
+      closeLabel: 'Retry',
+      onClose: () => {
+        setFatalError(undefined)
+        window.location.reload()
+      },
+    } as FatalError)
   }
 
   const onLeave = () => {
@@ -212,16 +251,22 @@ const MainStage = () => {
     if (joinContext.conferenceLocked) {
       try {
         const result = await joinContext.lock()
+        if (result.status >= 300) {
+          throw result
+        }
       } catch (e) {
-        // TODO: Show Error
         console.error(e)
+        setNonFatalError({ ...(e as any), title: 'Error in locking party.' })
       }
     } else {
       try {
         const result = await joinContext.unlock()
+        if (result.status >= 300) {
+          throw result
+        }
       } catch (e) {
-        // TODO: Show Error
         console.error(e)
+        setNonFatalError({ ...(e as any), title: 'Error in unlocking party.' })
       }
     }
   }
@@ -269,9 +314,12 @@ const MainStage = () => {
           participant.participantId,
           requestState
         )
+        if (result.status >= 300) {
+          throw result
+        }
       } catch (e) {
         console.error(e)
-        // TODO: Show alert.
+        setNonFatalError(e)
       }
     },
     onMuteVideo: async (participant: Participant, requestMute: boolean) => {
@@ -284,24 +332,35 @@ const MainStage = () => {
           participant.participantId,
           requestState
         )
+        if (result.status >= 300) {
+          throw result
+        }
       } catch (e) {
         console.error(e)
-        // TODO: Show alert.
+        setNonFatalError(e)
       }
     },
-    onBan: async (participant: Participant) => {
-      // TODO: Show Confirmation before call?
-      try {
-        const result = await CONFERENCE_API_CALLS.banParticipant(
-          data.conference.conferenceId,
-          cookies.account,
-          participant.participantId
-        )
-      } catch (e) {
-        // TODO: Show alert.
-        console.error(e)
-      }
+    onBan: (participant: Participant) => {
+      setShowBanConfirmation(participant)
     },
+  }
+
+  const onContinueBan = async (participant: Participant) => {
+    try {
+      const result = await CONFERENCE_API_CALLS.banParticipant(
+        data.conference.conferenceId,
+        cookies.account,
+        participant.participantId
+      )
+      if (result.status >= 300) {
+        throw result
+      }
+    } catch (e) {
+      console.error(e)
+      setNonFatalError(e)
+    } finally {
+      setShowBanConfirmation(undefined)
+    }
   }
 
   return (
@@ -328,7 +387,11 @@ const MainStage = () => {
         {/* Role-based Controls */}
         {data.conference && (
           <Box className={classes.topBar} sx={layout.style.topBar}>
-            <Typography className={classes.header}>{data.conference.displayName}</Typography>
+            <Stack direction="row" alignItems="center" justifyContent="center" className={classes.header}>
+              <WbcLogoSmall />
+              <Divider orientation="vertical" flexItem className={classes.headerDivider} />
+              <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
+            </Stack>
             <Stack direction="row" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <IconButton
@@ -445,7 +508,7 @@ const MainStage = () => {
           </Stack>
         </Box>
         {/* Loading Message */}
-        {!data.conference && (
+        {(!data.conference || loading) && (
           <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
             <Loading />
             <Typography>Loading Watch Party</Typography>
@@ -469,6 +532,37 @@ const MainStage = () => {
           />
         </Box>
       </portals.InPortal>
+      {/* Fatal Error */}
+      {fatalError && (
+        <ErrorModal
+          open={!!fatalError}
+          title={fatalError.title || 'Error'}
+          message={fatalError.statusText}
+          closeLabel={fatalError.closeLabel || 'OK'}
+          onClose={fatalError.onClose}
+        ></ErrorModal>
+      )}
+      {/* Non-Fatal Error */}
+      {nonFatalError && (
+        <SimpleAlertDialog
+          title={nonFatalError.title || 'Error'}
+          message={`${nonFatalError.status} - ${nonFatalError.statusText}`}
+          confirmLabel="OK"
+          onConfirm={() => setNonFatalError(undefined)}
+        />
+      )}
+      {showBanConfirmation && (
+        <SimpleAlertDialog
+          title="Ban Confirmation"
+          message={`Are you sure you want to ban ${showBanConfirmation.displayName}?`}
+          confirmLabel="YES"
+          denyLabel="NEVERMIND"
+          onConfirm={() => {
+            onContinueBan(showBanConfirmation)
+          }}
+          onDeny={() => setShowBanConfirmation(undefined)}
+        />
+      )}
     </Box>
   )
 }

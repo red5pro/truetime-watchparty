@@ -22,7 +22,7 @@ const useStyles = makeStyles()((theme: any) => {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      marginTop: 'calc(100vh / 6)',
+      marginTop: 'calc(100vh / 8)',
     },
     conferenceDetails: {
       marginTop: '75px',
@@ -42,9 +42,6 @@ const useStyles = makeStyles()((theme: any) => {
     },
     inputField: {},
     buttonContainer: {
-      [theme.breakpoints.down('sm')]: {
-        flexDirection: 'column',
-      },
       alignItems: 'center',
     },
     mediaSetupButtons: {
@@ -52,7 +49,8 @@ const useStyles = makeStyles()((theme: any) => {
       alignItems: 'center',
       position: 'relative',
       textAlign: 'center',
-      width: 'calc(100vw / 3)',
+      width: 'calc(100vw * 2/3)',
+      maxWidth: '480px',
       justifyContent: 'center',
     },
     backButton: {
@@ -64,11 +62,7 @@ const useStyles = makeStyles()((theme: any) => {
       minWidth: '40px',
       height: '40px',
       borderRadius: '20px',
-
-      [theme.breakpoints.down('sm')]: {
-        top: '1rem',
-      },
-
+      marginRight: '20px',
       '& svg': {
         display: 'block',
         margin: '0 2px 0 8px',
@@ -82,6 +76,11 @@ const useStyles = makeStyles()((theme: any) => {
       fontWeight: 600,
       fontSize: '14px',
       textDecoration: 'underline',
+    },
+    title: {
+      fontSize: '18px',
+      fontWeight: 600,
+      textAlign: 'center',
     },
   }
 })
