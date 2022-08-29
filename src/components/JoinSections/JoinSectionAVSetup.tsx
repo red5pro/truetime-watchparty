@@ -24,7 +24,7 @@ const JoinSectionAVSetup = (props: JoinSectionAVSetupProps) => {
 
   return (
     <Box className={classes.mediaSetupContainer}>
-      <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>Choose your camera and microphone preferences</Typography>
+      <Typography className={classes.title}>Choose your camera and microphone preferences</Typography>
       <MediaSetup selfCleanup={false} />
       <Box className={classes.mediaSetupButtons}>
         {shouldDisplayBackButton && (

@@ -11,10 +11,15 @@ const ENDPOINT = {
 
 const getSeriesList = async () => {
   // try {
-  //
   //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}`)
+  //   return response
   // } catch (e: any) {
   //   console.log(e)
+  //   return {
+  //     data: null,
+  //     status: e.code,
+  //     statusText: e.message,
+  //   } as AxiosResponse
   // }
 
   return {
@@ -43,9 +48,19 @@ const getSeriesList = async () => {
 
 const getCurrentEpisode = async (serieId: string, account?: AccountCredentials) => {
   // try {
-  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}/${serieId}/episode/current?user=${account.email}&password=${account.password}`)
+  //   let url = `${ENDPOINT.SERIES}/${serieId}/episode/current`
+  //   if (account) {
+  //     url += `?user=${account.email}&password=${account.password}`
+  //   }
+  //   const response: AxiosResponse = await axios.get(url)
+  //   return response
   // } catch (e: any) {
   //   console.log(e)
+  //   return {
+  //     data: null,
+  //     status: e.code,
+  //     statusText: e.message,
+  //   } as AxiosResponse
   // }
 
   return {
@@ -65,9 +80,19 @@ const getCurrentEpisode = async (serieId: string, account?: AccountCredentials) 
 
 const getAllEpisodes = async (serieId: string, account?: AccountCredentials) => {
   // try {
-  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}/${serieId}/episode?user=${account.email}&password=${account.password}`)
+  //   let url = `${ENDPOINT.SERIES}/${serieId}/episode`
+  //   if (account) {
+  //     url += `?user=${account.email}&password=${account.password}`
+  //   }
+  //   const response: AxiosResponse = await axios.get(url)
+  //   return response
   // } catch (e: any) {
   //   console.log(e)
+  //   return {
+  //     data: null,
+  //     status: e.code,
+  //     statusText: e.message,
+  //   } as AxiosResponse
   // }
 
   return {
@@ -118,10 +143,14 @@ const getConferenceDetails = async (conferenceId: string, account?: AccountCrede
       }
     }
     const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/${id}`, { params })
-
     return response
   } catch (e: any) {
     console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
   }
 
   return {
@@ -142,8 +171,14 @@ const getConferenceDetails = async (conferenceId: string, account?: AccountCrede
 const getJoinDetails = async (joinToken: string) => {
   // try {
   //   const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}?joinToken=${joinToken}`)
+  //   return response
   // } catch (e: any) {
   //   console.log(e)
+  //   return {
+  //     data: null,
+  //     status: e.code,
+  //     statusText: e.message,
+  //   } as AxiosResponse
   // }
 
   return {
@@ -180,7 +215,6 @@ const createConference = async (conference: ConferenceDetails, account: AccountC
   //     `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`,
   //     conference
   //   )
-
   //   return response
   // } catch (e: any) {
   //   console.log(e)
@@ -255,7 +289,7 @@ const lockConference = async (conferenceId: string | number, account: AccountCre
     console.log(e)
     return {
       data: null,
-      status: e.code,
+      status: e.code || 400,
       statusText: e.message,
     } as AxiosResponse
   }
@@ -271,7 +305,7 @@ const unlockConference = async (conferenceId: string | number, account: AccountC
     console.log(e)
     return {
       data: null,
-      status: e.code,
+      status: e.code || 400,
       statusText: e.message,
     } as AxiosResponse
   }
@@ -296,7 +330,7 @@ const muteParticipant = async (
     console.log(e)
     return {
       data: null,
-      status: e.code,
+      status: e.code || 400,
       statusText: e.message,
     } as AxiosResponse
   }
@@ -317,7 +351,7 @@ const banParticipant = async (
     console.log(e)
     return {
       data: null,
-      status: e.code,
+      status: e.code || 400,
       statusText: e.message,
     } as AxiosResponse
   }

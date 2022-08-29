@@ -1,12 +1,13 @@
 import * as React from 'react'
-import { Box, CardContent, MenuItem, Select } from '@mui/material'
-import MicIcon from '@mui/icons-material/Mic'
-import CameraAltIcon from '@mui/icons-material/CameraAlt'
+import { Alert, Box, Button, CardContent, MenuItem, Select } from '@mui/material'
 
 import MediaContext from '../MediaContext/MediaContext'
 import useMediaStyles from './MediaSetup.module'
 import { DEFAULT_CONSTRAINTS } from '../../settings/variables'
 import { getDeviceListing } from '../../utils/deviceSelectorUtil'
+import Loading from '../Loading/Loading'
+
+const useMediaContext = () => React.useContext(MediaContext.Context)
 
 const deviceReducer = (state: any, action: any) => {
   switch (action.type) {
@@ -22,7 +23,19 @@ interface IMediaSetupProps {
 }
 
 const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
-  const mediaContext = React.useContext(MediaContext.Context)
+  const {
+    error,
+    loading,
+    constraints,
+    setConstraints,
+    mediaStream,
+    setMediaStream,
+    cameraSelected,
+    setCameraSelected,
+    microphoneSelected,
+    setMicrophoneSelected,
+    retry,
+  } = useMediaContext()
 
   const videoRef: any = React.useRef(null)
   const { classes } = useMediaStyles()
@@ -32,23 +45,23 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
   const [storedConstraints, setStoredConstraints] = React.useState<any | undefined>()
 
   React.useEffect(() => {
-    if (mediaContext && !mediaContext?.constraints) {
-      mediaContext?.setConstraints(storedConstraints || DEFAULT_CONSTRAINTS)
+    if (!constraints) {
+      setConstraints(storedConstraints || DEFAULT_CONSTRAINTS)
     }
   }, [])
 
   React.useEffect(() => {
-    if (mediaContext && mediaContext.mediaStream) {
-      getDevices(mediaContext.mediaStream)
+    if (mediaStream) {
+      getDevices(mediaStream)
     }
-  }, [mediaContext?.mediaStream])
+  }, [mediaStream])
 
   React.useEffect(() => {
     const video: any = videoRef.current
-    if (mediaContext?.mediaStream) {
+    if (mediaStream) {
       const { srcObject } = videoRef
-      if (srcObject !== mediaContext?.mediaStream) {
-        video.srcObject = mediaContext.mediaStream
+      if (srcObject !== mediaStream) {
+        video.srcObject = mediaStream
       }
     }
 
@@ -58,35 +71,53 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
       if (typeof selfCleanup === 'boolean' && selfCleanup) {
         if (video && video.srcObject) {
           video.srcObject.getTracks().forEach((t: MediaStreamTrack) => t.stop())
-          mediaContext?.setConstraints(undefined)
-          mediaContext?.setMediaStream(undefined)
+          setConstraints(undefined)
+          setMediaStream(undefined)
         }
       }
       video.srcObject = null
     }
-  }, [videoRef, mediaContext?.mediaStream])
+  }, [videoRef, mediaStream])
 
   const getDevices = async (stream: MediaStream) => {
     const [cameras, microphones] = await getDeviceListing(stream)
     const selectedCamera = cameras.availableDevices.find((d) => d.label === cameras.currentTrack.label)
     const selectedMicrophone = microphones.availableDevices.find((d) => d.label === microphones.currentTrack.label)
-    mediaContext?.setCameraSelected(selectedCamera?.deviceId)
-    mediaContext?.setMicrophoneSelected(selectedMicrophone?.deviceId)
+    setCameraSelected(selectedCamera?.deviceId)
+    setMicrophoneSelected(selectedMicrophone?.deviceId)
     dispatch({ type: 'CAMERAS', payload: cameras.availableDevices })
     dispatch({ type: 'MICROPHONES', payload: microphones.availableDevices })
   }
 
   const onMicrophoneSelect = (event: any) => {
-    mediaContext?.setMicrophoneSelected(event.target.value)
+    setMicrophoneSelected(event.target.value)
   }
 
   const onCameraSelect = (event: any) => {
-    mediaContext?.setCameraSelected(event.target.value)
+    setCameraSelected(event.target.value)
+  }
+
+  const onRetryMedia = () => {
+    retry()
   }
 
   return (
     <Box>
       <CardContent className={classes.container}>
+        {error && (
+          <Alert
+            className={classes.errorAlert}
+            sx={{ width: '100%' }}
+            severity="error"
+            action={
+              <Button color="inherit" size="small" onClick={onRetryMedia}>
+                RETRY
+              </Button>
+            }
+          >
+            {error.statusText}
+          </Alert>
+        )}
         <video
           ref={videoRef}
           width="100%"
@@ -97,8 +128,8 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
           onContextMenu={() => false}
           className={classes.video}
         />
-        {mediaContext && mediaContext.cameraSelected && (
-          <Select sx={{ width: '100%' }} onChange={onCameraSelect} value={mediaContext.cameraSelected}>
+        {cameraSelected && (
+          <Select sx={{ width: '100%' }} onChange={onCameraSelect} value={cameraSelected}>
             {devices.cameras.map((d: MediaDeviceInfo) => {
               return (
                 <MenuItem key={d.deviceId} value={d.deviceId} sx={{ color: 'black' }}>
@@ -108,8 +139,8 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
             })}
           </Select>
         )}
-        {mediaContext && mediaContext.microphoneSelected && (
-          <Select sx={{ width: '100%' }} onChange={onMicrophoneSelect} value={mediaContext.microphoneSelected}>
+        {microphoneSelected && (
+          <Select sx={{ width: '100%' }} onChange={onMicrophoneSelect} value={microphoneSelected}>
             {devices.microphones.map((d: MediaDeviceInfo) => {
               return (
                 <MenuItem key={d.deviceId} value={d.deviceId} sx={{ color: 'black' }}>
@@ -118,6 +149,11 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
               )
             })}
           </Select>
+        )}
+        {loading && (
+          <Box className={classes.loadingContainer}>
+            <Loading />
+          </Box>
         )}
       </CardContent>
     </Box>

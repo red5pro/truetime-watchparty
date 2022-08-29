@@ -17,7 +17,8 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
 
   return (
     // TODO: Set `mute` to false for production
-    <Box sx={menuActions ? { ...styles, position: 'relative' } : {}}>
+    // TODO: Set `resubscribe` to true for production
+    <Box sx={menuActions ? { ...styles, position: 'relative' } : styles}>
       <Subscriber
         host={host}
         useStreamManager={useStreamManager}
