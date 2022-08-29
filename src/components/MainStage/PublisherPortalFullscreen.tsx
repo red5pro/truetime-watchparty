@@ -8,7 +8,7 @@ interface Props {
 const PublisherPortalFullscreen = (props: Props) => {
   const { portalNode } = props
   return (
-    <div style={{ display: '-webkit-inline-box' }}>
+    <div style={{ display: '-webkit-inline-box', aspectRatio: '1/1', marginTop: '0!important' }}>
       <portals.OutPortal node={portalNode} style={{ height: '100%' }} />
     </div>
   )

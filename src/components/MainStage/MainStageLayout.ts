@@ -58,6 +58,7 @@ const styles = {
       paddingRight: '20px',
       alignItems: 'center',
       height: '100%',
+      rowGap: '10px',
     },
     subscriber: {
       maxHeight: '124px',
@@ -129,6 +130,7 @@ const styles = {
       gridTemplateColumns:
         'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
       height: '100%',
+      marginTop: '0!important',
       justifyContent: 'center',
     },
     subscriber: {
@@ -210,6 +212,7 @@ const styles = {
       paddingRight: '20px',
       alignItems: 'center',
       height: '100%',
+      rowGap: '10px',
     },
     subscriber: {
       maxHeight: '124px',
