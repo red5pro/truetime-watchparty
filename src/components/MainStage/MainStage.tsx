@@ -185,6 +185,8 @@ const MainStage = () => {
   React.useEffect(() => {
     if (data.vip && data.vip.participantId !== availableVipParticipant?.participantId) {
       setAvailableVipParticipant(data.vip)
+    } else if (!data.vip) {
+      setAvailableVipParticipant(undefined)
     }
   }, [data.vip])
 
