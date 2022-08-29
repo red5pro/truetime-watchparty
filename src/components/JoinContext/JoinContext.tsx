@@ -103,7 +103,7 @@ const JoinProvider = (props: JoinContextProps) => {
       if (!serieResponse.data) throw serieResponse
 
       const currentSeries = serieResponse.data.series[0]
-      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(currentSeries.seriesId, cookies.account)
+      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(cookies.account)
       if (!episodeResponse.data) throw episodeResponse
 
       const currentEpisode = episodeResponse.data.episode

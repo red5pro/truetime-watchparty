@@ -1,9 +1,11 @@
 import React from 'react'
 import * as portals from 'react-reverse-portal'
 import { useNavigate } from 'react-router-dom'
-import { IconButton, Box, Typography, Stack, Input, Divider } from '@mui/material'
+import { IconButton, Box, Typography, Stack, Divider } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble } from '@mui/icons-material'
+import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
+
 import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
@@ -33,12 +35,14 @@ import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import { FatalError } from '../../models/FatalError'
+import PickerAdapter from '../ChatBox/PickerAdapter'
+import useChatStyles from './ChatStyles.module'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
-enum Layout {
+export enum Layout {
   STAGE = 1,
   FULLSCREEN,
   EMPTY,
@@ -67,7 +71,7 @@ const MainStage = () => {
 
   const { classes } = useStyles()
   const navigate = useNavigate()
-  const [cookies, setCookie] = useCookies(['account'])
+  const [cookies] = useCookies(['account'])
 
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
@@ -83,7 +87,7 @@ const MainStage = () => {
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
   const [availableVipParticipant, setAvailableVipParticipant] = React.useState<Participant | undefined>()
   const [requiresSubscriberScroll, setRequiresSubscriberScroll] = React.useState<boolean>(false)
-  const [chatIsHidden, setChatIsHidden] = React.useState<boolean>(false)
+  const [chatIsHidden, setChatIsHidden] = React.useState<boolean>(true)
   const [maxParticipantGridColumnStyle, setMaxParticipantGridColumnStyle] = React.useState<any>({
     gridTemplateColumns:
       'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
@@ -92,6 +96,8 @@ const MainStage = () => {
   const [nonFatalError, setNonFatalError] = React.useState<any>()
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
   const [showBanConfirmation, setShowBanConfirmation] = React.useState<Participant | undefined>()
+
+  const { classes: chatClasses } = useChatStyles()
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     const request: ConnectionRequest = {
@@ -460,41 +466,54 @@ const MainStage = () => {
         </Box>
         {/* Publisher View - STAGE LAYOUT */}
         {publishMediaStream && layout.layout !== Layout.FULLSCREEN && <PublisherPortalStage portalNode={portalNode} />}
+
         {/* Bottom Controls / Chat */}
-        <Box className={classes.bottomBar}>
-          <Stack direction="row" alignItems="bottom" className={classes.bottomControls}>
-            {data.conference && (
-              <Stack direction="row" spacing={1} className={classes.layoutContainer}>
-                <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
-                {/* TODO: Chat? */}
-                <Input
-                  placeholder="Chat Message"
-                  inputProps={{ 'arial-label': 'enter chat message' }}
-                  className={classes.chatInput}
-                />
-              </Stack>
-            )}
-            {publishMediaStream && ENABLE_MUTE_API && (
+        <Stack className={classes.bottomBar} direction="row" alignItems="bottom" spacing={2}>
+          {publishMediaStream && ENABLE_MUTE_API && (
+            <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
               <PublisherControls
                 cameraOn={true}
                 microphoneOn={true}
                 onCameraToggle={onPublisherCameraToggle}
                 onMicrophoneToggle={onPublisherMicrophoneToggle}
               />
+            </Stack>
+          )}
+          {data.conference && (
+            <Stack direction="row" spacing={1} justifyContent="center" className={classes.layoutContainer}>
+              <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+
+              <Box className={chatClasses.inputChatContainer}>
+                {layout.layout === Layout.FULLSCREEN && (
+                  <Box className={`${chatClasses.chatContainer} ${chatClasses.fullScreenChatContainer}`}>
+                    <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
+                      <TypingIndicator />
+                    </MessageList>
+                  </Box>
+                )}
+                <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" />
+              </Box>
+            </Stack>
+          )}
+          <Stack direction="row" spacing={1} className={classes.partyControls}>
+            {mainStreamGuid && (
+              <VolumeControl
+                isOpen={false}
+                min={0}
+                max={100}
+                step={1}
+                currentValue={50}
+                onVolumeChange={onVolumeChange}
+              />
             )}
-            <Box className={classes.partyControls}>
-              {mainStreamGuid && (
-                <VolumeControl
-                  isOpen={false}
-                  min={0}
-                  max={100}
-                  step={1}
-                  currentValue={50}
-                  onVolumeChange={onVolumeChange}
-                />
-              )}
-              {data.conference && (
-                // TODO: Chat?
+            {data.conference && layout.layout !== Layout.FULLSCREEN && (
+              <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
+                <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
+                  <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
+                    <TypingIndicator />
+                  </MessageList>
+                  <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" />
+                </Box>
                 <CustomButton
                   size={BUTTONSIZE.SMALL}
                   buttonType={BUTTONTYPE.TRANSPARENT}
@@ -503,10 +522,11 @@ const MainStage = () => {
                 >
                   {chatIsHidden ? 'Show' : 'Hide'} Chat
                 </CustomButton>
-              )}
-            </Box>
+              </Box>
+            )}
           </Stack>
-        </Box>
+        </Stack>
+
         {/* Loading Message */}
         {(!data.conference || loading) && (
           <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>

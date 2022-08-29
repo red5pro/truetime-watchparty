@@ -14,6 +14,7 @@ import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup
 import MainStage from '../../components/MainStage/MainStage'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -148,7 +149,11 @@ const JoinPage = () => {
           <JoinSectionAVSetup conferenceData={conferenceData} onBack={onReturnToNickname} onJoin={onJoin} />
         </Box>
       )}
-      {!loading && conferenceData && currentSection === Section.WatchParty && <MainStage />}
+      {!loading && conferenceData && currentSection === Section.WatchParty && (
+        <MainStageWithChatBox>
+          <MainStage />
+        </MainStageWithChatBox>
+      )}
       {error && (
         <SimpleAlertDialog
           title="Something went wrong"
