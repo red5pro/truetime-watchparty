@@ -14,8 +14,9 @@ export const getCurrentEpisode = async () => {
     // check this
     currentSerie = seriesList[0]
 
-    const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(seriesList[0].seriesId)
+    const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode()
     const allEpisodesResponse = await CONFERENCE_API_CALLS.getAllEpisodes(seriesList[0].seriesId)
+    // const allEpisodesResponse = seriesList.data.series[0].episodes
 
     if (episodeResponse.data.episode && episodeResponse.data.status === 200) {
       currentEpisode = episodeResponse.data.episode

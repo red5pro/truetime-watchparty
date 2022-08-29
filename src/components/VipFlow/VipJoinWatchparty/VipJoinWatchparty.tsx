@@ -21,13 +21,22 @@ interface IVipSeeParticipantsProps {
   onActions: IStepActionsSubComponent
   account?: AccountCredentials
   currentEpisode?: Episode
-  joinNextConference: () => boolean
+  getNextConference: () => boolean
   currentConference?: Conference
+  nextConferenceToJoin?: Conference
   userAccount?: UserAccount
 }
 
 const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
-  const { onActions, account, userAccount, currentConference, currentEpisode, joinNextConference } = props
+  const {
+    onActions,
+    account,
+    userAccount,
+    currentConference,
+    currentEpisode,
+    getNextConference,
+    nextConferenceToJoin,
+  } = props
 
   const [participants, setParticipants] = React.useState<Participant[]>([])
   const [conferenceDetails, setConferenceDetails] = React.useState<ConferenceDetails>()
@@ -98,9 +107,9 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     }
   }, [currentConference])
 
-  const skipCurrentConference = () => {
+  const skipNextConference = () => {
     setJoinConference(false)
-    const canJoinNextConference = joinNextConference()
+    const canJoinNextConference = getNextConference()
 
     if (canJoinNextConference) {
       onActions.onBackStep()
@@ -115,7 +124,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
         currentEpisode={currentEpisode}
         conferenceDetails={conferenceDetails}
         participants={participants}
-        skipCurrentConference={skipCurrentConference}
+        skipNextConference={skipNextConference}
       />
     )
   }
@@ -155,7 +164,8 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
         <WatchpartyParticipants
           conferenceDetails={conferenceDetails}
           participants={participants}
-          skipCurrentConference={skipCurrentConference}
+          skipNextConference={skipNextConference}
+          // nextConferenceToJoin={nextConferenceToJoin}
           onJoinNextParty={() => setShowMediaStream(true)}
         />
       </Box>
