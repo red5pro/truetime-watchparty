@@ -48,7 +48,7 @@ const MediaControl = (props: MediaControlProps) => {
 
   return (
     <Stack direction="column" className={classes.root}>
-      <Box ref={ref}>
+      <Box ref={ref} sx={{ width: 'fit-content' }}>
         <CustomButton
           className={classes.button}
           labelStyle={classes.buttonLabel}
