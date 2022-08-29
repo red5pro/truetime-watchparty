@@ -5,7 +5,7 @@ import { AccountCredentials } from '../../models/AccountCredentials'
 import { Conference } from '../../models/Conference'
 import { Episode } from '../../models/Episode'
 import { UserAccount } from '../../models/UserAccount'
-import { getAllConferences, getCurrentEpisode } from '../../services/conference/conference'
+import { getAllConferences } from '../../services/conference/conference'
 
 import { IStepActionsSubComponent } from '../../utils/commonUtils'
 import Signin from '../Account/Signin/Signin'
@@ -32,6 +32,7 @@ const VipSteps = () => {
   const [currentEpisode, setCurrentEpisode] = React.useState<Episode>()
   const [allConferences, setAllConferences] = React.useState<Conference[]>()
   const [currentConference, setCurrentConference] = React.useState<Conference>()
+  const [nextConference, setNextConference] = React.useState<Conference>()
 
   const { classes } = useStyles()
 
@@ -70,12 +71,26 @@ const VipSteps = () => {
   }, [joinContext.seriesEpisode])
 
   const joinNextConference = () => {
+    const currConfIndex =
+      allConferences?.findIndex((item) => item.conferenceId === currentConference?.conferenceId) || 0
+
+    if (currConfIndex && allConferences && allConferences.length >= currConfIndex) {
+      const nextConf = allConferences[currConfIndex + 1]
+      setCurrentConference(nextConf)
+
+      return true
+    }
+    return false
+  }
+
+  const getNextConference = () => {
+    debugger
     const nextConfIndex =
       allConferences?.findIndex((item) => item.conferenceId === currentConference?.conferenceId) || 0
 
     if (nextConfIndex && allConferences && allConferences.length > nextConfIndex) {
       const nextConf = allConferences[nextConfIndex + 1]
-      setCurrentConference(nextConf)
+      setNextConference(nextConf)
 
       return true
     }
@@ -104,7 +119,8 @@ const VipSteps = () => {
               onActions={actions}
               account={accountCredentials}
               userAccount={account}
-              joinNextConference={joinNextConference}
+              getNextConference={getNextConference}
+              nextConferenceToJoin={nextConference}
               currentEpisode={currentEpisode}
               currentConference={currentConference}
             />

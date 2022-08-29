@@ -21,7 +21,6 @@ const getSeriesList = async () => {
   //     statusText: e.message,
   //   } as AxiosResponse
   // }
-
   return {
     data: {
       series: [
@@ -46,7 +45,7 @@ const getSeriesList = async () => {
   } as AxiosResponse
 }
 
-const getCurrentEpisode = async (serieId: string, account?: AccountCredentials) => {
+const getCurrentEpisode = async (account?: AccountCredentials) => {
   // try {
   //   let url = `${ENDPOINT.SERIES}/${serieId}/episode/current`
   //   if (account) {
