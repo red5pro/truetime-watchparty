@@ -10,13 +10,13 @@ import { ConferenceDetails } from '../../../models/ConferenceDetails'
 interface IWatchpartyParticipantsProps {
   conferenceDetails?: ConferenceDetails
   participants: Participant[]
-  skipCurrentConference: () => void
+  skipNextConference: () => void
   buttonPrimary?: boolean
   onJoinNextParty: any
 }
 
 const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
-  const { conferenceDetails, participants, skipCurrentConference, onJoinNextParty, buttonPrimary = false } = props
+  const { conferenceDetails, participants, skipNextConference, onJoinNextParty, buttonPrimary = false } = props
 
   const { classes } = useStyles()
 
@@ -59,7 +59,7 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
         >
           Join The Party
         </CustomButton>
-        <CustomButton onClick={skipCurrentConference} size={BUTTONSIZE.SMALL} buttonType={BUTTONTYPE.TERTIARY}>
+        <CustomButton onClick={skipNextConference} size={BUTTONSIZE.SMALL} buttonType={BUTTONTYPE.TERTIARY}>
           Skip
         </CustomButton>
       </Box>
