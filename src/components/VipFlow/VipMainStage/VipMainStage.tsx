@@ -35,12 +35,12 @@ const useMediaContext = () => React.useContext(MediaContext.Context)
 interface IVipMainStageProps {
   currentEpisode: Episode
   participants: Participant[]
-  skipCurrentConference: () => void
+  skipNextConference: () => void
   conferenceDetails: ConferenceDetails
 }
 
 const VipMainStage = (props: IVipMainStageProps) => {
-  const { currentEpisode, participants, skipCurrentConference, conferenceDetails } = props
+  const { currentEpisode, participants, skipNextConference, conferenceDetails } = props
 
   const joinContext = useJoinContext()
   const { data, message, join } = useWatchContext()
@@ -222,7 +222,7 @@ const VipMainStage = (props: IVipMainStageProps) => {
               finishedCountdown={finishedCountdown}
             />
             <WatchpartyParticipants
-              skipCurrentConference={skipCurrentConference}
+              skipNextConference={skipNextConference}
               // NOTE: CHECK IF conferenceDetails IS NEEDED
               conferenceDetails={data.conference ?? conferenceDetails}
               participants={participants}
