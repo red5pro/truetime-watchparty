@@ -1,6 +1,7 @@
 import { Box, Fade, IconButton, Slider, Stack } from '@mui/material'
 import VolumeUp from '@mui/icons-material/VolumeUp'
 import React from 'react'
+import useOutsideClick from '../../hooks/useOutsideClick'
 
 interface VolumeControlProps {
   isOpen: boolean
@@ -70,6 +71,7 @@ const VolumeControl = (props: VolumeControlProps) => {
         <Box sx={{ height: 120, position: 'absolute', bottom: 60 }}>
           <Slider
             sx={{
+              zIndeX: 500,
               '& input[type="range"]': {
                 WebkitAppearance: 'slider-vertical',
               },
