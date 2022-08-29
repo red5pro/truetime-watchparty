@@ -4,12 +4,14 @@ const useStyles = makeStyles()({
   root: {
     position: 'relative',
     flexGrow: 1,
+    alignItems: 'center',
   },
   button: {
     justifyContent: 'flex-start',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    maxWidth: '200px!important',
   },
   buttonLabel: {
     whiteSpace: 'nowrap',

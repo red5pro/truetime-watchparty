@@ -134,7 +134,7 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
           onContextMenu={() => false}
           className={classes.video}
         />
-        <Stack direction="row" alignItems="center">
+        <Stack direction="row" alignItems="center" sx={{ width: '100%' }}>
           {cameraSelected && (
             <MediaControl
               icon={<Mic />}
