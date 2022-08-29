@@ -8,6 +8,7 @@ import MediaContext from '../components/MediaContext/MediaContext'
 import JoinContext from '../components/JoinContext/JoinContext'
 import WatchContext from '../components/WatchContext/WatchContext'
 import VipJoinPage from '../pages/VipJoinPage/VipJoinPage'
+import ThankYouPage from '../pages/ThankYouPage/ThankYouPage'
 
 const AppRoutes = () => {
   return (
@@ -30,6 +31,14 @@ const AppRoutes = () => {
         />
         {/* WAT-70, WAT-73 */}
         <Route path="/join/guest" element={<VipJoinPage />} />
+        <Route
+          path="/thankyou/:token"
+          element={
+            <JoinContext.Provider>
+              <ThankYouPage />
+            </JoinContext.Provider>
+          }
+        />
         <Route path="*" element={<Landing />} />
       </Routes>
     </BrowserRouter>

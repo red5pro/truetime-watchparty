@@ -249,8 +249,7 @@ const MainStage = () => {
   }
 
   const onLeave = () => {
-    // TODO: Redirect to /bye/${joinToken}
-    navigate('/')
+    navigate(`/thankyou/${joinContext.joinToken}`)
   }
 
   const toggleLock = async () => {
