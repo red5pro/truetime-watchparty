@@ -52,25 +52,22 @@ const useStyles = makeStyles()((theme: any) => {
       zIndex: 1,
     },
     bottomBar: {
+      width: '100%',
+      alignItems: 'center',
+      justifyContent: 'space-between',
       position: 'absolute',
       left: 0,
       bottom: 0,
       padding: '20px',
       display: 'flex',
       flexDirection: 'row',
-      width: '100%',
-    },
-    bottomControls: {
-      position: 'relative',
-      width: '100%',
-      alignItems: 'center',
     },
     layoutContainer: {
-      position: 'absolute',
       width: '100%',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
+      alignContent: 'flex-end',
+      alignSelf: 'flex-end',
     },
     chatInput: {
       width: '45%',
@@ -84,6 +81,14 @@ const useStyles = makeStyles()((theme: any) => {
       display: 'flex',
       justifyContent: 'flex-end',
       width: '100%',
+      alignItems: 'center',
+      alignContent: 'flex-end',
+      alignSelf: 'flex-end',
+
+      '& label': {
+        width: '32px',
+        height: '32px',
+      },
     },
   }
 })
