@@ -3,6 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 const useStyles = makeStyles()({
   root: {
     position: 'relative',
+    flexGrow: 1,
   },
   button: {
     justifyContent: 'flex-start',
@@ -17,6 +18,7 @@ const useStyles = makeStyles()({
   },
   listContainer: {
     position: 'absolute',
+    width: 'max-content',
     top: '50px',
     padding: '4px',
     boxSizing: 'border-box',
@@ -25,12 +27,11 @@ const useStyles = makeStyles()({
     border: '1px solid rgba(255, 255, 255, 0.15)',
     boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
     backdropFilter: 'blur(24px)',
-    width: '180px',
     zIndex: 1000,
   },
   listDivider: {
     margin: '2px',
-    color: 'white',
+    backgroundColor: 'white',
   },
 })
 

@@ -1,5 +1,6 @@
-import { Fade, List, ListItemButton, ListItemText, Stack } from '@mui/material'
+import { Box, Fade, List, ListItemButton, ListItemText, Stack } from '@mui/material'
 import React from 'react'
+import useOutsideClick from '../../hooks/useOutsideClick'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import useStyles from './MediaControl.module'
 
@@ -20,8 +21,12 @@ const MediaControl = (props: MediaControlProps) => {
 
   const { classes } = useStyles()
 
+  const ref = React.useRef()
+
   const [open, setOpen] = React.useState<boolean>(false)
   const [selectedIndex, setSelectedIndex] = React.useState<number>(0)
+
+  useOutsideClick(ref, () => setOpen(false))
 
   React.useEffect(() => {
     if (value && options) {
@@ -43,21 +48,28 @@ const MediaControl = (props: MediaControlProps) => {
 
   return (
     <Stack direction="column" className={classes.root}>
-      <CustomButton
-        className={classes.button}
-        size={BUTTONSIZE.SMALL}
-        buttonType={BUTTONTYPE.TRANSPARENT}
-        startIcon={icon}
-        onClick={toggleOpen}
-      >
-        {options && options.length > selectedIndex ? options[selectedIndex].name : 'N/A'}
-      </CustomButton>
+      <Box ref={ref}>
+        <CustomButton
+          className={classes.button}
+          labelStyle={classes.buttonLabel}
+          size={BUTTONSIZE.SMALL}
+          buttonType={BUTTONTYPE.TRANSPARENT}
+          startIcon={icon}
+          onClick={toggleOpen}
+        >
+          {options && options.length > selectedIndex ? options[selectedIndex].name : 'N/A'}
+        </CustomButton>
+      </Box>
       {open && (
         <Fade in={open}>
           <List className={classes.listContainer}>
             {options.map((o: MediaControlOption, i: number) => {
               return (
-                <ListItemButton key={`option_${i}`} onClick={() => onSelect(o, i)}>
+                <ListItemButton
+                  key={`option_${i}`}
+                  onClick={() => onSelect(o, i)}
+                  sx={i < options.length - 1 ? { borderBottom: '1px solid gray' } : {}}
+                >
                   <ListItemText>{o.name}</ListItemText>
                 </ListItemButton>
               )

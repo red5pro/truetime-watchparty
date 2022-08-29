@@ -134,41 +134,30 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
           onContextMenu={() => false}
           className={classes.video}
         />
-        <Stack>
-          <MediaControl
-            icon={<Mic />}
-            options={devices.cameras.map((d: MediaDeviceInfo) => {
-              return { name: d.label, value: d.deviceId }
-            })}
-            onChange={(sel: MediaControlOption) => {
-              console.log(sel)
-              setCameraSelected(sel.value)
-            }}
-            value={cameraSelected}
-          />
-        </Stack>
-        <Stack className={classes.controls} direction="row" spacing={2} alignItems="center" justifyContent="center">
+        <Stack direction="row" alignItems="center">
           {cameraSelected && (
-            <Select autoWidth={true} onChange={onCameraSelect} value={cameraSelected}>
-              {devices.cameras.map((d: MediaDeviceInfo) => {
-                return (
-                  <MenuItem key={d.deviceId} value={d.deviceId} sx={{ color: 'black' }}>
-                    {d.label}
-                  </MenuItem>
-                )
+            <MediaControl
+              icon={<Mic />}
+              options={devices.microphones.map((d: MediaDeviceInfo) => {
+                return { name: d.label, value: d.deviceId }
               })}
-            </Select>
+              onChange={(sel: MediaControlOption) => {
+                setMicrophoneSelected(sel.value)
+              }}
+              value={cameraSelected}
+            />
           )}
           {microphoneSelected && (
-            <Select autoWidth={true} onChange={onMicrophoneSelect} value={microphoneSelected}>
-              {devices.microphones.map((d: MediaDeviceInfo) => {
-                return (
-                  <MenuItem key={d.deviceId} value={d.deviceId} sx={{ color: 'black' }}>
-                    {d.label}
-                  </MenuItem>
-                )
+            <MediaControl
+              icon={<Videocam sx={{ color: 'rgb(156, 243, 97)' }} />}
+              options={devices.cameras.map((d: MediaDeviceInfo) => {
+                return { name: d.label, value: d.deviceId }
               })}
-            </Select>
+              onChange={(sel: MediaControlOption) => {
+                setCameraSelected(sel.value)
+              }}
+              value={microphoneSelected}
+            />
           )}
         </Stack>
         {loading && (

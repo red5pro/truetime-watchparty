@@ -21,6 +21,7 @@ export enum BUTTONSIZE {
 interface ICustomButtonProps extends ButtonProps {
   children: any
   buttonType: BUTTONTYPE
+  labelStyle?: any
   fullWidth?: boolean
   onClick?: any
   loading?: boolean
@@ -35,6 +36,7 @@ const CustomButton = (props: ICustomButtonProps): JSX.Element => {
     href,
     fullWidth,
     className,
+    labelStyle,
     onClick,
     buttonType,
     startIcon,
@@ -84,7 +86,7 @@ const CustomButton = (props: ICustomButtonProps): JSX.Element => {
         data-cy={dataCy}
         id={dataCy}
       >
-        <Typography>{children}</Typography>
+        <Typography className={labelStyle}>{children}</Typography>
       </Button>
     </Grid>
   )
