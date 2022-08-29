@@ -47,6 +47,7 @@ const ThankYouPage = () => {
             <Typography marginTop={2} className={classes.thankyouMessage}>
               {conferenceData.thankYouMessage}
             </Typography>
+            {/* TODO: How to recognize that the conference has ended? */}
             <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onRejoin}>
               Rejoin Party
             </CustomButton>
