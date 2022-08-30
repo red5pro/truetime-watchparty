@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Box, Typography } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { Episode } from '../../../models/Episode'
 import { Serie } from '../../../models/Serie'
@@ -18,6 +18,8 @@ interface IViewEventsProps {
 
 const ViewEvents = (props: IViewEventsProps) => {
   const { onActions, account } = props
+
+  const navigate = useNavigate()
 
   const [currentSerie, setCurrentSerie] = React.useState<Serie>()
   const [currentEpisode, setCurrentEpisode] = React.useState<Episode>()
@@ -42,8 +44,9 @@ const ViewEvents = (props: IViewEventsProps) => {
   const onCreateAParty = () => {
     onActions.onNextStep()
   }
-  const onJoinAParty = () => console.log('join a party')
-
+  const onJoinAParty = () => {
+    navigate(`/join`)
+  }
   return (
     <>
       {currentSerie && (

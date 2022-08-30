@@ -15,6 +15,7 @@ import { Participant } from '../../models/Participant'
 import MoreMenuIcon from '../../assets/MoreMenuIcon/MoreMenuIcon'
 import useStyles from './SubscriberMenu.module'
 import { Block, Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material'
+import useOutsideClick from '../../hooks/useOutsideClick'
 
 interface SubscriberMenuActions {
   onMuteAudio(participant: Participant, requestMute: boolean): any
@@ -35,7 +36,11 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
   let closeTimeout: any
   const closeRef = React.useRef(null)
 
+  const ref = React.useRef(null)
+
   const [showMenu, setShowMenu] = React.useState<boolean>(false)
+
+  useOutsideClick(ref, () => setShowMenu(false))
 
   React.useEffect(() => {
     stopCloseTimeout()
@@ -82,7 +87,7 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
 
   return (
     <Stack sx={{ position: 'relative' }}>
-      <IconButton color="primary" aria-label="subscriber menu" component="label" onClick={onToggleMenu}>
+      <IconButton ref={ref} color="primary" aria-label="subscriber menu" component="label" onClick={onToggleMenu}>
         <MoreMenuIcon />
       </IconButton>
       <Fade in={showMenu}>

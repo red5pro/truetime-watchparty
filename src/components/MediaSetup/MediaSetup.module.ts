@@ -28,6 +28,13 @@ const useMediaStyles = makeStyles()({
     objectFit: 'cover',
     transform: 'scaleX(-1)',
   },
+  controls: {
+    maxWidth: '480px',
+    width: '100%',
+  },
+  mediaControl: {
+    flexGrow: 1,
+  },
 })
 
 export default useMediaStyles
