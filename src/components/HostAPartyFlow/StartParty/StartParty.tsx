@@ -33,8 +33,13 @@ const StartParty = (props: IStartPartyProps) => {
 
   return (
     <Box className={classes.root}>
+<<<<<<< HEAD
       <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px' }}>
         Host a WatchParty
+=======
+      <Typography paddingTop={1} sx={{ textAlign: 'center', fontSize: '16px' }}>
+        {currentEpisode?.displayName}
+>>>>>>> da7e298 (feature/WAT-134/Add images)
       </Typography>
       {loading && (
         <Box className={classes.container} display="flex" alignItems="center">
