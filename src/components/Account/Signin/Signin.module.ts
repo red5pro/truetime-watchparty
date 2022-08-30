@@ -3,7 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 const useStyles = makeStyles()((theme: any) => ({
   root: {
     height: '100%',
-    background: 'linear-gradient(to bottom right, #1b1828,#2a448a)',
+    // background: 'linear-gradient(to bottom right, #1b1828,#2a448a)',
     backdropFilter: 'blur(88px)',
     width: '100%',
     overflow: 'auto',

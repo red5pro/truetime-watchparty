@@ -9,6 +9,7 @@ import JoinContext from '../components/JoinContext/JoinContext'
 import WatchContext from '../components/WatchContext/WatchContext'
 import VipJoinPage from '../pages/VipJoinPage/VipJoinPage'
 import ThankYouPage from '../pages/ThankYouPage/ThankYouPage'
+import PartyEndedPage from '../pages/PartyEndedPage/PartyEndedPage'
 
 const AppRoutes = () => {
   return (
@@ -36,6 +37,14 @@ const AppRoutes = () => {
           element={
             <JoinContext.Provider>
               <ThankYouPage />
+            </JoinContext.Provider>
+          }
+        />
+        <Route
+          path="/partyended/:token"
+          element={
+            <JoinContext.Provider>
+              <PartyEndedPage />
             </JoinContext.Provider>
           }
         />

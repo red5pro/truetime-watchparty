@@ -162,6 +162,16 @@ const JoinPage = () => {
           onConfirm={onRetryRequest}
         />
       )}
+      <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
+        <img
+          alt="Join a Party Main Image"
+          src={require('../../assets/images/BoxMainImage.png')}
+          style={{
+            opacity: currentSection === Section.Nickname ? 0.5 : 1,
+            display: currentSection === Section.Landing || currentSection === Section.Nickname ? 'block' : 'none',
+          }}
+        ></img>
+      </Box>
     </Box>
   )
 }
