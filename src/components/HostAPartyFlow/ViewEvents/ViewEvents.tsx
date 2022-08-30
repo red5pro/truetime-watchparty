@@ -48,7 +48,14 @@ const ViewEvents = (props: IViewEventsProps) => {
   }
 
   return (
-    <Box className={classes.root}>
+    <Box
+      className={classes.root}
+      sx={{
+        backgroundImage: `url(${require('../../../assets/images/BoxMainImage.png')})`,
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: '40% 100%',
+      }}
+    >
       {loading && (
         <Box className={classes.container} display="flex" alignItems="center">
           <Loading text="Loading Event Data..." />

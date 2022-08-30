@@ -21,14 +21,14 @@ const ElementList = (props: IElementListProps) => {
         const date = new Date(value.startTime)
         return (
           <Fragment key={value.seriesId}>
-            <ListItem disablePadding key={value.seriesId}>
-              <ListItemButton className={classes.itemButton} component="a" href="#simple-list">
-                <Box marginRight={2}>
-                  <ListItemText primary={date.toLocaleDateString('en-US', dateOptions)} />
-                  <ListItemText primary={`${date.getHours()}:${date.getMinutes()}`} />
-                </Box>
-                <ListItemText primary={value.displayName} className={classes.itemDisplayName} />
-              </ListItemButton>
+            <ListItem sx={{ margin: 3 }} disablePadding key={value.seriesId}>
+              {/* <ListItemButton className={classes.itemButton} component="a" href="#simple-list"> */}
+              <Box marginRight={2}>
+                <ListItemText primary={date.toLocaleDateString('en-US', dateOptions)} />
+                <ListItemText primary={`${date.getHours()}:${date.getMinutes()}`} />
+              </Box>
+              <ListItemText primary={value.displayName} className={classes.itemDisplayName} />
+              {/* </ListItemButton> */}
             </ListItem>
             <Divider orientation="horizontal" flexItem sx={{ width: '100%', bgcolor: '#d3d3d3', height: '1px' }} />
           </Fragment>
