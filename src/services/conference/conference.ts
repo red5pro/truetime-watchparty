@@ -6,28 +6,36 @@ export const getCurrentEpisode = async () => {
   let currentEpisode
   let nextEpisodes = []
 
-  const response = await CONFERENCE_API_CALLS.getSeriesList()
+  try {
+    const response = await CONFERENCE_API_CALLS.getSeriesList()
+    const { data } = response
+    if (!data) throw response
 
-  if (response.data.status === 200 && response.data.series) {
-    const seriesList = response.data.series
+    if (response.status === 200 && data.series) {
+      const seriesList = data.series
+      // check this
+      currentSerie = seriesList[seriesList.length - 1]
 
-    // check this
-    currentSerie = seriesList[0]
+      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(currentSerie.seriesId)
+      if (!episodeResponse.data) throw episodeResponse
 
-    const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode()
-    const allEpisodesResponse = await CONFERENCE_API_CALLS.getAllEpisodes(seriesList[0].seriesId)
-    // const allEpisodesResponse = seriesList.data.series[0].episodes
+      const allEpisodesResponse = await CONFERENCE_API_CALLS.getAllEpisodes(currentSerie.seriesId)
+      if (!allEpisodesResponse.data) throw allEpisodesResponse
 
-    if (episodeResponse.data.episode && episodeResponse.data.status === 200) {
-      currentEpisode = episodeResponse.data.episode
+      if (episodeResponse.data && episodeResponse.status === 200) {
+        currentEpisode = episodeResponse.data
+      }
+
+      if (allEpisodesResponse.data && allEpisodesResponse.status === 200) {
+        nextEpisodes = allEpisodesResponse.data ?? []
+      }
     }
 
-    if (allEpisodesResponse.data.episodes && allEpisodesResponse.data.status === 200) {
-      nextEpisodes = allEpisodesResponse.data.episodes ?? []
-    }
+    return [currentEpisode, currentSerie, nextEpisodes]
+  } catch (e) {
+    console.error(e)
+    throw e
   }
-
-  return [currentEpisode, currentSerie, nextEpisodes]
 }
 
 export const getAllConferences = async (account: AccountCredentials) => {

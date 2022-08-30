@@ -102,11 +102,11 @@ const JoinProvider = (props: JoinContextProps) => {
       const serieResponse = await CONFERENCE_API_CALLS.getSeriesList()
       if (!serieResponse.data) throw serieResponse
 
-      const currentSeries = serieResponse.data.series[0]
+      const currentSeries = serieResponse.data.series[serieResponse.data.series.length - 1]
       const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(cookies.account)
       if (!episodeResponse.data) throw episodeResponse
 
-      const currentEpisode = episodeResponse.data.episode
+      const currentEpisode = episodeResponse.data
       if (currentSeries && currentEpisode) {
         dispatch({ type: 'UPDATE', series: currentSeries, episode: currentEpisode })
         setLoading(false)

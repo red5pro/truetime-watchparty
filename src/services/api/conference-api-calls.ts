@@ -4,130 +4,136 @@ import { AccountCredentials } from '../../models/AccountCredentials'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
 
+// TODO: Take out creds from requests.
+const ADMIN_PARAMS = 'user=admin&password=changeme'
 const ENDPOINT = {
   SERIES: `${MAIN_ENDPOINT}/series`,
   CONFERENCE: `${MAIN_ENDPOINT}/conference`,
 }
 
 const getSeriesList = async () => {
-  // try {
-  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}`)
-  //   return response
-  // } catch (e: any) {
-  //   console.log(e)
-  //   return {
-  //     data: null,
-  //     status: e.code,
-  //     statusText: e.message,
-  //   } as AxiosResponse
-  // }
-  return {
-    data: {
-      series: [
-        {
-          seriesId: 9991,
-          displayName: 'Series 1',
-          maxParticipants: 8,
-        },
-        {
-          seriesId: 9992,
-          displayName: 'Series 2',
-          maxParticipants: 8,
-        },
-        {
-          seriesId: 9993,
-          displayName: 'Series 3',
-          maxParticipants: 8,
-        },
-      ],
-      status: 200,
-    },
-  } as AxiosResponse
+  try {
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}?${ADMIN_PARAMS}`)
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+  // return {
+  //   data: {
+  //     series: [
+  //       {
+  //         seriesId: 9991,
+  //         displayName: 'Series 1',
+  //         maxParticipants: 8,
+  //       },
+  //       {
+  //         seriesId: 9992,
+  //         displayName: 'Series 2',
+  //         maxParticipants: 8,
+  //       },
+  //       {
+  //         seriesId: 9993,
+  //         displayName: 'Series 3',
+  //         maxParticipants: 8,
+  //       },
+  //     ],
+  //     status: 200,
+  //   },
+  // } as AxiosResponse
 }
 
-const getCurrentEpisode = async (account?: AccountCredentials) => {
-  // try {
-  //   let url = `${ENDPOINT.SERIES}/${serieId}/episode/current`
-  //   if (account) {
-  //     url += `?user=${account.email}&password=${account.password}`
-  //   }
-  //   const response: AxiosResponse = await axios.get(url)
-  //   return response
-  // } catch (e: any) {
-  //   console.log(e)
-  //   return {
-  //     data: null,
-  //     status: e.code,
-  //     statusText: e.message,
-  //   } as AxiosResponse
-  // }
+const getCurrentEpisode = async (seriesId: number | string, account?: AccountCredentials) => {
+  try {
+    let url = `${MAIN_ENDPOINT}/episode/current`
+    if (account) {
+      url += `?user=${account.email}&password=${account.password}`
+    } else {
+      url += `?${ADMIN_PARAMS}`
+    }
+    const response: AxiosResponse = await axios.get(url)
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
 
-  return {
-    data: {
-      episode: {
-        episodeId: 9991,
-        displayName: 'Event 1',
-        description: 'Event1',
-        startTime: 1658677171000,
-        endTime: 1658691571000,
-        streamGuid: 'live/mainscreen',
-      },
-      status: 200,
-    },
-  } as AxiosResponse
+  // return {
+  //   data: {
+  //     episode: {
+  //       episodeId: 9991,
+  //       displayName: 'Event 1',
+  //       description: 'Event1',
+  //       startTime: 1658677171000,
+  //       endTime: 1658691571000,
+  //       streamGuid: 'live/mainscreen',
+  //     },
+  //     status: 200,
+  //   },
+  // } as AxiosResponse
 }
 
-const getAllEpisodes = async (serieId: string, account?: AccountCredentials) => {
-  // try {
-  //   let url = `${ENDPOINT.SERIES}/${serieId}/episode`
-  //   if (account) {
-  //     url += `?user=${account.email}&password=${account.password}`
-  //   }
-  //   const response: AxiosResponse = await axios.get(url)
-  //   return response
-  // } catch (e: any) {
-  //   console.log(e)
-  //   return {
-  //     data: null,
-  //     status: e.code,
-  //     statusText: e.message,
-  //   } as AxiosResponse
-  // }
+const getAllEpisodes = async (serieId: number | string, account?: AccountCredentials) => {
+  try {
+    let url = `${ENDPOINT.SERIES}/${serieId}/episode`
+    if (account) {
+      url += `?user=${account.email}&password=${account.password}`
+    } else {
+      url += `?${ADMIN_PARAMS}`
+    }
+    const response: AxiosResponse = await axios.get(url)
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
 
-  return {
-    data: {
-      episodes: [
-        {
-          episodeId: 1001,
-          seriesId: 9991,
-          displayName: 'Event 1',
-          description: 'Event1',
-          startTime: 1658763571000,
-          endTime: 1658777971000,
-          streamGuid: 'live/mainscreen',
-        },
-        {
-          episodeId: 1002,
-          seriesId: 9991,
-          displayName: 'Event 2',
-          description: 'Event2',
-          startTime: 1658849971000,
-          endTime: 1658864371000,
-          streamGuid: 'live/mainscreen',
-        },
-        {
-          episodeId: 1003,
-          seriesId: 9991,
-          displayName: 'Event 3',
-          description: 'Event3',
-          startTime: 1658936371000,
-          endTime: 1658950771000,
-          streamGuid: 'live/mainscreen',
-        },
-      ],
-      status: 200,
-    },
-  } as AxiosResponse
+  // return {
+  //   data: {
+  //     episodes: [
+  //       {
+  //         episodeId: 1001,
+  //         seriesId: 9991,
+  //         displayName: 'Event 1',
+  //         description: 'Event1',
+  //         startTime: 1658763571000,
+  //         endTime: 1658777971000,
+  //         streamGuid: 'live/mainscreen',
+  //       },
+  //       {
+  //         episodeId: 1002,
+  //         seriesId: 9991,
+  //         displayName: 'Event 2',
+  //         description: 'Event2',
+  //         startTime: 1658849971000,
+  //         endTime: 1658864371000,
+  //         streamGuid: 'live/mainscreen',
+  //       },
+  //       {
+  //         episodeId: 1003,
+  //         seriesId: 9991,
+  //         displayName: 'Event 3',
+  //         description: 'Event3',
+  //         startTime: 1658936371000,
+  //         endTime: 1658950771000,
+  //         streamGuid: 'live/mainscreen',
+  //       },
+  //     ],
+  //     status: 200,
+  //   },
+  // } as AxiosResponse
 }
 
 const getConferenceDetails = async (conferenceId: string, account?: AccountCredentials) => {
