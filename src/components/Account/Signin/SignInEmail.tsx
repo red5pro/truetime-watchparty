@@ -112,6 +112,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
                 size={BUTTONSIZE.MEDIUM}
                 buttonType={BUTTONTYPE.SECONDARY}
                 fullWidth
+                className={classes.signInButton}
               >
                 Sign In
               </CustomButton>
