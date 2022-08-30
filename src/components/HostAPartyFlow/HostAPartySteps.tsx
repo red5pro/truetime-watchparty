@@ -13,6 +13,7 @@ import ShareLink from './ShareLink/ShareLink'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { IStepActionsSubComponent } from '../../utils/commonUtils'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import ViewContext from '../ViewContext/ViewContext'
 
 enum EStepIdentify {
   LANDING = 0,
@@ -110,7 +111,7 @@ export default function HostAPartySteps() {
             <ArrowBackIosIcon />
           </Button>
         )}
-        {getSteps(actions)[activeStep].component}
+        <ViewContext.Provider>{getSteps(actions)[activeStep].component}</ViewContext.Provider>
       </Box>
     </Box>
   )
