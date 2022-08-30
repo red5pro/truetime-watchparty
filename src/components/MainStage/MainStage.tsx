@@ -479,7 +479,7 @@ const MainStage = () => {
             </Stack>
           )}
           {data.conference && (
-            <Stack direction="row" spacing={1} justifyContent="center" className={classes.layoutContainer}>
+            <Stack direction="row" spacing={0} justifyContent="center" className={classes.layoutContainer}>
               <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
 
               <Box className={chatClasses.inputChatContainer}>

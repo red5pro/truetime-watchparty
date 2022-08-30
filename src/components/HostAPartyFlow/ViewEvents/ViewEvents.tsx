@@ -51,9 +51,9 @@ const ViewEvents = (props: IViewEventsProps) => {
     <>
       {currentSerie && (
         <Box className={classes.root}>
-          <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px' }}>
+          {/* <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px' }}>
             {currentEpisode?.displayName}
-          </Typography>
+          </Typography> */}
           <Box className={classes.container} display="flex" alignItems="center">
             <Box className={classes.leftContainer}>
               <Typography sx={{ fontSize: '24px' }}>{currentSerie.displayName}</Typography>

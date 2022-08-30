@@ -3,7 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 const useStyles = makeStyles()((theme: any) => {
   return {
     root: {
-      backdropFilter: 'blur(88px)',
+      // backdropFilter: 'blur(88px)',
       width: '100%',
       height: '100%',
       overflow: 'auto',
