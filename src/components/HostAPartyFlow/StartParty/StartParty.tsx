@@ -53,7 +53,7 @@ const StartParty = (props: IStartPartyProps) => {
         <Box className={classes.container} display="flex" flexDirection="column">
           <Typography sx={{ fontSize: '24px' }}>{eventData.currentSeries?.displayName}</Typography>
           <Typography variant="h2">{eventData.currentEpisode?.displayName}</Typography>
-          <Typography variant="h4" marginY={3} sx={{ fontSize: '18px', fontWeight: 600 }}>
+          <Typography variant="h4" marginY={1} sx={{ fontSize: '18px', fontWeight: 600 }}>
             {getStartTimeFromTimestamp(eventData.currentEpisode?.startTime)}
           </Typography>
 
@@ -69,6 +69,11 @@ const StartParty = (props: IStartPartyProps) => {
           <SetupPartyForm onActions={onActions} data={data} setData={setData} account={account} />
         </Box>
       )}
+      <img
+        className={classes.image}
+        alt="Start Party Main Image"
+        src={require('../../../assets/images/BoxMainImage.png')}
+      ></img>
     </Box>
   )
 }

@@ -11,32 +11,29 @@ interface IVipTimerStepProps {
 const VipTimer = (props: IVipTimerStepProps) => {
   const { startedCountdown, setFinishedCountdown, finishedCountdown = false } = props
 
-  const [minutes, setMinutes] = React.useState<number>(30)
+  const [minutes, setMinutes] = React.useState<number>(0)
   const [seconds, setSeconds] = React.useState<number>(0)
-  // const [finishedCountdown, setFinishedCountdown] = React.useState<boolean>(false)
-  const [progressBar, setProgressBar] = React.useState<number>(0)
+  // const [progressBar, setProgressBar] = React.useState<number>(0)
 
   const { classes } = useStyles()
 
   React.useEffect(() => {
     if (startedCountdown) {
       const date = new Date()
-      date.setMinutes(date.getMinutes() + 30)
+      date.setMinutes(date.getMinutes())
 
       const countDownDate = date.getTime()
 
       const time = setInterval(() => {
         const now = new Date().getTime()
-        const distance = countDownDate - now
+        const distance = now - countDownDate
 
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
         const seconds = Math.floor((distance % (1000 * 60)) / 1000)
 
         setMinutes(minutes)
         setSeconds(seconds)
-        setProgressBar((prevProgress: number) => (prevProgress >= 100 ? 0 : prevProgress + 0.05555))
-
-        // VER ESTO ESTA DURANDO 2 MINUTOS
+        // setProgressBar((prevProgress: number) => (prevProgress >= 100 ? 0 : prevProgress + 0.05555))
 
         if (distance < 0) {
           clearInterval(time)
@@ -49,6 +46,9 @@ const VipTimer = (props: IVipTimerStepProps) => {
 
       return () => {
         clearInterval(time)
+        if (setFinishedCountdown) {
+          setFinishedCountdown(true)
+        }
       }
     }
 
@@ -60,7 +60,7 @@ const VipTimer = (props: IVipTimerStepProps) => {
       <CircularProgressWithLabel
         minutes={minutes}
         seconds={seconds}
-        progress={progressBar}
+        // progress={progressBar}
         finishedCountdown={finishedCountdown}
         className={classes.timer}
       />
@@ -71,11 +71,11 @@ const VipTimer = (props: IVipTimerStepProps) => {
 export default VipTimer
 
 const CircularProgressWithLabel = (
-  props: CircularProgressProps & { minutes: number; seconds: number; progress: number; finishedCountdown: boolean }
+  props: CircularProgressProps & { minutes: number; seconds: number; progress?: number; finishedCountdown: boolean }
 ) => {
   return (
     <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-      <CircularProgress variant="determinate" value={props.progress} {...props} />
+      {/* <CircularProgress variant="determinate" value={props.progress} {...props} /> */}
       <Box
         sx={{
           top: 0,
