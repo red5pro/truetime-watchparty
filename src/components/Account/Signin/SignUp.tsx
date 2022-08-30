@@ -54,12 +54,23 @@ const SignUp = (props: ISignUpProps) => {
     setErrorAfterSubmit(undefined)
     const response = await USER_API_CALLS.createUser(values.email, values.password)
 
-    if (response?.status === 201) {
-      setCookie('account', { email: values.email, password: values.password }, { httpOnly: true, secure: true })
+    if (response?.status === 201 && response?.data.token) {
+      setCookie('account', { email: values.email, password: values.password }, { secure: true })
       setEmail(values.email)
-      setShouldVerifyEmail(true)
+
+      //TODO CHECK THIS STEP
+      // setShouldVerifyEmail(true)
+      const verifyResponse = await USER_API_CALLS.verifyAccount(values.email, values.password, response.data.token)
+
+      if (verifyResponse?.status === 200) {
+        onActions?.onNextStep()
+      } else {
+        setErrorAfterSubmit(
+          verifyResponse?.statusText ?? 'There was an error verifying your account, please sign in and try again'
+        )
+      }
     } else {
-      setErrorAfterSubmit(response?.statusText || 'There was an error creating your account, please try again')
+      setErrorAfterSubmit(response?.statusText ?? 'There was an error creating your account, please try again')
     }
   }
 
@@ -90,7 +101,7 @@ const SignUp = (props: ISignUpProps) => {
                 type="email"
                 label="Email"
                 placeholder="Email"
-                className={classes.input}
+                className={`${classes.input} ${errorAfterSubmit?.includes(email) ? classes.errorTextField : ''}`}
               />
               <Field component={TextField} name="password" type="password" label="Password" className={classes.input} />
               <Field
@@ -112,7 +123,7 @@ const SignUp = (props: ISignUpProps) => {
               </CustomButton>
               {isSubmitting && <LinearProgress />}
               {errorAfterSubmit && (
-                <Typography sx={{ fontSize: '30px' }} className={classes.errorValidation}>
+                <Typography sx={{ fontSize: '20px' }} className={classes.errorValidation}>
                   {errorAfterSubmit}
                 </Typography>
               )}

@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios'
 import { MAIN_ENDPOINT } from '../../settings/variables'
+import { apiErrorMapping } from '../../utils/apiErrorMapping'
 import { UserRoles } from '../../utils/commonUtils'
 
 const ENDPOINT = {
@@ -17,11 +18,12 @@ const createUser = async (email: string, password: string, role?: string) => {
     return response
   } catch (e: any) {
     console.log(e)
+    const msg = apiErrorMapping(e)
 
     return {
       data: null,
-      status: e.code,
-      statusText: e.message,
+      status: msg.status,
+      statusText: msg.statusText,
     } as AxiosResponse
   }
 }
@@ -46,7 +48,28 @@ const signin = async (email: string, password: string) => {
   }
 }
 
+const verifyAccount = async (email: string, password: string, token: string) => {
+  try {
+    const body = {
+      token,
+      password,
+    }
+    const response: AxiosResponse = await axios.put(`${ENDPOINT.USER}/${email}/verify`, body)
+
+    return response
+  } catch (e: any) {
+    console.log(e)
+
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
+}
+
 export const USER_API_CALLS = {
   createUser,
   signin,
+  verifyAccount,
 }
