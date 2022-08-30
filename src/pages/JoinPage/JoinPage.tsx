@@ -34,7 +34,7 @@ const getParticipantText = (participants: Participant[] | undefined) => {
   const maxLength = 2
   const length = participants.length
   if (length < maxLength) {
-    return `${participants[0].displayName} is already here.}`
+    return `${participants[0].displayName} is already here.`
   } else if (length === maxLength) {
     return `${participants[0].displayName} and ${participants[1].displayName} are already here.`
   }
