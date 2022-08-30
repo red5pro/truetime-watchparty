@@ -40,6 +40,18 @@ const useStyles = makeStyles()((theme: any) => ({
     left: 0,
     top: 0,
   },
+  errorTextField: {
+    '& label': {
+      color: '#d32f2f',
+    },
+    '& input': {
+      border: '1px solid #d32f2f',
+    },
+
+    '& fieldset': {
+      border: 'none',
+    },
+  },
 }))
 
 export default useStyles

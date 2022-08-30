@@ -20,8 +20,8 @@ enum EStepIdentify {
   SIGN_IN = 1,
   START_PARTY = 2,
   SHARE = 3,
-  CHOOSE_NICKNAME = 4,
-  WATCH_PARTY = 5,
+  // CHOOSE_NICKNAME = 4,
+  // WATCH_PARTY = 5,
 }
 
 const currentEpisodeMock = {
@@ -62,7 +62,6 @@ export default function HostAPartySteps() {
       id: EStepIdentify.SHARE,
       component: <ShareLink account={cookies?.account} joinToken={startPartyData?.joinToken ?? ''} />,
     },
-    { id: EStepIdentify.CHOOSE_NICKNAME, component: <div>Chosee Nickname</div> },
   ]
 
   const handleNext = () => {
