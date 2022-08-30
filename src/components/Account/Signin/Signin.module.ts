@@ -7,6 +7,7 @@ const useStyles = makeStyles()((theme: any) => ({
     backdropFilter: 'blur(88px)',
     width: '100%',
     overflow: 'auto',
+    position: 'relative',
   },
   container: {
     width: '30rem',
@@ -26,8 +27,18 @@ const useStyles = makeStyles()((theme: any) => ({
     marginTop: '20px',
     '& > div': { width: '100% !important' },
   },
+  signInButton: {
+    margin: '24px 0 12px 0',
+  },
   errorValidation: {
     color: '#d32f2f',
+    textAlign: 'center',
+    fontSize: '14px',
+  },
+  brandLogo: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
   },
   errorTextField: {
     '& label': {

@@ -1,33 +1,42 @@
+import { Serie } from './../../models/Serie'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { CONFERENCE_API_CALLS } from '../api/conference-api-calls'
+import { Episode } from '../../models/Episode'
 
 export const getCurrentEpisode = async () => {
-  let currentSerie
-  let currentEpisode
+  let currentSerie: any
+  let currentEpisode: any
   let nextEpisodes = []
 
-  const response = await CONFERENCE_API_CALLS.getSeriesList()
+  try {
+    const response = await CONFERENCE_API_CALLS.getSeriesList()
+    const { data } = response
+    if (!data) throw response
 
-  if (response.data.status === 200 && response.data.series) {
-    const seriesList = response.data.series
+    if (response.status === 200 && data.series) {
+      const { series } = data
 
-    // check this
-    currentSerie = seriesList[0]
+      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode()
+      if (!episodeResponse.data) throw episodeResponse
 
-    const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode()
-    const allEpisodesResponse = await CONFERENCE_API_CALLS.getAllEpisodes(seriesList[0].seriesId)
-    // const allEpisodesResponse = seriesList.data.series[0].episodes
+      if (episodeResponse.data && episodeResponse.status === 200) {
+        currentEpisode = episodeResponse.data
+      }
+      currentSerie = series.find((s: Serie) => s.seriesId === currentEpisode.seriesId)
 
-    if (episodeResponse.data.episode && episodeResponse.data.status === 200) {
-      currentEpisode = episodeResponse.data.episode
+      const allEpisodesResponse = await CONFERENCE_API_CALLS.getAllEpisodes(currentSerie.seriesId)
+      if (!allEpisodesResponse.data) throw allEpisodesResponse
+
+      if (allEpisodesResponse.data && allEpisodesResponse.status === 200) {
+        nextEpisodes = allEpisodesResponse.data ?? []
+      }
+      return [currentEpisode, currentSerie, nextEpisodes]
     }
-
-    if (allEpisodesResponse.data.episodes && allEpisodesResponse.data.status === 200) {
-      nextEpisodes = allEpisodesResponse.data.episodes ?? []
-    }
+    throw { data: null, status: response.status, statusText: `Could not access any series data.` }
+  } catch (e) {
+    console.error(e)
+    throw e
   }
-
-  return [currentEpisode, currentSerie, nextEpisodes]
 }
 
 export const getAllConferences = async (account: AccountCredentials) => {
