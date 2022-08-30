@@ -34,11 +34,7 @@ const VipView = (props: IVipViewProps) => {
         <img
           alt="Vip View Main Image"
           src={require('../../../assets/images/BoxingSession.png')}
-          style={{
-            maxWidth: '70%',
-            // opacity: currentSection === Section.Nickname ? 0.5 : 1,
-            // display: currentSection === Section.Landing || currentSection === Section.Nickname ? 'block' : 'none',
-          }}
+          style={{ maxWidth: '70%' }}
         ></img>
       </Box>
     </Box>
