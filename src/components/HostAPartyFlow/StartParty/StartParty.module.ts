@@ -66,6 +66,14 @@ const useStyles = makeStyles()((theme: any) => {
         backgroundColor: '#2a4283c4',
       },
     },
+
+    image: {
+      position: 'absolute',
+      right: 0,
+      bottom: 0,
+      opacity: '0.6',
+      zIndex: '-1',
+    },
   }
 })
 
