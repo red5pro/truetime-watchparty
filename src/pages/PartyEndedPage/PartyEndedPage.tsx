@@ -43,13 +43,11 @@ const PartyEndedPage = () => {
           </Stack>
         )}
         {!loading && conferenceData && (
-          <Stack spacing={8}>
+          <Stack spacing={2}>
             <Typography marginTop={2} className={classes.thankyouMessage}>
               Thanks for attending
             </Typography>
-            <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>
-              height: 26px; width: 260px; left: 76px; top: 522px; border-radius: nullpx;
-            </Typography>
+            <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>The host ended the Watch Party</Typography>
             {/* TODO: How to recognize that the conference has ended? */}
             <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onRejoin}>
               Rejoin Party
