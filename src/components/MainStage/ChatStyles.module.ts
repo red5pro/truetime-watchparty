@@ -11,9 +11,17 @@ const useChatStyles = makeStyles()((theme: any) => ({
     bottom: '5rem',
     zIndex: 10,
     background: 'rgba(48, 48, 48, 0.6) 30%',
-    filter: 'opacity(0.8)',
+    filter: 'hue-rotate(45deg)',
     border: '1px solid rgba(255, 255, 255, 0.15)',
     color: 'white',
+
+    '& .pn-msg': {
+      padding: 0,
+    },
+
+    '& .pn-msg-input__textarea, .pn-msg-input__textarea:focus-within': {
+      fontSize: '15px',
+    },
 
     '& .pn-msg:hover': {
       background: 'none',
@@ -108,6 +116,7 @@ const useChatStyles = makeStyles()((theme: any) => ({
       '& .pn-msg__bubble': {
         backgroundColor: 'rgba(230, 232, 236, 0.8)',
         color: 'rgba(27, 27, 27, 0.95)',
+        fontSize: ' 15px',
       },
     },
 
@@ -118,6 +127,10 @@ const useChatStyles = makeStyles()((theme: any) => ({
   },
 
   fullScreenChatContainer: {
+    position: 'relative',
+    left: '-65px',
+    bottom: 0,
+
     '& .pn-msg-list': {
       height: '30vh !important',
     },
@@ -128,10 +141,15 @@ const useChatStyles = makeStyles()((theme: any) => ({
 
     '& .pn-msg-input__textarea, .pn-msg-input__textarea:focus-within': {
       background: 'rgba(48, 48, 48, 0.6) 30%',
-      filter: 'opacity(0.8)',
+      filter: 'contrtast(0.8)',
       border: '1px solid rgba(255, 255, 255, 0.15)',
       color: 'white',
+      fontSize: '14px',
       '--msg-input__textarea__padding': '6px 34px 8px 14px',
+    },
+
+    '& .pn-msg': {
+      padding: 0,
     },
 
     '& .pn-msg-input__emoji-picker': {
