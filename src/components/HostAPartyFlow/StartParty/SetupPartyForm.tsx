@@ -122,7 +122,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
 
         return (
           <Form autoComplete="off" method="post">
-            <Box display="flex" flexDirection="column" marginY={4} className={classes.formContainer}>
+            <Box display="flex" flexDirection="column" marginY={1} className={classes.formContainer}>
               <Field component={TextField} name="partyName" type="text" placeholder="Party Name" />
               <Field
                 component={TextareaAutosize}
@@ -176,7 +176,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
                 <Typography className={classes.errorValidation}>{errors.country}</Typography>
               )}
 
-              <Box display="flex" height="auto" alignItems="center" marginY={2}>
+              <Box display="flex" height="auto" alignItems="center" marginY={1}>
                 <Checkbox
                   id="vipOkay"
                   name="vipOkay"
