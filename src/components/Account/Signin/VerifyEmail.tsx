@@ -63,7 +63,7 @@ const VerifyEmail = (props: IVerifyEmailProps) => {
               </CustomButton>
               {isSubmitting && <LinearProgress />}
               {errorAfterSubmit && (
-                <Typography sx={{ fontSize: '30px' }} className={classes.errorValidation}>
+                <Typography sx={{ fontSize: '20px' }} className={classes.errorValidation}>
                   {errorAfterSubmit}
                 </Typography>
               )}
