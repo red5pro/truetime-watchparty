@@ -55,14 +55,7 @@ export default function HostAPartySteps() {
     {
       id: EStepIdentify.START_PARTY,
       component: (
-        <StartParty
-          onActions={actions}
-          currentEpisode={currentEpisodeMock}
-          currentSerie={currentSerieMock}
-          data={startPartyData}
-          setData={setStartPartyData}
-          account={cookies?.account}
-        />
+        <StartParty onActions={actions} data={startPartyData} setData={setStartPartyData} account={cookies?.account} />
       ),
     },
     {

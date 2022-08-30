@@ -2,13 +2,10 @@ import * as React from 'react'
 import { Box, Typography } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { Episode } from '../../../models/Episode'
-import { Serie } from '../../../models/Serie'
 import useStyles from './ViewEvents.module'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import ElementList from '../../Common/ElementList/ElementList'
 import { AccountCredentials } from '../../../models/AccountCredentials'
-import { getCurrentEpisode } from '../../../services/conference/conference'
 import { getStartTimeFromTimestamp, IStepActionsSubComponent } from '../../../utils/commonUtils'
 import ViewContext from '../../ViewContext/ViewContext'
 import Loading from '../../Loading/Loading'
@@ -30,6 +27,12 @@ const ViewEvents = (props: IViewEventsProps) => {
 
   const { classes } = useStyles()
   const dateOptions: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' }
+
+  React.useEffect(() => {
+    if (eventData.loaded) {
+      console.log('TIME', eventData.currentEpisode, getStartTimeFromTimestamp(eventData.currentEpisode?.startTime))
+    }
+  }, [eventData])
 
   const onCreateAParty = () => {
     onActions.onNextStep()
