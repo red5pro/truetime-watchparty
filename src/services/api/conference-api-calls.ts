@@ -23,6 +23,7 @@ const getSeriesList = async () => {
       statusText: e.message,
     } as AxiosResponse
   }
+
   // return {
   //   data: {
   //     series: [
@@ -42,12 +43,12 @@ const getSeriesList = async () => {
   //         maxParticipants: 8,
   //       },
   //     ],
-  //     status: 200,
   //   },
+  //   status: 200,
   // } as AxiosResponse
 }
 
-const getCurrentEpisode = async (seriesId: number | string, account?: AccountCredentials) => {
+const getCurrentEpisode = async (account?: AccountCredentials) => {
   try {
     let url = `${MAIN_ENDPOINT}/episode/current`
     if (account) {
@@ -68,16 +69,14 @@ const getCurrentEpisode = async (seriesId: number | string, account?: AccountCre
 
   // return {
   //   data: {
-  //     episode: {
-  //       episodeId: 9991,
-  //       displayName: 'Event 1',
-  //       description: 'Event1',
-  //       startTime: 1658677171000,
-  //       endTime: 1658691571000,
-  //       streamGuid: 'live/mainscreen',
-  //     },
-  //     status: 200,
+  //     episodeId: 9991,
+  //     displayName: 'Event 1',
+  //     description: 'Event1',
+  //     startTime: 1658677171000,
+  //     endTime: 1658691571000,
+  //     streamGuid: 'live/mainscreen',
   //   },
+  //   status: 200,
   // } as AxiosResponse
 }
 
@@ -101,38 +100,36 @@ const getAllEpisodes = async (serieId: number | string, account?: AccountCredent
   }
 
   // return {
-  //   data: {
-  //     episodes: [
-  //       {
-  //         episodeId: 1001,
-  //         seriesId: 9991,
-  //         displayName: 'Event 1',
-  //         description: 'Event1',
-  //         startTime: 1658763571000,
-  //         endTime: 1658777971000,
-  //         streamGuid: 'live/mainscreen',
-  //       },
-  //       {
-  //         episodeId: 1002,
-  //         seriesId: 9991,
-  //         displayName: 'Event 2',
-  //         description: 'Event2',
-  //         startTime: 1658849971000,
-  //         endTime: 1658864371000,
-  //         streamGuid: 'live/mainscreen',
-  //       },
-  //       {
-  //         episodeId: 1003,
-  //         seriesId: 9991,
-  //         displayName: 'Event 3',
-  //         description: 'Event3',
-  //         startTime: 1658936371000,
-  //         endTime: 1658950771000,
-  //         streamGuid: 'live/mainscreen',
-  //       },
-  //     ],
-  //     status: 200,
-  //   },
+  //   data: [
+  //     {
+  //       episodeId: 1001,
+  //       seriesId: 9991,
+  //       displayName: 'Event 1',
+  //       description: 'Event1',
+  //       startTime: 1658763571000,
+  //       endTime: 1658777971000,
+  //       streamGuid: 'live/mainscreen',
+  //     },
+  //     {
+  //       episodeId: 1002,
+  //       seriesId: 9991,
+  //       displayName: 'Event 2',
+  //       description: 'Event2',
+  //       startTime: 1658849971000,
+  //       endTime: 1658864371000,
+  //       streamGuid: 'live/mainscreen',
+  //     },
+  //     {
+  //       episodeId: 1003,
+  //       seriesId: 9991,
+  //       displayName: 'Event 3',
+  //       description: 'Event3',
+  //       startTime: 1658936371000,
+  //       endTime: 1658950771000,
+  //       streamGuid: 'live/mainscreen',
+  //     },
+  //   ],
+  //   status: 200,
   // } as AxiosResponse
 }
 
