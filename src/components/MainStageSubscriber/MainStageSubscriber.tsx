@@ -1,7 +1,9 @@
-import { Box } from '@mui/material'
+import { Box, Tooltip } from '@mui/material'
+import InfoIcon from '@mui/icons-material/Info'
 import { Participant } from '../../models/Participant'
 import Subscriber from '../Subscriber/Subscriber'
 import SubscriberMenu from '../SubscriberMenu/SubscriberMenu'
+import { ENABLE_DEBUG_UTILS } from '../../settings/variables'
 
 interface MainStageSubscriberProps {
   participant: Participant
@@ -18,7 +20,7 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
   return (
     // TODO: Set `mute` to false for production
     // TODO: Set `resubscribe` to true for production
-    <Box sx={menuActions ? { ...styles, position: 'relative' } : styles}>
+    <Box sx={{ ...styles, position: 'relative' }}>
       <Subscriber
         host={host}
         useStreamManager={useStreamManager}
@@ -35,6 +37,11 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
         <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
           <SubscriberMenu participant={participant} actions={menuActions} />
         </Box>
+      )}
+      {participant && !menuActions && ENABLE_DEBUG_UTILS && (
+        <Tooltip title={`${participant.displayName}`} arrow>
+          <InfoIcon fontSize="small" sx={{ position: 'absolute', top: 4, right: 4 }} />
+        </Tooltip>
       )}
     </Box>
   )
