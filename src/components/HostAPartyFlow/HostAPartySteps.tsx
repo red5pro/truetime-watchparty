@@ -13,7 +13,9 @@ import ShareLink from './ShareLink/ShareLink'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { IStepActionsSubComponent } from '../../utils/commonUtils'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
-import ViewContext from '../ViewContext/ViewContext'
+import EventContext from '../EventContext/EventContext'
+import { AccountCredentials } from '../../models/AccountCredentials'
+import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 
 enum EStepIdentify {
   LANDING = 0,
@@ -43,6 +45,15 @@ export default function HostAPartySteps() {
   const [activeStep, setActiveStep] = React.useState(0)
   const [startPartyData, setStartPartyData] = React.useState<ConferenceDetails | undefined>()
 
+  const onSubmitPartyData = (data: ConferenceDetails, account: AccountCredentials | undefined) => {
+    setStartPartyData(data)
+    if (!account) {
+      setActiveStep(EStepIdentify.SIGN_IN)
+      return false
+    }
+    return true
+  }
+
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: EStepIdentify.LANDING,
@@ -55,7 +66,7 @@ export default function HostAPartySteps() {
     {
       id: EStepIdentify.START_PARTY,
       component: (
-        <StartParty onActions={actions} data={startPartyData} setData={setStartPartyData} account={cookies?.account} />
+        <StartParty onActions={actions} data={startPartyData} setData={onSubmitPartyData} account={cookies?.account} />
       ),
     },
     {
@@ -103,7 +114,7 @@ export default function HostAPartySteps() {
             <ArrowBackIosIcon />
           </Button>
         )}
-        <ViewContext.Provider>{getSteps(actions)[activeStep].component}</ViewContext.Provider>
+        <EventContext.Provider>{getSteps(actions)[activeStep].component}</EventContext.Provider>
       </Box>
     </Box>
   )

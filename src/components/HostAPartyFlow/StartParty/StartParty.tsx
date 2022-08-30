@@ -4,18 +4,18 @@ import { Link } from 'react-router-dom'
 import { AccountCredentials } from '../../../models/AccountCredentials'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
 import { getStartTimeFromTimestamp, IStepActionsSubComponent } from '../../../utils/commonUtils'
-import ViewContext from '../../ViewContext/ViewContext'
+import EventContext from '../../EventContext/EventContext'
 import SetupPartyForm from './SetupPartyForm'
 import useStyles from './StartParty.module'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import Loading from '../../Loading/Loading'
 
-const useViewContext = () => React.useContext(ViewContext.Context)
+const useEventContext = () => React.useContext(EventContext.Context)
 
 interface IStartPartyProps {
   onActions: IStepActionsSubComponent
   data?: ConferenceDetails
-  setData: (values: ConferenceDetails) => void
+  setData: (values: ConferenceDetails, account: AccountCredentials | undefined) => boolean
   account: AccountCredentials
 }
 
@@ -24,7 +24,7 @@ const StartParty = (props: IStartPartyProps) => {
 
   const { classes } = useStyles()
 
-  const { loading, error, eventData } = useViewContext()
+  const { loading, error, eventData } = useEventContext()
 
   const onRetryRequest = () => {
     window.location.reload()

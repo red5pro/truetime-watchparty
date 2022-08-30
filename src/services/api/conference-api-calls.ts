@@ -212,21 +212,20 @@ const getJoinDetails = async (joinToken: string) => {
 }
 
 const createConference = async (conference: ConferenceDetails, account: AccountCredentials) => {
-  // try {
-  //   const response: AxiosResponse = await axios.post(
-  //     `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`,
-  //     conference
-  //   )
-  //   return response
-  // } catch (e: any) {
-  //   console.log(e)
-
-  //   return {
-  //     data: null,
-  //     status: e.code,
-  //     statusText: e.message,
-  //   } as AxiosResponse
-  // }
+  try {
+    const response: AxiosResponse = await axios.post(
+      `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`,
+      conference
+    )
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
 
   return {
     data: {

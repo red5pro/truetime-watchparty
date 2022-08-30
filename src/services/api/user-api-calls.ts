@@ -54,7 +54,8 @@ const verifyAccount = async (email: string, password: string, token: string) => 
       token,
       password,
     }
-    const response: AxiosResponse = await axios.put(`${ENDPOINT.USER}/${email}/verify`, body)
+    encodeURIComponent
+    const response: AxiosResponse = await axios.put(`${ENDPOINT.USER}/${encodeURIComponent(email)}/verify`, body)
 
     return response
   } catch (e: any) {

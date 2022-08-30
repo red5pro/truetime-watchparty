@@ -7,11 +7,11 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/
 import ElementList from '../../Common/ElementList/ElementList'
 import { AccountCredentials } from '../../../models/AccountCredentials'
 import { getStartTimeFromTimestamp, IStepActionsSubComponent } from '../../../utils/commonUtils'
-import ViewContext from '../../ViewContext/ViewContext'
+import EventContext from '../../EventContext/EventContext'
 import Loading from '../../Loading/Loading'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 
-const useViewContext = () => React.useContext(ViewContext.Context)
+const useEventContext = () => React.useContext(EventContext.Context)
 
 interface IViewEventsProps {
   onActions: IStepActionsSubComponent
@@ -21,7 +21,7 @@ interface IViewEventsProps {
 const ViewEvents = (props: IViewEventsProps) => {
   const { onActions, account } = props
 
-  const { loading, error, eventData } = useViewContext()
+  const { loading, error, eventData } = useEventContext()
 
   const navigate = useNavigate()
 
@@ -49,9 +49,6 @@ const ViewEvents = (props: IViewEventsProps) => {
 
   return (
     <Box className={classes.root}>
-      {/* <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px' }}>
-            {currentEpisode?.displayName}
-          </Typography> */}
       {loading && (
         <Box className={classes.container} display="flex" alignItems="center">
           <Loading text="Loading Event Data..." />
@@ -69,7 +66,7 @@ const ViewEvents = (props: IViewEventsProps) => {
         <Box className={classes.container} display="flex" alignItems="center">
           <Box className={classes.leftContainer}>
             <Typography sx={{ fontSize: '24px' }}>{eventData.currentSeries?.displayName}</Typography>
-            <Typography variant="h1">{eventData.currentEpisode?.displayName}</Typography>
+            <Typography variant="h2">{eventData.currentEpisode?.displayName}</Typography>
             <Typography variant="h4" marginTop={3} sx={{ fontSize: '17px', fontWeight: 600 }}>
               {getStartTimeFromTimestamp(eventData.currentEpisode?.startTime)}
             </Typography>
