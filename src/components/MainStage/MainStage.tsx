@@ -1,7 +1,7 @@
 import React from 'react'
 import * as portals from 'react-reverse-portal'
 import { useNavigate } from 'react-router-dom'
-import { IconButton, Box, Typography, Stack, Divider } from '@mui/material'
+import { IconButton, Box, Typography, Stack, Divider, Tooltip } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble } from '@mui/icons-material'
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
@@ -104,6 +104,7 @@ const MainStage = () => {
       displayName: name,
       joinToken: token,
       streamGuid: guid,
+      messageType: 'JoinConferenceRequest',
     } as ConnectionRequest
 
     const fp = joinContext.fingerprint
@@ -114,14 +115,7 @@ const MainStage = () => {
       request.username = email
       request.password = password
     }
-
-    const host = API_SOCKET_HOST
-    let url = `wss:${host}`
-    if (host === 'localhost') {
-      // Local testing
-      url = `ws://localhost:8001`
-    }
-    return { url, request }
+    return { url: API_SOCKET_HOST, request }
   }
 
   if (!mediaContext?.mediaStream || !joinContext?.getStreamGuid()) {

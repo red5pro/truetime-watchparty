@@ -1,3 +1,4 @@
+import { IEmojiData } from 'emoji-picker-react'
 import { ParticipantMuteState } from './../../models/Participant'
 import axios, { AxiosResponse } from 'axios'
 import { AccountCredentials } from '../../models/AccountCredentials'
@@ -17,10 +18,16 @@ const getSeriesList = async () => {
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 
@@ -60,10 +67,16 @@ const getCurrentEpisode = async (account?: AccountCredentials) => {
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 
@@ -92,10 +105,16 @@ const getAllEpisodes = async (serieId: number | string, account?: AccountCredent
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 
@@ -148,10 +167,16 @@ const getConferenceDetails = async (conferenceId: string, account?: AccountCrede
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 
@@ -176,10 +201,16 @@ const getJoinDetails = async (joinToken: string) => {
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 
@@ -220,10 +251,16 @@ const createConference = async (conference: ConferenceDetails, account: AccountC
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 
@@ -242,10 +279,16 @@ const getAllConferences = async (account: AccountCredentials) => {
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 }
@@ -256,10 +299,16 @@ const getConferenceLoby = async (joinToken: string) => {
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 }
@@ -272,10 +321,16 @@ const getConferenceParticipants = async (conferenceId: string, account: AccountC
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 }
@@ -288,10 +343,16 @@ const lockConference = async (conferenceId: string | number, account: AccountCre
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code || 400,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 }
@@ -304,10 +365,16 @@ const unlockConference = async (conferenceId: string | number, account: AccountC
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code || 400,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 }
@@ -329,10 +396,16 @@ const muteParticipant = async (
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code || 400,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 }
@@ -350,10 +423,16 @@ const banParticipant = async (
     return response
   } catch (e: any) {
     console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code || 400,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 }
