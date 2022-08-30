@@ -83,7 +83,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const getConferenceData = async (token: string) => {
     try {
       setLoading(true)
-      const details = await CONFERENCE_API_CALLS.getJoinDetails(token)
+      const details = await CONFERENCE_API_CALLS.getConferenceLoby(token)
       const { data } = details
       if (!data) throw details
       setConferenceData(data)
