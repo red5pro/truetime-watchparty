@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Box, Input, Typography } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import WbcLogo from '../../assets/logos/WbcLogo'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
@@ -10,9 +10,15 @@ const Home = () => {
   const { classes } = useStyles()
   const [partyCode, setPartyCode] = React.useState<string>('')
 
+  const navigate = useNavigate()
+
   const onInputChange = (ev: any) => setPartyCode(ev?.target?.value ?? '')
 
-  const onClick = () => console.log(partyCode)
+  const onClick = () => {
+    if (partyCode.length > 0) {
+      navigate(`/join/${partyCode}`)
+    }
+  }
 
   return (
     <Box className={classes.container} display="flex">

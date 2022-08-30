@@ -249,8 +249,7 @@ const MainStage = () => {
   }
 
   const onLeave = () => {
-    // TODO: Redirect to /bye/${joinToken}
-    navigate('/')
+    navigate(`/thankyou/${joinContext.joinToken}`)
   }
 
   const toggleLock = async () => {
@@ -446,7 +445,7 @@ const MainStage = () => {
         )}
         {/* Other Participants Video Playback */}
         <Box sx={layout.style.subscriberList}>
-          <Stack spacing={2} sx={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}>
+          <div style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}>
             {data.list.map((s: Participant) => {
               return (
                 <MainStageSubscriber
@@ -461,7 +460,7 @@ const MainStage = () => {
               )
             })}
             {layout.layout === Layout.FULLSCREEN && <PublisherPortalFullscreen portalNode={portalNode} />}
-          </Stack>
+          </div>
           {/* {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && <Button>More...</Button>} */}
         </Box>
         {/* Publisher View - STAGE LAYOUT */}
