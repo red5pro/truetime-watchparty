@@ -18,6 +18,7 @@ const useStyles = makeStyles()((theme: any) => {
     listDivider: {
       margin: '2px',
       color: 'white',
+      backgroundColor: 'rgba(255, 255, 255, 0.5)',
     },
     listItemIcon: {
       minWidth: '46px',

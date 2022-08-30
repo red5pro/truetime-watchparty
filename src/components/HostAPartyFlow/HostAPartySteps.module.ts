@@ -31,6 +31,9 @@ const useStyles = makeStyles()((theme: any) => {
         margin: '0 2px 0 8px',
       },
     },
+    brandLogo: {
+      position: 'absolute',
+    },
   }
 })
 

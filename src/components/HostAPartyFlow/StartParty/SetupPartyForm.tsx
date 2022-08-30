@@ -21,15 +21,15 @@ import useStyles from './StartParty.module'
 import { COUNTRIES } from '../../../utils/countryUtils'
 import { ICountry } from '../../../models/Country'
 import InfoIcon from '@mui/icons-material/Info'
-import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
 import { AccountCredentials } from '../../../models/AccountCredentials'
 import { generateJoinToken, IStepActionsSubComponent } from '../../../utils/commonUtils'
+import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
 
 interface ISetupPartyFormProps {
   onActions: IStepActionsSubComponent
   data?: ConferenceDetails
-  setData: (values: ConferenceDetails) => void
+  setData: (values: ConferenceDetails, account: AccountCredentials | undefined) => boolean
   account?: AccountCredentials
 }
 
@@ -84,7 +84,6 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
     const token = await handleReCaptchaVerify()
     if (token) {
       const joinToken = generateJoinToken()
-
       const conference: ConferenceDetails = {
         displayName: values.partyName,
         welcomeMessage: values.welcomeMsg,
@@ -92,18 +91,12 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
         location: values.country,
         maxParticipants: 8,
         joinToken,
-        joinLocked: false,
         vipOkay: values.vipOkay ?? true,
-
-        // TODO CHECK THIS
-        conferenceId: 0,
-        startTime: 0,
       } as ConferenceDetails
-      setData(conference)
 
-      if (account) {
-        const response = await CONFERENCE_API_CALLS.createConference(conference, account)
-
+      if (setData(conference, account)) {
+        // Submit
+        const response = await CONFERENCE_API_CALLS.createConference(conference, account!)
         if (response.data) {
           onActions.onNextStep()
         } else {

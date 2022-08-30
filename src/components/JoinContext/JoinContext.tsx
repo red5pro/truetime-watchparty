@@ -83,7 +83,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const getConferenceData = async (token: string) => {
     try {
       setLoading(true)
-      const details = await CONFERENCE_API_CALLS.getJoinDetails(token)
+      const details = await CONFERENCE_API_CALLS.getConferenceLoby(token)
       const { data } = details
       if (!data) throw details
       setConferenceData(data)
@@ -102,11 +102,14 @@ const JoinProvider = (props: JoinContextProps) => {
       const serieResponse = await CONFERENCE_API_CALLS.getSeriesList()
       if (!serieResponse.data) throw serieResponse
 
-      const currentSeries = serieResponse.data.series[0]
+      const { series } = serieResponse.data
+
       const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(cookies.account)
       if (!episodeResponse.data) throw episodeResponse
 
-      const currentEpisode = episodeResponse.data.episode
+      const currentEpisode = episodeResponse.data
+      const currentSeries = series.find((s: Serie) => s.seriesId === currentEpisode.seriesId)
+
       if (currentSeries && currentEpisode) {
         dispatch({ type: 'UPDATE', series: currentSeries, episode: currentEpisode })
         setLoading(false)

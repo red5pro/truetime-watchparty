@@ -12,6 +12,10 @@ import Signin from '../Account/Signin/Signin'
 import ShareLink from './ShareLink/ShareLink'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { IStepActionsSubComponent } from '../../utils/commonUtils'
+import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import EventContext from '../EventContext/EventContext'
+import { AccountCredentials } from '../../models/AccountCredentials'
+import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 
 enum EStepIdentify {
   LANDING = 0,
@@ -41,6 +45,15 @@ export default function HostAPartySteps() {
   const [activeStep, setActiveStep] = React.useState(0)
   const [startPartyData, setStartPartyData] = React.useState<ConferenceDetails | undefined>()
 
+  const onSubmitPartyData = (data: ConferenceDetails, account: AccountCredentials | undefined) => {
+    setStartPartyData(data)
+    if (!account) {
+      setActiveStep(EStepIdentify.SIGN_IN)
+      return false
+    }
+    return true
+  }
+
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: EStepIdentify.LANDING,
@@ -53,14 +66,7 @@ export default function HostAPartySteps() {
     {
       id: EStepIdentify.START_PARTY,
       component: (
-        <StartParty
-          onActions={actions}
-          currentEpisode={currentEpisodeMock}
-          currentSerie={currentSerieMock}
-          data={startPartyData}
-          setData={setStartPartyData}
-          account={cookies?.account}
-        />
+        <StartParty onActions={actions} data={startPartyData} setData={onSubmitPartyData} account={cookies?.account} />
       ),
     },
     {
@@ -99,14 +105,16 @@ export default function HostAPartySteps() {
   return (
     <Box className={classes.container}>
       <Stepper activeStep={activeStep}></Stepper>
-
       <Box height="100%">
+        <Box padding={2} className={classes.brandLogo}>
+          <WbcLogoSmall />
+        </Box>
         {activeStep > 0 && activeStep < getSteps(actions).length && (
           <Button color="inherit" hidden={activeStep === 0} onClick={handleBack} className={classes.backButton}>
             <ArrowBackIosIcon />
           </Button>
         )}
-        {getSteps(actions)[activeStep].component}
+        <EventContext.Provider>{getSteps(actions)[activeStep].component}</EventContext.Provider>
       </Box>
     </Box>
   )

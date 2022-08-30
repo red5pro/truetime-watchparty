@@ -6,6 +6,7 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/
 import useStyles from './Signin.module'
 import SignInEmail from './SignInEmail'
 import { IStepActionsSubComponent } from '../../../utils/commonUtils'
+import WbcLogoSmall from '../../../assets/logos/WbcLogoSmall'
 
 interface ISignInProps {
   onActions?: IStepActionsSubComponent
@@ -21,6 +22,9 @@ const Signin = (props: ISignInProps) => {
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" className={classes.root}>
+      <Box padding={2} className={classes.brandLogo}>
+        <WbcLogoSmall />
+      </Box>
       {!signInEmail && !signInFacebook && (
         <Box display="flex" flexDirection="column" className={classes.container}>
           <Typography className={classes.title}>Sign In</Typography>

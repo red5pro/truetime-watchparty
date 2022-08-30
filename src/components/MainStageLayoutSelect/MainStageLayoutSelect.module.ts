@@ -12,6 +12,7 @@ const useStyles = makeStyles()((theme: any) => {
       border: '1px solid rgba(255, 255, 255, 0.15)',
       boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
       backdropFilter: 'blur(24px)',
+      zIndex: 2000,
     },
   }
 })
