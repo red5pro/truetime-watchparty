@@ -12,6 +12,7 @@ import Signin from '../Account/Signin/Signin'
 import ShareLink from './ShareLink/ShareLink'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { IStepActionsSubComponent } from '../../utils/commonUtils'
+import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 
 enum EStepIdentify {
   LANDING = 0,
@@ -100,8 +101,10 @@ export default function HostAPartySteps() {
   return (
     <Box className={classes.container}>
       <Stepper activeStep={activeStep}></Stepper>
-
       <Box height="100%">
+        <Box padding={2} className={classes.brandLogo}>
+          <WbcLogoSmall />
+        </Box>
         {activeStep > 0 && activeStep < getSteps(actions).length && (
           <Button color="inherit" hidden={activeStep === 0} onClick={handleBack} className={classes.backButton}>
             <ArrowBackIosIcon />

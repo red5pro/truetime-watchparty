@@ -7,6 +7,7 @@ const useStyles = makeStyles()((theme: any) => ({
     backdropFilter: 'blur(88px)',
     width: '100%',
     overflow: 'auto',
+    position: 'relative',
   },
   container: {
     width: '30rem',
@@ -28,6 +29,11 @@ const useStyles = makeStyles()((theme: any) => ({
   },
   errorValidation: {
     color: '#d32f2f',
+  },
+  brandLogo: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
   },
 }))
 
