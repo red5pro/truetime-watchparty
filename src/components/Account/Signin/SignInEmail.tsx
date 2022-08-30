@@ -9,6 +9,7 @@ import useStyles from './Signin.module'
 import { IStepActionsSubComponent } from '../../../utils/commonUtils'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import { UserAccount } from '../../../models/UserAccount'
+import SignUp from './SignUp'
 
 const initialValues = {
   email: '',
@@ -44,6 +45,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
   const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string>()
   const [forgotPassword, setForgotPassword] = React.useState<boolean>(false)
   const [accountUnverified, setAccountUnverified] = React.useState<boolean>(false)
+  const [signUp, setSignUp] = React.useState<boolean>(false)
 
   const handleSubmit = async (values: any) => {
     const response = await USER_API_CALLS.signin(values.email, values.password)
@@ -76,6 +78,10 @@ const SignInEmail = (props: ISignInEmailProps) => {
     return <Box>Verify Account</Box>
   }
 
+  if (signUp) {
+    return <SignUp onActions={onActions} />
+  }
+
   return (
     <Formik
       initialValues={initialValues}
@@ -106,6 +112,10 @@ const SignInEmail = (props: ISignInEmailProps) => {
                 Forgot your password?
               </Link>
 
+              <Link textAlign="end" onClick={() => setSignUp(true)}>
+                <strong>Need to Create a new Account?</strong>
+              </Link>
+
               <CustomButton
                 disabled={isSubmitting}
                 onClick={submitForm}
@@ -118,7 +128,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
               </CustomButton>
               {isSubmitting && <LinearProgress />}
               {errorAfterSubmit && (
-                <Typography sx={{ fontSize: '30px' }} className={classes.errorValidation}>
+                <Typography sx={{ fontSize: '20px' }} className={classes.errorValidation}>
                   {errorAfterSubmit}
                 </Typography>
               )}
