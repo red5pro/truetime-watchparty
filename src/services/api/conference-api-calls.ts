@@ -155,60 +155,60 @@ const getConferenceDetails = async (conferenceId: string, account?: AccountCrede
     } as AxiosResponse
   }
 
-  return {
-    data: {
-      conferenceId: id,
-      displayName: 'My Conference',
-      welcomeMessage: "Welcome to my conference! We're going to have a great time! You'll love it!",
-      thankYouMessage: 'Thanks for joining, see you next time!',
-      location: 'United States of America',
-      joinToken: 'kXQu9dEH',
-      joinLocked: false,
-      vipOkay: true,
-      startTime: 1660150337146,
-    },
-  } as AxiosResponse
+  // return {
+  //   data: {
+  //     conferenceId: id,
+  //     displayName: 'My Conference',
+  //     welcomeMessage: "Welcome to my conference! We're going to have a great time! You'll love it!",
+  //     thankYouMessage: 'Thanks for joining, see you next time!',
+  //     location: 'United States of America',
+  //     joinToken: 'kXQu9dEH',
+  //     joinLocked: false,
+  //     vipOkay: true,
+  //     startTime: 1660150337146,
+  //   },
+  // } as AxiosResponse
 }
 
 const getJoinDetails = async (joinToken: string) => {
-  // try {
-  //   const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}?joinToken=${joinToken}`)
-  //   return response
-  // } catch (e: any) {
-  //   console.log(e)
-  //   return {
-  //     data: null,
-  //     status: e.code,
-  //     statusText: e.message,
-  //   } as AxiosResponse
-  // }
+  try {
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/lobby?joinToken=${joinToken}`)
+    return response
+  } catch (e: any) {
+    console.log(e)
+    return {
+      data: null,
+      status: e.code,
+      statusText: e.message,
+    } as AxiosResponse
+  }
 
-  return {
-    data: {
-      conferenceId: 1,
-      displayName: 'My Conference',
-      welcomeMessage: 'Welcome to my conference! We\u0027re going to have a great time! You\u0027ll love it!',
-      thankYouMessage: 'Thanks for joining, see you next time!',
-      location: 'United States of America',
-      joinLocked: false,
-      vipOkay: true,
-      startTime: 1660150337146,
-      participants: [
-        {
-          displayName: 'LynardMaffeus',
-          role: 'ORGANIZER',
-        },
-        {
-          displayName: 'RolindaWilken',
-          role: 'PARTICIPANT',
-        },
-        {
-          displayName: 'OxnardFrankenheel',
-          role: 'VIP',
-        },
-      ],
-    },
-  } as AxiosResponse
+  // return {
+  //   data: {
+  //     conferenceId: 1,
+  //     displayName: 'My Conference',
+  //     welcomeMessage: 'Welcome to my conference! We\u0027re going to have a great time! You\u0027ll love it!',
+  //     thankYouMessage: 'Thanks for joining, see you next time!',
+  //     location: 'United States of America',
+  //     joinLocked: false,
+  //     vipOkay: true,
+  //     startTime: 1660150337146,
+  //     participants: [
+  //       {
+  //         displayName: 'LynardMaffeus',
+  //         role: 'ORGANIZER',
+  //       },
+  //       {
+  //         displayName: 'RolindaWilken',
+  //         role: 'PARTICIPANT',
+  //       },
+  //       {
+  //         displayName: 'OxnardFrankenheel',
+  //         role: 'VIP',
+  //       },
+  //     ],
+  //   },
+  // } as AxiosResponse
 }
 
 const createConference = async (conference: ConferenceDetails, account: AccountCredentials) => {
@@ -227,11 +227,11 @@ const createConference = async (conference: ConferenceDetails, account: AccountC
     } as AxiosResponse
   }
 
-  return {
-    data: {
-      conferenceId: 1,
-    },
-  } as AxiosResponse
+  // return {
+  //   data: {
+  //     conferenceId: 1,
+  //   },
+  // } as AxiosResponse
 }
 
 const getAllConferences = async (account: AccountCredentials) => {
