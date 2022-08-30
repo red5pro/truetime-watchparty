@@ -16,19 +16,27 @@ const VipView = (props: IVipViewProps) => {
   const isMobile = isMobileScreen()
 
   return (
-    <Box paddingX={isMobile ? 2 : 8} display="flex" flexDirection="column" width={isMobile ? '100%' : '65%'}>
-      <Typography variant="h1">
-        Welcome To WBC`S <br /> Watch Parties
-      </Typography>
-      <Typography className={classes.text} marginY={2}>
-        Watch Parties let people come together online to watch their favorite sports. You as a guest, will be
-        interacting with avid fans of boxing to answer their questions, talk about yourself or just joke around!
-      </Typography>
-      {/* <Link className={classes.link} to="/login?spg=1"> */}
-      <CustomButton onClick={onActions.onNextStep} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
-        {account ? 'Join Party' : 'Sign In'}
-      </CustomButton>
-      {/* </Link> */}
+    <Box display="flex" alignItems="center">
+      <Box paddingX={isMobile ? 2 : 8} display="flex" flexDirection="column" width={isMobile ? '100%' : '55%'}>
+        <Typography variant="h1">
+          Welcome To WBC`S <br /> Watch Parties
+        </Typography>
+        <Typography className={classes.text} marginY={2}>
+          Watch Parties let people come together online to watch their favorite sports. You as a guest, will be
+          interacting with avid fans of boxing to answer their questions, talk about yourself or just joke around!
+        </Typography>
+
+        <CustomButton onClick={onActions.onNextStep} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
+          {account ? 'Join Party' : 'Sign In'}
+        </CustomButton>
+      </Box>
+      <Box sx={{ width: '45%' }}>
+        <img
+          alt="Vip View Main Image"
+          src={require('../../../assets/images/BoxingSession.png')}
+          style={{ maxWidth: '70%' }}
+        ></img>
+      </Box>
     </Box>
   )
 }

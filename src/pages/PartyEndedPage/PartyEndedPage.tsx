@@ -7,11 +7,11 @@ import JoinContext from '../../components/JoinContext/JoinContext'
 import Loading from '../../components/Loading/Loading'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
-import useStyles from './ThankYouPage.module'
+import useStyles from './PartyEndedPage.module'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 
-const ThankYouPage = () => {
+const PartyEndedPage = () => {
   const { loading, error, joinToken, conferenceData, seriesEpisode } = useJoinContext()
 
   const { classes } = useStyles()
@@ -43,10 +43,11 @@ const ThankYouPage = () => {
           </Stack>
         )}
         {!loading && conferenceData && (
-          <Stack spacing={8}>
+          <Stack spacing={2}>
             <Typography marginTop={2} className={classes.thankyouMessage}>
-              {conferenceData.thankYouMessage}
+              Thanks for attending
             </Typography>
+            <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>The host ended the Watch Party</Typography>
             {/* TODO: How to recognize that the conference has ended? */}
             <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onRejoin}>
               Rejoin Party
@@ -62,15 +63,11 @@ const ThankYouPage = () => {
           onConfirm={onRetryRequest}
         />
       )}
-      <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: '20%' }}>
-        <img
-          alt="Thank you Page Main Image"
-          src={require('../../assets/images/BoxingSession.png')}
-          style={{ maxWidth: '70%' }}
-        ></img>
+      <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
+        <img alt="Party Ended Main Image" src={require('../../assets/images/BoxMainImage.png')}></img>
       </Box>
     </Box>
   )
 }
 
-export default ThankYouPage
+export default PartyEndedPage
