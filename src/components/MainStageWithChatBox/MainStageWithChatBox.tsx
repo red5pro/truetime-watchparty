@@ -58,7 +58,7 @@ const MainStageWithChatBox = ({ children }: IChatBoxProps) => {
             {...{
               currentChannel: channelName,
               channels: [channelName],
-              theme: 'dark',
+              theme: 'light',
               users: chatUsers,
             }}
           >
