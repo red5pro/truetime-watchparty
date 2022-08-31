@@ -17,6 +17,6 @@ enum Errortype {
 }
 
 export const ERROR_TYPE = {
-  [Errortype.NO_SERIES]: 'There are not current series. Please check back later!',
-  [Errortype.NO_EPISODES]: 'There are not current events. Please check back later!',
+  [Errortype.NO_SERIES]: 'There are not any current tournaments. Please check back later!',
+  [Errortype.NO_EPISODES]: 'There are not any current events. Please check back later!',
 }
