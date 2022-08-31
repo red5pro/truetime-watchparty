@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Box, Typography } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
 
 import Loading from '../../components/Loading/Loading'
 import useStyles from './JoinPage.module'
@@ -15,6 +15,8 @@ import MainStage from '../../components/MainStage/MainStage'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
+import OracleLogo from '../../assets/logos/OracleLogo'
+import AMDLogo from '../../assets/logos/AMDLogo'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -172,6 +174,22 @@ const JoinPage = () => {
           }}
         ></img>
       </Box>
+      {currentSection !== Section.WatchParty && (
+        <Stack
+          spacing={2}
+          direction="column"
+          className={classes.sponsorContainer}
+          sx={currentSection === Section.AVSetup ? { alignItems: 'center', width: 'calc(100vw - 158px)' } : {}}
+        >
+          <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
+          <Stack spacing={2} direction="row">
+            <OracleLogo />
+            <Box sx={{ width: '100px', height: '24px' }}>
+              <img alt="AMD" src={require('../../assets/images/AMDLogo.png')}></img>
+            </Box>
+          </Stack>
+        </Stack>
+      )}
     </Box>
   )
 }

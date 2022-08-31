@@ -5,6 +5,7 @@ const useStyles = makeStyles()((theme: any) => {
     container: {
       // background: 'linear-gradient(to bottom right, #1b1828,#2a448a)',
       backdropFilter: 'blur(88px)',
+      background: 'radial-gradient(circle at right, rgba(255,0,0, 0.2) 0%, rgba(0, 0, 0, 1) 70%,rgba(0, 0, 1) 100%)',
       width: '100%',
       height: '100%',
       overflow: 'auto',

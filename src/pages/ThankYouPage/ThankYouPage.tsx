@@ -1,6 +1,7 @@
 import { Box, Stack, Typography } from '@mui/material'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import OracleLogo from '../../assets/logos/OracleLogo'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import JoinContext from '../../components/JoinContext/JoinContext'
@@ -11,6 +12,7 @@ import useStyles from './ThankYouPage.module'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 
+// TODO: Determine how we are taken here between simple `Leave` and when conference is ended.
 const ThankYouPage = () => {
   const { loading, error, joinToken, conferenceData, seriesEpisode } = useJoinContext()
 
@@ -43,7 +45,7 @@ const ThankYouPage = () => {
           </Stack>
         )}
         {!loading && conferenceData && (
-          <Stack spacing={8}>
+          <Stack spacing={4}>
             <Typography marginTop={2} className={classes.thankyouMessage}>
               {conferenceData.thankYouMessage}
             </Typography>
@@ -51,6 +53,15 @@ const ThankYouPage = () => {
             <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onRejoin}>
               Rejoin Party
             </CustomButton>
+            <Stack spacing={2} direction="column">
+              <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
+              <Stack spacing={2} direction="row">
+                <OracleLogo />
+                <Box sx={{ width: '100px', height: '24px' }}>
+                  <img alt="AMD" src={require('../../assets/images/AMDLogo.png')}></img>
+                </Box>
+              </Stack>
+            </Stack>
           </Stack>
         )}
       </Stack>
