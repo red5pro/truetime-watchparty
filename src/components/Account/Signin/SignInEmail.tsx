@@ -92,6 +92,12 @@ const SignInEmail = (props: ISignInEmailProps) => {
       {(props: any) => {
         const { submitForm, isSubmitting } = props
 
+        const handleKeyPress = (ev: any) => {
+          if (ev && ev.code === 'Enter') {
+            submitForm()
+          }
+        }
+
         return (
           <Form method="post">
             <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
@@ -105,7 +111,14 @@ const SignInEmail = (props: ISignInEmailProps) => {
                 placeholder="Email"
                 className={classes.input}
               />
-              <Field component={TextField} name="password" type="password" label="Password" className={classes.input} />
+              <Field
+                component={TextField}
+                name="password"
+                type="password"
+                label="Password"
+                className={classes.input}
+                onKeyPress={handleKeyPress}
+              />
 
               {/* TODO IMPLEMENT FORGOT PASSWORD */}
               <Link textAlign="end" onClick={() => setForgotPassword(true)}>

@@ -25,18 +25,6 @@ enum EStepIdentify {
   // WATCH_PARTY = 5,
 }
 
-const currentEpisodeMock = {
-  episodeId: 9991,
-  displayName: 'Event 1',
-  startTime: 1658677171000,
-  endTime: 1658691571000,
-}
-
-const currentSerieMock = {
-  seriesId: 9991,
-  displayName: 'Series 1',
-}
-
 export default function HostAPartySteps() {
   const { classes } = useStyles()
   const [cookies] = useCookies(['account'])
@@ -70,7 +58,7 @@ export default function HostAPartySteps() {
     },
     {
       id: EStepIdentify.SHARE,
-      component: <ShareLink account={cookies?.account} joinToken={startPartyData?.joinToken ?? ''} />,
+      component: <ShareLink joinToken={startPartyData?.joinToken ?? ''} />,
     },
   ]
 

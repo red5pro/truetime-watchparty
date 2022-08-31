@@ -6,12 +6,11 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/
 import useStyles from './ShareLink.module'
 
 interface IShareLinkProps {
-  account: any
   joinToken: string
 }
 
 const ShareLink = (props: IShareLinkProps) => {
-  const { account, joinToken } = props
+  const { joinToken } = props
 
   const [textCopied, setTextCopied] = React.useState<boolean>(false)
   const { classes } = useStyles()

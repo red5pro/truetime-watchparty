@@ -1,5 +1,6 @@
 import * as React from 'react'
 import * as Yup from 'yup'
+import { useNavigate } from 'react-router-dom'
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 import {
@@ -25,6 +26,7 @@ import { ConferenceDetails } from '../../../models/ConferenceDetails'
 import { AccountCredentials } from '../../../models/AccountCredentials'
 import { generateJoinToken, IStepActionsSubComponent } from '../../../utils/commonUtils'
 import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
+import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 
 interface ISetupPartyFormProps {
   onActions: IStepActionsSubComponent
@@ -57,8 +59,10 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
   const { onActions, data, setData, account } = props
   const { classes } = useStyles()
   const { executeRecaptcha } = useGoogleReCaptcha()
+  const navigate = useNavigate()
 
   const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string | undefined>()
+  const [conferenceJoinToken, setConferenceJoinToken] = React.useState<string | undefined>()
 
   const initialValues = {
     welcomeMsg: data?.welcomeMessage ?? '',
@@ -100,7 +104,32 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
         if (response.data) {
           onActions.onNextStep()
         } else {
-          setErrorAfterSubmit(response.statusText)
+          if (account) {
+            const conferencesResponse = await CONFERENCE_API_CALLS.getAllConferences(account)
+
+            if (conferencesResponse.status === 200 && conferencesResponse.data?.conferences.length) {
+              const conf = conferencesResponse.data?.conferences[0]
+              setConferenceJoinToken(conf.joinToken)
+
+              setData(
+                {
+                  joinToken: conf.joinToken,
+                  startTime: conf.startTime,
+                  conferenceId: 0,
+                  displayName: conf.displayName,
+                  welcomeMessage: '',
+                  thankYouMessage: '',
+                  location: '',
+                  maxParticipants: 0,
+                  joinLocked: false,
+                  vipOkay: false,
+                  participants: [],
+                },
+                account
+              )
+            }
+            setErrorAfterSubmit(response.statusText)
+          }
         }
       }
     }
@@ -214,10 +243,23 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
                 Continue
               </CustomButton>
               {isSubmitting && <LinearProgress />}
-              {errorAfterSubmit && (
-                <Typography sx={{ fontSize: '20px' }} className={classes.errorValidation}>
-                  {errorAfterSubmit}
-                </Typography>
+
+              {errorAfterSubmit && conferenceJoinToken && (
+                <SimpleAlertDialog
+                  title="Warning"
+                  message={errorAfterSubmit}
+                  onConfirm={() => onActions.onNextStep()}
+                  confirmLabel="Join Conference"
+                />
+              )}
+
+              {errorAfterSubmit && !conferenceJoinToken && (
+                <SimpleAlertDialog
+                  title="Warning"
+                  message={errorAfterSubmit}
+                  onConfirm={() => navigate('/join')}
+                  confirmLabel="Go To Landing Page"
+                />
               )}
             </Box>
           </Form>

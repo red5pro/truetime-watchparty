@@ -1,7 +1,6 @@
 import { Serie } from './../../models/Serie'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { CONFERENCE_API_CALLS } from '../api/conference-api-calls'
-import { Episode } from '../../models/Episode'
 
 export const getCurrentEpisode = async () => {
   let currentSerie: any
@@ -37,10 +36,6 @@ export const getCurrentEpisode = async () => {
     console.error(e)
     throw e
   }
-}
-
-export const getAllConferences = async (account: AccountCredentials) => {
-  return await CONFERENCE_API_CALLS.getAllConferences(account)
 }
 
 export const getConferenceDetails = async (conferenceId: string, account: AccountCredentials) => {
