@@ -10,3 +10,13 @@ export const apiErrorMapping = (error: any) => {
 
   return errorResponse
 }
+
+enum Errortype {
+  NO_EPISODES = 'NO_EPISODES',
+  NO_SERIES = 'NO_SERIES',
+}
+
+export const ERROR_TYPE = {
+  [Errortype.NO_SERIES]: 'There are not any current tournaments. Please check back later!',
+  [Errortype.NO_EPISODES]: 'There are not any current events. Please check back later!',
+}

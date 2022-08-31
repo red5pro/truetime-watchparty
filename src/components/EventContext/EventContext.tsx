@@ -51,9 +51,9 @@ const EventProvider = (props: EventContextProps) => {
         series: currentSerie,
         next: nextEpisodes,
       })
-    } catch (e) {
+    } catch (e: any) {
       console.error(e)
-      setError(e)
+      setError(e.error ?? e)
     } finally {
       setLoading(false)
     }
