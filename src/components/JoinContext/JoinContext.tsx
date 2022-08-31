@@ -129,10 +129,11 @@ const JoinProvider = (props: JoinContextProps) => {
 
     // Only keep numbers and letters, otherwise stream may break.
     const stripped = nickname.replace(/[^a-zA-Z0-9]/g, '')
+    const uid = Math.floor(Math.random() * 0x10000).toString(16)
     if (!FORCE_LIVE_CONTEXT && joinToken) {
-      return `${joinToken?.split('-').join('')}/${stripped}`
+      return `${joinToken?.split('-').join('')}/${stripped}_${uid}`
     }
-    return `live/${joinToken}_${stripped}`
+    return `live/${joinToken}_${stripped}_${uid}`
   }
 
   const getMainStreamGuid = () => {
