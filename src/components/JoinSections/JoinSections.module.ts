@@ -14,6 +14,7 @@ const useStyles = makeStyles()((theme: any) => {
     },
     landingContainer: {
       marginTop: '33px',
+      width: '50%',
     },
     nicknameContainer: {
       marginTop: 'calc(100vh / 5)',

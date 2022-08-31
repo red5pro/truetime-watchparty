@@ -115,7 +115,7 @@ const JoinPage = () => {
       )}
       {!loading && conferenceData && currentSection === Section.Landing && (
         <Box className={classes.joinSection}>
-          <Typography padding={2} className={classes.joinTitleLarge}>
+          <Typography padding={2} className={classes.joinTitleSmall}>
             Join WatchParty
           </Typography>
           <JoinSectionLanding
