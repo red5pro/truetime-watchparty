@@ -107,9 +107,32 @@ const JoinPage = () => {
     return false
   }
 
+  if (error) {
+    return typeof error !== 'string' ? (
+      <SimpleAlertDialog
+        title="Something went wrong"
+        message={`${error.status} - ${error.statusText}`}
+        confirmLabel="Retry"
+        onConfirm={onRetryRequest}
+      />
+    ) : (
+      <Box className={classes.root}>
+        <Box
+          sx={{ width: '50% !important' }}
+          className={classes.joinSection}
+          display="flex"
+          alignItems="left"
+          justifyContent="center"
+        >
+          <Typography variant="h3">{error}</Typography>
+        </Box>
+      </Box>
+    )
+  }
   return (
     <Box className={classes.root}>
       {loading && <Loading />}
+
       {currentSection !== Section.WatchParty && (
         <Box padding={2} className={classes.brandLogo}>
           <WbcLogoSmall />
@@ -156,14 +179,7 @@ const JoinPage = () => {
           <MainStage />
         </MainStageWithChatBox>
       )}
-      {error && (
-        <SimpleAlertDialog
-          title="Something went wrong"
-          message={`${error.status} - ${error.statusText}`}
-          confirmLabel="Retry"
-          onConfirm={onRetryRequest}
-        />
-      )}
+
       <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
         <img
           alt="Join a Party Main Image"
@@ -174,6 +190,7 @@ const JoinPage = () => {
           }}
         ></img>
       </Box>
+
       {currentSection !== Section.WatchParty && (
         <Stack
           spacing={2}
