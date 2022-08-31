@@ -5,7 +5,7 @@ import { AccountCredentials } from '../../models/AccountCredentials'
 import { Conference } from '../../models/Conference'
 import { Episode } from '../../models/Episode'
 import { UserAccount } from '../../models/UserAccount'
-import { getAllConferences } from '../../services/conference/conference'
+import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 
 import { IStepActionsSubComponent } from '../../utils/commonUtils'
 import Signin from '../Account/Signin/Signin'
@@ -41,7 +41,7 @@ const VipSteps = () => {
   React.useEffect(() => {
     const getConferences = async (account: AccountCredentials) => {
       if (!currentConference) {
-        const conf = await getAllConferences(account)
+        const conf = await CONFERENCE_API_CALLS.getAllConferences(account)
 
         if (conf.data?.conferences && conf.status === 200) {
           const data = conf.data.conferences

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Box, Input, Typography } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
 
 import WbcLogo from '../../assets/logos/WbcLogo'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
@@ -11,6 +12,7 @@ const Home = () => {
   const [partyCode, setPartyCode] = React.useState<string>('')
 
   const navigate = useNavigate()
+  const [cookies] = useCookies(['account'])
 
   const onInputChange = (ev: any) => setPartyCode(ev?.target?.value ?? '')
 
@@ -35,12 +37,15 @@ const Home = () => {
             Join
           </CustomButton>
         </Box>
-        <Box mt={4} display="flex">
-          <Typography mr={2}>Already have a party?</Typography>
-          <Link to="login" className={classes.link}>
-            Sign in here
-          </Link>
-        </Box>
+        {!cookies.account && (
+          <Box mt={4} display="flex">
+            <Typography mr={2}>Already have a party?</Typography>
+
+            <Link to="login" className={classes.link}>
+              Sign in here
+            </Link>
+          </Box>
+        )}
       </Box>
       <Box className={classes.rightContainer}>
         <Box className={classes.imageContainer}>
