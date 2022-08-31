@@ -15,7 +15,6 @@ import { IStepActionsSubComponent } from '../../utils/commonUtils'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import EventContext from '../EventContext/EventContext'
 import { AccountCredentials } from '../../models/AccountCredentials'
-import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 
 enum EStepIdentify {
   LANDING = 0,

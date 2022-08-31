@@ -5,8 +5,7 @@ const useStyles = makeStyles()((theme: any) => {
     root: {
       // background: 'linear-gradient(to bottom right, #1b1828,#2a448a)',
       backdropFilter: 'blur(88px)',
-      backgroundImage:
-        'radial-gradient(circle at right, rgba(255,0,0, 0.2) 0%, rgba(0, 0, 0, 1) 70%,rgba(0, 0, 1) 100%)',
+      background: 'radial-gradient(circle at right, rgba(255,0,0, 0.2) 0%, rgba(0, 0, 0, 1) 70%,rgba(0, 0, 1) 100%)',
       width: '100%',
       height: '100%',
       overflow: 'auto',
@@ -16,6 +15,11 @@ const useStyles = makeStyles()((theme: any) => {
     },
     brandLogo: {
       position: 'absolute',
+    },
+    sponsorContainer: {
+      position: 'absolute',
+      left: '74px',
+      bottom: '24px',
     },
     joinTitleLarge: {
       textAlign: 'center',
