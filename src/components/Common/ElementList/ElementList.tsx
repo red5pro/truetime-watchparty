@@ -24,7 +24,7 @@ const ElementList = (props: IElementListProps) => {
             <ListItem sx={{ margin: 3 }} disablePadding key={value.seriesId}>
               {/* <ListItemButton className={classes.itemButton} component="a" href="#simple-list"> */}
               <Box marginRight={2}>
-                <ListItemText primary={date.toLocaleDateString('en-US', dateOptions)} />
+                <ListItemText sx={{ whiteSpace: 'nowrap' }} primary={date.toLocaleDateString('en-US', dateOptions)} />
                 <ListItemText primary={`${date.getHours()}:${date.getMinutes()}`} />
               </Box>
               <ListItemText primary={value.displayName} className={classes.itemDisplayName} />

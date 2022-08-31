@@ -119,8 +119,7 @@ const MainStage = () => {
   }
 
   if (!mediaContext?.mediaStream || !joinContext?.getStreamGuid()) {
-    // TODO: Navigate back. This may happen on a refesh
-    // navigate(`/join/${joinContext.joinToken}`)
+    navigate(`/join/${joinContext.joinToken}`)
   }
 
   React.useEffect(() => {
@@ -139,11 +138,8 @@ const MainStage = () => {
   }, [error])
 
   React.useEffect(() => {
-    // TODO: Got here without setting up media. Where to send them?
     if (!mediaContext?.mediaStream) {
-      // TODO: Remove for testing
-      onPublisherBroadcast()
-      // navigate(`/join/${joinContext.joinToken}`)
+      navigate(`/join/${joinContext.joinToken}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
       const { mediaStream } = mediaContext
       setPublishMediaStream(mediaStream)

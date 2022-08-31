@@ -57,7 +57,7 @@ const ShareLink = (props: IShareLinkProps) => {
           </CustomButton>
         </Box>
         <CustomButton fullWidth size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
-          <LinkTo className={classes.linkToJoin} to={`/join/${joinToken}`}>
+          <LinkTo className={classes.linkToJoin} to={`/join/${joinToken}?s_id=2`}>
             Continue to WatchParty
           </LinkTo>
         </CustomButton>
