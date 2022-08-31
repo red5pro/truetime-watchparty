@@ -11,10 +11,11 @@ import ViewEvents from './ViewEvents/ViewEvents'
 import Signin from '../Account/Signin/Signin'
 import ShareLink from './ShareLink/ShareLink'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
-import { IStepActionsSubComponent } from '../../utils/commonUtils'
+import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import EventContext from '../EventContext/EventContext'
 import { AccountCredentials } from '../../models/AccountCredentials'
+import { useNavigate } from 'react-router-dom'
 
 enum EStepIdentify {
   LANDING = 0,
@@ -27,10 +28,17 @@ enum EStepIdentify {
 
 export default function HostAPartySteps() {
   const { classes } = useStyles()
-  const [cookies] = useCookies(['account'])
+  const [cookies] = useCookies(['account', 'userAccount'])
+  const navigate = useNavigate()
 
   const [activeStep, setActiveStep] = React.useState(0)
   const [startPartyData, setStartPartyData] = React.useState<ConferenceDetails | undefined>()
+
+  React.useEffect(() => {
+    if (cookies?.userAccount?.role === UserRoles.VIP) {
+      navigate('/join/guest')
+    }
+  }, [cookies?.userAccount])
 
   const onSubmitPartyData = (data: ConferenceDetails, account: AccountCredentials | undefined) => {
     setStartPartyData(data)

@@ -84,7 +84,6 @@ const VipSteps = () => {
   }
 
   const getNextConference = () => {
-    debugger
     const nextConfIndex =
       allConferences?.findIndex((item) => item.conferenceId === currentConference?.conferenceId) || 0
 

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Box, Stack, Typography } from '@mui/material'
 
 import Loading from '../../components/Loading/Loading'
@@ -17,6 +17,8 @@ import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
 import OracleLogo from '../../assets/logos/OracleLogo'
 import AMDLogo from '../../assets/logos/AMDLogo'
+import { useCookies } from 'react-cookie'
+import { UserRoles } from '../../utils/commonUtils'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -46,13 +48,21 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 }
 
 const JoinPage = () => {
+  const [cookies] = useCookies(['userAccount'])
   const { loading, error, seriesEpisode, conferenceData, nickname, updateNickname } = useJoinContext()
   const mediaContext = useMediaContext()
 
   const { classes } = useStyles()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
 
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
+
+  React.useEffect(() => {
+    if (cookies?.userAccount?.role === UserRoles.VIP) {
+      navigate('/join/guest')
+    }
+  }, [cookies?.userAccount])
 
   React.useEffect(() => {
     if (searchParams.get('s_id')) {

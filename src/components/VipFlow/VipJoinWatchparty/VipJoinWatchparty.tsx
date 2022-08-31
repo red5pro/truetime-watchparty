@@ -16,6 +16,7 @@ import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls
 import { ConnectionRequest } from '../../../models/ConferenceStatusEvent'
 import WatchContext from '../../WatchContext/WatchContext'
 import { UserAccount } from '../../../models/UserAccount'
+import { API_SOCKET_HOST } from '../../../settings/variables'
 
 interface IVipSeeParticipantsProps {
   onActions: IStepActionsSubComponent
@@ -66,13 +67,13 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     // Participant
     const fp = joinContext.fingerprint
     request.fingerprint = fp
-
-    // Registered User
-    // set u/p
-
-    // Local testing
-    const url = `ws://localhost:8001`
-    return { url, request }
+    if (account) {
+      // Registered User
+      const { email, password } = account
+      request.username = email
+      request.password = password
+    }
+    return { url: API_SOCKET_HOST, request }
   }
 
   React.useEffect(() => {
