@@ -15,6 +15,8 @@ const episodeReducer = (state: any, action: any) => {
   switch (action.type) {
     case 'UPDATE':
       return { ...state, loaded: true, series: action.series, episode: action.episode }
+    case 'TOGGLE_LOCK':
+      return { ...state, locked: action.locked }
   }
 }
 
@@ -46,9 +48,10 @@ const JoinProvider = (props: JoinContextProps) => {
     loaded: false,
     series: cannedSeries,
     episode: cannedEpisode,
+    locked: false,
   })
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
-  const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
+  // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     if (params && params.token) {
@@ -87,7 +90,8 @@ const JoinProvider = (props: JoinContextProps) => {
       const { data } = details
       if (!data) throw details
       setConferenceData(data)
-      setConferenceLocked(data.joinLocked)
+      dispatch({ type: 'TOGGLE_LOCK', locked: data.joinLocked })
+      // setConferenceLocked(data.joinLocked)
       setLoading(false)
     } catch (e) {
       console.error(e)
@@ -141,12 +145,15 @@ const JoinProvider = (props: JoinContextProps) => {
     return episode.streamGuid
   }
 
-  const lock = async () => {
+  const lock = async (conferenceId: string | number) => {
     if (conferenceData) {
-      const { conferenceId } = conferenceData
       try {
         const result = await CONFERENCE_API_CALLS.lockConference(conferenceId, cookies.account)
-        setConferenceLocked(true)
+        if (result.status !== 200) {
+          throw { data: null, status: result.status, statusText: `Could not unlock conference.` }
+        }
+        // setConferenceLocked(true)
+        dispatch({ type: 'TOGGLE_LOCK', locked: true })
         return result
       } catch (e) {
         console.error(e)
@@ -156,12 +163,15 @@ const JoinProvider = (props: JoinContextProps) => {
     return null
   }
 
-  const unlock = async () => {
+  const unlock = async (conferenceId: string | number) => {
     if (conferenceData) {
-      const { conferenceId } = conferenceData
       try {
         const result = await CONFERENCE_API_CALLS.unlockConference(conferenceId, cookies.account)
-        setConferenceLocked(false)
+        if (result.status !== 200) {
+          throw { data: null, status: result.status, statusText: `Could not unlock conference.` }
+        }
+        dispatch({ type: 'TOGGLE_LOCK', locked: true })
+
         return result
       } catch (e) {
         console.error(e)
@@ -179,7 +189,7 @@ const JoinProvider = (props: JoinContextProps) => {
     fingerprint,
     seriesEpisode,
     conferenceData,
-    conferenceLocked,
+    // conferenceLocked,
     setConferenceData,
     updateNickname: (value: string) => {
       setNickname(value)
