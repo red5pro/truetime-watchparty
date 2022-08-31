@@ -10,7 +10,7 @@ export const RECAPTCHA_SECRET_KEY =
 export const USE_STREAM_MANAGER = false
 export const API_SOCKET_HOST = USE_LOCAL_SERVICES
   ? 'ws://localhost:8001'
-  : `ws://${API_SERVER_HOST}:5080/conferenceapi/1.0/ws/conference`
+  : `wss://${API_SERVER_HOST}/conferenceapi/1.0/ws/conference`
 export const STREAM_HOST = USE_LOCAL_SERVICES ? 'release-11.red5.net' : SERVER_HOST
 
 export const DEFAULT_CONSTRAINTS = {
