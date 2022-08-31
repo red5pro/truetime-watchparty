@@ -58,12 +58,12 @@ const useStyles = makeStyles()((theme: any) => {
     },
     item: {},
     menuItem: {
-      backgroundColor: '#2a4283e8',
+      backgroundColor: '#30303099',
       '&&.Mui-selected': {
-        backgroundColor: '#2a4283c4',
+        backgroundColor: '#3030305c',
       },
       '&&:hover': {
-        backgroundColor: '#2a4283c4',
+        backgroundColor: '#30303073',
       },
     },
 
