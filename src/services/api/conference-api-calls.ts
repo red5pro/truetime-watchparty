@@ -337,7 +337,7 @@ const getConferenceParticipants = async (conferenceId: string, account: AccountC
 
 const lockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
-    const response: AxiosResponse = await axios.get(
+    const response: AxiosResponse = await axios.put(
       `${ENDPOINT.CONFERENCE}/${conferenceId}/lock?user=${account.email}&password=${account.password}`
     )
     return response
