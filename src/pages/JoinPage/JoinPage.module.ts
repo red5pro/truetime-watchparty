@@ -40,9 +40,7 @@ const useStyles = makeStyles()((theme: any) => {
       marginTop: '15px',
       zIndex: 1,
     },
-    nicknameContainer: {
-      // marginTop: 'calc(100vh / 15)',
-    },
+    nicknameContainer: {},
     mediaSetupContainer: {
       display: 'flex',
       flexDirection: 'column',
