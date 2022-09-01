@@ -126,16 +126,19 @@ const JoinProvider = (props: JoinContextProps) => {
   }
 
   // Returns stream guid (context + name) of the current participant to broadcast on.
+  // TODO: Be more clever when VIP...
   const getStreamGuid = () => {
-    if (!nickname) return null
+    const isVIP = location.pathname === '/join/guest'
+    if (!isVIP && !nickname) return null
 
     // Only keep numbers and letters, otherwise stream may break.
-    const stripped = nickname.replace(/[^a-zA-Z0-9]/g, '')
+    const append = isVIP ? 'vip' : joinToken
+    const stripped = isVIP ? nickname?.replace(/[^a-zA-Z0-9]/g, '') : 'VIP'
     const uid = Math.floor(Math.random() * 0x10000).toString(16)
     if (!FORCE_LIVE_CONTEXT && joinToken) {
-      return `${joinToken?.split('-').join('')}/${stripped}_${uid}`
+      return `${append?.split('-').join('')}/${stripped}_${uid}`
     }
-    return `live/${joinToken}_${stripped}_${uid}`
+    return `live/${append}_${stripped}_${uid}`
   }
 
   const getMainStreamGuid = () => {

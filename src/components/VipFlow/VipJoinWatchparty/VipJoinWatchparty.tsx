@@ -38,6 +38,7 @@ interface IVipSeeParticipantsProps {
   currentConference?: Conference
   nextConferenceToJoin?: Conference
   userAccount?: UserAccount
+  onCancelOnboarding(): any
 }
 
 const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
@@ -49,6 +50,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     currentEpisode,
     getNextConference,
     nextConferenceToJoin,
+    onCancelOnboarding,
   } = props
 
   const [participants, setParticipants] = React.useState<Participant[]>([])
@@ -100,10 +102,6 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   // }, [])
 
   React.useEffect(() => {
-    console.log('SHOW MEDIA', showMediaStream, mediaStream)
-  }, [showMediaStream, mediaStream])
-
-  React.useEffect(() => {
     if (data?.conference?.participants?.length) {
       setParticipants(data.conference.participants)
     }
@@ -151,6 +149,12 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   //   )
   // }
 
+  const onDisclaimerClose = () => {
+    setShowDisclaimer(false)
+    setShowMediaStream(true)
+    onCancelOnboarding()
+  }
+
   const onPublisherBroadcastInterrupt = () => {
     setFatalError({
       status: 400,
@@ -195,17 +199,14 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
           <Box display="flex" justifyContent="center" flexDirection="column" className={classes.container}>
             <Typography>You can join this party or skip into another one</Typography>
             <Box marginTop={2}>
-              <CustomButton
-                onClick={() => setShowDisclaimer(false)}
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.SECONDARY}
-              >
+              <CustomButton onClick={onDisclaimerClose} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
                 Got it!
               </CustomButton>
             </Box>
           </Box>
         )}
         <WatchpartyParticipants
+          disabled={!showMediaStream}
           conferenceDetails={conferenceDetails}
           participants={participants}
           skipNextConference={skipNextConference}
@@ -213,6 +214,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
           onJoinNextParty={() => setShowMediaStream(true)}
         />
       </Box>
+      {/* VIP Broadcast */}
       {showMediaStream && mediaStream && (
         <Box className={classes.vipContainer}>
           <Publisher

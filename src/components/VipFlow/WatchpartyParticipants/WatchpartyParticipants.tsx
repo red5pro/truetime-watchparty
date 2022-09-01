@@ -8,6 +8,7 @@ import useStyles, { styles } from './WatchpartyParticipants.module'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
 
 interface IWatchpartyParticipantsProps {
+  disabled: boolean
   conferenceDetails?: ConferenceDetails
   participants: Participant[]
   skipNextConference: () => void
@@ -16,7 +17,14 @@ interface IWatchpartyParticipantsProps {
 }
 
 const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
-  const { conferenceDetails, participants, skipNextConference, onJoinNextParty, buttonPrimary = false } = props
+  const {
+    disabled,
+    conferenceDetails,
+    participants,
+    skipNextConference,
+    onJoinNextParty,
+    buttonPrimary = false,
+  } = props
 
   const { classes } = useStyles()
 
@@ -53,13 +61,21 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
       </Box>
       <Box display="flex" justifyContent="space-evenly" className={classes.buttonContainer}>
         <CustomButton
+          labelStyle={disabled ? classes.disabledButton : classes.enabledButton}
+          disabled={disabled}
           onClick={onJoinNextParty}
           size={BUTTONSIZE.SMALL}
-          buttonType={buttonPrimary ? BUTTONTYPE.SECONDARY : BUTTONTYPE.TERTIARY}
+          buttonType={disabled ? BUTTONTYPE.TERTIARY : BUTTONTYPE.SECONDARY}
         >
           Join The Party
         </CustomButton>
-        <CustomButton onClick={skipNextConference} size={BUTTONSIZE.SMALL} buttonType={BUTTONTYPE.TERTIARY}>
+        <CustomButton
+          labelStyle={disabled ? classes.disabledButton : classes.enabledButton}
+          disabled={disabled}
+          onClick={skipNextConference}
+          size={BUTTONSIZE.SMALL}
+          buttonType={BUTTONTYPE.TERTIARY}
+        >
           Skip
         </CustomButton>
       </Box>

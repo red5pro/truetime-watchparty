@@ -223,6 +223,7 @@ const VipMainStage = (props: IVipMainStageProps) => {
               finishedCountdown={finishedCountdown}
             />
             <WatchpartyParticipants
+              disabled={false}
               skipNextConference={skipNextConference}
               // NOTE: CHECK IF conferenceDetails IS NEEDED
               conferenceDetails={data.conference ?? conferenceDetails}

@@ -22,6 +22,7 @@ import VipTimerStep from './VipTimer/VipTimerStep'
 import VipView from './VipView/VipView'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
+const useMediaContext = () => React.useContext(MediaContext.Context)
 
 interface SubscriberRef {
   setVolume(value: number): any
@@ -48,11 +49,28 @@ const VipSteps = (props: any) => {
   const [currentConference, setCurrentConference] = React.useState<Conference>()
   const [nextConference, setNextConference] = React.useState<Conference>()
 
+  const [onBoarding, setOnboarding] = React.useState<boolean>(true)
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
 
   const { classes } = useStyles()
 
   const { loading, error, seriesEpisode } = useJoinContext()
+  const { mediaStream, setConstraints, setMediaStream } = useMediaContext()
+
+  const clearMediaContext = () => {
+    if (mediaStream) {
+      console.log('~~CLEAR MEDIA~~')
+      mediaStream.getTracks().forEach((t: MediaStreamTrack) => t.stop())
+      setConstraints(undefined)
+      setMediaStream(undefined)
+    }
+  }
+
+  React.useEffect(() => {
+    if (activeStep < VipStepIdentify.AV_SETUP) {
+      clearMediaContext()
+    }
+  }, [activeStep])
 
   React.useEffect(() => {
     const getConferences = async (account: AccountCredentials) => {
@@ -66,8 +84,6 @@ const VipSteps = (props: any) => {
         }
       }
     }
-
-    console.log('check')
 
     let requiresLogin = true
     if (cookies.userAccount) {
@@ -161,6 +177,7 @@ const VipSteps = (props: any) => {
             nextConferenceToJoin={nextConference}
             currentEpisode={currentEpisode}
             currentConference={currentConference}
+            onCancelOnboarding={() => setOnboarding(false)}
           />
         </WatchContext.Provider>
       ),
@@ -217,17 +234,15 @@ const VipSteps = (props: any) => {
           />
         </Box>
       )}
-      <MediaContext.Provider>
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          height="100%"
-          className={activeStep === VipStepIdentify.JOIN_WATCH_PARTY ? classes.watchContainer : classes.stepsContainer}
-        >
-          {getSteps(actions)[activeStep].component}
-        </Box>
-      </MediaContext.Provider>
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        height="100%"
+        className={!onBoarding ? classes.watchContainer : classes.stepsContainer}
+      >
+        {getSteps(actions)[activeStep].component}
+      </Box>
     </Box>
   )
 }
