@@ -1,20 +1,18 @@
-import { IEmojiData } from 'emoji-picker-react'
 import { ParticipantMuteState } from './../../models/Participant'
 import axios, { AxiosResponse } from 'axios'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
 
-// TODO: Take out creds from requests.
-const ADMIN_PARAMS = 'user=admin&password=changeme'
 const ENDPOINT = {
   SERIES: `${MAIN_ENDPOINT}/series`,
   CONFERENCE: `${MAIN_ENDPOINT}/conference`,
+  EPISODE: `${MAIN_ENDPOINT}/episode`,
 }
 
 const getSeriesList = async () => {
   try {
-    const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}?${ADMIN_PARAMS}`)
+    const response: AxiosResponse = await axios.get(ENDPOINT.SERIES)
     return response
   } catch (e: any) {
     console.log(e)
@@ -55,15 +53,9 @@ const getSeriesList = async () => {
   // } as AxiosResponse
 }
 
-const getCurrentEpisode = async (account?: AccountCredentials) => {
+const getCurrentEpisode = async () => {
   try {
-    let url = `${MAIN_ENDPOINT}/episode/current`
-    if (account) {
-      url += `?user=${account.email}&password=${account.password}`
-    } else {
-      url += `?${ADMIN_PARAMS}`
-    }
-    const response: AxiosResponse = await axios.get(url)
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.EPISODE}/current`)
     return response
   } catch (e: any) {
     console.log(e)
@@ -79,29 +71,11 @@ const getCurrentEpisode = async (account?: AccountCredentials) => {
       statusText: message,
     } as AxiosResponse
   }
-
-  // return {
-  //   data: {
-  //     episodeId: 9991,
-  //     displayName: 'Event 1',
-  //     description: 'Event1',
-  //     startTime: 1658677171000,
-  //     endTime: 1658691571000,
-  //     streamGuid: 'live/mainscreen',
-  //   },
-  //   status: 200,
-  // } as AxiosResponse
 }
 
-const getAllEpisodes = async (serieId: number | string, account?: AccountCredentials) => {
+const getAllEpisodesBySerie = async (serieId: number | string) => {
   try {
-    let url = `${ENDPOINT.SERIES}/${serieId}/episode`
-    if (account) {
-      url += `?user=${account.email}&password=${account.password}`
-    } else {
-      url += `?${ADMIN_PARAMS}`
-    }
-    const response: AxiosResponse = await axios.get(url)
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}/${serieId}/episode`)
     return response
   } catch (e: any) {
     console.log(e)
@@ -440,7 +414,7 @@ const banParticipant = async (
 export const CONFERENCE_API_CALLS = {
   getSeriesList,
   getCurrentEpisode,
-  getAllEpisodes,
+  getAllEpisodesBySerie,
   getConferenceDetails,
   getJoinDetails,
   createConference,

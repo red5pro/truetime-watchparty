@@ -3,7 +3,7 @@ import { AccountCredentials } from '../../models/AccountCredentials'
 import { CONFERENCE_API_CALLS } from '../api/conference-api-calls'
 import { ERROR_TYPE } from '../../utils/apiErrorMapping'
 
-export const getCurrentEpisode = async (retrieveNextEpisodes = true, account?: AccountCredentials) => {
+export const getCurrentEpisode = async (retrieveNextEpisodes = true) => {
   let currentSerie: any
   let currentEpisode: any
   let nextEpisodes = []
@@ -17,7 +17,7 @@ export const getCurrentEpisode = async (retrieveNextEpisodes = true, account?: A
     if (data.series) {
       const { series } = data
 
-      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode(account)
+      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode()
       if (episodeResponse.status !== 200) throw episodeResponse
       if (!episodeResponse.data) throw { episodeResponse, error: ERROR_TYPE.NO_EPISODES }
 
@@ -26,7 +26,7 @@ export const getCurrentEpisode = async (retrieveNextEpisodes = true, account?: A
       currentSerie = series.find((s: Serie) => s.seriesId === currentEpisode.seriesId)
 
       if (retrieveNextEpisodes) {
-        const allEpisodesResponse = await CONFERENCE_API_CALLS.getAllEpisodes(currentSerie.seriesId, account)
+        const allEpisodesResponse = await CONFERENCE_API_CALLS.getAllEpisodesBySerie(currentSerie.seriesId)
         if (allEpisodesResponse.status !== 200) throw allEpisodesResponse
 
         nextEpisodes = allEpisodesResponse.data ?? []
