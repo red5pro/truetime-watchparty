@@ -21,6 +21,8 @@ import { FatalError } from '../../../models/FatalError'
 import ErrorModal from '../../Modal/ErrorModal'
 import MediaContext from '../../MediaContext/MediaContext'
 import WbcLogoSmall from '../../../assets/logos/WbcLogoSmall'
+import LeaveMessage from '../VipMainStage/LeaveMessage/LeaveMessage'
+import VipTimer from '../VipTimer/VipTimer'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -59,6 +61,8 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   const [joinConference, setJoinConference] = React.useState<boolean>(false)
   const [showDisclaimer, setShowDisclaimer] = React.useState<boolean>(true)
   const [showMediaStream, setShowMediaStream] = React.useState<boolean>(false)
+  const [finishedCountdown, setFinishedCountdown] = React.useState<boolean>(false)
+  const [startedCountdown, setStartedCountdown] = React.useState<boolean>(false)
 
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
 
@@ -230,14 +234,39 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
             </Box>
           </Box>
         )}
-        <WatchpartyParticipants
-          disabled={!showMediaStream}
-          conferenceDetails={conferenceDetails}
-          participants={participants}
-          skipNextConference={skipNextConference}
-          // nextConferenceToJoin={nextConferenceToJoin}
-          onJoinNextParty={() => setShowMediaStream(true)}
-        />
+        {/* CHECK WHEN WE SHOULD DISPLAY THIS */}
+        {finishedCountdown ? (
+          <LeaveMessage />
+        ) : (
+          <>
+            {!showDisclaimer && (
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'absolute',
+                  top: -60,
+                }}
+              >
+                <VipTimer
+                  startedCountdown={startedCountdown}
+                  setFinishedCountdown={setFinishedCountdown}
+                  finishedCountdown={finishedCountdown}
+                />
+              </Box>
+            )}
+            <WatchpartyParticipants
+              disabled={!showMediaStream}
+              conferenceDetails={conferenceDetails}
+              participants={participants}
+              skipNextConference={skipNextConference}
+              // nextConferenceToJoin={nextConferenceToJoin}
+              onJoinNextParty={() => console.log('join next party here')}
+            />
+          </>
+        )}
       </Box>
       {/* VIP Broadcast */}
       {showMediaStream && mediaStream && (

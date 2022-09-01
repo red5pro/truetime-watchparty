@@ -12,7 +12,9 @@ import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
 import Signin from '../Account/Signin/Signin'
 import JoinContext from '../JoinContext/JoinContext'
+import Loading from '../Loading/Loading'
 import MediaContext from '../MediaContext/MediaContext'
+import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import Subscriber from '../Subscriber/Subscriber'
 import WatchContext from '../WatchContext/WatchContext'
 import VipJoinWatchparty from './VipJoinWatchparty/VipJoinWatchparty'
@@ -148,6 +150,10 @@ const VipSteps = (props: any) => {
     return false
   }
 
+  const onRetryRequest = () => {
+    window.location.reload()
+  }
+
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: VipStepIdentify.LANDING,
@@ -215,12 +221,25 @@ const VipSteps = (props: any) => {
 
   return (
     <Box className={classes.root}>
+      {loading && (
+        <Box className={classes.loadingContainer}>
+          <Loading text="Loading Information..." />
+        </Box>
+      )}
+      {error && (
+        <SimpleAlertDialog
+          title="Something went wrong"
+          message={`${error.status} - ${error.statusText}`}
+          confirmLabel="Retry"
+          onConfirm={onRetryRequest}
+        />
+      )}
       {activeStep != VipStepIdentify.JOIN_WATCH_PARTY && (
         <Box padding={2} className={classes.brandLogo}>
           <WbcLogoSmall />
         </Box>
       )}
-      <Stepper activeStep={activeStep}></Stepper>
+      {/* Main Video in Background */}
       {activeStep >= VipStepIdentify.TIMER && mainStreamGuid && (
         <Box className={classes.mainVideoContainer}>
           <Subscriber
@@ -236,6 +255,7 @@ const VipSteps = (props: any) => {
           />
         </Box>
       )}
+      <Stepper activeStep={activeStep}></Stepper>
       <Box
         display="flex"
         flexDirection="column"
