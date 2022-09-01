@@ -25,9 +25,7 @@ const useStyles = makeStyles()((theme: any) => {
       alignItems: 'center',
       marginTop: 'calc(100vh / 8)',
     },
-    conferenceDetails: {
-      // marginTop: '45px',
-    },
+    conferenceDetails: {},
     landingJoin: {
       marginTop: '60px!important',
     },
