@@ -130,7 +130,11 @@ const JoinPage = () => {
   }
   return (
     <Box className={classes.root} display="flex" flexDirection="column">
-      {loading && <Loading />}
+      {loading && (
+        <Box marginTop={2}>
+          <Loading text="Loading Watch Party" />
+        </Box>
+      )}
 
       {currentSection !== Section.WatchParty && (
         <Box>

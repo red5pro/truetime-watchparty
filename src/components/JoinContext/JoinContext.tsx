@@ -9,12 +9,21 @@ import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
 import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 
+function useUID() {
+  const [id] = React.useState<string | number>(() => {
+    return Math.floor(Math.random() * 0x10000).toString(16)
+  })
+  return id
+}
+
 const cannedSeries = { displayName: 'Accessing Information...' }
 const cannedEpisode = { displayName: '...', startTime: new Date().getTime() }
 const episodeReducer = (state: any, action: any) => {
   switch (action.type) {
     case 'UPDATE':
       return { ...state, loaded: true, series: action.series, episode: action.episode }
+    case 'TOGGLE_LOCK':
+      return { ...state, locked: action.locked }
   }
 }
 
@@ -27,7 +36,7 @@ const JoinContext = React.createContext<any>(null)
 const JoinProvider = (props: JoinContextProps) => {
   const { children } = props
 
-  const query = useQueryParams()
+  const uid = useUID()
   const params = useParams()
   const navigate = useNavigate()
   const [cookies] = useCookies(['account'])
@@ -46,9 +55,10 @@ const JoinProvider = (props: JoinContextProps) => {
     loaded: false,
     series: cannedSeries,
     episode: cannedEpisode,
+    locked: false,
   })
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
-  const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
+  // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     if (params && params.token) {
@@ -87,7 +97,8 @@ const JoinProvider = (props: JoinContextProps) => {
       const { data } = details
       if (!data) throw details
       setConferenceData(data)
-      setConferenceLocked(data.joinLocked)
+      dispatch({ type: 'TOGGLE_LOCK', locked: data.joinLocked })
+      // setConferenceLocked(data.joinLocked)
       setLoading(false)
     } catch (e) {
       console.error(e)
@@ -100,7 +111,7 @@ const JoinProvider = (props: JoinContextProps) => {
     try {
       setLoading(true)
 
-      const [currentEpisode, currentSerie] = await getCurrentEpisode(false, cookies.account)
+      const [currentEpisode, currentSerie] = await getCurrentEpisode(false)
 
       if (currentSerie && currentEpisode) {
         dispatch({ type: 'UPDATE', series: currentSerie, episode: currentEpisode })
@@ -121,7 +132,6 @@ const JoinProvider = (props: JoinContextProps) => {
 
     // Only keep numbers and letters, otherwise stream may break.
     const stripped = nickname.replace(/[^a-zA-Z0-9]/g, '')
-    const uid = Math.floor(Math.random() * 0x10000).toString(16)
     if (!FORCE_LIVE_CONTEXT && joinToken) {
       return `${joinToken?.split('-').join('')}/${stripped}_${uid}`
     }
@@ -133,12 +143,15 @@ const JoinProvider = (props: JoinContextProps) => {
     return episode.streamGuid
   }
 
-  const lock = async () => {
+  const lock = async (conferenceId: string | number) => {
     if (conferenceData) {
-      const { conferenceId } = conferenceData
       try {
         const result = await CONFERENCE_API_CALLS.lockConference(conferenceId, cookies.account)
-        setConferenceLocked(true)
+        if (result.status !== 200) {
+          throw { data: null, status: result.status, statusText: `Could not unlock conference.` }
+        }
+        // setConferenceLocked(true)
+        dispatch({ type: 'TOGGLE_LOCK', locked: true })
         return result
       } catch (e) {
         console.error(e)
@@ -148,12 +161,15 @@ const JoinProvider = (props: JoinContextProps) => {
     return null
   }
 
-  const unlock = async () => {
+  const unlock = async (conferenceId: string | number) => {
     if (conferenceData) {
-      const { conferenceId } = conferenceData
       try {
         const result = await CONFERENCE_API_CALLS.unlockConference(conferenceId, cookies.account)
-        setConferenceLocked(false)
+        if (result.status !== 200) {
+          throw { data: null, status: result.status, statusText: `Could not unlock conference.` }
+        }
+        dispatch({ type: 'TOGGLE_LOCK', locked: true })
+
         return result
       } catch (e) {
         console.error(e)
@@ -171,7 +187,7 @@ const JoinProvider = (props: JoinContextProps) => {
     fingerprint,
     seriesEpisode,
     conferenceData,
-    conferenceLocked,
+    // conferenceLocked,
     setConferenceData,
     updateNickname: (value: string) => {
       setNickname(value)

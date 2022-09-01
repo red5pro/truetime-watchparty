@@ -65,7 +65,7 @@ interface PublisherRef {
 }
 
 const MainStage = () => {
-  const joinContext = useJoinContext()
+  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
   const mediaContext = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
 
@@ -107,7 +107,7 @@ const MainStage = () => {
       messageType: 'JoinConferenceRequest',
     } as ConnectionRequest
 
-    const fp = joinContext.fingerprint
+    const fp = fingerprint
     request.fingerprint = fp
     if (cookies?.account) {
       // Registered User
@@ -118,8 +118,8 @@ const MainStage = () => {
     return { url: API_SOCKET_HOST, request }
   }
 
-  if (!mediaContext?.mediaStream || !joinContext?.getStreamGuid()) {
-    navigate(`/join/${joinContext.joinToken}`)
+  if (!mediaContext?.mediaStream || !getStreamGuid()) {
+    navigate(`/join/${joinToken}`)
   }
 
   React.useEffect(() => {
@@ -139,7 +139,7 @@ const MainStage = () => {
 
   React.useEffect(() => {
     if (!mediaContext?.mediaStream) {
-      navigate(`/join/${joinContext.joinToken}`)
+      navigate(`/join/${joinToken}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
       const { mediaStream } = mediaContext
       setPublishMediaStream(mediaStream)
@@ -147,15 +147,19 @@ const MainStage = () => {
   }, [mediaContext?.mediaStream])
 
   React.useEffect(() => {
-    if (joinContext.seriesEpisode && joinContext.seriesEpisode.loaded) {
-      const { maxParticipants } = joinContext.seriesEpisode.series
-      const { streamGuid } = joinContext.seriesEpisode.episode
+    if (seriesEpisode && seriesEpisode.loaded) {
+      const { maxParticipants } = seriesEpisode.series
+      const { streamGuid } = seriesEpisode.episode
       if (streamGuid !== mainStreamGuid) {
         setMainStreamGuid(streamGuid)
       }
       setMaxParticipants(maxParticipants)
     }
-  }, [joinContext.seriesEpisode])
+  }, [seriesEpisode])
+
+  React.useEffect(() => {
+    console.log('LOCK', seriesEpisode.locked)
+  }, [seriesEpisode])
 
   React.useEffect(() => {
     if (maxParticipants > 0) {
@@ -207,8 +211,8 @@ const MainStage = () => {
   }
 
   const onPublisherBroadcast = () => {
-    const streamGuid = joinContext.getStreamGuid()
-    const { url, request } = getSocketUrl(joinContext.joinToken, joinContext.nickname, streamGuid)
+    const streamGuid = getStreamGuid()
+    const { url, request } = getSocketUrl(joinToken, nickname, streamGuid)
     join(url, request)
   }
 
@@ -239,13 +243,14 @@ const MainStage = () => {
   }
 
   const onLeave = () => {
-    navigate(`/thankyou/${joinContext.joinToken}`)
+    navigate(`/thankyou/${joinToken}`)
   }
 
   const toggleLock = async () => {
-    if (joinContext.conferenceLocked) {
+    const conferenceId = data.conference.conferenceId
+    if (seriesEpisode.locked) {
       try {
-        const result = await joinContext.lock()
+        const result = await lock(conferenceId)
         if (result.status >= 300) {
           throw result
         }
@@ -255,7 +260,7 @@ const MainStage = () => {
       }
     } else {
       try {
-        const result = await joinContext.unlock()
+        const result = await unlock(conferenceId)
         if (result.status >= 300) {
           throw result
         }
@@ -378,7 +383,7 @@ const MainStage = () => {
       )}
       <Box className={classes.content}>
         {/* Add / Share Modal */}
-        <ShareLinkModal joinToken={joinContext.joinToken} open={showLink} onDismiss={() => setShowLink(false)} />
+        <ShareLinkModal joinToken={joinToken} open={showLink} onDismiss={() => setShowLink(false)} />
         {/* Role-based Controls */}
         {data.conference && (
           <Box className={classes.topBar} sx={layout.style.topBar}>
@@ -399,16 +404,18 @@ const MainStage = () => {
                   <GroupAdd fontSize="small" />
                 </IconButton>
               )}
-              {joinContext && userRole === UserRoles.ORGANIZER.toLowerCase() && (
-                <IconButton
-                  sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
-                  color="primary"
-                  aria-label="lock unlock watch party"
-                  component="label"
-                  onClick={toggleLock}
-                >
-                  {joinContext.conferenceLocked ? <LockOpen fontSize="small" /> : <Lock fontSize="small" />}
-                </IconButton>
+              {userRole === UserRoles.ORGANIZER.toLowerCase() && (
+                <Tooltip title={seriesEpisode.locked ? 'Unlock' : 'Lock'}>
+                  <IconButton
+                    sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
+                    color="primary"
+                    aria-label="lock unlock watch party"
+                    component="label"
+                    onClick={toggleLock}
+                  >
+                    {seriesEpisode.locked ? <LockOpen fontSize="small" /> : <Lock fontSize="small" />}
+                  </IconButton>
+                </Tooltip>
               )}
               <CustomButton
                 size={BUTTONSIZE.SMALL}
@@ -532,7 +539,7 @@ const MainStage = () => {
             ref={publisherRef}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
-            streamGuid={joinContext.getStreamGuid()}
+            streamGuid={getStreamGuid()}
             stream={mediaContext?.mediaStream}
             styles={layout.layout !== Layout.FULLSCREEN ? layout.style.publisher : layout.style.publisherVideo}
             onFail={onPublisherFail}
