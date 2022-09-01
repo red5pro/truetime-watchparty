@@ -9,11 +9,12 @@ interface VolumeControlProps {
   max: number
   step: number
   currentValue: number
+  position?: string
   onVolumeChange(value: number): any
 }
 
 const VolumeControl = (props: VolumeControlProps) => {
-  const { isOpen, min, max, step, currentValue, onVolumeChange } = props
+  const { isOpen, min, max, step, currentValue, position, onVolumeChange } = props
 
   let closeTimeout: any
   const closeRef = React.useRef(null)
@@ -66,17 +67,23 @@ const VolumeControl = (props: VolumeControlProps) => {
   }
 
   return (
-    <Stack spacing={2} direction="column" alignItems="center" justifyContent="center" sx={{ position: 'relative' }}>
+    <Stack
+      spacing={2}
+      direction={position === 'horizontal' ? 'row' : 'column'}
+      alignItems="center"
+      justifyContent="center"
+      sx={{ position: 'relative' }}
+    >
       <Fade in={isSliderShown}>
-        <Box sx={{ height: 120, position: 'absolute', bottom: 60 }}>
+        <Box sx={position === 'horizontal' ? { width: 120 } : { height: 120, position: 'absolute', bottom: 60 }}>
           <Slider
             sx={{
-              zIndeX: 500,
+              zIndex: 500,
               '& input[type="range"]': {
-                WebkitAppearance: 'slider-vertical',
+                WebkitAppearance: position === 'horizontal' ? 'slider-horizontal' : 'slider-vertical',
               },
             }}
-            orientation="vertical"
+            orientation={position === 'horizontal' ? 'horizontal' : 'vertical'}
             defaultValue={30}
             aria-label="Temperature"
             valueLabelDisplay="auto"

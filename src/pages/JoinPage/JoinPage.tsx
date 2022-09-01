@@ -17,6 +17,8 @@ import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
 import OracleLogo from '../../assets/logos/OracleLogo'
 import AMDLogo from '../../assets/logos/AMDLogo'
+import { useCookies } from 'react-cookie'
+import { UserRoles } from '../../utils/commonUtils'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -47,12 +49,25 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 
 const JoinPage = () => {
   const { loading, error, seriesEpisode, conferenceData, nickname, updateNickname } = useJoinContext()
+
   const mediaContext = useMediaContext()
-
   const { classes } = useStyles()
-  const [searchParams, setSearchParams] = useSearchParams()
 
+  const [cookies, removeCookie] = useCookies(['userAccount', 'account'])
+  const [searchParams, setSearchParams] = useSearchParams()
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
+
+  React.useEffect(() => {
+    if (cookies.userAccount) {
+      const acc = cookies.userAccount
+      const { role } = acc
+      // VIPs can't join as a VIP though the main stage.
+      if (role === UserRoles.VIP) {
+        removeCookie('userAccount', '')
+        removeCookie('account', '')
+      }
+    }
+  }, [cookies])
 
   React.useEffect(() => {
     if (searchParams.get('s_id')) {

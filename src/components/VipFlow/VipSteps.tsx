@@ -149,6 +149,11 @@ const VipSteps = (props: any) => {
     }
     return false
   }
+  const onMainVideoVolume = (value: number) => {
+    if (mainVideoRef && mainVideoRef.current) {
+      mainVideoRef.current.setVolume(value)
+    }
+  }
 
   const onRetryRequest = () => {
     window.location.reload()
@@ -184,6 +189,7 @@ const VipSteps = (props: any) => {
             currentEpisode={currentEpisode}
             currentConference={currentConference}
             onCancelOnboarding={() => setOnboarding(false)}
+            onMainVideoVolume={onMainVideoVolume}
           />
         </WatchContext.Provider>
       ),
