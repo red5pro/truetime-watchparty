@@ -9,6 +9,13 @@ import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
 import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 
+function useUID() {
+  const [id] = React.useState<string | number>(() => {
+    return Math.floor(Math.random() * 0x10000).toString(16)
+  })
+  return id
+}
+
 const cannedSeries = { displayName: 'Accessing Information...' }
 const cannedEpisode = { displayName: '...', startTime: new Date().getTime() }
 const episodeReducer = (state: any, action: any) => {
@@ -29,6 +36,7 @@ const JoinContext = React.createContext<any>(null)
 const JoinProvider = (props: JoinContextProps) => {
   const { children } = props
 
+  const uid = useUID()
   const params = useParams()
   const navigate = useNavigate()
   const [cookies] = useCookies(['account'])
@@ -124,7 +132,6 @@ const JoinProvider = (props: JoinContextProps) => {
 
     // Only keep numbers and letters, otherwise stream may break.
     const stripped = nickname.replace(/[^a-zA-Z0-9]/g, '')
-    const uid = Math.floor(Math.random() * 0x10000).toString(16)
     if (!FORCE_LIVE_CONTEXT && joinToken) {
       return `${joinToken?.split('-').join('')}/${stripped}_${uid}`
     }
