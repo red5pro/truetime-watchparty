@@ -16,6 +16,19 @@ import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls
 import { ConnectionRequest } from '../../../models/ConferenceStatusEvent'
 import WatchContext from '../../WatchContext/WatchContext'
 import { UserAccount } from '../../../models/UserAccount'
+import Publisher from '../../Publisher/Publisher'
+import { STREAM_HOST, USE_STREAM_MANAGER } from '../../../settings/variables'
+import { FatalError } from '../../../models/FatalError'
+import ErrorModal from '../../Modal/ErrorModal'
+import MediaContext from '../../MediaContext/MediaContext'
+
+const useWatchContext = () => React.useContext(WatchContext.Context)
+const useMediaContext = () => React.useContext(MediaContext.Context)
+
+interface PublisherRef {
+  toggleCamera(on: boolean): any
+  toggleMicrophone(on: boolean): any
+}
 
 interface IVipSeeParticipantsProps {
   onActions: IStepActionsSubComponent
@@ -44,9 +57,14 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   const [showDisclaimer, setShowDisclaimer] = React.useState<boolean>(true)
   const [showMediaStream, setShowMediaStream] = React.useState<boolean>(false)
 
+  const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
+
   const { classes } = useStyles()
+
+  const vipRef = React.useRef<PublisherRef>(null)
   const joinContext = React.useContext(JoinContext.Context)
-  const watchContext = React.useContext(WatchContext.Context)
+  const { join, leave, data } = useWatchContext()
+  const { mediaStream } = useMediaContext()
 
   const isMobile = isMobileScreen()
 
@@ -75,17 +93,21 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     return { url, request }
   }
 
-  React.useEffect(() => {
-    const streamGuid = joinContext.getStreamGuid()
-    const { url, request } = getSocketUrl(joinContext.joinToken, userAccount?.username ?? '', streamGuid)
-    watchContext.join(url, request)
-  }, [])
+  // React.useEffect(() => {
+  //   const streamGuid = joinContext.getStreamGuid()
+  //   const { url, request } = getSocketUrl(joinContext.joinToken, userAccount?.username ?? '', streamGuid)
+  //   join(url, request)
+  // }, [])
 
   React.useEffect(() => {
-    if (watchContext.data?.conference?.participants?.length) {
-      setParticipants(watchContext.data.conference.participants)
+    console.log('SHOW MEDIA', showMediaStream, mediaStream)
+  }, [showMediaStream, mediaStream])
+
+  React.useEffect(() => {
+    if (data?.conference?.participants?.length) {
+      setParticipants(data.conference.participants)
     }
-  }, [watchContext.data?.conference?.participants])
+  }, [data?.conference?.participants])
 
   React.useEffect(() => {
     const getCurrentConference = async () => {
@@ -118,23 +140,45 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     }
   }
 
-  if (joinConference && conferenceDetails && currentEpisode) {
-    return (
-      <VipMainStage
-        currentEpisode={currentEpisode}
-        conferenceDetails={conferenceDetails}
-        participants={participants}
-        skipNextConference={skipNextConference}
-      />
-    )
+  // if (joinConference && conferenceDetails && currentEpisode) {
+  //   return (
+  //     <VipMainStage
+  //       currentEpisode={currentEpisode}
+  //       conferenceDetails={conferenceDetails}
+  //       participants={participants}
+  //       skipNextConference={skipNextConference}
+  //     />
+  //   )
+  // }
+
+  const onPublisherBroadcastInterrupt = () => {
+    setFatalError({
+      status: 400,
+      title: 'Broadcast Stream Error',
+      statusText: `Your broadcast session was interrupted expectedly. You are no longer streaming.`,
+      closeLabel: 'Restart',
+      onClose: () => {
+        setFatalError(undefined)
+        window.location.reload()
+      },
+    } as FatalError)
   }
 
-  if (showMediaStream) {
-    return (
-      <Box className={classes.avSetup}>
-        <JoinSectionAVSetup onJoin={() => setJoinConference(true)} shouldDisplayBackButton={false} />
-      </Box>
-    )
+  const onPublisherFail = () => {
+    setFatalError({
+      status: 404,
+      title: 'Broadcast Stream Error',
+      statusText: `Could not start a broadcast.`,
+      closeLabel: 'Retry',
+      onClose: () => {
+        setFatalError(undefined)
+        window.location.reload()
+      },
+    } as FatalError)
+  }
+
+  const onPublisherBroadcast = () => {
+    // TODO
   }
 
   return (
@@ -169,6 +213,37 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
           onJoinNextParty={() => setShowMediaStream(true)}
         />
       </Box>
+      {showMediaStream && mediaStream && (
+        <Box className={classes.vipContainer}>
+          <Publisher
+            key="publisher"
+            ref={vipRef}
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            streamGuid={joinContext.getStreamGuid()}
+            stream={mediaStream}
+            styles={{
+              borderRadius: '20px',
+              backgroundColor: 'black',
+              width: '100%',
+              height: '100%',
+            }}
+            onFail={onPublisherFail}
+            onStart={onPublisherBroadcast}
+            onInterrupt={onPublisherBroadcastInterrupt}
+          />
+        </Box>
+      )}
+      {/* Fatal Error */}
+      {fatalError && (
+        <ErrorModal
+          open={!!fatalError}
+          title={fatalError.title || 'Error'}
+          message={fatalError.statusText}
+          closeLabel={fatalError.closeLabel || 'OK'}
+          onClose={fatalError.onClose}
+        ></ErrorModal>
+      )}
     </Box>
   )
 }

@@ -54,7 +54,9 @@ const JoinProvider = (props: JoinContextProps) => {
     if (params && params.token) {
       setJoinToken(params.token)
     } else if (location.pathname === '/join/guest') {
-      setJoinToken('')
+      // Note: We'll access conferences through API for VIP.
+      // Only want to know about current series/episode now...
+      // setJoinToken('vip')
     } else {
       navigate('/')
     }

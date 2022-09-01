@@ -33,6 +33,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
   const [microphoneSelected, setMicrophoneSelected] = React.useState<string | undefined>()
 
   React.useEffect(() => {
+    console.log('MEDIACONTEXT')
     startAdapter()
   }, [])
 
@@ -54,6 +55,10 @@ const MediaProvider = (props: IMediaProviderProps) => {
       })
     }
   }, [cameraSelected])
+
+  React.useEffect(() => {
+    console.log('MEDIA', mediaStream)
+  }, [mediaStream])
 
   React.useEffect(() => {
     if (microphoneSelected) {

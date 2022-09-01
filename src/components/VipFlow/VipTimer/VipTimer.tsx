@@ -11,7 +11,8 @@ interface IVipTimerStepProps {
 const VipTimer = (props: IVipTimerStepProps) => {
   const { startedCountdown, setFinishedCountdown, finishedCountdown = false } = props
 
-  const [minutes, setMinutes] = React.useState<number>(0)
+  // TODO: Where does this limit come from?
+  const [minutes, setMinutes] = React.useState<number>(30)
   const [seconds, setSeconds] = React.useState<number>(0)
   // const [progressBar, setProgressBar] = React.useState<number>(0)
 
