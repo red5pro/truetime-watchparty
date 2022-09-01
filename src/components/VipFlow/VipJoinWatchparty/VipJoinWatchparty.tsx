@@ -23,10 +23,13 @@ import MediaContext from '../../MediaContext/MediaContext'
 import WbcLogoSmall from '../../../assets/logos/WbcLogoSmall'
 import LeaveMessage from '../VipMainStage/LeaveMessage/LeaveMessage'
 import VipTimer from '../VipTimer/VipTimer'
+import VolumeControl from '../../VolumeControl/VolumeControl'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
+
+const VIDEO_VOLUME = 10
 
 interface PublisherRef {
   toggleCamera(on: boolean): any
@@ -42,6 +45,7 @@ interface IVipSeeParticipantsProps {
   nextConferenceToJoin?: Conference
   userAccount?: UserAccount
   onCancelOnboarding(): any
+  onMainVideoVolume(value: number): any
 }
 
 const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
@@ -54,6 +58,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     getNextConference,
     nextConferenceToJoin,
     onCancelOnboarding,
+    onMainVideoVolume,
   } = props
 
   const [participants, setParticipants] = React.useState<Participant[]>([])
@@ -120,10 +125,12 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
         const confDetails = await CONFERENCE_API_CALLS.getConferenceDetails(currentConference?.conferenceId, account)
         const currConf = await CONFERENCE_API_CALLS.getConferenceLoby(confDetails.data.joinToken)
 
-        if (currConf.data && confDetails.data) {
+        const { data } = currConf
+        if (data && confDetails.data) {
           setConferenceDetails(confDetails.data)
+          setParticipants(data.participants)
           joinContext.setConferenceData(confDetails.data)
-          joinContext.setJoinToken(currConf.data.joinToken)
+          joinContext.setJoinToken(confDetails.data.joinToken)
         }
       }
     }
@@ -155,6 +162,13 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   //   )
   // }
 
+  React.useEffect(() => {
+    if (showMediaStream && mediaStream) {
+      onVolumeChange(VIDEO_VOLUME)
+    }
+  }, [showMediaStream, mediaStream])
+
+  // Lets start streaming and pulling in conferences...
   const onDisclaimerClose = () => {
     setShowDisclaimer(false)
     setShowMediaStream(true)
@@ -196,6 +210,12 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     location.reload()
   }
 
+  const onVolumeChange = (value: number) => {
+    if (showMediaStream && mediaStream) {
+      onMainVideoVolume(value / 100)
+    }
+  }
+
   return (
     <Box height="100%" width="100%">
       <Stack direction="row" justifyContent="flex-end" sx={{ padding: '20px' }}>
@@ -204,6 +224,15 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
           <Divider orientation="vertical" flexItem className={classes.headerDivider} />
           <Typography className={classes.headerTitle}>{currentEpisode?.displayName}</Typography>
         </Stack>
+        <VolumeControl
+          isOpen={false}
+          min={0}
+          max={100}
+          step={1}
+          position="horizontal"
+          currentValue={VIDEO_VOLUME}
+          onVolumeChange={onVolumeChange}
+        />
         <CustomButton
           size={BUTTONSIZE.SMALL}
           buttonType={BUTTONTYPE.LEAVE}

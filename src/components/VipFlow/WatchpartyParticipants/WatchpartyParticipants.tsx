@@ -38,27 +38,21 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
       className={classes.container}
     >
       <Typography className={classes.title}>{conferenceDetails?.displayName}</Typography>
-      <Typography>{`${participants.length} Attendees`}</Typography>
-      <Box>
+      <Typography>{`${participants.length} Attendee(s)`}</Typography>
+      {/* Participants moved to Stage */}
+      {/* <Box>
         {participants && (
           <Grid container spacing={2} marginY={2}>
-            {participants.map((participant: Participant) => {
+            {participants.map((participant: Participant, i: number) => {
               return (
-                <Grid key={participant.participantId} item xs={3}>
-                  <MainStageSubscriber
-                    key={participant.participantId}
-                    participant={participant}
-                    styles={styles.stage.participantVideoFeedContainer}
-                    videoStyles={styles.stage.participantVideoFeed}
-                    host={STREAM_HOST}
-                    useStreamManager={USE_STREAM_MANAGER}
-                  />
+                <Grid key={`${participant.participantId}-${i}`} item xs={3}>
+                  <Box>{participant.displayName}</Box>
                 </Grid>
               )
             })}
           </Grid>
         )}
-      </Box>
+      </Box> */}
       <Box display="flex" justifyContent="space-evenly" className={classes.buttonContainer}>
         <CustomButton
           labelStyle={disabled ? classes.disabledButton : classes.enabledButton}
