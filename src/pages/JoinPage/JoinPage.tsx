@@ -131,7 +131,7 @@ const JoinPage = () => {
   }
   return (
     <Box className={classes.root}>
-      {loading && <Loading />}
+      {loading && <Loading text="Loading Watch Party" />}
 
       {currentSection !== Section.WatchParty && (
         <Box padding={2} className={classes.brandLogo}>
