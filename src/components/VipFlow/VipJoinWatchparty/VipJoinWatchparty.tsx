@@ -85,19 +85,14 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   const getSocketUrl = (token: string, guid: string) => {
     // TODO: How to get display name of VIP?
     const request: ConnectionRequest = {
-      displayName: 'VIP',
+      displayName: 'VIP Guest',
       joinToken: token,
       streamGuid: guid,
+      fingerprint: joinContext.fingerprint,
+      username: account?.email,
+      password: account?.password,
     } as ConnectionRequest
 
-    const fp = joinContext.fingerprint
-    request.fingerprint = fp
-    if (account) {
-      // Registered User
-      const { email, password } = account
-      request.username = email
-      request.password = password
-    }
     return { url: API_SOCKET_HOST, request }
   }
 
