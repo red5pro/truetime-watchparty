@@ -67,6 +67,7 @@ const VipMainStage = (props: IVipMainStageProps) => {
   }
 
   React.useEffect(() => {
+    console.log('MAINSTAGE')
     // TODO: Got here without setting up media. Where to send them?
     if (!mediaContext?.mediaStream) {
       // TODO: Remove for testing
@@ -157,7 +158,7 @@ const VipMainStage = (props: IVipMainStageProps) => {
         </Box>
       )}
       {/* Main Video */}
-      {mainStreamGuid && (
+      {/* {mainStreamGuid && (
         <Box height="100%">
           <Subscriber
             useStreamManager={USE_STREAM_MANAGER}
@@ -170,7 +171,7 @@ const VipMainStage = (props: IVipMainStageProps) => {
             showControls={true}
           />
         </Box>
-      )}
+      )} */}
       <Box className={classes.content}>
         {/* {showLink && <ShareLink joinToken={joinContext.joinToken} account={cookies.account} />}
         {data.conference && (

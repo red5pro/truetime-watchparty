@@ -36,6 +36,19 @@ const useStyles = makeStyles()((theme: any) => {
       fontSize: '18px',
       fontWeight: 600,
     },
+    vipContainer: {
+      position: 'absolute',
+      right: '24px',
+      top: '80px',
+      height: 'calc(100vh / 3)',
+      aspectRatio: '1 / 1',
+    },
+    vipVideo: {
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'black',
+      borderRadius: '20px',
+    },
   }
 })
 
