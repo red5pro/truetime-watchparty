@@ -67,6 +67,11 @@ const useStyles = makeStyles()((theme: any) => {
       borderLeft: '1px solid rgb(211, 211, 211, 0.3)',
       margin: '10px',
     },
+    loadingContainer: {
+      alignItems: 'center',
+      marginTop: '10%',
+      zIndex: 200,
+    },
   }
 })
 

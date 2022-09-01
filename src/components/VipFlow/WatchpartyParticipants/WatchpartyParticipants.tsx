@@ -13,7 +13,7 @@ interface IWatchpartyParticipantsProps {
   participants: Participant[]
   skipNextConference: () => void
   buttonPrimary?: boolean
-  onJoinNextParty: any
+  onJoinNextParty(details: ConferenceDetails): any
 }
 
 const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
@@ -57,7 +57,7 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
         <CustomButton
           labelStyle={disabled ? classes.disabledButton : classes.enabledButton}
           disabled={disabled}
-          onClick={onJoinNextParty}
+          onClick={() => onJoinNextParty(conferenceDetails!)}
           size={BUTTONSIZE.SMALL}
           buttonType={disabled ? BUTTONTYPE.TERTIARY : BUTTONTYPE.SECONDARY}
         >
