@@ -22,6 +22,12 @@ const useStyles = makeStyles()((theme: any) => {
       fontSize: '18px',
       fontWeight: 600,
     },
+    disabledButton: {
+      color: 'gray!important',
+    },
+    enabledButton: {
+      color: 'unset',
+    },
   }
 })
 
