@@ -11,6 +11,14 @@ const useStyles = makeStyles()((theme: any) => {
       overflow: 'auto',
       position: 'relative',
     },
+    loadingContainer: {
+      alignItems: 'center',
+      position: 'absolute',
+      top: 20,
+      display: 'flex',
+      width: '100%',
+      zIndex: 10,
+    },
     brandLogo: {
       position: 'absolute',
       zIndex: 100,
