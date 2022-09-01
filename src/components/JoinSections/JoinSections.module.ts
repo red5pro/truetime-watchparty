@@ -13,7 +13,7 @@ const useStyles = makeStyles()((theme: any) => {
       padding: '0 75px 0 75px',
     },
     landingContainer: {
-      marginTop: '33px',
+      margin: 'auto 0',
       width: '70%',
     },
     nicknameContainer: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles()((theme: any) => {
       marginTop: 'calc(100vh / 8)',
     },
     conferenceDetails: {
-      marginTop: '45px',
+      // marginTop: '45px',
     },
     landingJoin: {
       marginTop: '60px!important',

@@ -9,17 +9,15 @@ const useStyles = makeStyles()((theme: any) => {
       width: '100%',
       height: '100%',
       overflow: 'auto',
-      display: 'flex',
-      flexDirection: 'column',
       position: 'relative',
     },
     brandLogo: {
       position: 'absolute',
     },
     sponsorContainer: {
-      position: 'absolute',
+      position: 'relative',
       left: '74px',
-      bottom: '24px',
+      bottom: '5px',
     },
     joinTitleLarge: {
       textAlign: 'center',
@@ -33,18 +31,17 @@ const useStyles = makeStyles()((theme: any) => {
     },
     joinSection: {
       width: '100%',
-      height: '100%',
       overflow: 'auto',
       padding: '0 75px 0 75px',
       display: 'flex',
       flexDirection: 'column',
     },
     landingContainer: {
-      marginTop: '33px',
+      marginTop: '15px',
       zIndex: 1,
     },
     nicknameContainer: {
-      marginTop: 'calc(100vh / 5)',
+      // marginTop: 'calc(100vh / 15)',
     },
     mediaSetupContainer: {
       display: 'flex',
@@ -53,7 +50,7 @@ const useStyles = makeStyles()((theme: any) => {
       marginTop: 'calc(100vh / 6)',
     },
     conferenceDetails: {
-      marginTop: '75px',
+      marginTop: '20px',
     },
     landingJoin: {
       marginTop: '80px',
