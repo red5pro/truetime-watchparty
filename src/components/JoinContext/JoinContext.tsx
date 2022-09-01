@@ -29,7 +29,6 @@ const JoinContext = React.createContext<any>(null)
 const JoinProvider = (props: JoinContextProps) => {
   const { children } = props
 
-  const query = useQueryParams()
   const params = useParams()
   const navigate = useNavigate()
   const [cookies] = useCookies(['account'])
@@ -104,7 +103,7 @@ const JoinProvider = (props: JoinContextProps) => {
     try {
       setLoading(true)
 
-      const [currentEpisode, currentSerie] = await getCurrentEpisode(false, cookies.account)
+      const [currentEpisode, currentSerie] = await getCurrentEpisode(false)
 
       if (currentSerie && currentEpisode) {
         dispatch({ type: 'UPDATE', series: currentSerie, episode: currentEpisode })
