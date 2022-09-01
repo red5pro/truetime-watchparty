@@ -49,6 +49,24 @@ const useStyles = makeStyles()((theme: any) => {
       backgroundColor: 'black',
       borderRadius: '20px',
     },
+    header: {
+      width: '100%',
+      position: 'absolute',
+      top: 20,
+      zIndex: 0,
+      filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
+    },
+    headerTitle: {
+      fontSize: '16px',
+      fontWeight: 400,
+      textAlign: 'center',
+    },
+    headerDivider: {
+      height: '19px',
+      width: '1px',
+      borderLeft: '1px solid rgb(211, 211, 211, 0.3)',
+      margin: '10px',
+    },
   }
 })
 
