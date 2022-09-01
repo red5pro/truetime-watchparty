@@ -16,14 +16,15 @@ import { ConnectionRequest } from '../../../models/ConferenceStatusEvent'
 import WatchContext from '../../WatchContext/WatchContext'
 import { UserAccount } from '../../../models/UserAccount'
 import Publisher from '../../Publisher/Publisher'
-import { STREAM_HOST, USE_STREAM_MANAGER } from '../../../settings/variables'
+import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../../settings/variables'
 import { FatalError } from '../../../models/FatalError'
 import ErrorModal from '../../Modal/ErrorModal'
 import MediaContext from '../../MediaContext/MediaContext'
 import WbcLogoSmall from '../../../assets/logos/WbcLogoSmall'
-import LeaveMessage from '../VipMainStage/LeaveMessage/LeaveMessage'
+import LeaveMessage from './LeaveMessage/LeaveMessage'
 import VipTimer from '../VipTimer/VipTimer'
 import VolumeControl from '../../VolumeControl/VolumeControl'
+import Loading from '../../Loading/Loading'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -76,47 +77,49 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   const vipRef = React.useRef<PublisherRef>(null)
 
   const joinContext = useJoinContext()
-  const { join, leave, data } = useWatchContext()
+  const { loading, error, join, leave, data } = useWatchContext()
   const { mediaStream } = useMediaContext()
 
   const isMobile = isMobileScreen()
 
-  // TODO: THIS CAN GO INTO A UTILS
-  const getSocketUrl = (token: string, name: string, guid: string) => {
-    // TODO: Determine if Participant or Registered User?
-    // TODO: Where does username & password come from if registered?
-
+  const getSocketUrl = (token: string, guid: string) => {
+    // TODO: How to get display name of VIP?
     const request: ConnectionRequest = {
-      displayName: name,
+      displayName: 'VIP',
       joinToken: token,
       streamGuid: guid,
-      username: account?.email,
-      password: account?.password,
     } as ConnectionRequest
 
-    // Participant
     const fp = joinContext.fingerprint
     request.fingerprint = fp
-
-    // Registered User
-    // set u/p
-
-    // Local testing
-    const url = `ws://localhost:8001`
-    return { url, request }
+    if (account) {
+      // Registered User
+      const { email, password } = account
+      request.username = email
+      request.password = password
+    }
+    return { url: API_SOCKET_HOST, request }
   }
-
-  // React.useEffect(() => {
-  //   const streamGuid = joinContext.getStreamGuid()
-  //   const { url, request } = getSocketUrl(joinContext.joinToken, userAccount?.username ?? '', streamGuid)
-  //   join(url, request)
-  // }, [])
 
   React.useEffect(() => {
     if (data?.conference?.participants?.length) {
       setParticipants(data.conference.participants)
     }
   }, [data?.conference?.participants])
+
+  React.useEffect(() => {
+    // Fatal Socket Error.
+    if (error) {
+      setFatalError({
+        ...(error as any),
+        title: 'Connection Error',
+        closeLabel: 'CLOSE',
+        onClose: () => {
+          setFatalError(undefined)
+        },
+      } as FatalError)
+    }
+  }, [error])
 
   React.useEffect(() => {
     const getCurrentConference = async () => {
@@ -151,22 +154,19 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     }
   }
 
-  // if (joinConference && conferenceDetails && currentEpisode) {
-  //   return (
-  //     <VipMainStage
-  //       currentEpisode={currentEpisode}
-  //       conferenceDetails={conferenceDetails}
-  //       participants={participants}
-  //       skipNextConference={skipNextConference}
-  //     />
-  //   )
-  // }
-
   React.useEffect(() => {
     if (showMediaStream && mediaStream) {
       onVolumeChange(VIDEO_VOLUME)
     }
   }, [showMediaStream, mediaStream])
+
+  // TODO: Call this each time they decide to join a conference/party
+  const onJoinNextParty = (details: ConferenceDetails) => {
+    const streamGuid = joinContext.getStreamGuid()
+    const { url, request } = getSocketUrl(details.joinToken, streamGuid)
+    setStartedCountdown(true)
+    join(url, request)
+  }
 
   // Lets start streaming and pulling in conferences...
   const onDisclaimerClose = () => {
@@ -202,11 +202,13 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   }
 
   const onPublisherBroadcast = () => {
-    // TODO
+    // Nothing. this is just a notification that they have a stream going.
+    // This will likely be invoked before they join a party.
   }
 
   const onLeave = () => {
     // TODO: Redirect to /bye/${joinToken}
+    // TODO: Probably a nicer by for VIP?
     location.reload()
   }
 
@@ -292,7 +294,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
               participants={participants}
               skipNextConference={skipNextConference}
               // nextConferenceToJoin={nextConferenceToJoin}
-              onJoinNextParty={() => console.log('join next party here')}
+              onJoinNextParty={onJoinNextParty}
             />
           </>
         )}
@@ -318,6 +320,11 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
             onInterrupt={onPublisherBroadcastInterrupt}
           />
         </Box>
+      )}
+      {loading && (
+        <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
+          <Loading text={`Loading ${conferenceDetails?.displayName}...`} />
+        </Stack>
       )}
       {/* Fatal Error */}
       {fatalError && (
