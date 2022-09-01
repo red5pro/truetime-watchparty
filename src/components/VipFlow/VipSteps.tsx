@@ -215,9 +215,11 @@ const VipSteps = (props: any) => {
 
   return (
     <Box className={classes.root}>
-      <Box padding={2} className={classes.brandLogo}>
-        <WbcLogoSmall />
-      </Box>
+      {activeStep != VipStepIdentify.JOIN_WATCH_PARTY && (
+        <Box padding={2} className={classes.brandLogo}>
+          <WbcLogoSmall />
+        </Box>
+      )}
       <Stepper activeStep={activeStep}></Stepper>
       {activeStep >= VipStepIdentify.TIMER && mainStreamGuid && (
         <Box className={classes.mainVideoContainer}>

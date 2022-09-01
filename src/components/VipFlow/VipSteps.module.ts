@@ -13,6 +13,7 @@ const useStyles = makeStyles()((theme: any) => {
     },
     brandLogo: {
       position: 'absolute',
+      zIndex: 100,
     },
     container: {
       width: '25rem',

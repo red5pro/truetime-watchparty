@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Box, Typography } from '@mui/material'
+import { Box, Divider, Stack, Typography } from '@mui/material'
 import { AccountCredentials } from '../../../models/AccountCredentials'
 import { Conference } from '../../../models/Conference'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
@@ -8,9 +8,8 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/
 import useStyles from './VipJoinWatchparty.module'
 import { Participant } from '../../../models/Participant'
 import JoinContext from '../../JoinContext/JoinContext'
-import JoinSectionAVSetup from '../../JoinSections/JoinSectionAVSetup'
 import { Episode } from '../../../models/Episode'
-import VipMainStage from '../VipMainStage/VipMainStage'
+import LogoutIcon from '@mui/icons-material/Logout'
 import WatchpartyParticipants from '../WatchpartyParticipants/WatchpartyParticipants'
 import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
 import { ConnectionRequest } from '../../../models/ConferenceStatusEvent'
@@ -21,7 +20,9 @@ import { STREAM_HOST, USE_STREAM_MANAGER } from '../../../settings/variables'
 import { FatalError } from '../../../models/FatalError'
 import ErrorModal from '../../Modal/ErrorModal'
 import MediaContext from '../../MediaContext/MediaContext'
+import WbcLogoSmall from '../../../assets/logos/WbcLogoSmall'
 
+const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
@@ -64,7 +65,8 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   const { classes } = useStyles()
 
   const vipRef = React.useRef<PublisherRef>(null)
-  const joinContext = React.useContext(JoinContext.Context)
+
+  const joinContext = useJoinContext()
   const { join, leave, data } = useWatchContext()
   const { mediaStream } = useMediaContext()
 
@@ -185,15 +187,38 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     // TODO
   }
 
+  const onLeave = () => {
+    // TODO: Redirect to /bye/${joinToken}
+    location.reload()
+  }
+
   return (
-    <Box padding={4} height="100%" width="100%">
+    <Box height="100%" width="100%">
+      <Stack direction="row" justifyContent="flex-end" sx={{ padding: '20px' }}>
+        <Stack direction="row" alignItems="center" justifyContent="center" className={classes.header}>
+          <WbcLogoSmall />
+          <Divider orientation="vertical" flexItem className={classes.headerDivider} />
+          <Typography className={classes.headerTitle}>{currentEpisode?.displayName}</Typography>
+        </Stack>
+        <CustomButton
+          size={BUTTONSIZE.SMALL}
+          buttonType={BUTTONTYPE.LEAVE}
+          startIcon={<LogoutIcon />}
+          onClick={onLeave}
+        >
+          Leave
+        </CustomButton>
+      </Stack>
       <Box
         display="flex"
         flexDirection={isMobile ? 'column' : 'row'}
         justifyContent="flex-end"
         alignItems="end"
-        height="100%"
-        marginBottom={4}
+        sx={{
+          position: 'absolute',
+          right: '20px',
+          bottom: '20px',
+        }}
       >
         {showDisclaimer && (
           <Box display="flex" justifyContent="center" flexDirection="column" className={classes.container}>
