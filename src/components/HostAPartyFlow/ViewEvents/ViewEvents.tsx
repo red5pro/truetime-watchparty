@@ -51,7 +51,7 @@ const ViewEvents = (props: IViewEventsProps) => {
     <Box
       className={classes.root}
       sx={{
-        backgroundImage: `url(${require('../../../assets/images/BoxMainImage.png')})`,
+        backgroundImage: !error ? `url(${require('../../../assets/images/BoxMainImage.png')})` : '',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: '40% 100%',
       }}
@@ -61,13 +61,20 @@ const ViewEvents = (props: IViewEventsProps) => {
           <Loading text="Loading Event Data..." />
         </Box>
       )}
-      {error && (
+      {error && typeof error !== 'string' && (
         <SimpleAlertDialog
           title="Could not load event information"
           message={`${error.status} - ${error.statusText}`}
           confirmLabel="Retry"
           onConfirm={onRetryRequest}
         />
+      )}
+      {error && typeof error === 'string' && (
+        <Box className={classes.container} display="flex" alignItems="center">
+          <Box className={classes.leftContainer}>
+            <Typography variant="h3">{error}</Typography>
+          </Box>
+        </Box>
       )}
       {!loading && eventData.loaded && (
         <Box className={classes.container} display="flex" alignItems="center">
