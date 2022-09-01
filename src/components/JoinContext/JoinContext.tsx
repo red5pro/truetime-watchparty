@@ -9,6 +9,13 @@ import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
 import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 
+function useUID() {
+  const [id] = React.useState<string | number>(() => {
+    return Math.floor(Math.random() * 0x10000).toString(16)
+  })
+  return id
+}
+
 const cannedSeries = { displayName: 'Accessing Information...' }
 const cannedEpisode = { displayName: '...', startTime: new Date().getTime() }
 const episodeReducer = (state: any, action: any) => {
@@ -18,19 +25,6 @@ const episodeReducer = (state: any, action: any) => {
     case 'TOGGLE_LOCK':
       return { ...state, locked: action.locked }
   }
-}
-const streamReducer = (state: any, action: any) => {
-  switch (action.type) {
-    case 'SET_GUID':
-      return { ...state, guid: action.guid }
-  }
-}
-
-function useUID() {
-  const [id] = React.useState<string | number>(() => {
-    return Math.floor(Math.random() * 0x10000).toString(16)
-  })
-  return id
 }
 
 interface JoinContextProps {
@@ -63,9 +57,7 @@ const JoinProvider = (props: JoinContextProps) => {
     episode: cannedEpisode,
     locked: false,
   })
-  const [streamData, dispatchStream] = useReducer(streamReducer, {
-    guid: undefined,
-  })
+
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
   // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
@@ -142,20 +134,14 @@ const JoinProvider = (props: JoinContextProps) => {
   const getStreamGuid = () => {
     const isVIP = location.pathname === '/join/guest'
     if (!isVIP && !nickname) return null
-
-    if (streamData && streamData.guid) {
-      return streamData.guid
-    } else {
-      // Only keep numbers and letters, otherwise stream may break.
-      const append = !isVIP ? joinToken : 'vip'
-      const stripped = !isVIP ? nickname?.replace(/[^a-zA-Z0-9]/g, '') : 'VIP'
-      let guid = `live/${append}_${stripped}_${uid}`
-      if (!FORCE_LIVE_CONTEXT && joinToken) {
-        guid = `${append?.split('-').join('')}/${stripped}_${uid}`
-      }
-      dispatchStream({ action: 'SET_GUID', guid })
-      return guid
+    // Only keep numbers and letters, otherwise stream may break.
+    const append = !isVIP ? joinToken : 'vip'
+    const stripped = !isVIP ? nickname?.replace(/[^a-zA-Z0-9]/g, '') : 'VIP'
+    let guid = `live/${append}_${stripped}_${uid}`
+    if (!FORCE_LIVE_CONTEXT && joinToken) {
+      guid = `${append?.split('-').join('')}/${stripped}_${uid}`
     }
+    return guid
   }
 
   const getMainStreamGuid = () => {
@@ -206,7 +192,6 @@ const JoinProvider = (props: JoinContextProps) => {
     joinToken,
     fingerprint,
     seriesEpisode,
-    streamData,
     conferenceData,
     // conferenceLocked,
     setConferenceData,
