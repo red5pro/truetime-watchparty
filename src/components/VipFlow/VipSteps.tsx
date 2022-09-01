@@ -162,7 +162,7 @@ const VipSteps = (props: any) => {
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: VipStepIdentify.LANDING,
-      component: <VipView onActions={actions} account={accountCredentials} />,
+      component: <VipView loading={loading} onActions={actions} account={accountCredentials} />,
     },
     {
       id: VipStepIdentify.SIGN_IN,
