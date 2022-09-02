@@ -86,10 +86,10 @@ const ViewEvents = (props: IViewEventsProps) => {
             </Typography>
             <Box display="flex" marginY={4} className={classes.buttonContainer}>
               <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onCreateAParty}>
-                Create a WatchParty
+                Create a Watch Party
               </CustomButton>
               <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.TERTIARY} onClick={onJoinAParty}>
-                Join a WatchParty
+                Join a Watch Party
               </CustomButton>
             </Box>
             {!account && (

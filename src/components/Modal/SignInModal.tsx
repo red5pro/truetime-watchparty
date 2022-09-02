@@ -140,7 +140,7 @@ const SignInModal = (props: SignInModalProps) => {
                     <Form method="post">
                       <Stack direction="column" marginY={4}>
                         <Typography className={classes.title}>Sign In</Typography>
-                        <Typography>Please verify your account before entering your watchparty</Typography>
+                        <Typography>Please verify your account before entering your watch party</Typography>
                         <Field
                           component={TextField}
                           name="email"

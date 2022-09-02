@@ -35,7 +35,7 @@ const ShareLink = (props: IShareLinkProps) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" className={classes.root}>
       <Box display="flex" flexDirection="column" className={classes.container}>
-        <Typography className={classes.title}>Your watchparty is ready!</Typography>
+        <Typography className={classes.title}>Your watch party is ready!</Typography>
         <Typography textAlign="center" marginY={1}>
           Now you can invite your friends
         </Typography>
@@ -57,7 +57,7 @@ const ShareLink = (props: IShareLinkProps) => {
         </Box>
         <CustomButton fullWidth size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
           <LinkTo className={classes.linkToJoin} to={`/join/${joinToken}?s_id=2`}>
-            Continue to WatchParty
+            Continue to Watch Party
           </LinkTo>
         </CustomButton>
 
