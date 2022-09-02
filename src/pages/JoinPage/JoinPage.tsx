@@ -143,7 +143,7 @@ const JoinPage = () => {
           </Box>
           <Box>
             <Typography padding={2} className={classes.joinTitleSmall}>
-              Join WatchParty
+              Join Watch Party
             </Typography>
           </Box>
         </Box>
