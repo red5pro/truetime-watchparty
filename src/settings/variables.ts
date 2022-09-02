@@ -1,7 +1,7 @@
 export const USE_LOCAL_SERVICES = false
 
-export const SERVER_HOST = process.env.REACT_APP_SERVER_HOST || 'watchtest.red5.net'
-export const API_SERVER_HOST = process.env.REACT_APP_API_SERVER_HOST || 'wat-101-sm.red5.net'
+export const SERVER_HOST = process.env.REACT_APP_SERVER_HOST || 'watchtest.red5.net' // 'watchparty-sm.red5.net' // 'watchtest.red5.net'
+export const API_SERVER_HOST = process.env.REACT_APP_API_SERVER_HOST || 'wat-101-sm.red5.net' // 'watchparty-sm.red5.net' // 'wat-101-sm.red5.net'
 export const MAIN_ENDPOINT = `https://${API_SERVER_HOST}/conferenceapi/1.0`
 export const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY || '6LdnYWAhAAAAALa4NtXnet5rmzV-dLTDeuVcIP2a'
 export const RECAPTCHA_SECRET_KEY =
