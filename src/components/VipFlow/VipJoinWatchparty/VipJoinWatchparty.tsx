@@ -25,6 +25,7 @@ import LeaveMessage from './LeaveMessage/LeaveMessage'
 import VipTimer from '../VipTimer/VipTimer'
 import VolumeControl from '../../VolumeControl/VolumeControl'
 import Loading from '../../Loading/Loading'
+import MainStageSubscriber from '../../MainStageSubscriber/MainStageSubscriber'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -67,6 +68,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   const [joinConference, setJoinConference] = React.useState<boolean>(false)
   const [showDisclaimer, setShowDisclaimer] = React.useState<boolean>(true)
   const [showMediaStream, setShowMediaStream] = React.useState<boolean>(false)
+  const [vipBroadcastAvailable, setVipBroadcastAvailable] = React.useState<boolean>(false)
   const [finishedCountdown, setFinishedCountdown] = React.useState<boolean>(false)
   const [startedCountdown, setStartedCountdown] = React.useState<boolean>(false)
 
@@ -77,6 +79,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   const vipRef = React.useRef<PublisherRef>(null)
 
   const joinContext = useJoinContext()
+
   const { loading, error, join, leave, data } = useWatchContext()
   const { mediaStream } = useMediaContext()
 
@@ -97,10 +100,8 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   }
 
   React.useEffect(() => {
-    if (data?.conference?.participants?.length) {
-      setParticipants(data.conference.participants)
-    }
-  }, [data?.conference?.participants])
+    console.log('PARTIC', participants)
+  }, [participants])
 
   React.useEffect(() => {
     // Fatal Socket Error.
@@ -199,6 +200,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   const onPublisherBroadcast = () => {
     // Nothing. this is just a notification that they have a stream going.
     // This will likely be invoked before they join a party.
+    setVipBroadcastAvailable(true)
   }
 
   const onLeave = () => {
@@ -314,6 +316,33 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
             onStart={onPublisherBroadcast}
             onInterrupt={onPublisherBroadcastInterrupt}
           />
+        </Box>
+      )}
+      {/* Other Participants Video Playback */}
+      {participants && vipBroadcastAvailable && (
+        <Box className={classes.subscriberList}>
+          <Box className={classes.subscriberContainer}>
+            {participants.map((s: Participant, i: number) => {
+              return (
+                <MainStageSubscriber
+                  key={`${s.participantId}_${i}`}
+                  participant={s}
+                  styles={{
+                    maxHeight: '124px',
+                    flexGrow: 1,
+                    height: '100%',
+                  }}
+                  videoStyles={{
+                    borderRadius: '20px',
+                    backgroundColor: 'black',
+                    width: '100%',
+                  }}
+                  host={STREAM_HOST}
+                  useStreamManager={USE_STREAM_MANAGER}
+                />
+              )
+            })}
+          </Box>
         </Box>
       )}
       {loading && (
