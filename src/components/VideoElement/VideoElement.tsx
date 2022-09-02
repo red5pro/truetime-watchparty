@@ -27,7 +27,8 @@ const VideoElement = ({ elementId, styles, muted, controls, volume }: IVideoElem
     if (videoRef && videoRef.current) {
       videoRef.current.muted = muted
     }
-  }, [muted])
+    console.log('VIDEO MUTED', elementId, muted)
+  }, [muted, elementId])
 
   return (
     <Box className={classes.container}>
