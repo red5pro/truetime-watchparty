@@ -64,7 +64,8 @@ const JoinProvider = (props: JoinContextProps) => {
   React.useEffect(() => {
     if (params && params.token) {
       setJoinToken(params.token)
-    } else if (location.pathname === '/join/guest') {
+    } else if (location.pathname === '/join/guest' || location.pathname === '/vip') {
+      // TODO: Remove the `/vip`
       // Note: We'll access conferences through API for VIP.
       // Only want to know about current series/episode now...
       // setJoinToken('vip')
