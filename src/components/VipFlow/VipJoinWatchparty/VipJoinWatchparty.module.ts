@@ -71,6 +71,7 @@ const useStyles = makeStyles()((theme: any) => {
       alignItems: 'center',
       marginTop: '10%',
       zIndex: 200,
+      filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
     },
     subscriberList: {
       position: 'absolute',
@@ -100,6 +101,17 @@ const useStyles = makeStyles()((theme: any) => {
       borderRadius: '20px',
       backgroundColor: 'black',
       width: '100%',
+    },
+    participantsLoading: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
     },
   }
 })

@@ -145,7 +145,7 @@ const JoinPage = () => {
   return (
     <Box className={classes.root} display="flex" flexDirection="column">
       {loading && (
-        <Box marginTop={2}>
+        <Box className={classes.loadingContainer}>
           <Loading text="Loading Watch Party" />
         </Box>
       )}
