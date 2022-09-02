@@ -15,19 +15,25 @@ const useStyles = makeStyles()((theme: any) => {
     landingContainer: {
       margin: 'auto 0',
       width: '70%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-evenly',
     },
     nicknameContainer: {
-      marginTop: 'calc(100vh / 5)',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-evenly',
     },
     mediaSetupContainer: {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      marginTop: 'calc(100vh / 8)',
     },
     conferenceDetails: {},
     landingJoin: {
-      marginTop: '60px!important',
+      marginTop: '25px!important',
     },
     nicknameForm: {
       marginTop: 'calc(100vh / 8)',

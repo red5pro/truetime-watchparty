@@ -7,9 +7,7 @@ const useStyles = makeStyles()((theme: any) => {
       backdropFilter: 'blur(88px)',
       background: 'radial-gradient(circle at right, rgba(255,0,0, 0.2) 0%, rgba(0, 0, 0, 1) 70%,rgba(0, 0, 1) 100%)',
       width: '100%',
-      height: '100%',
-      overflow: 'auto',
-      position: 'relative',
+      height: '100vh',
     },
     brandLogo: {
       position: 'absolute',
@@ -17,7 +15,7 @@ const useStyles = makeStyles()((theme: any) => {
     sponsorContainer: {
       position: 'relative',
       left: '74px',
-      bottom: '5px',
+      margin: '10px 0',
     },
     joinTitleLarge: {
       textAlign: 'center',
@@ -31,7 +29,7 @@ const useStyles = makeStyles()((theme: any) => {
     },
     joinSection: {
       width: '100%',
-      overflow: 'auto',
+      height: '100%',
       padding: '0 75px 0 75px',
       display: 'flex',
       flexDirection: 'column',

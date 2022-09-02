@@ -161,7 +161,7 @@ const JoinPage = () => {
           </Box>
         </Box>
       )}
-      <Box display="flex" flexDirection="column" justifyContent="space-around" width="100%" height="100vh">
+      <Box display="flex" flexDirection="column" justifyContent="space-around" width="100%" height="100%">
         {!loading && conferenceData && currentSection === Section.Landing && (
           <Box className={classes.joinSection}>
             <JoinSectionLanding
@@ -216,7 +216,7 @@ const JoinPage = () => {
             <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
             <Stack spacing={2} direction="row">
               {/* <OracleLogo /> */}
-              <Box sx={{ width: 'auto', height: '50px' }}>
+              <Box sx={{ width: 'auto', height: '70px' }}>
                 <img
                   width="100%"
                   height="100%"
