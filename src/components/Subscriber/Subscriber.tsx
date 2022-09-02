@@ -75,7 +75,7 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
     setContext(context)
 
     if (name) {
-      const elemId = `${name}-subscriber`
+      const elemId = `${name}-subscriber-${Math.floor(Math.random() * 0x10000).toString(16)}`
       setElementId(elemId)
       setStreamName(name)
     }
