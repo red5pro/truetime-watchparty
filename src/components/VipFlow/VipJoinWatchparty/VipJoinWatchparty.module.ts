@@ -72,6 +72,35 @@ const useStyles = makeStyles()((theme: any) => {
       marginTop: '10%',
       zIndex: 200,
     },
+    subscriberList: {
+      position: 'absolute',
+      left: '24px',
+      top: '6px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      height: 'calc(100vh - 12px)',
+    },
+    subscriberContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      width: '144px',
+      margin: '20px 0',
+      paddingRight: '20px',
+      alignItems: 'center',
+      height: '100%',
+      rowGap: '10px',
+    },
+    subscriber: {
+      maxHeight: '124px',
+      flexGrow: 1,
+      height: '100%',
+    },
+    subscriberVideo: {
+      borderRadius: '20px',
+      backgroundColor: 'black',
+      width: '100%',
+    },
   }
 })
 

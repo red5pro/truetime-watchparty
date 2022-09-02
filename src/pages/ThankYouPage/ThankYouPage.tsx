@@ -56,9 +56,14 @@ const ThankYouPage = () => {
             <Stack spacing={2} direction="column">
               <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
               <Stack spacing={2} direction="row">
-                <OracleLogo />
-                <Box sx={{ width: '100px', height: '24px' }}>
-                  <img alt="AMD" src={require('../../assets/images/AMDLogo.png')}></img>
+                {/* <OracleLogo /> */}
+                <Box sx={{ width: 'auto', height: '50px' }}>
+                  <img
+                    width="100%"
+                    height="100%"
+                    alt="Logo Placeholder"
+                    src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
+                  ></img>
                 </Box>
               </Stack>
             </Stack>
