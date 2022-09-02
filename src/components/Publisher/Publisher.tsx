@@ -1,4 +1,4 @@
-import { RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
+import { setLogLevel, RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
 import Loading from '../Loading/Loading'
 import VideoElement from '../VideoElement/VideoElement'
@@ -55,6 +55,8 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
   const pubRef = React.useRef()
 
   React.useEffect(() => {
+    setLogLevel('debug')
+
     const { context, name } = getContextAndNameFromGuid(streamGuid)
     setContext(context)
 

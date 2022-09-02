@@ -10,6 +10,7 @@ import WatchContext from '../components/WatchContext/WatchContext'
 import VipJoinPage from '../pages/VipJoinPage/VipJoinPage'
 import ThankYouPage from '../pages/ThankYouPage/ThankYouPage'
 import PartyEndedPage from '../pages/PartyEndedPage/PartyEndedPage'
+import SimpleVipPage from '../pages/SimpleVipPage/SimpleVipPage'
 
 const AppRoutes = () => {
   return (
@@ -49,6 +50,8 @@ const AppRoutes = () => {
           }
         />
         <Route path="*" element={<Landing />} />
+        {/* TODO: Remove for production. Here for simple VIP entrance in demos. */}
+        <Route path="/vip" element={<SimpleVipPage />} />
       </Routes>
     </BrowserRouter>
   )
