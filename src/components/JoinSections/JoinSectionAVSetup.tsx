@@ -17,7 +17,7 @@ interface JoinSectionAVSetupProps {
 }
 
 const JoinSectionAVSetup = (props: JoinSectionAVSetupProps) => {
-  const { conferenceData, onBack, onJoin, shouldDisplayBackButton = true } = props
+  const { onBack, onJoin, shouldDisplayBackButton = true } = props
   const mediaContext = React.useContext(MediaContext.Context)
 
   const { classes } = useStyles()
