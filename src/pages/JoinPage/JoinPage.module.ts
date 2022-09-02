@@ -42,6 +42,7 @@ const useStyles = makeStyles()((theme: any) => {
     },
     loadingContainer: {
       position: 'absolute',
+      display: 'flex',
       top: 0,
       left: 0,
       width: '100vw',
