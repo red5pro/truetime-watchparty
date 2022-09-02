@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, IconButton, Tooltip, Typography } from '@mui/material'
+import { Button, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import InfoIcon from '@mui/icons-material/Info'
 import useStyles from './JoinSections.module'
@@ -22,7 +22,7 @@ const JoinSectionLanding = (props: JoinLandingProps) => {
   const [showLogin, setShowLogin] = React.useState<boolean>(false)
 
   const { classes } = useStyles()
-  const [cookies, setCookie] = useCookies(['account'])
+  const [cookies] = useCookies(['account'])
 
   const onHostLogin = () => {
     setShowLogin(true)
