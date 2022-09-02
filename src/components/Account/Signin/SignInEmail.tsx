@@ -102,7 +102,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
           <Form method="post">
             <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
               <Typography className={classes.title}>Sign In</Typography>
-              <Typography>Please verify your account before creating a watchparty</Typography>
+              <Typography>Please verify your account before creating a watch party</Typography>
               <Field
                 component={TextField}
                 name="email"
