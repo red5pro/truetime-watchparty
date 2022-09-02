@@ -345,6 +345,12 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
           </Box>
         </Box>
       )}
+      {/* Interim loading of party participants while setting up broadcast */}
+      {participants && showMediaStream && !vipBroadcastAvailable && (
+        <Box className={classes.participantsLoading}>
+          <Loading text={`Loading participants of ${conferenceDetails?.displayName}...`} />
+        </Box>
+      )}
       {loading && (
         <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
           <Loading text={`Loading ${conferenceDetails?.displayName}...`} />

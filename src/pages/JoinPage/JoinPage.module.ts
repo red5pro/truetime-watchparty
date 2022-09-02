@@ -40,6 +40,16 @@ const useStyles = makeStyles()((theme: any) => {
       marginTop: '15px',
       zIndex: 1,
     },
+    loadingContainer: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      alignItems: 'center',
+      justifyContent: 'center',
+      filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
+    },
     nicknameContainer: {},
     mediaSetupContainer: {
       display: 'flex',

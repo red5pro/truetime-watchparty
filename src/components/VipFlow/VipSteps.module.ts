@@ -18,6 +18,7 @@ const useStyles = makeStyles()((theme: any) => {
       display: 'flex',
       width: '100%',
       zIndex: 10,
+      filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
     },
     brandLogo: {
       position: 'absolute',

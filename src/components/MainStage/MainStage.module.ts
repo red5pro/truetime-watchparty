@@ -12,6 +12,7 @@ const useStyles = makeStyles()((theme: any) => {
     loadingContainer: {
       alignItems: 'center',
       marginTop: '10%',
+      filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
     },
     mainVideo: {
       position: 'absolute',
