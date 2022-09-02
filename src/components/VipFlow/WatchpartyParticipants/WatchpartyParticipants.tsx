@@ -8,15 +8,23 @@ import useStyles, { styles } from './WatchpartyParticipants.module'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
 
 interface IWatchpartyParticipantsProps {
+  disabled: boolean
   conferenceDetails?: ConferenceDetails
   participants: Participant[]
   skipNextConference: () => void
   buttonPrimary?: boolean
-  onJoinNextParty: any
+  onJoinNextParty(details: ConferenceDetails): any
 }
 
 const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
-  const { conferenceDetails, participants, skipNextConference, onJoinNextParty, buttonPrimary = false } = props
+  const {
+    disabled,
+    conferenceDetails,
+    participants,
+    skipNextConference,
+    onJoinNextParty,
+    buttonPrimary = false,
+  } = props
 
   const { classes } = useStyles()
 
@@ -30,36 +38,38 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
       className={classes.container}
     >
       <Typography className={classes.title}>{conferenceDetails?.displayName}</Typography>
-      <Typography>{`${participants.length} Attendees`}</Typography>
-      <Box>
+      <Typography>{`${participants.length} Attendee(s)`}</Typography>
+      {/* Participants moved to Stage */}
+      {/* <Box>
         {participants && (
           <Grid container spacing={2} marginY={2}>
-            {participants.map((participant: Participant) => {
+            {participants.map((participant: Participant, i: number) => {
               return (
-                <Grid key={participant.participantId} item xs={3}>
-                  <MainStageSubscriber
-                    key={participant.participantId}
-                    participant={participant}
-                    styles={styles.stage.participantVideoFeedContainer}
-                    videoStyles={styles.stage.participantVideoFeed}
-                    host={STREAM_HOST}
-                    useStreamManager={USE_STREAM_MANAGER}
-                  />
+                <Grid key={`${participant.participantId}-${i}`} item xs={3}>
+                  <Box>{participant.displayName}</Box>
                 </Grid>
               )
             })}
           </Grid>
         )}
-      </Box>
+      </Box> */}
       <Box display="flex" justifyContent="space-evenly" className={classes.buttonContainer}>
         <CustomButton
-          onClick={onJoinNextParty}
+          labelStyle={disabled ? classes.disabledButton : classes.enabledButton}
+          disabled={disabled}
+          onClick={() => onJoinNextParty(conferenceDetails!)}
           size={BUTTONSIZE.SMALL}
-          buttonType={buttonPrimary ? BUTTONTYPE.SECONDARY : BUTTONTYPE.TERTIARY}
+          buttonType={disabled ? BUTTONTYPE.TERTIARY : BUTTONTYPE.SECONDARY}
         >
           Join The Party
         </CustomButton>
-        <CustomButton onClick={skipNextConference} size={BUTTONSIZE.SMALL} buttonType={BUTTONTYPE.TERTIARY}>
+        <CustomButton
+          labelStyle={disabled ? classes.disabledButton : classes.enabledButton}
+          disabled={disabled}
+          onClick={skipNextConference}
+          size={BUTTONSIZE.SMALL}
+          buttonType={BUTTONTYPE.TERTIARY}
+        >
           Skip
         </CustomButton>
       </Box>

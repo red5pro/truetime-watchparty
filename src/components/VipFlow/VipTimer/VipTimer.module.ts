@@ -21,6 +21,7 @@ const useStyles = makeStyles()((theme: any) => {
       height: '85px !important',
       border: '3px solid #2864FF',
       borderRadius: '50%',
+      backdropFilter: 'blur(60px)',
       margin: '0 20px',
       '& p': {
         color: '#ffffff',

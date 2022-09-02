@@ -7,10 +7,11 @@ import useStyles from './VipView.module'
 interface IVipViewProps {
   onActions: IStepActionsSubComponent
   account?: AccountCredentials
+  loading: boolean
 }
 
 const VipView = (props: IVipViewProps) => {
-  const { onActions, account } = props
+  const { loading, onActions, account } = props
   const { classes } = useStyles()
 
   const isMobile = isMobileScreen()
@@ -25,10 +26,11 @@ const VipView = (props: IVipViewProps) => {
           Watch Parties let people come together online to watch their favorite sports. You as a guest, will be
           interacting with avid fans of boxing to answer their questions, talk about yourself or just joke around!
         </Typography>
-
-        <CustomButton onClick={onActions.onNextStep} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
-          {account ? 'Join Party' : 'Sign In'}
-        </CustomButton>
+        {!loading && (
+          <CustomButton onClick={onActions.onNextStep} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
+            {account ? 'Join Party' : 'Sign In'}
+          </CustomButton>
+        )}
       </Box>
       <Box sx={{ width: '45%' }}>
         <img

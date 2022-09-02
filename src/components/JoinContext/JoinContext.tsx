@@ -57,6 +57,7 @@ const JoinProvider = (props: JoinContextProps) => {
     episode: cannedEpisode,
     locked: false,
   })
+
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
   // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
@@ -64,7 +65,9 @@ const JoinProvider = (props: JoinContextProps) => {
     if (params && params.token) {
       setJoinToken(params.token)
     } else if (location.pathname === '/join/guest') {
-      setJoinToken('')
+      // Note: We'll access conferences through API for VIP.
+      // Only want to know about current series/episode now...
+      // setJoinToken('vip')
     } else {
       navigate('/')
     }
@@ -127,15 +130,18 @@ const JoinProvider = (props: JoinContextProps) => {
   }
 
   // Returns stream guid (context + name) of the current participant to broadcast on.
+  // TODO: Be more clever when VIP...
   const getStreamGuid = () => {
-    if (!nickname) return null
-
+    const isVIP = location.pathname === '/join/guest'
+    if (!isVIP && !nickname) return null
     // Only keep numbers and letters, otherwise stream may break.
-    const stripped = nickname.replace(/[^a-zA-Z0-9]/g, '')
+    const append = !isVIP ? joinToken : 'vip'
+    const stripped = !isVIP ? nickname?.replace(/[^a-zA-Z0-9]/g, '') : 'VIP'
+    let guid = `live/${append}_${stripped}_${uid}`
     if (!FORCE_LIVE_CONTEXT && joinToken) {
-      return `${joinToken?.split('-').join('')}/${stripped}_${uid}`
+      guid = `${append?.split('-').join('')}/${stripped}_${uid}`
     }
-    return `live/${joinToken}_${stripped}_${uid}`
+    return guid
   }
 
   const getMainStreamGuid = () => {
