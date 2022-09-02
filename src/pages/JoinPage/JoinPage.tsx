@@ -16,7 +16,6 @@ import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
 import OracleLogo from '../../assets/logos/OracleLogo'
-import AMDLogo from '../../assets/logos/AMDLogo'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -130,7 +129,7 @@ const JoinPage = () => {
     )
   }
   return (
-    <Box className={classes.root}>
+    <Box className={classes.root} display="flex" flexDirection="column">
       {loading && (
         <Box marginTop={2}>
           <Loading text="Loading Watch Party" />
@@ -138,79 +137,84 @@ const JoinPage = () => {
       )}
 
       {currentSection !== Section.WatchParty && (
-        <Box padding={2} className={classes.brandLogo}>
-          <WbcLogoSmall />
+        <Box>
+          <Box padding={2} className={classes.brandLogo}>
+            <WbcLogoSmall />
+          </Box>
+          <Box>
+            <Typography padding={2} className={classes.joinTitleSmall}>
+              Join WatchParty
+            </Typography>
+          </Box>
         </Box>
       )}
-      {!loading && conferenceData && currentSection === Section.Landing && (
-        <Box className={classes.joinSection}>
-          <Typography padding={2} className={classes.joinTitleSmall}>
-            Join WatchParty
-          </Typography>
-          <JoinSectionLanding
-            seriesEpisode={seriesEpisode}
-            conferenceData={conferenceData}
-            conferenceParticipantsStringBuilder={getParticipantText}
-            onStartJoin={onStartJoin}
-          />
-        </Box>
-      )}
-      {!loading && conferenceData && currentSection === Section.Nickname && (
-        <Box className={classes.joinSection}>
-          <Typography padding={2} className={classes.joinTitleSmall}>
-            Join WatchParty
-          </Typography>
-          <JoinSectionNicknameInput
-            nickname={nickname}
-            seriesEpisode={seriesEpisode}
-            conferenceData={conferenceData}
-            conferenceParticipantsStringBuilder={getParticipantText}
-            onBack={onReturnToLanding}
-            onStartSetup={onStartSetup}
-          />
-        </Box>
-      )}
-      {!loading && conferenceData && currentSection === Section.AVSetup && (
-        <Box className={classes.joinSection}>
-          <Typography padding={2} className={classes.joinTitleSmall}>
-            Join WatchParty
-          </Typography>
-          <JoinSectionAVSetup conferenceData={conferenceData} onBack={onReturnToNickname} onJoin={onJoin} />
-        </Box>
-      )}
-      {!loading && conferenceData && currentSection === Section.WatchParty && (
-        <MainStageWithChatBox>
-          <MainStage />
-        </MainStageWithChatBox>
-      )}
+      <Box display="flex" flexDirection="column" justifyContent="space-around" width="100%" height="100vh">
+        {!loading && conferenceData && currentSection === Section.Landing && (
+          <Box className={classes.joinSection}>
+            <JoinSectionLanding
+              seriesEpisode={seriesEpisode}
+              conferenceData={conferenceData}
+              conferenceParticipantsStringBuilder={getParticipantText}
+              onStartJoin={onStartJoin}
+            />
+          </Box>
+        )}
+        {!loading && conferenceData && currentSection === Section.Nickname && (
+          <Box className={classes.joinSection}>
+            <JoinSectionNicknameInput
+              nickname={nickname}
+              seriesEpisode={seriesEpisode}
+              conferenceData={conferenceData}
+              conferenceParticipantsStringBuilder={getParticipantText}
+              onBack={onReturnToLanding}
+              onStartSetup={onStartSetup}
+            />
+          </Box>
+        )}
+        {!loading && conferenceData && currentSection === Section.AVSetup && (
+          <Box className={classes.joinSection}>
+            <JoinSectionAVSetup conferenceData={conferenceData} onBack={onReturnToNickname} onJoin={onJoin} />
+          </Box>
+        )}
+        {!loading && conferenceData && currentSection === Section.WatchParty && (
+          <MainStageWithChatBox>
+            <MainStage />
+          </MainStageWithChatBox>
+        )}
 
-      <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
-        <img
-          alt="Join a Party Main Image"
-          src={require('../../assets/images/BoxMainImage.png')}
-          style={{
-            opacity: currentSection === Section.Nickname ? 0.5 : 1,
-            display: currentSection === Section.Landing || currentSection === Section.Nickname ? 'block' : 'none',
-          }}
-        ></img>
-      </Box>
+        <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
+          <img
+            alt="Join a Party Main Image"
+            src={require('../../assets/images/BoxMainImage.png')}
+            style={{
+              opacity: currentSection === Section.Nickname ? 0.5 : 1,
+              display: currentSection === Section.Landing || currentSection === Section.Nickname ? 'block' : 'none',
+            }}
+          ></img>
+        </Box>
 
-      {currentSection !== Section.WatchParty && (
-        <Stack
-          spacing={2}
-          direction="column"
-          className={classes.sponsorContainer}
-          sx={currentSection === Section.AVSetup ? { alignItems: 'center', width: 'calc(100vw - 158px)' } : {}}
-        >
-          <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
-          <Stack spacing={2} direction="row">
-            <OracleLogo />
-            <Box sx={{ width: '100px', height: '24px' }}>
-              <img alt="AMD" src={require('../../assets/images/AMDLogo.png')}></img>
-            </Box>
+        {currentSection !== Section.WatchParty && (
+          <Stack
+            spacing={2}
+            direction="column"
+            className={classes.sponsorContainer}
+            sx={currentSection === Section.AVSetup ? { alignItems: 'center', width: 'calc(100vw - 158px)' } : {}}
+          >
+            <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
+            <Stack spacing={2} direction="row">
+              {/* <OracleLogo /> */}
+              <Box sx={{ width: 'auto', height: '50px' }}>
+                <img
+                  width="100%"
+                  height="100%"
+                  alt="Logo Placeholder"
+                  src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
+                ></img>
+              </Box>
+            </Stack>
           </Stack>
-        </Stack>
-      )}
+        )}
+      </Box>
     </Box>
   )
 }
