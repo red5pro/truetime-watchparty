@@ -34,7 +34,7 @@ const StartParty = (props: IStartPartyProps) => {
   return (
     <Box className={classes.root}>
       <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px' }}>
-        Host a WatchParty
+        Host a Watch Party
       </Typography>
       {loading && (
         <Box className={classes.container} display="flex" alignItems="center">
