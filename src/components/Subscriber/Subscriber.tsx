@@ -30,6 +30,7 @@ interface ISubscriberProps {
   showControls: boolean
   isAudioOff?: boolean
   isVideoOff?: boolean
+  onSubscribeStart?(): any
 }
 
 const DELAY = 2000
@@ -47,6 +48,7 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
     showControls,
     isAudioOff, // from organizer mute
     isVideoOff, // from organizer mute
+    onSubscribeStart,
   } = props
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
@@ -139,6 +141,10 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
     if (type === 'Subscribe.Metadata') {
       const { streamingMode } = event.data
       handleMediaActiveFromMode(streamingMode)
+    } else if (type === 'Subscribe.VideoDimensions.Change') {
+      if (onSubscribeStart) {
+        onSubscribeStart()
+      }
     }
   }
 
