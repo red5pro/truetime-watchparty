@@ -53,7 +53,8 @@ const styles = {
     subscriberContainer: {
       display: 'flex',
       flexDirection: 'column',
-      width: '144px',
+      // width: '144px',
+      aspectRatio: '0.25',
       marginTop: '20px',
       paddingRight: '20px',
       alignItems: 'center',
@@ -207,7 +208,8 @@ const styles = {
     subscriberContainer: {
       display: 'flex',
       flexDirection: 'column',
-      width: '144px',
+      // width: '144px',
+      aspectRatio: '0.25',
       marginTop: '20px',
       paddingRight: '20px',
       alignItems: 'center',
