@@ -9,10 +9,13 @@ import WatchContext from '../../components/WatchContext/WatchContext'
 import JoinContext from '../../components/JoinContext/JoinContext'
 import Loading from '../../components/Loading/Loading'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
-import { API_SOCKET_HOST } from '../../settings/variables'
+import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import { FatalError } from '../../models/FatalError'
 import ErrorModal from '../../components/Modal/ErrorModal'
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
+import { Participant } from '../../models/Participant'
+import Publisher from '../../components/Publisher/Publisher'
+import MainStageSubscriber from '../../components/MainStageSubscriber/MainStageSubscriber'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -23,6 +26,11 @@ const vipReducer = (state: any, action: any) => {
     case 'UPDATE':
       return { ...state, token: action.token, email: action.email, password: action.password }
   }
+}
+
+interface PublisherRef {
+  toggleCamera(on: boolean): any
+  toggleMicrophone(on: boolean): any
 }
 
 const Page = () => {
@@ -38,6 +46,7 @@ const Page = () => {
   } = useJoinContext()
 
   const { classes } = useStyles()
+  const publisherRef = React.useRef<PublisherRef>(null)
 
   const [vipData, dispatch] = React.useReducer(vipReducer, {
     token: undefined,
@@ -46,6 +55,7 @@ const Page = () => {
   })
   const [startMedia, setStartMedia] = React.useState<boolean>()
   const [isInConference, setIsInConference] = React.useState<boolean>()
+  const [participants, setParticipants] = React.useState<Participant[]>([])
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
 
   const getSocketUrl = (token: string, email: string, password: string, guid: string) => {
@@ -103,6 +113,27 @@ const Page = () => {
     }
   }, [error])
 
+  React.useEffect(() => {
+    // Fatal Socket Error.
+    if (errorContext) {
+      setFatalError({
+        ...(errorContext as any),
+        title: 'Connection Error',
+        closeLabel: 'CLOSE',
+        onClose: () => {
+          setFatalError(undefined)
+          window.location.reload()
+        },
+      } as FatalError)
+    }
+  }, [errorContext])
+
+  React.useEffect(() => {
+    if (data?.list) {
+      setParticipants(data.list)
+    }
+  }, [data?.list])
+
   const onJoin = () => {
     if (vipData?.token && mediaStream) {
       const { token, email, password } = vipData
@@ -117,6 +148,36 @@ const Page = () => {
     if (joinToken?.length > 0 && email?.length > 0 && password?.length > 0) {
       dispatch({ type: 'UPDATE', token: joinToken, email: email, password: password })
     }
+  }
+
+  const onPublisherBroadcast = () => {
+    // TODO?
+  }
+
+  const onPublisherBroadcastInterrupt = () => {
+    setFatalError({
+      status: 400,
+      title: 'Broadcast Stream Error',
+      statusText: `Your broadcast session was interrupted expectedly. You are no longer streaming.`,
+      closeLabel: 'Restart',
+      onClose: () => {
+        setFatalError(undefined)
+        window.location.reload()
+      },
+    } as FatalError)
+  }
+
+  const onPublisherFail = () => {
+    setFatalError({
+      status: 404,
+      title: 'Broadcast Stream Error',
+      statusText: `Could not start a broadcast.`,
+      closeLabel: 'Retry',
+      onClose: () => {
+        setFatalError(undefined)
+        window.location.reload()
+      },
+    } as FatalError)
   }
 
   const initialValues = {
@@ -173,7 +234,45 @@ const Page = () => {
           <JoinSectionAVSetup onJoin={onJoin} shouldDisplayBackButton={false} />
         </Box>
       )}
-      {isInConference && <Box>Welcome</Box>}
+      {isInConference && (
+        <Box className={classes.watchContainer}>
+          <Publisher
+            key="publisher"
+            ref={publisherRef}
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            streamGuid={getStreamGuid()}
+            stream={mediaStream}
+            styles={{
+              width: '320px',
+              height: '240px',
+            }}
+            onFail={onPublisherFail}
+            onStart={onPublisherBroadcast}
+            onInterrupt={onPublisherBroadcastInterrupt}
+          />
+          <Box className={classes.subscriberContainer}>
+            {participants.map((s: Participant) => {
+              return (
+                <MainStageSubscriber
+                  key={s.participantId}
+                  participant={s}
+                  styles={{
+                    width: '180px',
+                    height: '180px',
+                    borderRadius: '20px',
+                    objectFit: 'cover',
+                  }}
+                  videoStyles={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  host={STREAM_HOST}
+                  useStreamManager={USE_STREAM_MANAGER}
+                  menuActions={undefined}
+                />
+              )
+            })}
+          </Box>
+        </Box>
+      )}
       {loadingContext && (
         <Box margin={4}>
           <Loading text="Loading Watch Party..." />
