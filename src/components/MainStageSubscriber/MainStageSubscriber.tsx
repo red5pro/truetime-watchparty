@@ -12,10 +12,11 @@ interface MainStageSubscriberProps {
   styles: any
   videoStyles: any
   menuActions?: any
+  onSubscribeStart?(): any
 }
 
 const MainStageSubscriber = (props: MainStageSubscriberProps) => {
-  const { participant, host, useStreamManager, styles, videoStyles, menuActions } = props
+  const { participant, host, useStreamManager, styles, videoStyles, menuActions, onSubscribeStart } = props
 
   return (
     // TODO: Set `mute` to false for production
@@ -32,6 +33,7 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
         videoStyles={videoStyles}
         isAudioOff={participant?.muteState?.audioMuted}
         isVideoOff={participant?.muteState?.videoMuted}
+        onSubscribeStart={onSubscribeStart}
       />
       {participant && menuActions && (
         <Box sx={{ position: 'absolute', top: 4, right: 4 }}>

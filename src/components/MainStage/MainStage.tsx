@@ -1,9 +1,9 @@
 import React from 'react'
 import * as portals from 'react-reverse-portal'
 import { useNavigate } from 'react-router-dom'
-import { IconButton, Box, Typography, Stack, Divider, Tooltip } from '@mui/material'
+import { IconButton, Box, Typography, Stack, Divider, Tooltip, Button } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
-import { Lock, LockOpen, GroupAdd, ChatBubble } from '@mui/icons-material'
+import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-material'
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
 
 import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
@@ -77,6 +77,7 @@ const MainStage = () => {
 
   const mainVideoRef = React.useRef<SubscriberRef>(null)
   const publisherRef = React.useRef<PublisherRef>(null)
+  const subscriberListRef = React.useRef<any>(null)
 
   const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
 
@@ -87,6 +88,8 @@ const MainStage = () => {
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
   const [availableVipParticipant, setAvailableVipParticipant] = React.useState<Participant | undefined>()
   const [requiresSubscriberScroll, setRequiresSubscriberScroll] = React.useState<boolean>(false)
+  const [viewportHeight, setViewportHeight] = React.useState<number>(0)
+  const [relayout, setRelayout] = React.useState<boolean>(false)
   const [chatIsHidden, setChatIsHidden] = React.useState<boolean>(true)
   const [maxParticipantGridColumnStyle, setMaxParticipantGridColumnStyle] = React.useState<any>({
     gridTemplateColumns:
@@ -121,6 +124,20 @@ const MainStage = () => {
   if (!mediaContext?.mediaStream || !getStreamGuid()) {
     navigate(`/join/${joinToken}`)
   }
+
+  React.useEffect(() => {
+    // Handler to call on window resize
+    function handleResize() {
+      // Set window width/height to state
+      setViewportHeight(window.innerHeight)
+    }
+    // Add event listener
+    window.addEventListener('resize', handleResize)
+    // Call handler right away so state gets updated with initial window size
+    handleResize()
+    // Remove event listener on cleanup
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   React.useEffect(() => {
     // Fatal Socket Error.
@@ -191,24 +208,23 @@ const MainStage = () => {
   }, [data.vip])
 
   React.useEffect(() => {
-    if (layout.layout === Layout.STAGE) {
-      const vh = window.innerHeight
-      const ch = vh - 320 // css subscriberContainer height
-      const sh = 124 // css height
-      const needsScroll = ch < sh * data.list.length
+    if (layout.layout === Layout.STAGE && viewportHeight > 0 && subscriberListRef.current) {
+      let needsScroll = false
+      try {
+        const bounds = subscriberListRef.current?.getBoundingClientRect()
+        const lastBounds = subscriberListRef.current?.lastChild?.getBoundingClientRect()
+        if (bounds && lastBounds) {
+          needsScroll = lastBounds.bottom > bounds.bottom
+        }
+      } catch (e) {
+        // TODO
+      }
+      setRelayout(false)
       setRequiresSubscriberScroll(needsScroll)
     } else {
       setRequiresSubscriberScroll(false)
     }
-  }, [data.list, layout])
-
-  const clearMediaContext = () => {
-    if (mediaContext && mediaContext.mediaStream) {
-      mediaContext.mediaStream.getTracks().forEach((t: MediaStreamTrack) => t.stop())
-      mediaContext.setConstraints(undefined)
-      mediaContext.setMediaStream(undefined)
-    }
-  }
+  }, [data.list, layout, viewportHeight, relayout])
 
   const onPublisherBroadcast = () => {
     const streamGuid = getStreamGuid()
@@ -295,6 +311,16 @@ const MainStage = () => {
     if (publisherRef && publisherRef.current) {
       publisherRef.current.toggleMicrophone(isOn)
     }
+  }
+
+  const onMoreScroll = () => {
+    if (subscriberListRef && subscriberListRef.current) {
+      subscriberListRef.current.lastChild.scrollIntoView()
+    }
+  }
+
+  const onRelayout = () => {
+    setRelayout(true)
   }
 
   const onLayoutSelect = (layout: number) => {
@@ -442,7 +468,10 @@ const MainStage = () => {
         )}
         {/* Other Participants Video Playback */}
         <Box sx={layout.style.subscriberList}>
-          <div style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}>
+          <div
+            ref={subscriberListRef}
+            style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}
+          >
             {data.list.map((s: Participant) => {
               return (
                 <MainStageSubscriber
@@ -453,16 +482,27 @@ const MainStage = () => {
                   host={STREAM_HOST}
                   useStreamManager={USE_STREAM_MANAGER}
                   menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
+                  onSubscribeStart={onRelayout}
                 />
               )
             })}
             {layout.layout === Layout.FULLSCREEN && <PublisherPortalFullscreen portalNode={portalNode} />}
           </div>
-          {/* {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && <Button>More...</Button>} */}
+          {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
+            <CustomButton
+              className={classes.moreButton}
+              size={BUTTONSIZE.SMALL}
+              buttonType={BUTTONTYPE.TRANSPARENT}
+              onClick={onMoreScroll}
+            >
+              <ExpandMore />
+            </CustomButton>
+          )}
+          {/* Publisher View - STAGE LAYOUT */}
+          {publishMediaStream && layout.layout !== Layout.FULLSCREEN && (
+            <PublisherPortalStage portalNode={portalNode} />
+          )}
         </Box>
-        {/* Publisher View - STAGE LAYOUT */}
-        {publishMediaStream && layout.layout !== Layout.FULLSCREEN && <PublisherPortalStage portalNode={portalNode} />}
-
         {/* Bottom Controls / Chat */}
         <Stack className={classes.bottomBar} direction="row" alignItems="bottom" spacing={2}>
           {publishMediaStream && ENABLE_MUTE_API && (
