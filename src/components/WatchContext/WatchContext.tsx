@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ConferenceStatusEvent, ConnectionRequest, ConnectionResult } from '../../models/ConferenceStatusEvent'
 import { Participant } from '../../models/Participant'
-import { MessageTypes, removeFromArray, UserRoles } from '../../utils/commonUtils'
+import { MessageTypes, UserRoles } from '../../utils/commonUtils'
 
 interface IWatchProviderProps {
   children: any

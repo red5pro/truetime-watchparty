@@ -3,19 +3,16 @@ import * as React from 'react'
 import { useCookies } from 'react-cookie'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import { AccountCredentials } from '../../models/AccountCredentials'
-import { Conference } from '../../models/Conference'
 import { Episode } from '../../models/Episode'
-import { UserAccount } from '../../models/UserAccount'
-import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 
 import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
 import Signin from '../Account/Signin/Signin'
-import JoinContext from '../JoinContext/JoinContext'
 import Loading from '../Loading/Loading'
 import MediaContext from '../MediaContext/MediaContext'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import Subscriber from '../Subscriber/Subscriber'
+import VipJoinContext from '../VipJoinContext/VipJoinContext'
 import WatchContext from '../WatchContext/WatchContext'
 import VipJoinWatchparty from './VipJoinWatchparty/VipJoinWatchparty'
 import VipMediaStep from './VipMediaStep/VipMediaStep'
@@ -23,7 +20,7 @@ import useStyles from './VipSteps.module'
 import VipTimerStep from './VipTimer/VipTimerStep'
 import VipView from './VipView/VipView'
 
-const useJoinContext = () => React.useContext(JoinContext.Context)
+const useJoinContext = () => React.useContext(VipJoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
 interface SubscriberRef {
@@ -38,18 +35,14 @@ enum VipStepIdentify {
   JOIN_WATCH_PARTY = 4,
 }
 
-const VipSteps = (props: any) => {
+const VipSteps = () => {
   const [cookies, removeCookie] = useCookies(['userAccount', 'account'])
 
   const mainVideoRef = React.useRef<SubscriberRef>(null)
 
   const [activeStep, setActiveStep] = React.useState(0)
-  const [account, setAccount] = React.useState<UserAccount>()
   const [accountCredentials, setAccountCredentials] = React.useState<AccountCredentials>()
   const [currentEpisode, setCurrentEpisode] = React.useState<Episode>()
-  const [allConferences, setAllConferences] = React.useState<Conference[]>()
-  const [currentConference, setCurrentConference] = React.useState<Conference>()
-  const [nextConference, setNextConference] = React.useState<Conference>()
 
   const [onBoarding, setOnboarding] = React.useState<boolean>(true)
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
@@ -75,18 +68,6 @@ const VipSteps = (props: any) => {
   }, [activeStep])
 
   React.useEffect(() => {
-    const getConferences = async (account: AccountCredentials) => {
-      if (!currentConference) {
-        const conf = await CONFERENCE_API_CALLS.getAllConferences(account)
-
-        if (conf.data?.conferences && conf.status === 200) {
-          const data = conf.data.conferences
-          setAllConferences(data)
-          setCurrentConference(currentConference ?? data[0])
-        }
-      }
-    }
-
     let requiresLogin = true
     if (cookies.userAccount) {
       const acc = cookies.userAccount
@@ -96,7 +77,6 @@ const VipSteps = (props: any) => {
         removeCookie('userAccount', '')
         removeCookie('account', '')
       } else {
-        setAccount(cookies.userAccount)
         requiresLogin = false
       }
     } else {
@@ -106,16 +86,13 @@ const VipSteps = (props: any) => {
 
     if (cookies.account && !requiresLogin) {
       setAccountCredentials(cookies.account)
-      getConferences(cookies.account)
     }
   }, [cookies])
 
   React.useEffect(() => {
     if (seriesEpisode && seriesEpisode.loaded) {
       setCurrentEpisode(seriesEpisode.episode)
-      // if (joinContext.conferenceData) {
-      //   setCurrentConference(joinContext.conferenceData)
-      // }
+
       const { streamGuid } = seriesEpisode.episode
       if (streamGuid !== mainStreamGuid) {
         setMainStreamGuid(streamGuid)
@@ -123,32 +100,6 @@ const VipSteps = (props: any) => {
     }
   }, [seriesEpisode])
 
-  const joinNextConference = () => {
-    const currConfIndex =
-      allConferences?.findIndex((item) => item.conferenceId === currentConference?.conferenceId) || 0
-
-    if (currConfIndex && allConferences && allConferences.length >= currConfIndex) {
-      const nextConf = allConferences[currConfIndex + 1]
-      setCurrentConference(nextConf)
-
-      return true
-    }
-    return false
-  }
-
-  const getNextConference = () => {
-    debugger
-    const nextConfIndex =
-      allConferences?.findIndex((item) => item.conferenceId === currentConference?.conferenceId) || 0
-
-    if (nextConfIndex && allConferences && allConferences.length > nextConfIndex) {
-      const nextConf = allConferences[nextConfIndex + 1]
-      setNextConference(nextConf)
-
-      return true
-    }
-    return false
-  }
   const onMainVideoVolume = (value: number) => {
     if (mainVideoRef && mainVideoRef.current) {
       mainVideoRef.current.setVolume(value)
@@ -181,13 +132,8 @@ const VipSteps = (props: any) => {
       component: (
         <WatchContext.Provider>
           <VipJoinWatchparty
-            onActions={actions}
             account={accountCredentials}
-            userAccount={account}
-            getNextConference={getNextConference}
-            nextConferenceToJoin={nextConference}
             currentEpisode={currentEpisode}
-            currentConference={currentConference}
             onCancelOnboarding={() => setOnboarding(false)}
             onMainVideoVolume={onMainVideoVolume}
           />
