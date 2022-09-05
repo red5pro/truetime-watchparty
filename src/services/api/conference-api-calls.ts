@@ -1,8 +1,10 @@
+import { USE_LOCAL_SERVICES } from './../../settings/variables'
 import { ParticipantMuteState } from './../../models/Participant'
 import axios, { AxiosResponse } from 'axios'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
+import { MOCK_API_CALLS } from './mock'
 
 const ENDPOINT = {
   SERIES: `${MAIN_ENDPOINT}/series`,
