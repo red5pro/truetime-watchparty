@@ -3,7 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 const useStyles = makeStyles()((theme: any) => {
   return {
     listContainer: {
-      position: 'absolute',
+      position: 'fixed',
       left: '40px',
       padding: '4px',
       boxSizing: 'border-box',

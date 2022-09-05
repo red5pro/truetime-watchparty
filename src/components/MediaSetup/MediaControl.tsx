@@ -1,4 +1,4 @@
-import { Box, Fade, List, ListItemButton, ListItemText, Stack } from '@mui/material'
+import { Box, Fade, List, ListItemButton, ListItemText, Paper, Stack } from '@mui/material'
 import React from 'react'
 import useOutsideClick from '../../hooks/useOutsideClick'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
@@ -62,19 +62,21 @@ const MediaControl = (props: MediaControlProps) => {
       </Box>
       {open && (
         <Fade in={open}>
-          <List className={classes.listContainer}>
-            {options.map((o: MediaControlOption, i: number) => {
-              return (
-                <ListItemButton
-                  key={`option_${i}`}
-                  onClick={() => onSelect(o, i)}
-                  sx={i < options.length - 1 ? { borderBottom: '1px solid gray' } : {}}
-                >
-                  <ListItemText>{o.name}</ListItemText>
-                </ListItemButton>
-              )
-            })}
-          </List>
+          <Paper className={classes.listContainer} style={{ maxHeight: 200, overflow: 'auto' }}>
+            <List>
+              {options.map((o: MediaControlOption, i: number) => {
+                return (
+                  <ListItemButton
+                    key={`option_${i}`}
+                    onClick={() => onSelect(o, i)}
+                    sx={i < options.length - 1 ? { borderBottom: '1px solid gray' } : {}}
+                  >
+                    <ListItemText>{o.name}</ListItemText>
+                  </ListItemButton>
+                )
+              })}
+            </List>
+          </Paper>
         </Fade>
       )}
     </Stack>
