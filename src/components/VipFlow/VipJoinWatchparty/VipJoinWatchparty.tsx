@@ -92,6 +92,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
       joinToken: token,
       streamGuid: guid,
       fingerprint: joinContext.fingerprint,
+      messageType: 'JoinConferenceRequest',
       username: account?.email,
       password: account?.password,
     } as ConnectionRequest
