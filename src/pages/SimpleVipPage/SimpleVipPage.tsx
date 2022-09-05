@@ -64,6 +64,7 @@ const Page = () => {
       joinToken: token,
       streamGuid: guid,
       fingerprint: fingerprint,
+      messageType: 'JoinConferenceRequest',
       username: email,
       password,
     } as ConnectionRequest

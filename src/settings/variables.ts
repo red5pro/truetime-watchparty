@@ -1,4 +1,4 @@
-export const USE_LOCAL_SERVICES = true
+export const USE_LOCAL_SERVICES = false
 
 export const SERVER_HOST = process.env.REACT_APP_SERVER_HOST || 'watchtest.red5.net' // 'watchparty-sm.red5.net' // 'watchtest.red5.net'
 export const API_SERVER_HOST = process.env.REACT_APP_API_SERVER_HOST || 'wat-101-sm.red5.net' // 'watchparty-sm.red5.net' // 'wat-101-sm.red5.net'
