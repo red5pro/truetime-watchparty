@@ -64,7 +64,8 @@ const JoinProvider = (props: JoinContextProps) => {
   React.useEffect(() => {
     if (params && params.token) {
       setJoinToken(params.token)
-    } else if (location.pathname === '/join/guest') {
+    } else if (location.pathname === '/join/guest' || location.pathname === '/vip') {
+      // TODO: Remove the `/vip`
       // Note: We'll access conferences through API for VIP.
       // Only want to know about current series/episode now...
       // setJoinToken('vip')
@@ -132,7 +133,7 @@ const JoinProvider = (props: JoinContextProps) => {
   // Returns stream guid (context + name) of the current participant to broadcast on.
   // TODO: Be more clever when VIP...
   const getStreamGuid = () => {
-    const isVIP = location.pathname === '/join/guest'
+    const isVIP = location.pathname === '/join/guest' || location.pathname === '/vip'
     if (!isVIP && !nickname) return null
     // Only keep numbers and letters, otherwise stream may break.
     const append = !isVIP ? joinToken : 'vip'

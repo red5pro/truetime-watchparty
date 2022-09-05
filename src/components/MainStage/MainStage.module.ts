@@ -70,6 +70,9 @@ const useStyles = makeStyles()((theme: any) => {
       alignContent: 'flex-end',
       alignSelf: 'flex-end',
     },
+    moreButton: {
+      margin: 'auto',
+    },
     chatInput: {
       width: '45%',
       maxWidth: '240px',
