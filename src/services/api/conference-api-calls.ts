@@ -1,8 +1,10 @@
+import { USE_LOCAL_SERVICES } from './../../settings/variables'
 import { ParticipantMuteState } from './../../models/Participant'
 import axios, { AxiosResponse } from 'axios'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
+import { MOCK_API_CALLS } from './mock'
 
 const ENDPOINT = {
   SERIES: `${MAIN_ENDPOINT}/series`,
@@ -309,11 +311,11 @@ const banParticipant = async (
 }
 
 export const CONFERENCE_API_CALLS = {
-  getSeriesList,
-  getCurrentEpisode,
+  getSeriesList: USE_LOCAL_SERVICES ? MOCK_API_CALLS.getSeriesList : getSeriesList,
+  getCurrentEpisode: USE_LOCAL_SERVICES ? MOCK_API_CALLS.getCurrentEpisode : getCurrentEpisode,
   getAllEpisodesBySerie,
   getConferenceDetails,
-  getJoinDetails,
+  getJoinDetails: USE_LOCAL_SERVICES ? MOCK_API_CALLS.getJoinDetails : getJoinDetails,
   createConference,
   getAllConferences,
   getConferenceParticipants,
@@ -321,5 +323,5 @@ export const CONFERENCE_API_CALLS = {
   unlockConference,
   muteParticipant,
   banParticipant,
-  getConferenceLoby,
+  getConferenceLoby: USE_LOCAL_SERVICES ? MOCK_API_CALLS.getJoinDetails : getJoinDetails,
 }

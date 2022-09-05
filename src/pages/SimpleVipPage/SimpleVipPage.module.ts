@@ -26,6 +26,24 @@ const useStyles = makeStyles()((theme: any) => {
       borderRadius: '20px',
       padding: '20px',
     },
+    watchContainer: {
+      width: '100vh',
+      height: '100vw',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      rowGap: '20px',
+      padding: '20px',
+    },
+    subscriberContainer: {
+      width: '100vh',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      rowGap: '10px',
+      flexWrap: 'wrap',
+    },
   }
 })
 
