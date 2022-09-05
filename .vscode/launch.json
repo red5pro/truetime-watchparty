@@ -13,6 +13,14 @@
       "preLaunchTask": "npm: start:debug"
     },
     {
+      "type": "pwa-chrome",
+      "request": "launch",
+      "name": "Launch Chrome against localhost with demo",
+      "url": "http://localhost:3006",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "npm: start:demo"
+    },
+    {
       "name": "Attach to Chrome",
       "port": 9222,
       "request": "attach",
