@@ -219,8 +219,7 @@ const JoinPage = () => {
               {/* <OracleLogo /> */}
               <Box sx={{ width: 'auto', height: '70px' }}>
                 <img
-                  width="100%"
-                  height="100%"
+                  height="70px"
                   alt="Logo Placeholder"
                   src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
                 ></img>
