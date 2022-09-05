@@ -37,6 +37,7 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
   const closeRef = React.useRef(null)
 
   const ref = React.useRef(null)
+  const menuRef = React.useRef(null)
 
   const [showMenu, setShowMenu] = React.useState<boolean>(false)
 
@@ -64,7 +65,12 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
     closeRef.current = closeTimeout
   }
 
-  const onToggleMenu = () => {
+  const onToggleMenu = (event?: any) => {
+    console.log('Click', event)
+    if (event && menuRef && menuRef.current) {
+      ;(menuRef.current as any).style.left = `${event.screenX + 24}px`
+      // ;(menuRef.current as any).style.top = `${event.screenY - 6}px`
+    }
     setShowMenu(!showMenu)
   }
 
@@ -91,7 +97,7 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
         <MoreMenuIcon />
       </IconButton>
       <Fade in={showMenu}>
-        <List className={classes.listContainer}>
+        <List ref={menuRef} className={classes.listContainer} sx={{ position: 'fixed' }}>
           <ListItemButton onClick={toggleMuteAudio}>
             <ListItemIcon className={classes.listItemIcon}>
               {!participant.muteState?.audioMuted && <Mic sx={{ color: 'white' }} />}
