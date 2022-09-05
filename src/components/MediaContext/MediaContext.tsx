@@ -44,9 +44,9 @@ const MediaProvider = (props: IMediaProviderProps) => {
 
   React.useEffect(() => {
     if (cameraSelected) {
-      if (typeof constraints.video === 'boolean') {
-        constraints.video = {}
-      }
+      // if (typeof constraints.video === 'boolean') {
+      //   constraints.video = {}
+      // }
       const videoConstraint = { ...constraints.video, deviceId: cameraSelected }
       setConstraints({
         ...constraints,
@@ -57,9 +57,9 @@ const MediaProvider = (props: IMediaProviderProps) => {
 
   React.useEffect(() => {
     if (microphoneSelected) {
-      if (typeof constraints.audio === 'boolean') {
-        constraints.audio = {}
-      }
+      // if (typeof constraints.audio === 'boolean') {
+      //   constraints.audio = {}
+      // }
       const audioConstraint = { ...constraints.audio, deviceId: microphoneSelected }
       setConstraints({
         ...constraints,
