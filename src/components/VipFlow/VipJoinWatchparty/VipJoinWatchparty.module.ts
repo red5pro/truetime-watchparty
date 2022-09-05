@@ -85,7 +85,8 @@ const useStyles = makeStyles()((theme: any) => {
     subscriberContainer: {
       display: 'flex',
       flexDirection: 'column',
-      width: '144px',
+      // width: '144px',
+      aspectRatio: '0.25',
       margin: '20px 0',
       paddingRight: '20px',
       alignItems: 'center',
