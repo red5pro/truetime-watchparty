@@ -175,10 +175,6 @@ const MainStage = () => {
   }, [seriesEpisode])
 
   React.useEffect(() => {
-    console.log('LOCK', seriesEpisode.locked)
-  }, [seriesEpisode])
-
-  React.useEffect(() => {
     if (maxParticipants > 0) {
       const half = maxParticipants / 2
       const column = `fit-content(230px)`
