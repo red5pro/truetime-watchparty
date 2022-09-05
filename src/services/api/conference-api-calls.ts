@@ -311,11 +311,11 @@ const banParticipant = async (
 }
 
 export const CONFERENCE_API_CALLS = {
-  getSeriesList: USE_LOCAL_SERVICES ? MOCK_API_CALLS.getSeriesList : getSeriesList,
-  getCurrentEpisode: USE_LOCAL_SERVICES ? MOCK_API_CALLS.getCurrentEpisode : getCurrentEpisode,
+  getSeriesList,
+  getCurrentEpisode,
   getAllEpisodesBySerie,
   getConferenceDetails,
-  getJoinDetails: USE_LOCAL_SERVICES ? MOCK_API_CALLS.getJoinDetails : getJoinDetails,
+  getJoinDetails,
   createConference,
   getAllConferences,
   getConferenceParticipants,
@@ -323,5 +323,5 @@ export const CONFERENCE_API_CALLS = {
   unlockConference,
   muteParticipant,
   banParticipant,
-  getConferenceLoby: USE_LOCAL_SERVICES ? MOCK_API_CALLS.getJoinDetails : getJoinDetails,
+  getConferenceLoby,
 }
