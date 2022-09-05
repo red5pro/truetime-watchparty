@@ -7,7 +7,7 @@ interface Props {
 const PublisherPortalStage = (props: Props) => {
   const { portalNode } = props
   return (
-    <div style={{ height: '100%' }}>
+    <div style={{ flexGrow: 1 }}>
       <portals.OutPortal node={portalNode} />
     </div>
   )
