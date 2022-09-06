@@ -1,32 +1,33 @@
 import * as React from 'react'
 import { Box, Typography } from '@mui/material'
-import FacebookIcon from '@mui/icons-material/Facebook'
 
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './Signin.module'
 import SignInEmail from './SignInEmail'
-import { IStepActionsSubComponent } from '../../../utils/commonUtils'
+import { IStepActionsSubComponent, UserRoles } from '../../../utils/commonUtils'
 import WbcLogoSmall from '../../../assets/logos/WbcLogoSmall'
+import SignInFacebook from './SignInFacebook'
 
 interface ISignInProps {
   onActions?: IStepActionsSubComponent
   emailSignin?: boolean
+  role?: UserRoles
+  redirectAfterLogin?: () => void
   validateAccount?: (account: any) => boolean
 }
 
 const Signin = (props: ISignInProps) => {
-  const { onActions, emailSignin, validateAccount } = props
+  const { onActions, emailSignin, role = UserRoles.PARTICIPANT, redirectAfterLogin, validateAccount } = props
   const { classes } = useStyles()
 
   const [signInEmail, setSignInEmail] = React.useState<boolean>(emailSignin ?? false)
-  const [signInFacebook, setSignInFacebook] = React.useState<boolean>(false)
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" className={classes.root}>
       <Box padding={2} className={classes.brandLogo}>
         <WbcLogoSmall />
       </Box>
-      {!signInEmail && !signInFacebook && (
+      {!signInEmail && (
         <Box display="flex" flexDirection="column" className={classes.container}>
           <Typography className={classes.title}>Sign In</Typography>
           <Typography marginY={1}>Create an account to start hosting watchparties!</Typography>
@@ -40,19 +41,12 @@ const Signin = (props: ISignInProps) => {
           </CustomButton>
           <Typography textAlign="center">Or</Typography>
 
-          <CustomButton
-            fullWidth
-            startIcon={<FacebookIcon />}
-            size={BUTTONSIZE.MEDIUM}
-            buttonType={BUTTONTYPE.FACEBOOK}
-            onClick={() => setSignInFacebook(true)}
-          >
-            Sign In with Facebook
-          </CustomButton>
+          <SignInFacebook onActions={onActions} role={role} redirectAfterLogin={redirectAfterLogin} />
         </Box>
       )}
-      {signInEmail && <SignInEmail onActions={onActions} validateAccount={validateAccount} />}
-      {signInFacebook && <Box>Facebook</Box>}
+      {signInEmail && (
+        <SignInEmail onActions={onActions} validateAccount={validateAccount} redirectAfterLogin={redirectAfterLogin} />
+      )}
     </Box>
   )
 }

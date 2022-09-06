@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { RTCSubscriber } from 'red5pro-webrtc-sdk'
 import VideoElement from '../VideoElement/VideoElement'
-import Loading from '../Loading/Loading'
+import Loading from '../Common/Loading/Loading'
 import { Box, Stack } from '@mui/material'
 import { MicOff, VideocamOff, AccountBox } from '@mui/icons-material'
 import { getContextAndNameFromGuid } from '../../utils/commonUtils'

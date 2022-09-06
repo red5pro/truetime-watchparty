@@ -23,3 +23,4 @@ export const ENABLE_DEBUG_UTILS = true
 
 export const PUBLISH_API_KEY = process.env.REACT_APP_PUBLISH_API_KEY
 export const SUBSCRIBE_API_KEY = process.env.REACT_APP_SUBSCRIBE_API_KEY
+export const FACEBOOK_APP_ID = process.env.REACT_APP_FACEBOOK_APP_ID

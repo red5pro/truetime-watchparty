@@ -5,7 +5,7 @@ import MediaContext from '../MediaContext/MediaContext'
 import useMediaStyles from './MediaSetup.module'
 import { DEFAULT_CONSTRAINTS } from '../../settings/variables'
 import { getDeviceListing } from '../../utils/deviceSelectorUtil'
-import Loading from '../Loading/Loading'
+import Loading from '../Common/Loading/Loading'
 import MediaControl, { MediaControlOption } from '../MediaSetup/MediaControl'
 import { Mic, Videocam } from '@mui/icons-material'
 

@@ -8,7 +8,7 @@ import EventContext from '../../EventContext/EventContext'
 import SetupPartyForm from './SetupPartyForm'
 import useStyles from './StartParty.module'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
-import Loading from '../../Loading/Loading'
+import Loading from '../../Common/Loading/Loading'
 
 const useEventContext = () => React.useContext(EventContext.Context)
 

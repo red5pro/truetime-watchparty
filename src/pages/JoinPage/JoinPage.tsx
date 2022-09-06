@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Box, Stack, Typography } from '@mui/material'
 
 import useCookies from '../../hooks/useCookies'
-import Loading from '../../components/Loading/Loading'
+import Loading from '../../components/Common/Loading/Loading'
 import useStyles from './JoinPage.module'
 import { Participant } from '../../models/Participant'
 

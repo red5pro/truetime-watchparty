@@ -1,6 +1,6 @@
 import { setLogLevel, RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
-import Loading from '../Loading/Loading'
+import Loading from '../Common/Loading/Loading'
 import VideoElement from '../VideoElement/VideoElement'
 import { Box, Stack, Typography } from '@mui/material'
 import { MicOff, VideocamOff, AccountBox } from '@mui/icons-material'
