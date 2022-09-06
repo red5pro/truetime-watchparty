@@ -10,6 +10,15 @@ export interface ConferenceState {
   participants: Participant[]
 }
 
+export interface NextVipConference {
+  conferenceId: number
+  displayName: string
+  joinToken: string
+  vipOkay: boolean
+  vipVisited: boolean
+  numParticipants: number
+}
+
 export interface ConferenceStatusEvent {
   messageType: string
   state: ConferenceState

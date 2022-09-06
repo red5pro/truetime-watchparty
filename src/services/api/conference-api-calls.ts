@@ -1,7 +1,7 @@
-import { USE_LOCAL_SERVICES } from './../../settings/variables'
-import { ParticipantMuteState } from './../../models/Participant'
 import axios, { AxiosResponse } from 'axios'
-import { AccountCredentials } from '../../models/AccountCredentials'
+
+import { AccountCredentials } from './../../models/AccountCredentials'
+import { ParticipantMuteState } from './../../models/Participant'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
 import { MOCK_API_CALLS } from './mock'
@@ -208,6 +208,58 @@ const getConferenceParticipants = async (conferenceId: string, account: AccountC
   }
 }
 
+const getNextVipConference = async (account: AccountCredentials) => {
+  try {
+    const params = {
+      user: account.email,
+      password: account.password,
+    }
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/nextvip`, { params })
+
+    return response
+  } catch (e: any) {
+    debugger
+    console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
+    return {
+      data: null,
+      status: e.code,
+      statusText: message,
+    } as AxiosResponse
+  }
+}
+
+const getVipConferenceList = async (account: AccountCredentials) => {
+  try {
+    const params = {
+      user: account.email,
+      password: account.password,
+    }
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/nextvip/debug`, { params })
+
+    return response
+  } catch (e: any) {
+    debugger
+    console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
+    return {
+      data: null,
+      status: e.code,
+      statusText: message,
+    } as AxiosResponse
+  }
+}
+
 const lockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
     const response: AxiosResponse = await axios.put(
@@ -324,4 +376,6 @@ export const CONFERENCE_API_CALLS = {
   muteParticipant,
   banParticipant,
   getConferenceLoby,
+  getNextVipConference,
+  getVipConferenceList,
 }
