@@ -1,19 +1,18 @@
 import * as React from 'react'
-import { Box, Grid, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { Participant } from '../../../models/Participant'
-import MainStageSubscriber from '../../MainStageSubscriber/MainStageSubscriber'
-import { STREAM_HOST, USE_STREAM_MANAGER } from '../../../settings/variables'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
-import useStyles, { styles } from './WatchpartyParticipants.module'
+import useStyles from './WatchpartyParticipants.module'
 import { ConferenceDetails } from '../../../models/ConferenceDetails'
 
 interface IWatchpartyParticipantsProps {
   disabled: boolean
   conferenceDetails?: ConferenceDetails
-  participants: Participant[]
+  participants: number //Participant[]
   skipNextConference: () => void
   buttonPrimary?: boolean
-  onJoinNextParty(details: ConferenceDetails): any
+  showNextConference?: boolean
+  onJoinNextParty(): Promise<any>
 }
 
 const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
@@ -23,7 +22,7 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
     participants,
     skipNextConference,
     onJoinNextParty,
-    buttonPrimary = false,
+    showNextConference = false,
   } = props
 
   const { classes } = useStyles()
@@ -38,7 +37,8 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
       className={classes.container}
     >
       <Typography className={classes.title}>{conferenceDetails?.displayName}</Typography>
-      <Typography>{`${participants.length} Attendee(s)`}</Typography>
+      {/* <Typography>{`${participants.length} Attendee(s)`}</Typography> */}
+      <Typography>{`${participants ?? 0} Attendee(s)`}</Typography>
       {/* Participants moved to Stage */}
       {/* <Box>
         {participants && (
@@ -57,11 +57,11 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
         <CustomButton
           labelStyle={disabled ? classes.disabledButton : classes.enabledButton}
           disabled={disabled}
-          onClick={() => onJoinNextParty(conferenceDetails!)}
+          onClick={() => onJoinNextParty()}
           size={BUTTONSIZE.SMALL}
           buttonType={disabled ? BUTTONTYPE.TERTIARY : BUTTONTYPE.SECONDARY}
         >
-          Join The Party
+          {showNextConference ? 'Join Next Party' : 'Join The Party'}
         </CustomButton>
         <CustomButton
           labelStyle={disabled ? classes.disabledButton : classes.enabledButton}
