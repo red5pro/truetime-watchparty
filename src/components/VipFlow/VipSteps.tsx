@@ -8,7 +8,7 @@ import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 
 import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
 import Signin from '../Account/Signin/Signin'
-import Loading from '../Loading/Loading'
+import Loading from '../Common/Loading/Loading'
 import MediaContext from '../MediaContext/MediaContext'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import Subscriber from '../Subscriber/Subscriber'
@@ -110,7 +110,7 @@ const VipSteps = () => {
     },
     {
       id: VipStepIdentify.SIGN_IN,
-      component: <Signin onActions={actions} validateAccount={validateAccount} />,
+      component: <Signin onActions={actions} role={UserRoles.VIP} validateAccount={validateAccount} />,
     },
     {
       id: VipStepIdentify.AV_SETUP,

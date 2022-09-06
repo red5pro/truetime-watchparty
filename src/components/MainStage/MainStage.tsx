@@ -8,7 +8,7 @@ import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-c
 
 import useCookies from '../../hooks/useCookies'
 import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
-import Loading from '../Loading/Loading'
+import Loading from '../Common/Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
 
 import useStyles from './MainStage.module'

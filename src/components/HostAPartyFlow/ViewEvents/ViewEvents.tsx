@@ -8,7 +8,7 @@ import ElementList from '../../Common/ElementList/ElementList'
 import { AccountCredentials } from '../../../models/AccountCredentials'
 import { getStartTimeFromTimestamp, IStepActionsSubComponent } from '../../../utils/commonUtils'
 import EventContext from '../../EventContext/EventContext'
-import Loading from '../../Loading/Loading'
+import Loading from '../../Common/Loading/Loading'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 
 const useEventContext = () => React.useContext(EventContext.Context)

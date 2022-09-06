@@ -63,7 +63,7 @@ export default function HostAPartySteps() {
     },
     {
       id: EStepIdentify.SIGN_IN,
-      component: <Signin onActions={actions} validateAccount={validateAccount} />,
+      component: <Signin onActions={actions} role={UserRoles.PARTICIPANT} validateAccount={validateAccount} />,
     },
     {
       id: EStepIdentify.START_PARTY,
