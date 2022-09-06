@@ -1,10 +1,12 @@
 import * as React from 'react'
 import { useCookies } from 'react-cookie'
 import MediaContext from '../../components/MediaContext/MediaContext'
+import ErrorModal from '../../components/Modal/ErrorModal'
 import VipSteps from '../../components/VipFlow/VipSteps'
 import VipJoinContext from '../../components/VipJoinContext/VipJoinContext'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { NextVipConference } from '../../models/ConferenceStatusEvent'
+import { FatalError } from '../../models/FatalError'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 
 const VipJoinPage = () => {
@@ -12,7 +14,7 @@ const VipJoinPage = () => {
 
   const [nextConferenceDetails, setNextConferenceDetails] = React.useState<ConferenceDetails>()
   const [nextConferences, setNextConferences] = React.useState<NextVipConference[]>()
-
+  const [fatalError, setFatalError] = React.useState<FatalError>()
   const [cookies] = useCookies(['account'])
 
   React.useEffect(() => {
@@ -22,7 +24,7 @@ const VipJoinPage = () => {
   }, [cookies.account])
 
   const getAllParties = async () => {
-    if (cookies.account) {
+    if (cookies.account && !fatalError) {
       // const response = await CONFERENCE_API_CALLS.getNextVipConference(cookies.account)
 
       const response = await CONFERENCE_API_CALLS.getVipConferenceList(cookies.account)
@@ -33,8 +35,17 @@ const VipJoinPage = () => {
           (item: NextVipConference) => item !== null && item.vipOkay && !item.vipVisited
         )
         setNextConferences(nextConfs)
-
         getFirstWatchParty(nextConfs)
+      } else {
+        setFatalError({
+          ...(response as any),
+          title: 'Connection Error',
+          closeLabel: 'RETRY',
+          onClose: () => {
+            setFatalError(undefined)
+            window.location.reload()
+          },
+        } as FatalError)
       }
     }
   }
@@ -94,7 +105,18 @@ const VipJoinPage = () => {
       nextConferenceDetails={nextConferenceDetails}
     >
       <MediaContext.Provider>
-        <VipSteps />
+        <>
+          <VipSteps />
+          {fatalError && (
+            <ErrorModal
+              open={!!fatalError}
+              title={fatalError.title || 'Error'}
+              message={fatalError.statusText}
+              closeLabel={fatalError.closeLabel || 'OK'}
+              onClose={fatalError.onClose}
+            ></ErrorModal>
+          )}
+        </>
       </MediaContext.Provider>
     </VipJoinContext.Provider>
   )
