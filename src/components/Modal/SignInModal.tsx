@@ -11,6 +11,8 @@ import { useCookies } from 'react-cookie'
 import { Box, LinearProgress, Stack, Typography } from '@mui/material'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
+import { UserAccount } from '../../models/UserAccount'
+import { USER_API_CALLS } from '../../services/api/user-api-calls'
 
 // TODO: Move these to common utils.
 const testPassword = (value?: string) => {
@@ -50,11 +52,13 @@ const SignInModal = (props: SignInModalProps) => {
   const { open, onDismiss } = props
 
   const { classes } = useStyles()
-  const [cookies, setCookie] = useCookies(['account'])
+  const [cookies, setCookie] = useCookies(['account', 'userAccount'])
 
   const [signInEmail, setSignInEmail] = React.useState<boolean>(false)
   const [signInFacebook, setSignInFacebook] = React.useState<boolean>(false)
-  const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<boolean>(false)
+  const [forgotPassword, setForgotPassword] = React.useState<boolean>(false)
+  const [accountUnverified, setAccountUnverified] = React.useState<boolean>(false)
+  const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string>()
 
   const reset = () => {
     const t = setTimeout(() => {
@@ -70,17 +74,30 @@ const SignInModal = (props: SignInModalProps) => {
   }
 
   const handleSubmit = async (values: any) => {
-    // const response = await API_REQUEST
+    const response = await USER_API_CALLS.signin(values.email, values.password)
+    if (response.status === 200 && response.data) {
+      const account: UserAccount = response.data
+      if (account.isVerified) {
+        setCookie('account', values, { secure: true })
+        setCookie('userAccount', response.data, { secure: true })
+        onDismiss(values)
+        reset()
+      } else {
+        setAccountUnverified(true)
+      }
+    } else {
+      setErrorAfterSubmit(response.statusText)
+    }
+  }
 
-    setCookie('account', values, { secure: true })
+  // TODO
+  if (forgotPassword) {
+    return <Box>Forgot Password</Box>
+  }
 
-    // if (response.data) {
-    onDismiss(values)
-    reset()
-    return
-    // }
-
-    // setErrorAfterSubmit(response.statusText)
+  // TODO
+  if (accountUnverified) {
+    return <Box>Verify Account</Box>
   }
 
   return (
@@ -136,6 +153,12 @@ const SignInModal = (props: SignInModalProps) => {
                 {(props: any) => {
                   const { submitForm, isSubmitting } = props
 
+                  const handleKeyPress = (ev: any) => {
+                    if (ev && ev.code === 'Enter') {
+                      submitForm()
+                    }
+                  }
+
                   return (
                     <Form method="post">
                       <Stack direction="column" marginY={4}>
@@ -155,6 +178,7 @@ const SignInModal = (props: SignInModalProps) => {
                           type="password"
                           label="Password"
                           className={classes.input}
+                          onKeyPress={handleKeyPress}
                         />
 
                         {/* TODO IMPLEMENT FORGOT PASSWORD */}
