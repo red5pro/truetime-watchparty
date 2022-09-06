@@ -262,22 +262,25 @@ const muteParticipant = async (
     const id = '' + participantId
     const payload: any = {}
     payload[id] = participantMuteState
-    const response: AxiosResponse = await axios.post(
+    const response: AxiosResponse = await axios.put(
       `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute?user=${account.email}&password=${account.password}`,
       payload
     )
     return response
   } catch (e: any) {
     console.log(e)
+    const code = e.code === 'ERR_BAD_REQUEST' ? 400 : e.code
     let message = e.message
     const { response } = e
     if (response && response.data) {
       const { error } = response.data
-      message = error
+      if (error) {
+        message = error
+      }
     }
     return {
       data: null,
-      status: e.code || 400,
+      status: code || 400,
       statusText: message,
     } as AxiosResponse
   }
@@ -296,15 +299,18 @@ const banParticipant = async (
     return response
   } catch (e: any) {
     console.log(e)
+    const code = e.code === 'ERR_BAD_REQUEST' ? 400 : e.code
     let message = e.message
     const { response } = e
     if (response && response.data) {
       const { error } = response.data
-      message = error
+      if (error) {
+        message = error
+      }
     }
     return {
       data: null,
-      status: e.code || 400,
+      status: code || 400,
       statusText: message,
     } as AxiosResponse
   }
