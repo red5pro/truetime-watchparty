@@ -69,6 +69,9 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
             setCookie('userAccount', userAccount, { secure: true })
 
             //TODO MAKE API CALL
+            //TODO GET MORE USER DATA IF NEEDED
+            // "https://graph.facebook.com/USER-ID?fields=id,name,email,picture&access_token=ACCESS-TOKEN"
+            // https://developers.facebook.com/docs/graph-api/overview
 
             if (onActions) {
               onActions.onNextStep()
