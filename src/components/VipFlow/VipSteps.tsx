@@ -36,7 +36,7 @@ enum VipStepIdentify {
 }
 
 const VipSteps = () => {
-  const [cookies, removeCookie] = useCookies(['userAccount', 'account'])
+  const [cookies, setCookie, removeCookie] = useCookies(['userAccount', 'account'])
 
   const mainVideoRef = React.useRef<SubscriberRef>(null)
 
@@ -74,14 +74,12 @@ const VipSteps = () => {
       const { role } = acc
       // We are dumping any previously entered account info if stored as non-VIP
       if (role !== UserRoles.VIP) {
-        removeCookie('userAccount', '')
-        removeCookie('account', '')
+        clearCookies()
       } else {
         requiresLogin = false
       }
     } else {
-      removeCookie('userAccount', '')
-      removeCookie('account', '')
+      clearCookies()
     }
 
     if (cookies.account && !requiresLogin) {
@@ -99,6 +97,11 @@ const VipSteps = () => {
       }
     }
   }, [seriesEpisode])
+
+  const clearCookies = () => {
+    removeCookie('userAccount', undefined)
+    removeCookie('account', undefined)
+  }
 
   const onMainVideoVolume = (value: number) => {
     if (mainVideoRef && mainVideoRef.current) {
