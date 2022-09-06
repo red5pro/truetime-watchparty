@@ -18,7 +18,9 @@ const LeaveMessage = () => {
       className={classes.container}
     >
       <Typography className={classes.title}>Thank you for joining us today!</Typography>
-      <Typography>{`You’ve visited ${partiesCount} parties and met ${totalAttendeesCount} attendees`}</Typography>
+
+      {/* TODO: COUNT NUMBERS OF PARTICIPANTS AND PARTIES JOINED */}
+      {/* <Typography>{`You’ve visited ${partiesCount} parties and met ${totalAttendeesCount} attendees`}</Typography> */}
 
       <Box display="flex" justifyContent="space-evenly" className={classes.buttonContainer}>
         <CustomButton
@@ -28,11 +30,7 @@ const LeaveMessage = () => {
         >
           Stay Longer
         </CustomButton>
-        <CustomButton
-          onClick={() => console.log('ending participation')}
-          size={BUTTONSIZE.SMALL}
-          buttonType={BUTTONTYPE.TERTIARY}
-        >
+        <CustomButton onClick={() => location.reload()} size={BUTTONSIZE.SMALL} buttonType={BUTTONTYPE.TERTIARY}>
           End Participation
         </CustomButton>
       </Box>
