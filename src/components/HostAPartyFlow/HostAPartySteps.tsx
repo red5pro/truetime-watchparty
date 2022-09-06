@@ -14,6 +14,7 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import EventContext from '../EventContext/EventContext'
+import { loadFBScriptAsyncronously } from '../../utils/facebookScript'
 
 enum EStepIdentify {
   LANDING = 0,
@@ -30,6 +31,17 @@ export default function HostAPartySteps() {
 
   const [activeStep, setActiveStep] = React.useState(0)
   const [startPartyData, setStartPartyData] = React.useState<ConferenceDetails | undefined>()
+  const [facebookLoaded, setFacebookLoaded] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    if (document.getElementById('facebook-jssdk')) {
+      setFacebookLoaded(true)
+      return
+    }
+
+    loadFBScriptAsyncronously()
+    document.getElementById('facebook-jssdk')?.addEventListener('load', () => setFacebookLoaded(true))
+  }, [])
 
   const onSubmitPartyData = (data: ConferenceDetails) => {
     setStartPartyData(data)
@@ -63,7 +75,14 @@ export default function HostAPartySteps() {
     },
     {
       id: EStepIdentify.SIGN_IN,
-      component: <Signin onActions={actions} role={UserRoles.PARTICIPANT} validateAccount={validateAccount} />,
+      component: (
+        <Signin
+          onActions={actions}
+          role={UserRoles.PARTICIPANT}
+          facebookLoaded={facebookLoaded}
+          validateAccount={validateAccount}
+        />
+      ),
     },
     {
       id: EStepIdentify.START_PARTY,

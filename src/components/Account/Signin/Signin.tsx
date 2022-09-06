@@ -11,13 +11,21 @@ import SignInFacebook from './SignInFacebook'
 interface ISignInProps {
   onActions?: IStepActionsSubComponent
   emailSignin?: boolean
+  facebookLoaded: boolean
   role?: UserRoles
   redirectAfterLogin?: () => void
   validateAccount?: (account: any) => boolean
 }
 
 const Signin = (props: ISignInProps) => {
-  const { onActions, emailSignin, role = UserRoles.PARTICIPANT, redirectAfterLogin, validateAccount } = props
+  const {
+    onActions,
+    emailSignin,
+    role = UserRoles.PARTICIPANT,
+    redirectAfterLogin,
+    facebookLoaded,
+    validateAccount,
+  } = props
   const { classes } = useStyles()
 
   const [signInEmail, setSignInEmail] = React.useState<boolean>(emailSignin ?? false)
@@ -39,9 +47,12 @@ const Signin = (props: ISignInProps) => {
           >
             Sign In with Email
           </CustomButton>
-          <Typography textAlign="center">Or</Typography>
-
-          <SignInFacebook onActions={onActions} role={role} redirectAfterLogin={redirectAfterLogin} />
+          {facebookLoaded && (
+            <>
+              <Typography textAlign="center">Or</Typography>
+              <SignInFacebook onActions={onActions} role={role} redirectAfterLogin={redirectAfterLogin} />{' '}
+            </>
+          )}
         </Box>
       )}
       {signInEmail && (
