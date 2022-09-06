@@ -84,25 +84,15 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
   }
 
   return (
-    <>
-      <CustomButton
-        fullWidth
-        startIcon={<FacebookIcon />}
-        size={BUTTONSIZE.MEDIUM}
-        buttonType={BUTTONTYPE.FACEBOOK}
-        onClick={click}
-      >
-        Sign In with Facebook
-      </CustomButton>
-
-      {/* <div
-        className="fb-login-button"
-        data-max-rows="1"
-        data-size="large"
-        data-button-type="continue_with"
-        data-use-continue-as="true"
-      ></div> */}
-    </>
+    <CustomButton
+      fullWidth
+      startIcon={<FacebookIcon />}
+      size={BUTTONSIZE.MEDIUM}
+      buttonType={BUTTONTYPE.FACEBOOK}
+      onClick={click}
+    >
+      Sign In with Facebook
+    </CustomButton>
   )
 }
 
