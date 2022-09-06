@@ -1,24 +1,15 @@
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 import Signin from '../../components/Account/Signin/Signin'
-import { loadFBScriptAsyncronously } from '../../utils/facebookScript'
+import Loading from '../../components/Common/Loading/Loading'
+import { useLoadScript } from '../../hooks/useLoadScript'
+import { parseQueryParamToObject } from '../../utils/commonUtils'
 
 const SignInPage = () => {
-  const [facebookLoaded, setFacebookLoaded] = React.useState<boolean>(false)
-
-  React.useEffect(() => {
-    if (document.getElementById('facebook-jssdk')) {
-      setFacebookLoaded(true)
-      return
-    }
-
-    loadFBScriptAsyncronously()
-    document.getElementById('facebook-jssdk')?.addEventListener('load', () => setFacebookLoaded(true))
-  }, [])
+  const facebookLoaded = useLoadScript()
 
   const navigate = useNavigate()
   const query = useQueryParams()
-  const navigate = useNavigate()
 
   const getLink = (link: string | null) => {
     return link === 'home' ? `/` : `/${link}`
@@ -26,6 +17,10 @@ const SignInPage = () => {
 
   const redirectAfterLogin = () => {
     navigate('/')
+  }
+
+  if (!facebookLoaded) {
+    return <Loading />
   }
 
   const onActions = query.get('r_id')
