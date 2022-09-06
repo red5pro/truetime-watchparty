@@ -1,12 +1,22 @@
-import React from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
 import Signin from '../../components/Account/Signin/Signin'
-import useQueryParams from '../../hooks/useQueryParams'
-import { IStepActionsSubComponent } from '../../utils/commonUtils'
+import { loadFBScriptAsyncronously } from '../../utils/facebookScript'
 
 const SignInPage = () => {
+  const [facebookLoaded, setFacebookLoaded] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    if (document.getElementById('facebook-jssdk')) {
+      setFacebookLoaded(true)
+      return
+    }
+
+    loadFBScriptAsyncronously()
+    document.getElementById('facebook-jssdk')?.addEventListener('load', () => setFacebookLoaded(true))
+  }, [])
+
   const navigate = useNavigate()
-  const location = useLocation()
   const query = useQueryParams()
   const navigate = useNavigate()
 
@@ -29,7 +39,7 @@ const SignInPage = () => {
       } as IStepActionsSubComponent)
     : undefined
 
-  return <Signin onActions={onActions} redirectAfterLogin={redirectAfterLogin} />
+  return <Signin onActions={onActions} redirectAfterLogin={redirectAfterLogin} facebookLoaded={facebookLoaded} />
 }
 
 export default SignInPage

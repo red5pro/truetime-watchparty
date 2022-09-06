@@ -6,11 +6,14 @@ export const loadFBScriptAsyncronously = () => {
     document.body.appendChild(rootElem)
   }
 
+  //TODO: CHANGE THIS TO USE GEO LOC
+  const location = 'en_US'
+
   const script = document.createElement('script')
   script.id = 'facebook-jssdk'
-  script.src = `https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v14.0`
+  script.src = `https://connect.facebook.net/${location}/sdk.js#xfbml=1&version=v14.0`
   script.nonce = 'Pv4Itb3k'
-  script.defer = true
+  script.async = true
 
   document.body.appendChild(script)
 }
