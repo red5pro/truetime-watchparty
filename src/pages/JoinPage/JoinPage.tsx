@@ -61,8 +61,8 @@ const JoinPage = () => {
       const { role } = acc
       // VIPs can't join as a VIP though the main stage.
       if (role === UserRoles.VIP) {
-        removeCookie('userAccount', '')
-        removeCookie('account', '')
+        removeCookie('userAccount', undefined)
+        removeCookie('account', undefined)
       }
     }
   }, [cookies])
