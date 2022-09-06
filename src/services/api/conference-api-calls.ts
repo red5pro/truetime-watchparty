@@ -218,7 +218,7 @@ const getNextVipConference = async (account: AccountCredentials) => {
 
     return response
   } catch (e: any) {
-    debugger
+    // debugger
     console.log(e)
     let message = e.message
     const { response } = e
@@ -244,7 +244,7 @@ const getVipConferenceList = async (account: AccountCredentials) => {
 
     return response
   } catch (e: any) {
-    debugger
+    // debugger
     console.log(e)
     let message = e.message
     const { response } = e
