@@ -2,12 +2,12 @@ import { Box, Stepper } from '@mui/material'
 import * as React from 'react'
 import useCookies from '../../hooks/useCookies'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import { useLoadScript } from '../../hooks/useLoadScript'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { Episode } from '../../models/Episode'
 import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 
 import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
-import { loadFBScriptAsyncronously } from '../../utils/facebookScript'
 import Signin from '../Account/Signin/Signin'
 import Loading from '../Common/Loading/Loading'
 import MediaContext from '../MediaContext/MediaContext'
@@ -47,9 +47,9 @@ const VipSteps = () => {
 
   const [onBoarding, setOnboarding] = React.useState<boolean>(true)
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
-  const [facebookLoaded, setFacebookLoaded] = React.useState<boolean>(false)
 
   const { classes } = useStyles()
+  const facebookLoaded = useLoadScript()
 
   const { loading, error, seriesEpisode, account, setAccount, setLoggedIn } = useJoinContext()
   const { mediaStream, setConstraints, setMediaStream } = useMediaContext()
@@ -62,16 +62,6 @@ const VipSteps = () => {
       setMediaStream(undefined)
     }
   }
-
-  React.useEffect(() => {
-    if (document.getElementById('facebook-jssdk')) {
-      setFacebookLoaded(true)
-      return
-    }
-
-    loadFBScriptAsyncronously()
-    document.getElementById('facebook-jssdk')?.addEventListener('load', () => setFacebookLoaded(true))
-  }, [])
 
   React.useEffect(() => {
     if (activeStep < VipStepIdentify.AV_SETUP) {
