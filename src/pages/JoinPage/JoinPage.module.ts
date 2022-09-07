@@ -16,6 +16,7 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'relative',
       left: '74px',
       margin: '10px 0',
+      width: 'fit-content',
     },
     joinTitleLarge: {
       textAlign: 'center',

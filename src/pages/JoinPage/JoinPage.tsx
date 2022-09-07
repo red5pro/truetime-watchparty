@@ -61,8 +61,8 @@ const JoinPage = () => {
       const { role } = acc
       // VIPs can't join as a VIP though the main stage.
       if (role === UserRoles.VIP) {
-        removeCookie('userAccount', '')
-        removeCookie('account', '')
+        removeCookie('userAccount', undefined)
+        removeCookie('account', undefined)
       }
     }
   }, [cookies])
@@ -200,6 +200,7 @@ const JoinPage = () => {
             alt="Join a Party Main Image"
             src={require('../../assets/images/BoxMainImage.png')}
             style={{
+              width: '100%',
               opacity: currentSection === Section.Nickname ? 0.5 : 1,
               display: currentSection === Section.Landing || currentSection === Section.Nickname ? 'block' : 'none',
             }}
@@ -218,8 +219,7 @@ const JoinPage = () => {
               {/* <OracleLogo /> */}
               <Box sx={{ width: 'auto', height: '70px' }}>
                 <img
-                  width="100%"
-                  height="100%"
+                  height="70px"
                   alt="Logo Placeholder"
                   src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
                 ></img>
