@@ -517,7 +517,7 @@ const MainStage = () => {
 
               <Box className={chatClasses.inputChatContainer}>
                 {layout.layout === Layout.FULLSCREEN && (
-                  <Box className={`${chatClasses.chatContainer} ${chatClasses.fullScreenChatContainer}`}>
+                  <Box className={`${chatClasses.fullScreenChatContainer} ${chatClasses.chatContainer} `}>
                     <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
                       <TypingIndicator />
                     </MessageList>
