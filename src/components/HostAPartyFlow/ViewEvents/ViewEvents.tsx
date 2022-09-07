@@ -28,12 +28,6 @@ const ViewEvents = (props: IViewEventsProps) => {
   const { classes } = useStyles()
   const dateOptions: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' }
 
-  React.useEffect(() => {
-    if (eventData.loaded) {
-      console.log('TIME', eventData.currentEpisode, getStartTimeFromTimestamp(eventData.currentEpisode?.startTime))
-    }
-  }, [eventData])
-
   const onCreateAParty = () => {
     onActions.onNextStep()
   }
@@ -97,7 +91,7 @@ const ViewEvents = (props: IViewEventsProps) => {
                 <Typography sx={{ fontSize: '14px' }} mr={2}>
                   Already have a party?
                 </Typography>
-                <Link to="login" className={classes.link}>
+                <Link to="login?r_id=home" className={classes.link}>
                   Sign in
                 </Link>
               </Box>
