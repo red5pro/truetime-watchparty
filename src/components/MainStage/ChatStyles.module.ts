@@ -11,7 +11,6 @@ const useChatStyles = makeStyles()((theme: any) => ({
     bottom: '5rem',
     zIndex: 10,
     background: 'rgba(48, 48, 48, 0.6) 30%',
-    filter: 'hue-rotate(45deg)',
     border: '1px solid rgba(255, 255, 255, 0.15)',
     color: 'white',
 
