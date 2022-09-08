@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { useCookies } from 'react-cookie'
+
+import useCookies from '../../hooks/useCookies'
 import MediaContext from '../../components/MediaContext/MediaContext'
 import ErrorModal from '../../components/Modal/ErrorModal'
 import VipSteps from '../../components/VipFlow/VipSteps'

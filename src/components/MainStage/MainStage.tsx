@@ -1,15 +1,15 @@
 import React from 'react'
 import * as portals from 'react-reverse-portal'
 import { useNavigate } from 'react-router-dom'
-import { IconButton, Box, Typography, Stack, Divider, Tooltip, Button } from '@mui/material'
+import { IconButton, Box, Typography, Stack, Divider, Tooltip } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-material'
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
 
+import useCookies from '../../hooks/useCookies'
 import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
-import { useCookies } from 'react-cookie'
 
 import useStyles from './MainStage.module'
 import MediaContext from '../MediaContext/MediaContext'

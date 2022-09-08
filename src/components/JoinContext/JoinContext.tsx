@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react'
-import { useCookies } from 'react-cookie'
 import { useNavigate, useParams } from 'react-router-dom'
-import useQueryParams from '../../hooks/useQueryParams'
+
+import useCookies from '../../hooks/useCookies'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { getCurrentEpisode } from '../../services/conference/conference'

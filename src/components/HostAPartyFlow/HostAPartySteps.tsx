@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { useCookies } from 'react-cookie'
-
 import Box from '@mui/material/Box'
 import Stepper from '@mui/material/Stepper'
 import Button from '@mui/material/Button'
-import useStyles from './HostAPartySteps.module'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+
+import useCookies from '../../hooks/useCookies'
+import useStyles from './HostAPartySteps.module'
 import StartParty from './StartParty/StartParty'
 import ViewEvents from './ViewEvents/ViewEvents'
 import Signin from '../Account/Signin/Signin'

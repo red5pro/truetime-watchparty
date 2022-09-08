@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as Yup from 'yup'
-import { useCookies } from 'react-cookie'
+import useCookies from '../../../hooks/useCookies'
 import { Box, LinearProgress, Typography } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
