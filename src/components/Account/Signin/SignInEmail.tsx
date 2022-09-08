@@ -1,6 +1,8 @@
 import * as React from 'react'
 import * as Yup from 'yup'
-import { useCookies } from 'react-cookie'
+
+import useCookies from '../../../hooks/useCookies'
+
 import { Box, LinearProgress, Link, Typography } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
@@ -53,8 +55,8 @@ const SignInEmail = (props: ISignInEmailProps) => {
     if (response.status === 200 && response.data) {
       const account: UserAccount = response.data
       if (account.isVerified) {
-        setCookie('account', values, { secure: true })
-        setCookie('userAccount', response.data, { secure: true })
+        setCookie('account', values, { secure: true, samesite: 'Strict' })
+        setCookie('userAccount', response.data, { secure: true, samesite: 'Strict' })
 
         if (onActions) {
           onActions.onNextStep()

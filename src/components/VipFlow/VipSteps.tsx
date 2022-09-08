@@ -1,6 +1,6 @@
 import { Box, Stepper } from '@mui/material'
 import * as React from 'react'
-import { useCookies } from 'react-cookie'
+import useCookies from '../../hooks/useCookies'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { Episode } from '../../models/Episode'
@@ -99,8 +99,8 @@ const VipSteps = () => {
   }, [seriesEpisode])
 
   const clearCookies = () => {
-    removeCookie('userAccount', undefined)
-    removeCookie('account', undefined)
+    removeCookie('userAccount')
+    removeCookie('account')
   }
 
   const onMainVideoVolume = (value: number) => {
