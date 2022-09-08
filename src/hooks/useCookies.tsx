@@ -64,7 +64,6 @@ const useCookies = (keys: string[]) => {
   const [cookies, setCookies] = React.useState<any>(getNamesCookies(keys))
 
   const setCookie = (key: string, value: any, options?: ICookieOptions) => {
-    debugger
     const opt = options ? parseObjToStringOptions(options) : ''
     const val = typeof value === 'object' ? encodeURI(JSON.stringify(value)) : value.toString()
 
