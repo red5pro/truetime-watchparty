@@ -27,6 +27,28 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
 
   const { classes } = useStyles()
 
+  if (!conferenceDetails) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        flexDirection="column"
+        marginLeft={2}
+        className={classes.container}
+      >
+        <CustomButton
+          labelStyle={classes.enabledButton}
+          onClick={() => skipNextConference()}
+          size={BUTTONSIZE.MEDIUM}
+          buttonType={disabled ? BUTTONTYPE.TERTIARY : BUTTONTYPE.SECONDARY}
+        >
+          {'Get Next Conference'}
+        </CustomButton>
+      </Box>
+    )
+  }
+
   return (
     <Box
       display="flex"
