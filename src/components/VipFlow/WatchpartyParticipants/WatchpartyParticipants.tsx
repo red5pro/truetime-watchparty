@@ -8,7 +8,7 @@ import { ConferenceDetails } from '../../../models/ConferenceDetails'
 interface IWatchpartyParticipantsProps {
   disabled: boolean
   conferenceDetails?: ConferenceDetails
-  participants: number //Participant[]
+  participants: Participant[]
   skipNextConference: () => void
   buttonPrimary?: boolean
   showNextConference?: boolean
@@ -37,8 +37,7 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
       className={classes.container}
     >
       <Typography className={classes.title}>{conferenceDetails?.displayName}</Typography>
-      {/* <Typography>{`${participants.length} Attendee(s)`}</Typography> */}
-      <Typography>{`${participants ?? 0} Attendee(s)`}</Typography>
+      <Typography>{`${participants?.length} Attendee(s)`}</Typography>
       {/* Participants moved to Stage */}
       {/* <Box>
         {participants && (
