@@ -67,6 +67,8 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
 
   const vipRef = React.useRef<PublisherRef>(null)
 
+  console.log({ nextVipConferenceDetails })
+
   React.useEffect(() => {
     // Fatal Socket Error.
     if (error) {
@@ -245,22 +247,17 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
                 />
               </Box>
             )}
-            {!nextVipConferenceDetails ? (
-              <LeaveMessage canStayLonger={false} />
-            ) : (
-              <>
-                <WatchpartyParticipants
-                  disabled={!showMediaStream}
-                  conferenceDetails={nextVipConferenceDetails}
-                  participants={nextVipConferenceDetails?.participants.filter(
-                    (p: Participant) => p.role !== UserRoles.VIP
-                  )}
-                  skipNextConference={skipOrGetNextConference}
-                  showNextConference={showNextConference}
-                  onJoinNextParty={onJoinNextParty}
-                />
-              </>
-            )}
+
+            <WatchpartyParticipants
+              disabled={!showMediaStream}
+              conferenceDetails={nextVipConferenceDetails}
+              participants={
+                nextVipConferenceDetails?.participants.filter((p: Participant) => p.role !== UserRoles.VIP) ?? []
+              }
+              skipNextConference={skipOrGetNextConference}
+              showNextConference={showNextConference}
+              onJoinNextParty={onJoinNextParty}
+            />
           </>
         )}
       </Box>
