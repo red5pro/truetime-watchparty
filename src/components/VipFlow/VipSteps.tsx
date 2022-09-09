@@ -49,7 +49,7 @@ const VipSteps = () => {
 
   const { classes } = useStyles()
 
-  const { loading, error, seriesEpisode } = useJoinContext()
+  const { loading, error, seriesEpisode, setLoggedIn } = useJoinContext()
   const { mediaStream, setConstraints, setMediaStream } = useMediaContext()
 
   const clearMediaContext = () => {
@@ -135,7 +135,6 @@ const VipSteps = () => {
       component: (
         <WatchContext.Provider>
           <VipJoinWatchparty
-            account={accountCredentials}
             currentEpisode={currentEpisode}
             onCancelOnboarding={() => setOnboarding(false)}
             onMainVideoVolume={onMainVideoVolume}
@@ -148,6 +147,9 @@ const VipSteps = () => {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => {
       const nextStep = prevActiveStep + 1
+      if (prevActiveStep === VipStepIdentify.SIGN_IN) {
+        setLoggedIn(true)
+      }
       if (nextStep === VipStepIdentify.SIGN_IN && cookies && cookies.account) {
         // skip sign in step if account is present
         return nextStep + 1
@@ -184,7 +186,7 @@ const VipSteps = () => {
       {error && (
         <SimpleAlertDialog
           title="Something went wrong"
-          message={`${error.status} - ${error.statusText}`}
+          message={`${error.status ?? error.title} - ${error.statusText}`}
           confirmLabel="Retry"
           onConfirm={onRetryRequest}
         />

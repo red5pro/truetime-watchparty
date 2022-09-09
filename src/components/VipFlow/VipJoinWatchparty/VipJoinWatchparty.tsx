@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Box, Divider, Stack, Typography } from '@mui/material'
-import { AccountCredentials } from '../../../models/AccountCredentials'
-import { isMobileScreen } from '../../../utils/commonUtils'
+import { isMobileScreen, UserRoles } from '../../../utils/commonUtils'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './VipJoinWatchparty.module'
 import { Participant } from '../../../models/Participant'
@@ -22,6 +21,7 @@ import VolumeControl from '../../VolumeControl/VolumeControl'
 import Loading from '../../Loading/Loading'
 import MainStageSubscriber from '../../MainStageSubscriber/MainStageSubscriber'
 import VipJoinContext from '../../VipJoinContext/VipJoinContext'
+import useCookies from '../../../hooks/useCookies'
 
 const useJoinContext = () => React.useContext(VipJoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -35,57 +35,37 @@ interface PublisherRef {
 }
 
 interface IVipSeeParticipantsProps {
-  account?: AccountCredentials
   currentEpisode?: Episode
   onCancelOnboarding(): any
   onMainVideoVolume(value: number): any
 }
 
 const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
-  const { account, currentEpisode, onCancelOnboarding, onMainVideoVolume } = props
-
-  // const [participants, setParticipants] = React.useState<Participant[]>([])
-  // const [conferenceDetails, setConferenceDetails] = React.useState<ConferenceDetails>()
-
-  // const [nextParticipants, setNextParticipants] = React.useState<Participant[]>([])
-  // const [nextConferenceDetails, setNextConferenceDetails] = React.useState<ConferenceDetails>()
+  const { currentEpisode, onCancelOnboarding, onMainVideoVolume } = props
   const [showNextConference, setShowNextConference] = React.useState<boolean>(false)
   const [showDisclaimer, setShowDisclaimer] = React.useState<boolean>(true)
   const [showMediaStream, setShowMediaStream] = React.useState<boolean>(false)
   const [vipBroadcastAvailable, setVipBroadcastAvailable] = React.useState<boolean>(false)
   const [finishedCountdown, setFinishedCountdown] = React.useState<boolean>(false)
   const [startedCountdown, setStartedCountdown] = React.useState<boolean>(false)
-  const [noMoreConferences, setNoMoreConferences] = React.useState<boolean>(false)
-
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
 
   const { classes } = useStyles()
-
-  const vipRef = React.useRef<PublisherRef>(null)
-
-  const joinContext = useJoinContext()
-
-  const { currentConferenceData, nextVipConferenceDetails, fingerprint, getNextConference } = useJoinContext()
-
+  const [cookies] = useCookies(['account'])
+  const {
+    currentConferenceData,
+    nextVipConferenceDetails,
+    setCurrentConferenceGetNext,
+    getNextConference,
+    fingerprint,
+    getStreamGuid,
+  } = useJoinContext()
   const { loading, error, join, leave, data } = useWatchContext()
   const { mediaStream } = useMediaContext()
 
   const isMobile = isMobileScreen()
 
-  const getSocketUrl = (token: string, guid: string) => {
-    // TODO: How to get display name of VIP?
-    const request: ConnectionRequest = {
-      displayName: 'VIP Guest',
-      joinToken: token,
-      streamGuid: guid,
-      fingerprint: joinContext.fingerprint,
-      messageType: 'JoinConferenceRequest',
-      username: account?.email,
-      password: account?.password,
-    } as ConnectionRequest
-
-    return { url: API_SOCKET_HOST, request }
-  }
+  const vipRef = React.useRef<PublisherRef>(null)
 
   React.useEffect(() => {
     // Fatal Socket Error.
@@ -102,70 +82,44 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   }, [error])
 
   React.useEffect(() => {
-    joinFirstWatchParty()
-  }, [])
-
-  const joinFirstWatchParty = async () => {
-    joinContext.setCurrentConferenceData(currentConferenceData)
-    joinContext.setJoinToken(currentConferenceData.joinToken)
-  }
-
-  const joinNextConference = async () => {
-    joinContext.setCurrentConferenceData(nextVipConferenceDetails)
-    joinContext.setJoinToken(nextVipConferenceDetails.joinToken)
-
-    await skipOrGetNextConference()
-  }
-
-  // const getNextConference = async () => {
-  //   if (account) {
-  //     const response = await CONFERENCE_API_CALLS.getNextVipConference(account)
-
-  //     if (response.status === 200 && Object.values(response.data).length) {
-  //       const nextVipConf = response.data
-
-  //       const confDetails = await CONFERENCE_API_CALLS.getConferenceDetails(nextVipConf.conferenceId, account)
-  //       const confLoby = await CONFERENCE_API_CALLS.getConferenceLoby(confDetails.data.joinToken)
-
-  //       const { data } = confLoby
-  //       if (data && confDetails.data) {
-  //         setNextConferenceDetails(nextVipConferenceDetails)
-
-  //       }
-
-  //       return { confDetails: confDetails.data, participants: data.participants }
-  //     }
-  //   }
-
-  //   return null
-  // }
-
-  const skipOrGetNextConference = async () => {
-    const nextConference = await getNextConference()
-
-    console.log({ nextConference })
-
-    if (nextConference && nextConference.confDetails) {
-      setShowNextConference(true)
-    } else {
-      setNoMoreConferences(true)
-    }
-  }
-
-  React.useEffect(() => {
     if (showMediaStream && mediaStream) {
       onVolumeChange(VIDEO_VOLUME)
     }
   }, [showMediaStream, mediaStream])
 
+  const joinNextConference = async () => {
+    await setCurrentConferenceGetNext()
+    setShowNextConference(true)
+  }
+
+  const skipOrGetNextConference = async () => {
+    const nextConference = await getNextConference(false)
+    setShowNextConference(nextConference)
+  }
+
+  const getSocketUrl = (token: string, guid: string) => {
+    // TODO: How to get display name of VIP?
+    const request: ConnectionRequest = {
+      displayName: 'VIP Guest',
+      joinToken: token,
+      streamGuid: guid,
+      fingerprint: fingerprint,
+      messageType: 'JoinConferenceRequest',
+      username: cookies.account?.email,
+      password: cookies.account?.password,
+    } as ConnectionRequest
+
+    return { url: API_SOCKET_HOST, request }
+  }
+
   const onJoinNextParty = async () => {
     if (nextVipConferenceDetails) {
       leave()
-      const streamGuid = joinContext.getStreamGuid()
+      const streamGuid = getStreamGuid()
       const { url, request } = getSocketUrl(nextVipConferenceDetails.joinToken, streamGuid)
       setStartedCountdown(true)
       join(url, request)
-      await joinNextConference()
+      joinNextConference()
     }
   }
 
@@ -269,7 +223,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
         )}
         {/* CHECK WHEN WE SHOULD DISPLAY THIS */}
         {finishedCountdown ? (
-          <LeaveMessage />
+          <LeaveMessage canStayLonger={true} />
         ) : (
           <>
             {!showDisclaimer && (
@@ -291,18 +245,16 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
                 />
               </Box>
             )}
-            {noMoreConferences ? (
-              <LeaveMessage />
+            {!nextVipConferenceDetails ? (
+              <LeaveMessage canStayLonger={false} />
             ) : (
               <>
                 <WatchpartyParticipants
-                  disabled={
-                    !showMediaStream || (showNextConference ? !nextVipConferenceDetails : !currentConferenceData)
-                  }
-                  conferenceDetails={showNextConference ? nextVipConferenceDetails : currentConferenceData}
-                  participants={
-                    showNextConference ? nextVipConferenceDetails.participants : currentConferenceData.participants
-                  }
+                  disabled={!showMediaStream}
+                  conferenceDetails={nextVipConferenceDetails}
+                  participants={nextVipConferenceDetails?.participants.filter(
+                    (p: Participant) => p.role !== UserRoles.VIP
+                  )}
                   skipNextConference={skipOrGetNextConference}
                   showNextConference={showNextConference}
                   onJoinNextParty={onJoinNextParty}
@@ -320,7 +272,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
             ref={vipRef}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
-            streamGuid={joinContext.getStreamGuid()}
+            streamGuid={getStreamGuid()}
             stream={mediaStream}
             styles={{
               borderRadius: '20px',
@@ -363,7 +315,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
         </Box>
       )}
       {/* Interim loading of party participants while setting up broadcast */}
-      {currentConferenceData.participants && showMediaStream && !vipBroadcastAvailable && (
+      {currentConferenceData?.participants && showMediaStream && !vipBroadcastAvailable && (
         <Box className={classes.participantsLoading}>
           <Loading text={`Loading participants of ${currentConferenceData?.displayName}...`} />
         </Box>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 

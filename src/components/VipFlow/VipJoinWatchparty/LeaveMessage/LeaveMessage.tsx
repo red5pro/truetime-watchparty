@@ -2,7 +2,11 @@ import { Box, Typography } from '@mui/material'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../../Common/CustomButton/CustomButton'
 import useStyles from './LeaveMessage.module'
 
-const LeaveMessage = () => {
+interface ILeaveMessageProps {
+  canStayLonger: boolean
+}
+
+const LeaveMessage = ({ canStayLonger }: ILeaveMessageProps) => {
   const { classes } = useStyles()
 
   const partiesCount = 24
@@ -23,13 +27,15 @@ const LeaveMessage = () => {
       {/* <Typography>{`You’ve visited ${partiesCount} parties and met ${totalAttendeesCount} attendees`}</Typography> */}
 
       <Box display="flex" justifyContent="space-evenly" className={classes.buttonContainer}>
-        <CustomButton
-          onClick={() => console.log('stay longer')}
-          size={BUTTONSIZE.SMALL}
-          buttonType={BUTTONTYPE.SECONDARY}
-        >
-          Stay Longer
-        </CustomButton>
+        {canStayLonger && (
+          <CustomButton
+            onClick={() => console.log('stay longer')}
+            size={BUTTONSIZE.SMALL}
+            buttonType={BUTTONTYPE.SECONDARY}
+          >
+            Stay Longer
+          </CustomButton>
+        )}
         <CustomButton onClick={() => location.reload()} size={BUTTONSIZE.SMALL} buttonType={BUTTONTYPE.TERTIARY}>
           End Participation
         </CustomButton>
