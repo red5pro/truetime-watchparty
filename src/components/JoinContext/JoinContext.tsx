@@ -39,7 +39,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const uid = useUID()
   const params = useParams()
   const navigate = useNavigate()
-  const [cookies] = useCookies(['account'])
+  const { getCookies } = useCookies(['account'])
 
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
@@ -153,7 +153,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const lock = async (conferenceId: string | number) => {
     if (conferenceData) {
       try {
-        const result = await CONFERENCE_API_CALLS.lockConference(conferenceId, cookies.account)
+        const result = await CONFERENCE_API_CALLS.lockConference(conferenceId, getCookies().account)
         if (result.status !== 200) {
           throw { data: null, status: result.status, statusText: `Could not unlock conference.` }
         }
@@ -171,7 +171,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const unlock = async (conferenceId: string | number) => {
     if (conferenceData) {
       try {
-        const result = await CONFERENCE_API_CALLS.unlockConference(conferenceId, cookies.account)
+        const result = await CONFERENCE_API_CALLS.unlockConference(conferenceId, getCookies().account)
         if (result.status !== 200) {
           throw { data: null, status: result.status, statusText: `Could not unlock conference.` }
         }

@@ -63,24 +63,55 @@ const parseObjToStringOptions = (obj: any) => {
 const useCookies = (keys: string[]) => {
   const [cookies, setCookies] = React.useState<any>(getNamesCookies(keys))
 
+  const previousCookiesRef = React.useRef(cookies)
+
+  const updateCookies = () => {
+    const newCookies = getNamesCookies(keys)
+
+    if (shouldUpdate(null, newCookies, previousCookiesRef.current)) {
+      setCookies(newCookies)
+      previousCookiesRef.current = newCookies
+    }
+  }
+
+  const getCookies = () => {
+    if (Object.keys(cookies).length) {
+      return cookies
+    }
+    return getNamesCookies(keys)
+  }
+
   const setCookie = (key: string, value: any, options?: ICookieOptions) => {
     const opt = options ? parseObjToStringOptions(options) : ''
     const val = typeof value === 'object' ? encodeURI(JSON.stringify(value)) : value.toString()
 
     document.cookie = `${key}=${val}${opt}`
-    setCookies(getNamesCookies(keys))
+    updateCookies()
   }
 
   const removeCookie = (key: string) => {
     document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`
-    document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
     if (cookies && Object.prototype.hasOwnProperty.call(cookies, key)) {
       delete cookies[key]
-      setCookies(cookies)
+      updateCookies()
     }
   }
 
-  return [cookies, setCookie, removeCookie]
+  return { getCookies, setCookie, removeCookie }
 }
 
 export default useCookies
+
+function shouldUpdate<U = { [K: string]: any }>(dependencies: Array<keyof U> | null, newCookies: U, oldCookies: U) {
+  if (!dependencies) {
+    return true
+  }
+
+  for (const dependency of dependencies) {
+    if (newCookies[dependency] !== oldCookies[dependency]) {
+      return true
+    }
+  }
+
+  return false
+}

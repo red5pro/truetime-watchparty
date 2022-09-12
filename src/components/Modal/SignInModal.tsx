@@ -41,7 +41,7 @@ const SignInModal = (props: SignInModalProps) => {
   const { open, onDismiss } = props
 
   const { classes } = useStyles()
-  const [cookies, setCookie] = useCookies(['account', 'userAccount'])
+  const { getCookies, setCookie } = useCookies(['account', 'userAccount'])
 
   const [signInEmail, setSignInEmail] = React.useState<boolean>(false)
   const [signInFacebook, setSignInFacebook] = React.useState<boolean>(false)
@@ -132,7 +132,7 @@ const SignInModal = (props: SignInModalProps) => {
             {signInEmail && (
               <Formik
                 initialValues={{
-                  email: cookies && cookies.account ? cookies.account.email : '',
+                  email: getCookies()?.account?.email ?? '',
                   password: '',
                 }}
                 validationSchema={validationSchema}
