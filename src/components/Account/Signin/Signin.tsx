@@ -11,10 +11,11 @@ import WbcLogoSmall from '../../../assets/logos/WbcLogoSmall'
 interface ISignInProps {
   onActions?: IStepActionsSubComponent
   emailSignin?: boolean
+  validateAccount?: (account: any) => boolean
 }
 
 const Signin = (props: ISignInProps) => {
-  const { onActions, emailSignin } = props
+  const { onActions, emailSignin, validateAccount } = props
   const { classes } = useStyles()
 
   const [signInEmail, setSignInEmail] = React.useState<boolean>(emailSignin ?? false)
@@ -50,7 +51,7 @@ const Signin = (props: ISignInProps) => {
           </CustomButton>
         </Box>
       )}
-      {signInEmail && <SignInEmail onActions={onActions} />}
+      {signInEmail && <SignInEmail onActions={onActions} validateAccount={validateAccount} />}
       {signInFacebook && <Box>Facebook</Box>}
     </Box>
   )

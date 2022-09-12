@@ -11,7 +11,7 @@ import ViewEvents from './ViewEvents/ViewEvents'
 import Signin from '../Account/Signin/Signin'
 import ShareLink from './ShareLink/ShareLink'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
-import { IStepActionsSubComponent } from '../../utils/commonUtils'
+import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import EventContext from '../EventContext/EventContext'
 
@@ -26,9 +26,7 @@ enum EStepIdentify {
 
 export default function HostAPartySteps() {
   const { classes } = useStyles()
-  const { getCookies } = useCookies(['account'])
-
-  const [account, setAccount] = React.useState()
+  const { getCookies, removeCookie } = useCookies(['account'])
 
   const [activeStep, setActiveStep] = React.useState(0)
   const [startPartyData, setStartPartyData] = React.useState<ConferenceDetails | undefined>()
@@ -43,22 +41,40 @@ export default function HostAPartySteps() {
     return true
   }
 
-  React.useEffect(() => {
-    setAccount(getCookies()?.account)
-  }, [])
+  const clearCookies = () => {
+    removeCookie('userAccount')
+    removeCookie('account')
+  }
+
+  const validateAccount = (account: any) => {
+    if (account.role === UserRoles.ORGANIZER) {
+      return true
+    }
+    {
+      clearCookies()
+      return false
+    }
+  }
 
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: EStepIdentify.LANDING,
-      component: <ViewEvents onActions={actions} account={account} />,
+      component: <ViewEvents onActions={actions} account={getCookies().account} />,
     },
     {
       id: EStepIdentify.SIGN_IN,
-      component: <Signin onActions={actions} />,
+      component: <Signin onActions={actions} validateAccount={validateAccount} />,
     },
     {
       id: EStepIdentify.START_PARTY,
-      component: <StartParty onActions={actions} data={startPartyData} setData={onSubmitPartyData} account={account} />,
+      component: (
+        <StartParty
+          onActions={actions}
+          data={startPartyData}
+          setData={onSubmitPartyData}
+          account={getCookies().account}
+        />
+      ),
     },
     {
       id: EStepIdentify.SHARE,
@@ -69,7 +85,7 @@ export default function HostAPartySteps() {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => {
       const nextStep = prevActiveStep + 1
-      if (nextStep === EStepIdentify.SIGN_IN && account) {
+      if (nextStep === EStepIdentify.SIGN_IN && getCookies()?.userAccount?.role === UserRoles.ORGANIZER) {
         // skip sign in step if account is present
         return nextStep + 1
       }
@@ -78,9 +94,10 @@ export default function HostAPartySteps() {
   }
 
   const handleBack = () => {
+    debugger
     setActiveStep((prevActiveStep) => {
       const prevStep = prevActiveStep - 1
-      if (prevStep === EStepIdentify.SIGN_IN && account) {
+      if (prevStep === EStepIdentify.SIGN_IN && getCookies()?.userAccount?.role === UserRoles.ORGANIZER) {
         // skip sign in step if account is present
         return prevStep - 1
       }

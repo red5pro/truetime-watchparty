@@ -90,11 +90,15 @@ const useCookies = (keys: string[]) => {
   }
 
   const removeCookie = (key: string) => {
-    document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`
-    if (cookies && Object.prototype.hasOwnProperty.call(cookies, key)) {
-      delete cookies[key]
-      updateCookies()
+    document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+    if (cookies && cookies[key]) {
+      const nextCookies = { ...cookies }
+
+      delete nextCookies[key]
+
+      setCookies({ ...nextCookies })
     }
+    updateCookies()
   }
 
   return { getCookies, setCookie, removeCookie }

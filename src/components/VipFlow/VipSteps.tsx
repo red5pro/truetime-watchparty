@@ -108,6 +108,16 @@ const VipSteps = () => {
     window.location.reload()
   }
 
+  const validateAccount = (account: any) => {
+    if (account.role === UserRoles.VIP) {
+      return true
+    }
+    {
+      clearCookies()
+      return false
+    }
+  }
+
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: VipStepIdentify.LANDING,
@@ -115,7 +125,7 @@ const VipSteps = () => {
     },
     {
       id: VipStepIdentify.SIGN_IN,
-      component: <Signin onActions={actions} />,
+      component: <Signin onActions={actions} validateAccount={validateAccount} />,
     },
     {
       id: VipStepIdentify.AV_SETUP,
