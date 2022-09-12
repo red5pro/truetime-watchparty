@@ -2,13 +2,14 @@ import React from 'react'
 import { Button, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import InfoIcon from '@mui/icons-material/Info'
+
 import useStyles from './JoinSections.module'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import { Participant } from '../../models/Participant'
 import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
 import SignInModal from '../Modal/SignInModal'
-import { useCookies } from 'react-cookie'
+import useCookies from '../../hooks/useCookies'
 
 interface JoinLandingProps {
   seriesEpisode: any

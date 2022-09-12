@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { useCookies } from 'react-cookie'
+
+import useCookies from '../../hooks/useCookies'
 import MediaContext from '../../components/MediaContext/MediaContext'
 import ErrorModal from '../../components/Modal/ErrorModal'
 import VipSteps from '../../components/VipFlow/VipSteps'
@@ -8,6 +9,7 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { NextVipConference } from '../../models/ConferenceStatusEvent'
 import { FatalError } from '../../models/FatalError'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
+import { UserRoles } from '../../utils/commonUtils'
 
 const VipJoinPage = () => {
   const [conferenceDetails, setConferenceDetails] = React.useState<ConferenceDetails>()
@@ -15,13 +17,21 @@ const VipJoinPage = () => {
   const [nextConferenceDetails, setNextConferenceDetails] = React.useState<ConferenceDetails>()
   const [nextConferences, setNextConferences] = React.useState<NextVipConference[]>()
   const [fatalError, setFatalError] = React.useState<FatalError>()
-  const [cookies] = useCookies(['account'])
+  const [cookies, setCookie, removeCookie] = useCookies(['account'])
 
   React.useEffect(() => {
-    if (cookies.account && !conferenceDetails) {
-      getAllParties()
+    if (cookies.account && cookies.userAccount) {
+      const acc = cookies.userAccount
+      const { role } = acc
+      // We are dumping any previously entered account info if stored as non-VIP
+      if (role !== UserRoles.VIP) {
+        removeCookie('account')
+        removeCookie('userAccount')
+      } else if (!conferenceDetails) {
+        getAllParties()
+      }
     }
-  }, [cookies.account])
+  }, [cookies])
 
   const getAllParties = async () => {
     if (cookies.account && !fatalError) {

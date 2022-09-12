@@ -5,11 +5,12 @@ import Modal from '@mui/material/Modal'
 import Fade from '@mui/material/Fade'
 import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
-import useStyles from './SignInModal.module'
-import { useCookies } from 'react-cookie'
-
 import { Box, LinearProgress, Stack, Typography } from '@mui/material'
 import FacebookIcon from '@mui/icons-material/Facebook'
+
+import useCookies from '../../hooks/useCookies'
+import useStyles from './SignInModal.module'
+
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import { UserAccount } from '../../models/UserAccount'
 import { USER_API_CALLS } from '../../services/api/user-api-calls'
@@ -34,18 +35,6 @@ const validationSchema = Yup.object().shape({
 interface SignInModalProps {
   open: boolean
   onDismiss(account?: any): any
-}
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
 }
 
 const SignInModal = (props: SignInModalProps) => {

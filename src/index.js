@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { CookiesProvider } from 'react-cookie'
 import { CssBaseline, GlobalStyles } from '@mui/material'
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
 
@@ -21,9 +20,7 @@ root.render(
         }}
       />
       <StyledEngineProvider injectFirst>
-        <CookiesProvider>
-          <AppRoutes />
-        </CookiesProvider>
+        <AppRoutes />
       </StyledEngineProvider>
     </ThemeProvider>
     {/* Footer here */}

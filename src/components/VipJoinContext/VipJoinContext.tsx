@@ -1,5 +1,5 @@
 import React, { useReducer } from 'react'
-import { useCookies } from 'react-cookie'
+import useCookies from '../../hooks/useCookies'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { NextVipConference } from '../../models/ConferenceStatusEvent'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
