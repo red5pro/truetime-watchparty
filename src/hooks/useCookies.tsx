@@ -72,7 +72,12 @@ const useCookies = (keys: string[]) => {
   }
 
   const removeCookie = (key: string) => {
+    document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`
     document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
+    if (cookies && Object.prototype.hasOwnProperty.call(cookies, key)) {
+      delete cookies[key]
+      setCookies(cookies)
+    }
   }
 
   return [cookies, setCookie, removeCookie]
