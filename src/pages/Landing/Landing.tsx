@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { Box, Input, Typography } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
-import { useCookies } from 'react-cookie'
 
+import useCookies from '../../hooks/useCookies'
 import WbcLogo from '../../assets/logos/WbcLogo'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import useStyles from './Landing.module'

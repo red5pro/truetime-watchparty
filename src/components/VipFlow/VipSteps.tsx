@@ -1,6 +1,6 @@
 import { Box, Stepper } from '@mui/material'
 import * as React from 'react'
-import { useCookies } from 'react-cookie'
+import useCookies from '../../hooks/useCookies'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { Episode } from '../../models/Episode'
@@ -68,22 +68,15 @@ const VipSteps = () => {
   }, [activeStep])
 
   React.useEffect(() => {
-    let requiresLogin = true
-    if (cookies.userAccount) {
+    if (cookies.account && cookies.userAccount) {
       const acc = cookies.userAccount
       const { role } = acc
       // We are dumping any previously entered account info if stored as non-VIP
       if (role !== UserRoles.VIP) {
         clearCookies()
       } else {
-        requiresLogin = false
+        setAccountCredentials(cookies.account)
       }
-    } else {
-      clearCookies()
-    }
-
-    if (cookies.account && !requiresLogin) {
-      setAccountCredentials(cookies.account)
     }
   }, [cookies])
 
@@ -99,8 +92,8 @@ const VipSteps = () => {
   }, [seriesEpisode])
 
   const clearCookies = () => {
-    removeCookie('userAccount', undefined)
-    removeCookie('account', undefined)
+    removeCookie('userAccount')
+    removeCookie('account')
   }
 
   const onMainVideoVolume = (value: number) => {
@@ -148,7 +141,7 @@ const VipSteps = () => {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => {
       const nextStep = prevActiveStep + 1
-      if (nextStep === VipStepIdentify.SIGN_IN && cookies && cookies.account) {
+      if (nextStep === VipStepIdentify.SIGN_IN && cookies && cookies.account && cookies.userAccount) {
         // skip sign in step if account is present
         return nextStep + 1
       }
@@ -159,7 +152,7 @@ const VipSteps = () => {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => {
       const prevStep = prevActiveStep - 1
-      if (prevStep === VipStepIdentify.SIGN_IN && cookies && cookies.account) {
+      if (prevStep === VipStepIdentify.SIGN_IN && cookies && cookies.account && cookies.userAccount) {
         // skip sign in step if account is present
         return prevStep - 1
       }

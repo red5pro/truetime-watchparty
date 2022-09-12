@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Box, Stack, Typography } from '@mui/material'
 
+import useCookies from '../../hooks/useCookies'
 import Loading from '../../components/Loading/Loading'
 import useStyles from './JoinPage.module'
 import { Participant } from '../../models/Participant'
@@ -15,7 +16,6 @@ import MainStage from '../../components/MainStage/MainStage'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
-import { useCookies } from 'react-cookie'
 import { UserRoles } from '../../utils/commonUtils'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
@@ -51,7 +51,7 @@ const JoinPage = () => {
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
 
-  const [cookies, removeCookie] = useCookies(['userAccount', 'account'])
+  const [cookies, setCookie, removeCookie] = useCookies(['userAccount', 'account'])
   const [searchParams, setSearchParams] = useSearchParams()
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
 
@@ -61,8 +61,8 @@ const JoinPage = () => {
       const { role } = acc
       // VIPs can't join as a VIP though the main stage.
       if (role === UserRoles.VIP) {
-        removeCookie('userAccount', undefined)
-        removeCookie('account', undefined)
+        removeCookie('userAccount')
+        removeCookie('account')
       }
     }
   }, [cookies])
