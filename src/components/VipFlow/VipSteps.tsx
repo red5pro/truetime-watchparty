@@ -68,22 +68,15 @@ const VipSteps = () => {
   }, [activeStep])
 
   React.useEffect(() => {
-    let requiresLogin = true
-    if (cookies.userAccount) {
+    if (cookies.account && cookies.userAccount) {
       const acc = cookies.userAccount
       const { role } = acc
       // We are dumping any previously entered account info if stored as non-VIP
       if (role !== UserRoles.VIP) {
         clearCookies()
       } else {
-        requiresLogin = false
+        setAccountCredentials(cookies.account)
       }
-    } else {
-      clearCookies()
-    }
-
-    if (cookies.account && !requiresLogin) {
-      setAccountCredentials(cookies.account)
     }
   }, [cookies])
 
@@ -150,7 +143,7 @@ const VipSteps = () => {
       if (prevActiveStep === VipStepIdentify.SIGN_IN) {
         setLoggedIn(true)
       }
-      if (nextStep === VipStepIdentify.SIGN_IN && cookies && cookies.account) {
+      if (nextStep === VipStepIdentify.SIGN_IN && cookies && cookies.account && cookies.userAccount) {
         // skip sign in step if account is present
         return nextStep + 1
       }
@@ -161,7 +154,7 @@ const VipSteps = () => {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => {
       const prevStep = prevActiveStep - 1
-      if (prevStep === VipStepIdentify.SIGN_IN && cookies && cookies.account) {
+      if (prevStep === VipStepIdentify.SIGN_IN && cookies && cookies.account && cookies.userAccount) {
         // skip sign in step if account is present
         return prevStep - 1
       }
