@@ -68,10 +68,8 @@ const useCookies = (keys: string[]) => {
   const updateCookies = () => {
     const newCookies = getNamesCookies(keys)
 
-    if (shouldUpdate(null, newCookies, previousCookiesRef.current)) {
-      setCookies(newCookies)
-      previousCookiesRef.current = newCookies
-    }
+    setCookies(newCookies)
+    previousCookiesRef.current = newCookies
   }
 
   const getCookies = () => {
@@ -105,17 +103,3 @@ const useCookies = (keys: string[]) => {
 }
 
 export default useCookies
-
-function shouldUpdate<U = { [K: string]: any }>(dependencies: Array<keyof U> | null, newCookies: U, oldCookies: U) {
-  if (!dependencies) {
-    return true
-  }
-
-  for (const dependency of dependencies) {
-    if (newCookies[dependency] !== oldCookies[dependency]) {
-      return true
-    }
-  }
-
-  return false
-}
