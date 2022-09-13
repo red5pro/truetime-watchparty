@@ -23,7 +23,7 @@ const JoinSectionLanding = (props: JoinLandingProps) => {
   const [showLogin, setShowLogin] = React.useState<boolean>(false)
 
   const { classes } = useStyles()
-  const [cookies] = useCookies(['account'])
+  const { getCookies } = useCookies(['account'])
 
   const onHostLogin = () => {
     setShowLogin(true)
@@ -67,7 +67,7 @@ const JoinSectionLanding = (props: JoinLandingProps) => {
           >
             Join Party
           </CustomButton>
-          {!cookies?.account && (
+          {!getCookies()?.account && (
             <Button variant="text" className={classes.link} onClick={onHostLogin}>
               Are you the host?
             </Button>

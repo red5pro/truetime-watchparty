@@ -71,7 +71,7 @@ const MainStage = () => {
 
   const { classes } = useStyles()
   const navigate = useNavigate()
-  const [cookies] = useCookies(['account'])
+  const { getCookies } = useCookies(['account'])
 
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
@@ -112,6 +112,7 @@ const MainStage = () => {
 
     const fp = fingerprint
     request.fingerprint = fp
+    const cookies = getCookies()
     if (cookies?.account) {
       // Registered User
       const { email, password } = cookies.account
@@ -332,7 +333,7 @@ const MainStage = () => {
       try {
         const result = await CONFERENCE_API_CALLS.muteParticipant(
           data.conference.conferenceId,
-          cookies.account,
+          getCookies().account,
           participant.participantId,
           requestState
         )
@@ -350,7 +351,7 @@ const MainStage = () => {
       try {
         const result = await CONFERENCE_API_CALLS.muteParticipant(
           data.conference.conferenceId,
-          cookies.account,
+          getCookies().account,
           participant.participantId,
           requestState
         )
@@ -371,7 +372,7 @@ const MainStage = () => {
     try {
       const result = await CONFERENCE_API_CALLS.banParticipant(
         data.conference.conferenceId,
-        cookies.account,
+        getCookies().account,
         participant.participantId
       )
       if (result.status >= 300) {
