@@ -88,11 +88,15 @@ const useCookies = (keys: string[]) => {
   }
 
   const removeCookie = (key: string) => {
+    // For some reason, having both here (one with path and one without) properly clears the cookies
+    //  from application storage...
+    document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`
     document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
     if (cookies && cookies[key]) {
       const nextCookies = { ...cookies }
 
       delete nextCookies[key]
+      delete cookies[key]
 
       setCookies({ ...nextCookies })
     }
