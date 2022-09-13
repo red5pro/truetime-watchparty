@@ -1,11 +1,10 @@
 import React, { useReducer } from 'react'
 import useCookies from '../../hooks/useCookies'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
-import { NextVipConference } from '../../models/ConferenceStatusEvent'
-import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
-import { getCurrentEpisode } from '../../services/conference/conference'
+import { FatalError } from '../../models/FatalError'
+import { getCurrentEpisode, getNextConference } from '../../services/conference/conference'
 import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
-import { generateFingerprint } from '../../utils/commonUtils'
+import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 
 function useUID() {
@@ -28,27 +27,35 @@ const episodeReducer = (state: any, action: any) => {
 
 interface VipJoinContextProps {
   children: any
-  currConferenceDetails: ConferenceDetails | undefined
-  nextConferenceDetails: ConferenceDetails | undefined
-  nextConferences: NextVipConference[] | undefined
 }
 
-const VipJoinContext = React.createContext<any>(null)
+interface IVipJonContextProps {
+  loading: boolean
+  error: any
+  fingerprint: string | undefined
+  seriesEpisode: any
+  currentConferenceData: ConferenceDetails | undefined
+  nextVipConferenceDetails: ConferenceDetails | undefined
+  getStreamGuid: () => string
+  getNextConference: (isFirstCall: boolean) => Promise<boolean>
+  setCurrentConferenceGetNext: () => Promise<void>
+  setLoggedIn: (value: boolean) => void
+  account: any
+  setAccount: (value: any) => void
+}
+
+const VipJoinContext = React.createContext<IVipJonContextProps>({} as IVipJonContextProps)
 
 const VipJoinProvider = (props: VipJoinContextProps) => {
-  const { children, currConferenceDetails, nextConferences, nextConferenceDetails } = props
+  const { children } = props
 
   const uid = useUID()
-  const { getCookies } = useCookies(['account', 'userAccount'])
+  const { getCookies, removeCookie } = useCookies(['account', 'userAccount'])
 
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
   const [joinToken, setJoinToken] = React.useState<string | null>(null)
-
-  // TODO: Update this based on User record / Auth ?
-  // TODO: Does this belong here or in an overarching Context ?
   const [fingerprint, setFingerprint] = React.useState<string | undefined>(LocalStorage.get('wp_fingeprint'))
-  const [nickname, setNickname] = React.useState<string | undefined>(LocalStorage.get('wp_nickname' || undefined))
   // ConferenceDetails access from the server API.
   const [seriesEpisode, dispatch] = useReducer(episodeReducer, {
     loaded: false,
@@ -56,25 +63,31 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
     episode: cannedEpisode,
     locked: false,
   })
-
   const [currentConferenceData, setCurrentConferenceData] = React.useState<ConferenceDetails | undefined>()
-  const [nextVipConferences, setVipNextConferences] = React.useState<NextVipConference[]>()
   const [nextVipConferenceDetails, setNextVipConferenceDetails] = React.useState<ConferenceDetails>()
+  const [account, setAccount] = React.useState<any>()
+  const [ready, setReady] = React.useState<boolean>(false)
+  const [loggedIn, setLoggedIn] = React.useState<boolean>(false)
 
   React.useEffect(() => {
-    if (currConferenceDetails) {
-      setCurrentConferenceData(currConferenceDetails)
-      setJoinToken(currConferenceDetails.joinToken)
+    const cookies = getCookies()
+    const acc = cookies.userAccount
+    if (acc) {
+      const { role } = acc
+      // We are dumping any previously entered account info if stored as non-VIP
+      if (role !== UserRoles.VIP) {
+        clearCookies()
+      } else {
+        setReady(true)
+      }
     }
-  }, [currConferenceDetails])
+  }, [])
 
   React.useEffect(() => {
-    setVipNextConferences(nextConferences)
-  }, [nextConferences])
-
-  React.useEffect(() => {
-    setNextVipConferenceDetails(nextConferenceDetails)
-  }, [nextConferenceDetails])
+    if (ready || loggedIn) {
+      getNextConferenceDetails(true)
+    }
+  }, [ready, loggedIn])
 
   React.useEffect(() => {
     if (!fingerprint) {
@@ -89,6 +102,44 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
       getCurrentSeriesEpisodeData()
     }
   }, [seriesEpisode])
+
+  const clearCookies = () => {
+    removeCookie('userAccount')
+    removeCookie('account')
+  }
+
+  /*--------------------------METHODS----------------------------------*/
+
+  const getNextConferenceDetails = async (isFirstCall: boolean) => {
+    const response = await getNextConference(getCookies().account)
+    if (!response.error && response.data) {
+      setNextVipConferenceDetails(response.data)
+      return true
+    } else {
+      setNextVipConferenceDetails(undefined)
+
+      if (isFirstCall) {
+        setError({
+          ...(error as any),
+          title: response.title,
+          closeLabel: 'CLOSE',
+          statusText: response.statusText,
+          onClose: () => {
+            setError(undefined)
+          },
+        } as FatalError)
+      }
+      return false
+    }
+  }
+
+  const setCurrentConferenceGetNext = async () => {
+    if (nextVipConferenceDetails) {
+      setCurrentConferenceData(nextVipConferenceDetails)
+      setJoinToken(nextVipConferenceDetails.joinToken)
+      await getNextConferenceDetails(false)
+    }
+  }
 
   const getCurrentSeriesEpisodeData = async () => {
     try {
@@ -110,10 +161,7 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
   }
 
   // Returns stream guid (context + name) of the current participant to broadcast on.
-  // TODO: Be more clever when VIP...
   const getStreamGuid = () => {
-    const isVIP = location.pathname === '/join/guest'
-
     // Only keep numbers and letters, otherwise stream may break.
     const append = 'vip'
     const stripped = 'VIP'
@@ -124,69 +172,19 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
     return guid
   }
 
-  const getMainStreamGuid = () => {
-    const { episode } = seriesEpisode
-    return episode.streamGuid
-  }
-
-  const getNextConference = async (nextConfs?: NextVipConference[]) => {
-    // if (cookies.account) {
-    //   // const response = await CONFERENCE_API_CALLS.getNextVipConference(cookies.account)
-
-    //   if (response.status === 200 && Object.values(response.data).length) {
-    //     const confDetails = await CONFERENCE_API_CALLS.getConferenceDetails(nextVipConf.conferenceId, cookies.account)
-    //     const confLoby = await CONFERENCE_API_CALLS.getConferenceLoby(confDetails.data.joinToken)
-
-    //     const { data } = confLoby
-    //     if (data && confDetails.data) {
-    //       setNextConferenceDetails(confDetails.data)
-    //       setNextParticipants(data.participants)
-    //     }
-
-    //     return { confDetails: confDetails.data, participants: data.participants }
-    //   }
-    // }
-
-    const nextVipConf = nextConfs ? nextConfs[0] : nextVipConferences ? nextVipConferences[0] : null
-
-    if (nextVipConf) {
-      const confDetails = await CONFERENCE_API_CALLS.getConferenceDetails(
-        nextVipConf.conferenceId.toString(),
-        getCookies().account
-      )
-
-      if (confDetails.data) {
-        setNextVipConferenceDetails(confDetails.data)
-
-        nextConfs ? nextConfs.shift() : nextVipConferences?.shift()
-
-        setVipNextConferences(nextConfs ?? nextVipConferences)
-
-        return { confDetails: confDetails.data, nextConfList: nextConfs ?? nextVipConferences }
-      }
-    }
-
-    return null
-  }
-
   const exportedValues = {
     loading,
     error,
-    nickname,
-    joinToken,
     fingerprint,
     seriesEpisode,
     currentConferenceData,
-    setCurrentConferenceData,
-    updateNickname: (value: string) => {
-      setNickname(value)
-      LocalStorage.set('wp_nickname', value)
-    },
     getStreamGuid,
-    getMainStreamGuid,
-    setJoinToken,
     nextVipConferenceDetails,
-    getNextConference,
+    getNextConference: getNextConferenceDetails,
+    setCurrentConferenceGetNext,
+    setLoggedIn,
+    account,
+    setAccount,
   }
 
   return <VipJoinContext.Provider value={exportedValues}>{children}</VipJoinContext.Provider>

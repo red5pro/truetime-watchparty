@@ -68,11 +68,10 @@ const CustomButton = (props: ICustomButtonProps): JSX.Element => {
   return (
     <Grid
       className={classes.root}
-      style={{ width: `${fullWidth ? '100%' : 'initial'}` }}
-      alignItems="center"
-      justifyContent="center"
+      style={{ width: `${fullWidth ? '100%' : 'initial'}`, minWidth: `${fullWidth ? '100%' : ''}` }}
     >
       <Button
+        style={{ width: `${fullWidth ? '100%' : 'initial'}`, minWidth: `${fullWidth ? '100%' : ''}` }}
         startIcon={startIcon}
         onClick={onClick}
         variant={variant}

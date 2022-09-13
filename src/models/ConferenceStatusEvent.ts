@@ -40,3 +40,8 @@ export interface ConnectionResult {
   role?: string
   error?: string
 }
+
+export interface NextConferenceToJoin {
+  conferenceId: number
+  joinToken: string
+}

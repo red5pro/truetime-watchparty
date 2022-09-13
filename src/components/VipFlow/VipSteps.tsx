@@ -49,7 +49,7 @@ const VipSteps = () => {
 
   const { classes } = useStyles()
 
-  const { loading, error, seriesEpisode } = useJoinContext()
+  const { loading, error, seriesEpisode, account, setAccount, setLoggedIn } = useJoinContext()
   const { mediaStream, setConstraints, setMediaStream } = useMediaContext()
 
   const clearMediaContext = () => {
@@ -68,19 +68,10 @@ const VipSteps = () => {
   }, [activeStep])
 
   React.useEffect(() => {
-    const requiresLogin = true
-    const cookies = getCookies()
-    if (cookies.account && cookies.userAccount) {
-      const acc = cookies.userAccount
-      const { role } = acc
-      // We are dumping any previously entered account info if stored as non-VIP
-      if (role !== UserRoles.VIP) {
-        clearCookies()
-      } else {
-        setAccountCredentials(cookies.account)
-      }
+    if (account) {
+      setAccountCredentials(account)
     }
-  }, [])
+  }, [account])
 
   React.useEffect(() => {
     if (seriesEpisode && seriesEpisode.loaded) {
@@ -93,11 +84,6 @@ const VipSteps = () => {
     }
   }, [seriesEpisode])
 
-  const clearCookies = () => {
-    removeCookie('userAccount')
-    removeCookie('account')
-  }
-
   const onMainVideoVolume = (value: number) => {
     if (mainVideoRef && mainVideoRef.current) {
       mainVideoRef.current.setVolume(value)
@@ -109,11 +95,10 @@ const VipSteps = () => {
   }
 
   const validateAccount = (account: any) => {
-    if (account.role === UserRoles.VIP) {
+    if (account && account.role === UserRoles.VIP) {
+      setAccount(account)
       return true
-    }
-    {
-      clearCookies()
+    } else {
       return false
     }
   }
@@ -140,7 +125,6 @@ const VipSteps = () => {
       component: (
         <WatchContext.Provider>
           <VipJoinWatchparty
-            account={accountCredentials}
             currentEpisode={currentEpisode}
             onCancelOnboarding={() => setOnboarding(false)}
             onMainVideoVolume={onMainVideoVolume}
@@ -153,8 +137,10 @@ const VipSteps = () => {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => {
       const nextStep = prevActiveStep + 1
-      const cookies = getCookies()
-      if (nextStep === VipStepIdentify.SIGN_IN && cookies && cookies.account && cookies.userAccount) {
+      if (prevActiveStep === VipStepIdentify.SIGN_IN) {
+        setLoggedIn(true)
+      }
+      if (nextStep === VipStepIdentify.SIGN_IN && account && validateAccount(account)) {
         // skip sign in step if account is present
         return nextStep + 1
       }
@@ -165,8 +151,7 @@ const VipSteps = () => {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => {
       const prevStep = prevActiveStep - 1
-      const cookies = getCookies()
-      if (prevStep === VipStepIdentify.SIGN_IN && cookies && cookies.account && cookies.userAccount) {
+      if (prevStep === VipStepIdentify.SIGN_IN && account && validateAccount(account)) {
         // skip sign in step if account is present
         return prevStep - 1
       }
@@ -191,7 +176,7 @@ const VipSteps = () => {
       {error && (
         <SimpleAlertDialog
           title="Something went wrong"
-          message={`${error.status} - ${error.statusText}`}
+          message={`${error.status ?? error.title} - ${error.statusText}`}
           confirmLabel="Retry"
           onConfirm={onRetryRequest}
         />
