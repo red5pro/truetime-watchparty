@@ -17,9 +17,10 @@ const VipJoinPage = () => {
   const [nextConferenceDetails, setNextConferenceDetails] = React.useState<ConferenceDetails>()
   const [nextConferences, setNextConferences] = React.useState<NextVipConference[]>()
   const [fatalError, setFatalError] = React.useState<FatalError>()
-  const [cookies, setCookie, removeCookie] = useCookies(['account'])
+  const { getCookies, removeCookie } = useCookies(['account'])
 
   React.useEffect(() => {
+    const cookies = getCookies()
     if (cookies.account && cookies.userAccount) {
       const acc = cookies.userAccount
       const { role } = acc
@@ -31,9 +32,10 @@ const VipJoinPage = () => {
         getAllParties()
       }
     }
-  }, [cookies])
+  }, [])
 
   const getAllParties = async () => {
+    const cookies = getCookies()
     if (cookies.account && !fatalError) {
       // const response = await CONFERENCE_API_CALLS.getNextVipConference(cookies.account)
 
@@ -89,6 +91,7 @@ const VipJoinPage = () => {
     // }
 
     const nextVipConf = nextConfs[0]
+    const cookies = getCookies()
 
     const confDetails = await CONFERENCE_API_CALLS.getConferenceDetails(
       nextVipConf.conferenceId.toString(),

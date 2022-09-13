@@ -39,7 +39,7 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
   const { children, currConferenceDetails, nextConferences, nextConferenceDetails } = props
 
   const uid = useUID()
-  const [cookies] = useCookies(['account', 'userAccount'])
+  const { getCookies } = useCookies(['account', 'userAccount'])
 
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
@@ -152,7 +152,7 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
     if (nextVipConf) {
       const confDetails = await CONFERENCE_API_CALLS.getConferenceDetails(
         nextVipConf.conferenceId.toString(),
-        cookies.account
+        getCookies().account
       )
 
       if (confDetails.data) {
