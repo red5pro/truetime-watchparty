@@ -8,7 +8,7 @@ import ElementList from '../../Common/ElementList/ElementList'
 import { AccountCredentials } from '../../../models/AccountCredentials'
 import { getStartTimeFromTimestamp, IStepActionsSubComponent } from '../../../utils/commonUtils'
 import EventContext from '../../EventContext/EventContext'
-import Loading from '../../Loading/Loading'
+import Loading from '../../Common/Loading/Loading'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 
 const useEventContext = () => React.useContext(EventContext.Context)
@@ -91,7 +91,7 @@ const ViewEvents = (props: IViewEventsProps) => {
                 <Typography sx={{ fontSize: '14px' }} mr={2}>
                   Already have a party?
                 </Typography>
-                <Link to="login?r_id=home" className={classes.link}>
+                <Link to="login" className={classes.link}>
                   Sign in
                 </Link>
               </Box>

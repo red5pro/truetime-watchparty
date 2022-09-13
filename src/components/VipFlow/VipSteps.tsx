@@ -2,13 +2,14 @@ import { Box, Stepper } from '@mui/material'
 import * as React from 'react'
 import useCookies from '../../hooks/useCookies'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import { useLoadScript } from '../../hooks/useLoadScript'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { Episode } from '../../models/Episode'
 import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 
 import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
 import Signin from '../Account/Signin/Signin'
-import Loading from '../Loading/Loading'
+import Loading from '../Common/Loading/Loading'
 import MediaContext from '../MediaContext/MediaContext'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import Subscriber from '../Subscriber/Subscriber'
@@ -36,8 +37,6 @@ enum VipStepIdentify {
 }
 
 const VipSteps = () => {
-  const { getCookies, removeCookie } = useCookies(['userAccount', 'account'])
-
   const mainVideoRef = React.useRef<SubscriberRef>(null)
 
   const [activeStep, setActiveStep] = React.useState(0)
@@ -48,6 +47,7 @@ const VipSteps = () => {
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
 
   const { classes } = useStyles()
+  const facebookLoaded = useLoadScript()
 
   const { loading, error, seriesEpisode, account, setAccount, setLoggedIn } = useJoinContext()
   const { mediaStream, setConstraints, setMediaStream } = useMediaContext()
@@ -110,7 +110,14 @@ const VipSteps = () => {
     },
     {
       id: VipStepIdentify.SIGN_IN,
-      component: <Signin onActions={actions} validateAccount={validateAccount} />,
+      component: (
+        <Signin
+          onActions={actions}
+          role={UserRoles.VIP}
+          facebookLoaded={facebookLoaded}
+          validateAccount={validateAccount}
+        />
+      ),
     },
     {
       id: VipStepIdentify.AV_SETUP,

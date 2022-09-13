@@ -41,6 +41,16 @@ export interface ConnectionResult {
   error?: string
 }
 
+export interface NextVipConference {
+  conferenceId: number
+  organizerId: number
+  streamGuid: string
+  displayName: string
+  joinLocked: boolean
+  vipOkay: boolean
+  participants: number
+}
+
 export interface NextConferenceToJoin {
   conferenceId: number
   joinToken: string
