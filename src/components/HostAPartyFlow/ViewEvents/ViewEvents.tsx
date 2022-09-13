@@ -91,7 +91,7 @@ const ViewEvents = (props: IViewEventsProps) => {
                 <Typography sx={{ fontSize: '14px' }} mr={2}>
                   Already have a party?
                 </Typography>
-                <Link to="login?r_id=home" className={classes.link}>
+                <Link to="login" className={classes.link}>
                   Sign in
                 </Link>
               </Box>
