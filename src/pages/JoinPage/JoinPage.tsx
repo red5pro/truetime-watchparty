@@ -51,11 +51,12 @@ const JoinPage = () => {
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
 
-  const [cookies, setCookie, removeCookie] = useCookies(['userAccount', 'account'])
+  const { getCookies, removeCookie } = useCookies(['userAccount', 'account'])
   const [searchParams, setSearchParams] = useSearchParams()
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
 
   React.useEffect(() => {
+    const cookies = getCookies()
     if (cookies.userAccount) {
       const acc = cookies.userAccount
       const { role } = acc
@@ -65,7 +66,7 @@ const JoinPage = () => {
         removeCookie('account')
       }
     }
-  }, [cookies])
+  }, [])
 
   React.useEffect(() => {
     if (searchParams.get('s_id')) {

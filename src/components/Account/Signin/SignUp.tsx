@@ -44,7 +44,7 @@ const SignUp = (props: ISignUpProps) => {
   const { onActions } = props
   const { classes } = useStyles()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [cookies, setCookie] = useCookies(['account'])
+  const { setCookie } = useCookies(['account'])
 
   const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string | undefined>()
   const [shouldVerifyEmail, setShouldVerifyEmail] = React.useState<boolean>(false)

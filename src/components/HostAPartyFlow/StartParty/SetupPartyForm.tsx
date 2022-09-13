@@ -31,7 +31,7 @@ import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 interface ISetupPartyFormProps {
   onActions: IStepActionsSubComponent
   data?: ConferenceDetails
-  setData: (values: ConferenceDetails, account: AccountCredentials | undefined) => boolean
+  setData: (values: ConferenceDetails) => boolean
   account?: AccountCredentials
 }
 
@@ -98,7 +98,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
         vipOkay: values.vipOkay ?? true,
       } as ConferenceDetails
 
-      if (setData(conference, account)) {
+      if (setData(conference)) {
         // Submit
         const response = await CONFERENCE_API_CALLS.createConference(conference, account!)
         if (response.data) {
@@ -111,22 +111,19 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
               const conf = conferencesResponse.data?.conferences[0]
               setConferenceJoinToken(conf.joinToken)
 
-              setData(
-                {
-                  joinToken: conf.joinToken,
-                  startTime: conf.startTime,
-                  conferenceId: 0,
-                  displayName: conf.displayName,
-                  welcomeMessage: '',
-                  thankYouMessage: '',
-                  location: '',
-                  maxParticipants: 0,
-                  joinLocked: false,
-                  vipOkay: false,
-                  participants: [],
-                },
-                account
-              )
+              setData({
+                joinToken: conf.joinToken,
+                startTime: conf.startTime,
+                conferenceId: 0,
+                displayName: conf.displayName,
+                welcomeMessage: '',
+                thankYouMessage: '',
+                location: '',
+                maxParticipants: 0,
+                joinLocked: false,
+                vipOkay: false,
+                participants: [],
+              })
             }
             setErrorAfterSubmit(response.statusText)
           }

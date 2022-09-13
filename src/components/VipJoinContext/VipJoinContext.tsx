@@ -48,7 +48,7 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
   const { children } = props
 
   const uid = useUID()
-  const [cookies] = useCookies(['account'])
+  const { getCookies } = useCookies(['account', 'userAccount'])
 
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
@@ -155,7 +155,7 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
     }
     return guid
   }
-
+  
   const exportedValues = {
     loading,
     error,
