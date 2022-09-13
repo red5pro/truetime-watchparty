@@ -14,7 +14,7 @@ interface IFBSignInProps {
 }
 
 const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps) => {
-  const [cookies, setCookie] = useCookies(['account', 'userAccount'])
+  const { setCookie } = useCookies(['account', 'userAccount'])
 
   React.useEffect(() => {
     setfbAsyncInit()
