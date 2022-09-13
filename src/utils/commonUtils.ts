@@ -28,6 +28,10 @@ export enum UserRoles {
   ADMIN = 'ADMIN',
 }
 
+export enum ThirdParties {
+  FACEBOOK = 'FACEBOOK',
+}
+
 export enum MessageTypes {
   ERROR = 'ConferenceError',
   JOIN_RESPONSE = 'JoinConferenceResponse',

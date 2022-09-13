@@ -37,11 +37,12 @@ const validationSchema = Yup.object().shape({
 
 interface ISignInEmailProps {
   onActions?: IStepActionsSubComponent
+  redirectAfterLogin?: () => void
   validateAccount?: (account: any) => boolean
 }
 
 const SignInEmail = (props: ISignInEmailProps) => {
-  const { onActions, validateAccount } = props
+  const { onActions, validateAccount, redirectAfterLogin } = props
   const { classes } = useStyles()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { getCookies, setCookie } = useCookies(['userAccount', 'account'])
@@ -57,6 +58,8 @@ const SignInEmail = (props: ISignInEmailProps) => {
       if (onActions && getCookies()?.account) {
         onActions.onNextStep()
         return
+      } else if (redirectAfterLogin) {
+        redirectAfterLogin()
       }
     }
   }, [verifyAccount])

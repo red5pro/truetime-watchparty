@@ -14,6 +14,8 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import EventContext from '../EventContext/EventContext'
+import { AccountCredentials } from '../../models/AccountCredentials'
+import { useLoadScript } from '../../hooks/useLoadScript'
 
 enum EStepIdentify {
   LANDING = 0,
@@ -30,6 +32,8 @@ export default function HostAPartySteps() {
 
   const [activeStep, setActiveStep] = React.useState(0)
   const [startPartyData, setStartPartyData] = React.useState<ConferenceDetails | undefined>()
+
+  const facebookLoaded = useLoadScript()
 
   const onSubmitPartyData = (data: ConferenceDetails) => {
     setStartPartyData(data)
@@ -63,7 +67,14 @@ export default function HostAPartySteps() {
     },
     {
       id: EStepIdentify.SIGN_IN,
-      component: <Signin onActions={actions} validateAccount={validateAccount} />,
+      component: (
+        <Signin
+          onActions={actions}
+          role={UserRoles.PARTICIPANT}
+          facebookLoaded={facebookLoaded}
+          validateAccount={validateAccount}
+        />
+      ),
     },
     {
       id: EStepIdentify.START_PARTY,
@@ -94,7 +105,7 @@ export default function HostAPartySteps() {
   }
 
   const handleBack = () => {
-    debugger
+    // debugger
     setActiveStep((prevActiveStep) => {
       const prevStep = prevActiveStep - 1
       if (prevStep === EStepIdentify.SIGN_IN && getCookies()?.userAccount?.role === UserRoles.ORGANIZER) {

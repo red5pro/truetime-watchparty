@@ -39,19 +39,14 @@ const ShareLink = (props: IShareLinkProps) => {
         <Typography textAlign="center" marginY={1}>
           Now you can invite your friends
         </Typography>
-        <Box display="flex" className={classes.buttonsContainer}>
-          <CustomButton
-            fullWidth
-            startIcon={<FacebookIcon />}
-            size={BUTTONSIZE.MEDIUM}
-            buttonType={BUTTONTYPE.FACEBOOK}
-          >
+        <Box display="flex" justifyContent="center" className={classes.buttonsContainer}>
+          <CustomButton startIcon={<FacebookIcon />} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.FACEBOOK}>
             <Link href={`https://www.facebook.com/sharer/sharer.php?u=${linkToCopy}&display=page`} target="_blank">
               Share on Facebook
             </Link>
           </CustomButton>
 
-          <CustomButton fullWidth size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.PRIMARY} onClick={copyToClipboard}>
+          <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.PRIMARY} onClick={copyToClipboard}>
             Copy link
           </CustomButton>
         </Box>
