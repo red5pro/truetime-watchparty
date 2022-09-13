@@ -15,8 +15,8 @@ const useEventContext = () => React.useContext(EventContext.Context)
 interface IStartPartyProps {
   onActions: IStepActionsSubComponent
   data?: ConferenceDetails
-  setData: (values: ConferenceDetails, account: AccountCredentials | undefined) => boolean
-  account: AccountCredentials
+  setData: (values: ConferenceDetails) => boolean
+  account?: AccountCredentials
 }
 
 const StartParty = (props: IStartPartyProps) => {

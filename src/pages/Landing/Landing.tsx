@@ -12,7 +12,7 @@ const Home = () => {
   const [partyCode, setPartyCode] = React.useState<string>('')
 
   const navigate = useNavigate()
-  const [cookies] = useCookies(['account'])
+  const { getCookies } = useCookies(['account'])
 
   const onInputChange = (ev: any) => setPartyCode(ev?.target?.value ?? '')
 
@@ -37,7 +37,7 @@ const Home = () => {
             Join
           </CustomButton>
         </Box>
-        {!cookies.account && (
+        {!getCookies()?.account && (
           <Box mt={4} display="flex">
             <Typography mr={2}>Already have a party?</Typography>
 

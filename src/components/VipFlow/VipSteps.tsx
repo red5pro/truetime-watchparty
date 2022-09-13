@@ -36,7 +36,7 @@ enum VipStepIdentify {
 }
 
 const VipSteps = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(['userAccount', 'account'])
+  const { getCookies, removeCookie } = useCookies(['userAccount', 'account'])
 
   const mainVideoRef = React.useRef<SubscriberRef>(null)
 
@@ -68,6 +68,8 @@ const VipSteps = () => {
   }, [activeStep])
 
   React.useEffect(() => {
+    const requiresLogin = true
+    const cookies = getCookies()
     if (cookies.account && cookies.userAccount) {
       const acc = cookies.userAccount
       const { role } = acc
@@ -78,7 +80,7 @@ const VipSteps = () => {
         setAccountCredentials(cookies.account)
       }
     }
-  }, [cookies])
+  }, [])
 
   React.useEffect(() => {
     if (seriesEpisode && seriesEpisode.loaded) {
@@ -106,6 +108,16 @@ const VipSteps = () => {
     window.location.reload()
   }
 
+  const validateAccount = (account: any) => {
+    if (account.role === UserRoles.VIP) {
+      return true
+    }
+    {
+      clearCookies()
+      return false
+    }
+  }
+
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: VipStepIdentify.LANDING,
@@ -113,7 +125,7 @@ const VipSteps = () => {
     },
     {
       id: VipStepIdentify.SIGN_IN,
-      component: <Signin onActions={actions} />,
+      component: <Signin onActions={actions} validateAccount={validateAccount} />,
     },
     {
       id: VipStepIdentify.AV_SETUP,
@@ -143,6 +155,7 @@ const VipSteps = () => {
       if (prevActiveStep === VipStepIdentify.SIGN_IN) {
         setLoggedIn(true)
       }
+      const cookies = getCookies()
       if (nextStep === VipStepIdentify.SIGN_IN && cookies && cookies.account && cookies.userAccount) {
         // skip sign in step if account is present
         return nextStep + 1
@@ -154,6 +167,7 @@ const VipSteps = () => {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => {
       const prevStep = prevActiveStep - 1
+      const cookies = getCookies()
       if (prevStep === VipStepIdentify.SIGN_IN && cookies && cookies.account && cookies.userAccount) {
         // skip sign in step if account is present
         return prevStep - 1
