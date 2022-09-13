@@ -2,6 +2,7 @@ import { Serie } from './../../models/Serie'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { CONFERENCE_API_CALLS } from '../api/conference-api-calls'
 import { ERROR_TYPE } from '../../utils/apiErrorMapping'
+import { NextConferenceToJoin } from '../../models/ConferenceStatusEvent'
 
 export const getCurrentEpisode = async (retrieveNextEpisodes = true) => {
   let currentSerie: any
@@ -46,4 +47,33 @@ export const getConferenceDetails = async (conferenceId: string, account: Accoun
 
 export const getConferenceParticipants = async (conferenceId: string, account: AccountCredentials) => {
   return await CONFERENCE_API_CALLS.getConferenceParticipants(conferenceId, account)
+}
+
+export const getNextConference = async (account: AccountCredentials) => {
+  const response = await CONFERENCE_API_CALLS.getNextVipConference(account)
+
+  if (response.status === 200) {
+    if (Object.values(response.data).length) {
+      const nextConf: NextConferenceToJoin = response.data
+
+      const confDetails = await CONFERENCE_API_CALLS.getConferenceDetails(nextConf.conferenceId.toString(), account)
+      const confLoby = await CONFERENCE_API_CALLS.getConferenceLoby(confDetails.data.joinToken)
+
+      if (confDetails.status === 200 && confDetails.data && confLoby.status === 200 && confLoby.data) {
+        const nextConfResponse = {
+          ...nextConf,
+          ...confDetails.data,
+          ...confLoby.data,
+        }
+
+        return { data: nextConfResponse, error: false }
+      }
+    }
+  }
+  return {
+    data: null,
+    error: true,
+    title: 'Warning!',
+    statusText: 'There are not any current events. Please check back later!',
+  }
 }
