@@ -105,7 +105,7 @@ export default function HostAPartySteps() {
   }
 
   const handleBack = () => {
-    debugger
+    // debugger
     setActiveStep((prevActiveStep) => {
       const prevStep = prevActiveStep - 1
       if (prevStep === EStepIdentify.SIGN_IN && getCookies()?.userAccount?.role === UserRoles.ORGANIZER) {
