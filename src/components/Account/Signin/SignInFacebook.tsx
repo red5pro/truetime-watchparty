@@ -3,8 +3,9 @@ import { FACEBOOK_APP_ID } from '../../../settings/variables'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import { isMobileScreen, IStepActionsSubComponent, ThirdParties, UserRoles } from '../../../utils/commonUtils'
-import { useCookies } from 'react-cookie'
+
 import { ThirdPartyAccount, ThirdPartyUserAccount } from '../../../models/UserAccount'
+import useCookies from '../../../hooks/useCookies'
 
 interface IFBSignInProps {
   onActions?: IStepActionsSubComponent
