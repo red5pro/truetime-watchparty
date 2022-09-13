@@ -49,7 +49,7 @@ const getRootStyles = (size: BUTTONSIZE, theme: any) =>
         },
       },
       '& p': {
-        fontSize: '16px',
+        fontSize: '15px',
         fontWeight: 700,
         [theme.breakpoints.down('md')]: {
           fontSize: '14px',
