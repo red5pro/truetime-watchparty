@@ -69,6 +69,8 @@ const useChatStyles = makeStyles()((theme: any) => ({
 
     '& .pn-msg__actions': {
       top: '20px',
+      position: 'relative',
+      left: '5px',
     },
 
     '& .pn-msg__actions > *:hover': {
@@ -103,9 +105,10 @@ const useChatStyles = makeStyles()((theme: any) => ({
       },
 
       '& .pn-msg__actions': {
-        right: 'unset',
+        right: '10px',
         top: '20px',
-        left: '10px',
+        left: 'unset',
+        position: 'relative',
       },
 
       '& .pn-msg__main': {
