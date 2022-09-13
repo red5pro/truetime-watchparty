@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router'
 import { Button, Tooltip, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import InfoIcon from '@mui/icons-material/Info'
@@ -12,6 +13,7 @@ import SignInModal from '../Modal/SignInModal'
 import useCookies from '../../hooks/useCookies'
 
 interface JoinLandingProps {
+  joinToken: string
   seriesEpisode: any
   conferenceData: ConferenceDetails
   conferenceParticipantsStringBuilder(participants: Participant[]): string
@@ -19,14 +21,16 @@ interface JoinLandingProps {
 }
 
 const JoinSectionLanding = (props: JoinLandingProps) => {
-  const { seriesEpisode, conferenceData, conferenceParticipantsStringBuilder, onStartJoin } = props
+  const { joinToken, seriesEpisode, conferenceData, conferenceParticipantsStringBuilder, onStartJoin } = props
   const [showLogin, setShowLogin] = React.useState<boolean>(false)
 
   const { classes } = useStyles()
   const { getCookies } = useCookies(['account'])
+  const navigate = useNavigate()
 
   const onHostLogin = () => {
-    setShowLogin(true)
+    //    setShowLogin(true)
+    navigate(`/login?r_id=join/${joinToken}`)
   }
 
   const hideLogin = (account?: any) => {

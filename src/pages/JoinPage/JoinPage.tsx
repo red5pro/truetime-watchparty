@@ -46,7 +46,7 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 }
 
 const JoinPage = () => {
-  const { loading, error, seriesEpisode, conferenceData, nickname, updateNickname } = useJoinContext()
+  const { loading, error, joinToken, seriesEpisode, conferenceData, nickname, updateNickname } = useJoinContext()
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
@@ -166,6 +166,7 @@ const JoinPage = () => {
         {!loading && conferenceData && currentSection === Section.Landing && (
           <Box className={classes.joinSection}>
             <JoinSectionLanding
+              joinToken={joinToken}
               seriesEpisode={seriesEpisode}
               conferenceData={conferenceData}
               conferenceParticipantsStringBuilder={getParticipantText}
