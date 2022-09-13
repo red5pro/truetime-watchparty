@@ -2,6 +2,7 @@ import React from 'react'
 import { Stack } from '@mui/material'
 import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
+import useStyles from './PublisherControls.module'
 
 interface PublisherControlsProps {
   cameraOn: boolean
@@ -15,6 +16,8 @@ const PublisherControls = (props: PublisherControlsProps) => {
 
   const [isCameraOn, setIsCameraOn] = React.useState<boolean>(cameraOn)
   const [isMicrophoneOn, setIsMicrophoneOn] = React.useState<boolean>(microphoneOn)
+
+  const { classes } = useStyles()
 
   React.useEffect(() => {
     onCameraToggle(isCameraOn)
@@ -40,6 +43,7 @@ const PublisherControls = (props: PublisherControlsProps) => {
       <CustomButton
         size={BUTTONSIZE.SMALL}
         buttonType={BUTTONTYPE.TRANSPARENT}
+        className={classes.button}
         startIcon={
           isCameraOn ? (
             <Videocam sx={{ color: 'rgb(156, 243, 97)' }} />
