@@ -58,6 +58,8 @@ const SignInEmail = (props: ISignInEmailProps) => {
       if (onActions && getCookies()?.account) {
         onActions.onNextStep()
         return
+      } else if (redirectAfterLogin) {
+        redirectAfterLogin()
       }
     }
   }, [verifyAccount])
@@ -86,10 +88,6 @@ const SignInEmail = (props: ISignInEmailProps) => {
         setCookie('userAccount', response.data, { secure: true, samesite: 'Strict' })
 
         setVerifyAccount(true)
-
-        if (redirectAfterLogin) {
-          redirectAfterLogin()
-        }
       } else {
         setAccountUnverified(true)
       }
