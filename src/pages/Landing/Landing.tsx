@@ -22,6 +22,12 @@ const Home = () => {
     }
   }
 
+  const handleKeyPress = (ev: any) => {
+    if (ev && ev.code === 'Enter' && partyCode.length > 0) {
+      navigate(`/join/${partyCode}`)
+    }
+  }
+
   return (
     <Box className={classes.container} display="flex">
       <Box className={classes.leftContainer}>
@@ -32,7 +38,12 @@ const Home = () => {
         </Box>
         <Typography className={classes.partyCode}>Type Party Code</Typography>
         <Box display="flex">
-          <Input placeholder="Party Code" className={classes.input} onBlur={onInputChange} />
+          <Input
+            placeholder="Party Code"
+            className={classes.input}
+            onBlur={onInputChange}
+            onKeyPress={handleKeyPress}
+          />
           <CustomButton size={BUTTONSIZE.SMALL} buttonType={BUTTONTYPE.PRIMARY} onClick={onClick}>
             Join
           </CustomButton>
