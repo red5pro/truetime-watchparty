@@ -37,8 +37,6 @@ enum VipStepIdentify {
 }
 
 const VipSteps = () => {
-  const { getCookies, removeCookie } = useCookies(['userAccount', 'account'])
-
   const mainVideoRef = React.useRef<SubscriberRef>(null)
 
   const [activeStep, setActiveStep] = React.useState(0)
