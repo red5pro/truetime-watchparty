@@ -37,6 +37,7 @@ const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
         marginLeft={2}
         className={classes.container}
       >
+        <Typography>There are no more conferences.</Typography>
         <CustomButton
           labelStyle={classes.enabledButton}
           onClick={() => skipNextConference()}
