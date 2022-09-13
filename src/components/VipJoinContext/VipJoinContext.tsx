@@ -4,7 +4,7 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { FatalError } from '../../models/FatalError'
 import { getCurrentEpisode, getNextConference } from '../../services/conference/conference'
 import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
-import { generateFingerprint } from '../../utils/commonUtils'
+import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 
 function useUID() {
@@ -40,6 +40,8 @@ interface IVipJonContextProps {
   getNextConference: (isFirstCall: boolean) => Promise<boolean>
   setCurrentConferenceGetNext: () => Promise<void>
   setLoggedIn: (value: boolean) => void
+  account: any
+  setAccount: (value: any) => void
 }
 
 const VipJoinContext = React.createContext<IVipJonContextProps>({} as IVipJonContextProps)
@@ -48,7 +50,7 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
   const { children } = props
 
   const uid = useUID()
-  const { getCookies } = useCookies(['account', 'userAccount'])
+  const { getCookies, removeCookie } = useCookies(['account', 'userAccount'])
 
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
@@ -63,14 +65,23 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
   })
   const [currentConferenceData, setCurrentConferenceData] = React.useState<ConferenceDetails | undefined>()
   const [nextVipConferenceDetails, setNextVipConferenceDetails] = React.useState<ConferenceDetails>()
+  const [account, setAccount] = React.useState<any>()
   const [ready, setReady] = React.useState<boolean>(false)
   const [loggedIn, setLoggedIn] = React.useState<boolean>(false)
 
   React.useEffect(() => {
-    if (cookies.account) {
-      setReady(true)
+    const cookies = getCookies()
+    const acc = cookies.userAccount
+    if (acc) {
+      const { role } = acc
+      // We are dumping any previously entered account info if stored as non-VIP
+      if (role !== UserRoles.VIP) {
+        clearCookies()
+      } else {
+        setReady(true)
+      }
     }
-  }, [cookies, cookies.account])
+  }, [])
 
   React.useEffect(() => {
     if (ready || loggedIn) {
@@ -92,10 +103,15 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
     }
   }, [seriesEpisode])
 
+  const clearCookies = () => {
+    removeCookie('userAccount')
+    removeCookie('account')
+  }
+
   /*--------------------------METHODS----------------------------------*/
 
   const getNextConferenceDetails = async (isFirstCall: boolean) => {
-    const response = await getNextConference(cookies.account)
+    const response = await getNextConference(getCookies().account)
     if (!response.error && response.data) {
       setNextVipConferenceDetails(response.data)
       return true
@@ -155,7 +171,7 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
     }
     return guid
   }
-  
+
   const exportedValues = {
     loading,
     error,
@@ -167,6 +183,8 @@ const VipJoinProvider = (props: VipJoinContextProps) => {
     getNextConference: getNextConferenceDetails,
     setCurrentConferenceGetNext,
     setLoggedIn,
+    account,
+    setAccount,
   }
 
   return <VipJoinContext.Provider value={exportedValues}>{children}</VipJoinContext.Provider>

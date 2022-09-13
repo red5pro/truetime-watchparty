@@ -39,7 +39,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const uid = useUID()
   const params = useParams()
   const navigate = useNavigate()
-  const { getCookies } = useCookies(['account'])
+  const { getCookies, removeCookie } = useCookies(['account', 'userAccount'])
 
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
@@ -60,6 +60,18 @@ const JoinProvider = (props: JoinContextProps) => {
 
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
   // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    const cookies = getCookies()
+    const acc = cookies.userAccount
+    if (acc) {
+      const { role } = acc
+      // We are dumping any previously entered account info if stored as VIP
+      if (role === UserRoles.VIP) {
+        clearCookies()
+      }
+    }
+  }, [])
 
   React.useEffect(() => {
     if (params && params.token) {
@@ -93,6 +105,11 @@ const JoinProvider = (props: JoinContextProps) => {
       getCurrentSeriesEpisodeData()
     }
   }, [seriesEpisode])
+
+  const clearCookies = () => {
+    removeCookie('userAccount')
+    removeCookie('account')
+  }
 
   const getConferenceData = async (token: string) => {
     try {

@@ -51,7 +51,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
 
   const { classes } = useStyles()
-  const [cookies] = useCookies(['account'])
+  const { getCookies } = useCookies(['account'])
   const {
     currentConferenceData,
     nextVipConferenceDetails,
@@ -101,14 +101,16 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
 
   const getSocketUrl = (token: string, guid: string) => {
     // TODO: How to get display name of VIP?
+    const cookies = getCookies()
+    const { account } = cookies
     const request: ConnectionRequest = {
       displayName: 'VIP Guest',
       joinToken: token,
       streamGuid: guid,
       fingerprint: fingerprint,
       messageType: 'JoinConferenceRequest',
-      username: cookies.account?.email,
-      password: cookies.account?.password,
+      username: account?.email,
+      password: account?.password,
     } as ConnectionRequest
 
     return { url: API_SOCKET_HOST, request }
