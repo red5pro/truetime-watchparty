@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import Signin from '../../components/Account/Signin/Signin'
 import Loading from '../../components/Common/Loading/Loading'
 import { useLoadScript } from '../../hooks/useLoadScript'
-import { parseQueryParamToObject } from '../../utils/commonUtils'
+import useQueryParams from '../../hooks/useQueryParams'
+import { IStepActionsSubComponent } from '../../utils/commonUtils'
 
 const SignInPage = () => {
   const facebookLoaded = useLoadScript()
