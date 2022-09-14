@@ -39,11 +39,16 @@ const signin = async (email: string, password: string) => {
     return response
   } catch (e: any) {
     console.log(e)
-
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 }
@@ -60,11 +65,16 @@ const verifyAccount = async (email: string, password: string, token: string) => 
     return response
   } catch (e: any) {
     console.log(e)
-
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
     return {
       data: null,
       status: e.code,
-      statusText: e.message,
+      statusText: message,
     } as AxiosResponse
   }
 }
