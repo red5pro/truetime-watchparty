@@ -1,13 +1,13 @@
 export const USE_LOCAL_SERVICES = false
 
-export const SERVER_HOST = process.env.REACT_APP_SERVER_HOST || 'watchtest.red5.net'
-export const API_SERVER_HOST = process.env.REACT_APP_API_SERVER_HOST || 'wat-101-sm.red5.net'
+export const SERVER_HOST = process.env.REACT_APP_SERVER_HOST || 'wat-142-sm.red5.net'
+export const API_SERVER_HOST = process.env.REACT_APP_API_SERVER_HOST || 'wat-142-sm.red5.net'
 export const MAIN_ENDPOINT = `https://${API_SERVER_HOST}/conferenceapi/1.0`
 export const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY || '6LdnYWAhAAAAALa4NtXnet5rmzV-dLTDeuVcIP2a'
 export const RECAPTCHA_SECRET_KEY =
   process.env.REACT_APP_RECAPTCHA_SECRET_KEY || '6LdnYWAhAAAAABLHrGDm34M2M3gZE4Qy-3o0LMKJ'
 
-export const USE_STREAM_MANAGER = process.env.REACT_APP_SM === '1' || false
+export const USE_STREAM_MANAGER = process.env.REACT_APP_SM === '0' || true
 export const API_SOCKET_HOST = USE_LOCAL_SERVICES
   ? 'ws://localhost:8001'
   : `wss://${API_SERVER_HOST}/conferenceapi/1.0/ws/conference`
