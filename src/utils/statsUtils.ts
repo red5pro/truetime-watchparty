@@ -5,8 +5,8 @@ const padTo2Digits = (num: number) => {
   return num.toString().padStart(2, '0')
 }
 
-const getDate = (miliseconds: number) => {
-  const date = new Date(miliseconds)
+const getDate = (milliseconds: number) => {
+  const date = new Date(milliseconds)
 
   let hours = padTo2Digits(date.getHours())
   let ampm = 'AM'
@@ -32,10 +32,26 @@ const getDate = (miliseconds: number) => {
   }
 
   const response = `${
-    isToday ? 'Today' : [padTo2Digits(date.getMonth() + 1), padTo2Digits(date.getDate()), date.getFullYear()].join('-')
+    isToday
+      ? 'Today at'
+      : [padTo2Digits(date.getMonth() + 1), padTo2Digits(date.getDate()), date.getFullYear()].join('-')
   }  ${[hours, padTo2Digits(date.getMinutes())].join(':')} ${ampm}`
 
   return response
+}
+
+const getTime = (milliseconds: number) => {
+  let seconds = milliseconds
+  let minutes = Math.floor(seconds / 60)
+  let hours = Math.floor(minutes / 60)
+
+  console.log({ milliseconds, hours, minutes, seconds })
+
+  seconds = seconds % 60
+  minutes = minutes % 60
+  hours = hours % 24
+
+  return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`
 }
 
 export const mapLiveStatsData = (data: StatsByConference[]) => {
@@ -78,9 +94,9 @@ export const mapLiveStatsData = (data: StatsByConference[]) => {
   const rows = data.map((item: StatsByConference) => ({
     PartyName: item.displayName,
     HostName: 'TODO',
-    Viewers: item.curParticipants,
+    Viewers: item.maxParticipants,
     TotalViewers: item.totalParticipants,
-    TimeEngaged: item.avgViewTimeS,
+    TimeEngaged: getTime(item.totalViewTimeS),
     HasSpecialGuest: item.vipVisited ? 'Has Guest' : 'Has No Guest',
     StartTime: getDate(item.startTimeMs),
     EndTime: getDate(item.endTimeMs),
