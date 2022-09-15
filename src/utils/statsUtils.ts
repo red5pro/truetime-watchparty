@@ -45,8 +45,6 @@ const getTime = (milliseconds: number) => {
   let minutes = Math.floor(seconds / 60)
   let hours = Math.floor(minutes / 60)
 
-  console.log({ milliseconds, hours, minutes, seconds })
-
   seconds = seconds % 60
   minutes = minutes % 60
   hours = hours % 24
@@ -54,7 +52,9 @@ const getTime = (milliseconds: number) => {
   return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`
 }
 
-export const mapLiveStatsData = (data: StatsByConference[]) => {
+export const mapLiveStatsData = (stats: StatsByConference[]) => {
+  const data = stats.filter((stat) => stat.endTimeMs >= Date.now())
+
   const head: Column[] = [
     {
       id: 'PartyName',
