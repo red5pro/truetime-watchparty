@@ -80,7 +80,7 @@ const AdminPage = () => {
   }
 
   return (
-    <Box width="100%" display="flex" flexDirection="column" className={classes.container}>
+    <Box width="100%" minHeight="100%" display="flex" flexDirection="column" className={classes.container}>
       <Box marginBottom={1}>
         <Box padding={2} className={classes.brandLogo}>
           <WbcLogoSmall />
