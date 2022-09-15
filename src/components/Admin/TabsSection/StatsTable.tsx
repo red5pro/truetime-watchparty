@@ -64,7 +64,7 @@ const StatsTable = ({ tableHead, dataRow }: IStatsTableProps) => {
                       <TableCell
                         key={`${index}-${tindex}`}
                         align={column.align}
-                        style={{ minWidth: column.minWidth, borderBottom: 'none' }}
+                        style={{ minWidth: column.minWidth, borderBottom: 'none', overflowWrap: 'break-word' }}
                       >
                         {column.format && typeof value === 'number' ? column.format(value) : value}
                       </TableCell>

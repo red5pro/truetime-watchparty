@@ -2,7 +2,7 @@ import { Box, Typography } from '@mui/material'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
-// import MainTotalValues from '../../components/Admin/MainTotalValues/MainTotalValues'
+import MainTotalValues from '../../components/Admin/MainTotalValues/MainTotalValues'
 import TabsSection from '../../components/Admin/TabsSection/TabsSection'
 import Loading from '../../components/Common/Loading/Loading'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
@@ -11,6 +11,7 @@ import { AllConferenceStats, StatsByConference } from '../../models/ConferenceSt
 import { STATS_API_CALLS } from '../../services/api/stats-api-calls'
 import { getStatsByConference } from '../../services/conference/stats'
 import { UserRoles } from '../../utils/commonUtils'
+import { getSortedCountryList } from '../../utils/statsUtils'
 import useStyles from './AdminPage.module'
 
 const AdminPage = () => {
@@ -19,6 +20,7 @@ const AdminPage = () => {
   const [loading, setLoading] = React.useState<boolean>(true)
   const [allStats, setAllStats] = React.useState<AllConferenceStats>()
   const [statsByConference, setStatsByConference] = React.useState<StatsByConference[]>()
+  const [countries, setCountries] = React.useState<{ country: string; count: number }[]>([])
   const [error, setError] = React.useState<any>()
 
   const { getCookies, removeCookie } = useCookies(['userAccount', 'account'])
@@ -55,6 +57,8 @@ const AdminPage = () => {
 
       if (statsByConference.status === 200 && statsByConference.data) {
         setStatsByConference(statsByConference.data)
+
+        setCountries(getSortedCountryList(statsByConference.data))
       } else {
         setError(
           setError({
@@ -76,7 +80,7 @@ const AdminPage = () => {
   }
 
   return (
-    <Box width="100%" height="100%" display="flex" flexDirection="column" className={classes.container}>
+    <Box width="100%" display="flex" flexDirection="column" className={classes.container}>
       <Box marginBottom={1}>
         <Box padding={2} className={classes.brandLogo}>
           <WbcLogoSmall />
@@ -86,8 +90,9 @@ const AdminPage = () => {
         </Typography>
       </Box>
       {loading && <Loading />}
-      {/* {allStats && <MainTotalValues stats={allStats} />} */}
-      {statsByConference && <TabsSection statsByConferece={statsByConference} />}
+      {allStats && <MainTotalValues stats={allStats} />}
+      {statsByConference && <TabsSection statsByConferece={statsByConference} countries={countries} />}
+
       {error && (
         <SimpleAlertDialog
           title="Something went wrong"

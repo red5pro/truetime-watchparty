@@ -104,3 +104,22 @@ export const mapLiveStatsData = (stats: StatsByConference[]) => {
 
   return { head, rows }
 }
+
+export const getSortedCountryList = (stats: StatsByConference[]) => {
+  const countries: { country: string; count: number }[] = []
+
+  stats.forEach((currVall) => {
+    if (countries.length === 0) {
+      return countries.push({ country: currVall.location, count: 1 })
+    }
+    const country = countries.find((item: any) => item.country === currVall.location)
+    if (country) {
+      country.count = +1
+      return countries
+    }
+
+    return countries.push({ country: currVall.location, count: 1 })
+  })
+
+  return countries.sort((a, b) => b.count - a.count)
+}
