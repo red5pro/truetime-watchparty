@@ -12,6 +12,7 @@ interface ISignInProps {
   onActions?: IStepActionsSubComponent
   emailSignin?: boolean
   facebookLoaded: boolean
+  isAdminLoggingIn?: boolean
   role?: UserRoles
   redirectAfterLogin?: () => void
   validateAccount?: (account: any) => boolean
@@ -25,6 +26,7 @@ const Signin = (props: ISignInProps) => {
     redirectAfterLogin,
     facebookLoaded,
     validateAccount,
+    isAdminLoggingIn = false,
   } = props
   const { classes } = useStyles()
 
@@ -38,7 +40,11 @@ const Signin = (props: ISignInProps) => {
       {!signInEmail && (
         <Box display="flex" flexDirection="column" className={classes.container}>
           <Typography className={classes.title}>Sign In</Typography>
-          <Typography marginY={1}>Create an account to start hosting watchparties!</Typography>
+          <Typography marginY={1}>
+            {isAdminLoggingIn
+              ? 'Login with your admin credentials'
+              : 'Create an account to start hosting watchparties!'}
+          </Typography>
           <CustomButton
             fullWidth
             size={BUTTONSIZE.MEDIUM}
@@ -50,13 +56,18 @@ const Signin = (props: ISignInProps) => {
           {facebookLoaded && (
             <>
               <Typography textAlign="center">Or</Typography>
-              <SignInFacebook onActions={onActions} role={role} redirectAfterLogin={redirectAfterLogin} />{' '}
+              <SignInFacebook onActions={onActions} role={role} redirectAfterLogin={redirectAfterLogin} />
             </>
           )}
         </Box>
       )}
       {signInEmail && (
-        <SignInEmail onActions={onActions} validateAccount={validateAccount} redirectAfterLogin={redirectAfterLogin} />
+        <SignInEmail
+          onActions={onActions}
+          validateAccount={validateAccount}
+          redirectAfterLogin={redirectAfterLogin}
+          isAdminLoggingIn={isAdminLoggingIn}
+        />
       )}
     </Box>
   )

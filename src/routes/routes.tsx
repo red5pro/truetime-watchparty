@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import About from '../pages/About/About'
+
 import Signin from '../pages/SignIn/SignIn'
 import Home from '../pages/Home/Home'
 import Landing from '../pages/Landing/Landing'
@@ -11,13 +11,13 @@ import VipJoinPage from '../pages/VipJoinPage/VipJoinPage'
 import ThankYouPage from '../pages/ThankYouPage/ThankYouPage'
 import PartyEndedPage from '../pages/PartyEndedPage/PartyEndedPage'
 import SimpleVipPage from '../pages/SimpleVipPage/SimpleVipPage'
+import AdminPage from '../pages/Admin/AdminPage'
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/faq" element={<About />} />
         <Route path="/login" element={<Signin />} />
         <Route
           path="/join/:token"
@@ -52,6 +52,7 @@ const AppRoutes = () => {
         <Route path="*" element={<Landing />} />
         {/* TODO: Remove for production. Here for simple VIP entrance in demos. */}
         <Route path="/vip" element={<SimpleVipPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </BrowserRouter>
   )
