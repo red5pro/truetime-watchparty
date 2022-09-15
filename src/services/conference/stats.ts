@@ -23,7 +23,7 @@ export const getStatsByConference = async (user: string, password: string) => {
       )
 
       if (response.status === 200 && Object.values(response.data).length) {
-        statsByConferences.push(response.data)
+        statsByConferences.push({ ...response.data, ...allConferencesResponse.data.conferences[i] })
         results.push(response)
       }
     }
