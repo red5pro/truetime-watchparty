@@ -7,10 +7,10 @@ import useStyles from './TabSection.module'
 import TabPanel from './TabPanel'
 import StatsTable from './StatsTable'
 import { Column } from '..'
-import { mapLiveStatsData } from '../../../utils/statsUtils'
+import { mapLiveStatsData, mapPastEventsStatsData } from '../../../utils/statsUtils'
 import CountryList from '../MainTotalValues/CountryList'
 
-const TABS_SECTION = ['Live Stats', 'Tournament', 'Past Events', 'Special Guests']
+const TABS_SECTION = ['Live Stats', 'Series', 'Past Conferences', 'Special Guests']
 
 interface ITabsSectionProps {
   statsByConferece: StatsByConference[]
@@ -24,7 +24,7 @@ const mappingFunctions = (value: number, data: StatsByConference[]) => {
     case 1:
       return { head: [], rows: [] }
     case 2:
-      return { head: [], rows: [] }
+      return mapPastEventsStatsData(data)
     case 3:
       return { head: [], rows: [] }
 

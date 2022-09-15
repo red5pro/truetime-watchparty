@@ -105,6 +105,59 @@ export const mapLiveStatsData = (stats: StatsByConference[]) => {
   return { head, rows }
 }
 
+export const mapPastEventsStatsData = (stats: StatsByConference[]) => {
+  const data = stats.filter((stat) => stat.endTimeMs < Date.now())
+
+  const head: Column[] = [
+    {
+      id: 'PartyName',
+      label: 'Party Name',
+      minWidth: 100,
+    },
+    {
+      id: 'TotalViewers',
+      label: 'Total Viewers',
+    },
+    {
+      id: 'PeakViewership',
+      label: 'Peak Viewership',
+    },
+    {
+      id: 'PeakViewTime',
+      label: 'Peak View Time',
+    },
+    {
+      id: 'StartTime',
+      label: 'Start Time',
+    },
+    {
+      id: 'EndTime',
+      label: 'End Time',
+    },
+    {
+      id: 'Duration',
+      label: 'Duration',
+    },
+    {
+      id: 'Kicked',
+      label: 'Kicked',
+    },
+  ]
+
+  const rows = data.map((item: StatsByConference) => ({
+    PartyName: item.displayName,
+    TotalViewers: item.totalParticipants,
+    PeakViewership: item.maxParticipants,
+    PeakViewTime: getTime(item.maxViewTimeS),
+    StartTime: getDate(item.startTimeMs),
+    EndTime: getDate(item.endTimeMs),
+    Duration: getTime(Math.round((item.endTimeMs - item.startTimeMs) / 1000)),
+    Kicked: item.numKicked,
+  }))
+
+  return { head, rows }
+}
+
 export const getSortedCountryList = (stats: StatsByConference[]) => {
   const countries: { country: string; count: number }[] = []
 
