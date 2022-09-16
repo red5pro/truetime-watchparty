@@ -1,5 +1,7 @@
+import { UserRoles } from './commonUtils'
 import { Column } from '../components/Admin'
 import { StatsByConference } from '../models/ConferenceStats'
+import { UserAccount } from '../models/UserAccount'
 
 const padTo2Digits = (num: number) => {
   return num.toString().padStart(2, '0')
@@ -153,6 +155,54 @@ export const mapPastEventsStatsData = (stats: StatsByConference[]) => {
     EndTime: getDate(item.endTimeMs),
     Duration: getTime(Math.round((item.endTimeMs - item.startTimeMs) / 1000)),
     Kicked: item.numKicked,
+  }))
+
+  return { head, rows }
+}
+
+export const mapSpecialGuestsStatsData = (stats: UserAccount[]) => {
+  const data = stats.filter((stat) => stat.role === UserRoles.VIP)
+
+  const head: Column[] = [
+    {
+      id: 'GuestName',
+      label: 'Guest Name',
+      minWidth: 100,
+    },
+    {
+      id: 'Email',
+      label: 'Email',
+    },
+    {
+      id: 'Event',
+      label: 'Event',
+    },
+    {
+      id: 'Date',
+      label: 'Date',
+    },
+    {
+      id: 'Duration',
+      label: 'Duration',
+    },
+    {
+      id: 'Parties',
+      label: 'Parties',
+    },
+    {
+      id: 'Type',
+      label: 'Type',
+    },
+  ]
+
+  const rows = data.map((item: UserAccount) => ({
+    GuestName: 'TODO',
+    Email: item.username,
+    Event: 'TODO',
+    Date: 'TODO',
+    Duration: 'TODO',
+    Parties: 'TODO',
+    Type: item.role,
   }))
 
   return { head, rows }
