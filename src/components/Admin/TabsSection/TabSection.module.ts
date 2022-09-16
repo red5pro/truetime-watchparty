@@ -15,6 +15,9 @@ const useStyles = makeStyles()((theme: any) => ({
     borderRadius: '20px',
     backgroundColor: 'white',
     color: 'black !important',
+    animationDuration: '6s',
+    // transform: 'translateX(2%)',
+    transition: 'transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 2ms',
   },
   nonCurrTab: {
     color: 'white',

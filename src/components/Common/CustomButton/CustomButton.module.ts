@@ -2,8 +2,8 @@ import { makeStyles } from 'tss-react/mui'
 
 import { BUTTONSIZE } from './CustomButton'
 
-const getRootStyles = (size: BUTTONSIZE, theme: any) =>
-  ({
+const getRootStyles = (size: BUTTONSIZE, theme: any) => {
+  const root = {
     [BUTTONSIZE.SMALL]: {
       '& > *': {
         margin: theme.spacing(1),
@@ -82,7 +82,9 @@ const getRootStyles = (size: BUTTONSIZE, theme: any) =>
         },
       },
     },
-  }[size])
+  }[size]
+  return root
+}
 
 const useStyles = (size: BUTTONSIZE) =>
   makeStyles()((theme: any) => ({
