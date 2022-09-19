@@ -1,3 +1,5 @@
+import { ConferenceData } from './Conference'
+
 export interface AllConferenceStats {
   avgParticipants: number
   avgViewTimeS: number
@@ -13,7 +15,7 @@ export interface AllConferenceStats {
   totalViewTimeS: number
 }
 
-export interface StatsByConference {
+export interface StatsByConference extends ConferenceData {
   conferenceId: number
   episodeId: number
   streamGuid: string

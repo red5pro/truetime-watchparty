@@ -230,7 +230,7 @@ export const COUNTRIES: ICountry[] = [
   { label: 'Ukraine', code: 'UKR' },
   { label: 'United Arab Emirates', code: 'ARE' },
   { label: 'United Kingdom', code: 'GBR' },
-  { label: 'United States of America', code: 'USA' },
+  { label: 'United States', code: 'USA' },
   { label: 'Uruguay', code: 'URY' },
   { label: 'U.S. Virgin Islands', code: 'VIR' },
   { label: 'Uzbekistan', code: 'UZB' },

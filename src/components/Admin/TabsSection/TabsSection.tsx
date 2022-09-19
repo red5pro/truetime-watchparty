@@ -5,14 +5,16 @@ import Box from '@mui/material/Box'
 import { StatsByConference } from '../../../models/ConferenceStats'
 import useStyles from './TabSection.module'
 import TabPanel from './TabPanel'
-import StatsTable from '../StatsTable/StatsTable'
+import StatsTable from './StatsTable'
 import { Column } from '..'
 import { mapLiveStatsData } from '../../../utils/statsUtils'
+import CountryList from '../MainTotalValues/CountryList'
 
 const TABS_SECTION = ['Live Stats', 'Tournament', 'Past Events', 'Special Guests']
 
 interface ITabsSectionProps {
   statsByConferece: StatsByConference[]
+  countries: { country: string; count: number }[]
 }
 
 const mappingFunctions = (value: number, data: StatsByConference[]) => {
@@ -31,7 +33,7 @@ const mappingFunctions = (value: number, data: StatsByConference[]) => {
   }
 }
 
-const TabsSection = ({ statsByConferece }: ITabsSectionProps) => {
+const TabsSection = ({ statsByConferece, countries }: ITabsSectionProps) => {
   const [value, setValue] = React.useState(0)
 
   const [tableHead, setTableHead] = React.useState<Column[]>([])
@@ -73,9 +75,14 @@ const TabsSection = ({ statsByConferece }: ITabsSectionProps) => {
           ))}
         </Tabs>
       </Box>
-      <TabPanel value={value} index={0}>
-        <StatsTable tableHead={tableHead} dataRow={dataRow} />
-      </TabPanel>
+      <Box display="flex">
+        <>
+          <CountryList countries={countries} />
+          <TabPanel value={value} index={0}>
+            <StatsTable tableHead={tableHead} dataRow={dataRow} />
+          </TabPanel>
+        </>
+      </Box>
     </Box>
   )
 }
