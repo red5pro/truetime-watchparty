@@ -11,17 +11,22 @@ const useStyles = makeStyles()((theme: any) => ({
   container: {
     width: '30rem',
     borderRadius: '20px',
-
+    marginTop: '45px',
     [theme.breakpoints.down('md')]: {
       width: '75%',
     },
+  },
+  label: {
+    color: 'white',
+    fontSize: '18px',
+    fontWeight: 600,
   },
   title: {
     fontSize: '18px',
     fontWeight: 600,
   },
   input: {
-    marginTop: '20px',
+    marginBottom: '20px',
     '& > div': { width: '100% !important' },
   },
   signInButton: {
@@ -30,11 +35,6 @@ const useStyles = makeStyles()((theme: any) => ({
   errorValidation: {
     color: '#d32f2f',
     fontSize: '14px',
-  },
-  brandLogo: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
   },
   errorTextField: {
     color: '#d32f2f',
@@ -54,7 +54,7 @@ const useStyles = makeStyles()((theme: any) => ({
     height: '80px !important',
     width: '100%',
     padding: '9px 14px',
-    margin: '30px 0 10px 0',
+    margin: '10px 0 30px 0',
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     border: '1px solid #655f5f',
     borderRadius: '4px',
@@ -62,21 +62,6 @@ const useStyles = makeStyles()((theme: any) => ({
     fontFamily: 'inherit',
     letterSpacing: 'inherit',
     font: 'inherit',
-  },
-  selectField: {
-    '& svg': {
-      fill: 'white',
-    },
-  },
-  item: {},
-  menuItem: {
-    backgroundColor: '#30303099',
-    '&&.Mui-selected': {
-      backgroundColor: '#3030305c',
-    },
-    '&&:hover': {
-      backgroundColor: '#30303073',
-    },
   },
 }))
 

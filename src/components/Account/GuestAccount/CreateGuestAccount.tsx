@@ -70,7 +70,7 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
       <Typography variant="h4" fontWeight={600}>
         Invite New Special Guest
       </Typography>
-      <Typography fontSize="18px" fontWeight={400} marginY={2}>
+      <Typography className={classes.title} marginY={2}>
         Please add details for your invite
       </Typography>
 
@@ -87,15 +87,16 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
             return (
               <Form method="post">
                 <Box display="flex" flexDirection="column" className={classes.container}>
-                  <FormLabel color="primary">Special guest email</FormLabel>
+                  <FormLabel className={classes.label}>Special guest email</FormLabel>
                   <Field
                     component={TextField}
                     name="email"
+                    label="Email"
                     type="email"
-                    placeholder="Email"
                     className={classes.input}
                     fullWidth
                   />
+                  <FormLabel className={classes.label}>Password</FormLabel>
                   <Field
                     component={TextField}
                     id="password"
@@ -105,6 +106,7 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
                     autoComplete="off"
                     fullWidth
                   />
+                  <FormLabel className={classes.label}>Message in this Invite</FormLabel>
                   <Field
                     component={TextareaAutosize}
                     label="Message in this Invite"
