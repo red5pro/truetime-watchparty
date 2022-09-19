@@ -66,7 +66,7 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
   const handleCancel = async () => await backToPage(true)
 
   return (
-    <Box marginY={4} marginX={6}>
+    <Box marginY={4} sx={{ position: 'relative', left: '15%' }}>
       <Typography variant="h4" fontWeight={600}>
         Invite New Special Guest
       </Typography>
@@ -86,7 +86,7 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
 
             return (
               <Form method="post">
-                <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
+                <Box display="flex" flexDirection="column" className={classes.container}>
                   <FormLabel color="primary">Special guest email</FormLabel>
                   <Field
                     component={TextField}

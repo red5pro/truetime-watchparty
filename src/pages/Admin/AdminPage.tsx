@@ -88,19 +88,17 @@ const AdminPage = () => {
       </Box>
       {loading && <Loading />}
 
-      <Box>
-        {allStats && !openCreatePage && <MainTotalValues stats={allStats} />}
-        {statsByConference && (
-          <TabsSection
-            statsByConferece={statsByConference}
-            countries={countries}
-            setError={setError}
-            setLoading={setLoading}
-            setOpenCreatePage={setOpenCreatePage}
-            openCreatePage={openCreatePage}
-          />
-        )}
-      </Box>
+      {allStats && !openCreatePage && <MainTotalValues stats={allStats} />}
+      {statsByConference && (
+        <TabsSection
+          statsByConferece={statsByConference}
+          countries={countries}
+          setError={setError}
+          setLoading={setLoading}
+          setOpenCreatePage={setOpenCreatePage}
+          openCreatePage={openCreatePage}
+        />
+      )}
 
       {error && (
         <SimpleAlertDialog
