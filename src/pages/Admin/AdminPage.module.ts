@@ -3,7 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 const useStyles = makeStyles()(() => {
   return {
     container: {
-      backgroundColor: '#303030',
+      backgroundColor: 'black',
     },
     brandLogo: {
       position: 'absolute',
