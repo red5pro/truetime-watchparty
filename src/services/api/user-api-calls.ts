@@ -79,8 +79,34 @@ const verifyAccount = async (email: string, password: string, token: string) => 
   }
 }
 
+const getUsers = async (email: string, password: string) => {
+  try {
+    const params = {
+      user: email,
+      password: password,
+    }
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.USER}`, { params })
+
+    return response
+  } catch (e: any) {
+    console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
+    return {
+      data: null,
+      status: e.code,
+      statusText: message,
+    } as AxiosResponse
+  }
+}
+
 export const USER_API_CALLS = {
   createUser,
   signin,
   verifyAccount,
+  getUsers,
 }

@@ -7,17 +7,22 @@ import useStyles from './TabSection.module'
 import TabPanel from './TabPanel'
 import StatsTable from './StatsTable'
 import { Column } from '..'
-import { mapLiveStatsData, mapPastEventsStatsData } from '../../../utils/statsUtils'
+import { mapLiveStatsData, mapPastEventsStatsData, mapSpecialGuestsStatsData } from '../../../utils/statsUtils'
 import CountryList from '../MainTotalValues/CountryList'
+import { USER_API_CALLS } from '../../../services/api/user-api-calls'
+import useCookies from '../../../hooks/useCookies'
+import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 
 const TABS_SECTION = ['Live Stats', 'Series', 'Past Conferences', 'Special Guests']
 
 interface ITabsSectionProps {
   statsByConferece: StatsByConference[]
   countries: { country: string; count: number }[]
+  setError: (value: any) => void
+  setLoading: (value: boolean) => void
 }
 
-const mappingFunctions = (value: number, data: StatsByConference[]) => {
+const mappingFunctions = (value: number, data: StatsByConference[] | any) => {
   switch (value) {
     case 0:
       return mapLiveStatsData(data)
@@ -26,54 +31,110 @@ const mappingFunctions = (value: number, data: StatsByConference[]) => {
     case 2:
       return mapPastEventsStatsData(data)
     case 3:
-      return { head: [], rows: [] }
+      return mapSpecialGuestsStatsData(data)
 
     default:
       return mapLiveStatsData(data)
   }
 }
 
-const TabsSection = ({ statsByConferece, countries }: ITabsSectionProps) => {
+const getLabelButton = (value: number) => {
+  return {
+    0: 'Create an Event',
+    1: 'Create a Serie ',
+    3: 'Invite Special Guest',
+  }[value]
+}
+
+const TabsSection = ({ statsByConferece, countries, setError, setLoading }: ITabsSectionProps) => {
   const [value, setValue] = React.useState(0)
 
   const [tableHead, setTableHead] = React.useState<Column[]>([])
   const [dataRow, setDataRow] = React.useState<any>([])
+  const [buttonLabel, setButtonLabel] = React.useState<string>('')
 
   const { classes } = useStyles()
+  const { getCookies } = useCookies(['account'])
 
   React.useEffect(() => {
     if (statsByConferece) {
-      const { head, rows } = mappingFunctions(value, statsByConferece)
-
-      setTableHead(head)
-      setDataRow(rows)
+      getData()
+      setButtonLabel(getLabelButton(value) ?? '')
     }
   }, [statsByConferece, value])
+
+  const getData = async () => {
+    let users
+
+    if (value === 3) {
+      setLoading(true)
+
+      const { account } = getCookies()
+
+      const response = await USER_API_CALLS.getUsers(account.username, account.password)
+
+      setLoading(false)
+      if (response.status !== 200) {
+        setError({
+          status: `Warning!`,
+          statusText: `${response.statusText}`,
+        })
+        return
+      }
+
+      users = response.data.users
+    }
+
+    const data = users ? users : statsByConferece
+
+    const { head, rows } = mappingFunctions(value, data)
+
+    setTableHead(head)
+    setDataRow(rows)
+  }
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
 
+  const handleOnClick = () => {
+    console.log('handle onclick based on the value selected')
+  }
+
   return (
     <Box sx={{ width: '100%' }} display="flex" flexDirection="column" justifyContent="center" className={classes.root}>
-      <Box sx={{ width: 'fit-content', margin: '15px 2rem' }}>
-        <Tabs className={classes.tabs} value={value} onChange={handleChange}>
-          {TABS_SECTION.map((item: string, index) => (
-            <Tab
-              label={item}
-              id={item}
-              key={item}
-              className={value === index ? classes.currTab : classes.nonCurrTab}
-              sx={{
-                padding: '10px 15px',
-                margin: '5px',
-                minHeight: 'fit-content',
-                textTransform: 'none',
-                fontWeight: 600,
-              }}
-            />
-          ))}
-        </Tabs>
+      <Box display="flex" justifyContent="space-between">
+        <Box sx={{ width: 'fit-content', margin: '15px 2rem' }}>
+          <Tabs className={classes.tabs} value={value} onChange={handleChange}>
+            {TABS_SECTION.map((item: string, index) => (
+              <Tab
+                label={item}
+                id={item}
+                key={item}
+                className={value === index ? classes.currTab : classes.nonCurrTab}
+                sx={{
+                  padding: '10px 15px',
+                  margin: '5px',
+                  minHeight: 'fit-content',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                }}
+              />
+            ))}
+          </Tabs>
+        </Box>
+        {buttonLabel && (
+          <Box marginRight={2}>
+            <CustomButton
+              size={BUTTONSIZE.MEDIUM}
+              type="button"
+              buttonType={BUTTONTYPE.TERTIARY}
+              onClick={handleOnClick}
+            >
+              {buttonLabel}
+            </CustomButton>
+          </Box>
+        )}
       </Box>
       <Box display="flex">
         <>

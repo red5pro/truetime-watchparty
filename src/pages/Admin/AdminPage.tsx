@@ -60,20 +60,16 @@ const AdminPage = () => {
 
         setCountries(getSortedCountryList(statsByConference.data))
       } else {
-        setError(
-          setError({
-            status: `Warning!`,
-            statusText: `${statsByConference.statusText}. Please check back later!`,
-          })
-        )
-      }
-    } else {
-      setError(
         setError({
           status: `Warning!`,
-          statusText: `${allStats.statusText}. Please check back later!`,
+          statusText: `${statsByConference.statusText}. Please check back later!`,
         })
-      )
+      }
+    } else {
+      setError({
+        status: `Warning!`,
+        statusText: `${allStats.statusText}. Please check back later!`,
+      })
     }
 
     setLoading(false)
@@ -91,7 +87,14 @@ const AdminPage = () => {
       </Box>
       {loading && <Loading />}
       {allStats && <MainTotalValues stats={allStats} />}
-      {statsByConference && <TabsSection statsByConferece={statsByConference} countries={countries} />}
+      {statsByConference && (
+        <TabsSection
+          statsByConferece={statsByConference}
+          countries={countries}
+          setError={setError}
+          setLoading={setLoading}
+        />
+      )}
 
       {error && (
         <SimpleAlertDialog
