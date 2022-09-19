@@ -56,23 +56,13 @@ const ShareLinkModal = (props: ShareLinkModalProps) => {
               Share with your friends!
             </Typography>
             <Box display="flex" className={classes.buttonsContainer}>
-              <CustomButton
-                fullWidth
-                startIcon={<FacebookIcon />}
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.FACEBOOK}
-              >
+              <CustomButton startIcon={<FacebookIcon />} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.FACEBOOK}>
                 <Link href={`https://www.facebook.com/sharer/sharer.php?u=${linkToCopy}&display=page`} target="_blank">
                   Share on Facebook
                 </Link>
               </CustomButton>
 
-              <CustomButton
-                fullWidth
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.SECONDARY}
-                onClick={copyToClipboard}
-              >
+              <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={copyToClipboard}>
                 Copy link
               </CustomButton>
             </Box>
