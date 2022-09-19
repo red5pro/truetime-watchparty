@@ -1,3 +1,4 @@
+import { AccountCredentials } from './../../models/AccountCredentials'
 import axios, { AxiosResponse } from 'axios'
 import { MAIN_ENDPOINT } from '../../settings/variables'
 import { apiErrorMapping } from '../../utils/apiErrorMapping'
@@ -7,13 +8,25 @@ const ENDPOINT = {
   USER: `${MAIN_ENDPOINT}/user`,
 }
 
-const createUser = async (email: string, password: string, role?: string) => {
+const createUser = async (email: string, password: string, role?: string, adminCredentials?: AccountCredentials) => {
   try {
-    const response: AxiosResponse = await axios.post(`${ENDPOINT.USER}`, {
-      role: role ?? UserRoles.ORGANIZER,
-      username: email,
-      password: password,
-    })
+    let params = {}
+    if (adminCredentials) {
+      params = {
+        user: adminCredentials.email,
+        password: adminCredentials.password,
+      }
+    }
+
+    const response: AxiosResponse = await axios.post(
+      `${ENDPOINT.USER}`,
+      {
+        role: role ?? UserRoles.ORGANIZER,
+        username: email,
+        password: password,
+      },
+      { params }
+    )
 
     return response
   } catch (e: any) {
