@@ -22,6 +22,7 @@ const AdminPage = () => {
   const [statsByConference, setStatsByConference] = React.useState<StatsByConference[]>()
   const [countries, setCountries] = React.useState<{ country: string; count: number }[]>([])
   const [error, setError] = React.useState<any>()
+  const [openCreatePage, setOpenCreatePage] = React.useState<boolean>(false)
 
   const { getCookies, removeCookie } = useCookies(['userAccount', 'account'])
 
@@ -52,23 +53,23 @@ const AdminPage = () => {
     const allStats = await STATS_API_CALLS.getAllConferenceStats(cookies.account.username, cookies.account.password)
     if (allStats.status === 200 && allStats.data) {
       setAllStats(allStats.data as AllConferenceStats)
-
-      const statsByConference = await getStatsByConference(cookies.account.username, cookies.account.password)
-
-      if (statsByConference.status === 200 && statsByConference.data) {
-        setStatsByConference(statsByConference.data)
-
-        setCountries(getSortedCountryList(statsByConference.data))
-      } else {
-        setError({
-          status: `Warning!`,
-          statusText: `${statsByConference.statusText}. Please check back later!`,
-        })
-      }
     } else {
       setError({
-        status: `Warning!`,
-        statusText: `${allStats.statusText}. Please check back later!`,
+        status: `Got an error when trying to retrieve all stats.`,
+        statusText: `${allStats.statusText}.`,
+      })
+    }
+
+    const statsByConference = await getStatsByConference(cookies.account.username, cookies.account.password)
+
+    if (statsByConference.status === 200 && statsByConference.data) {
+      setStatsByConference(statsByConference.data)
+
+      setCountries(getSortedCountryList(statsByConference.data))
+    } else {
+      setError({
+        status: `Got an error when trying to retrieve conference stats.`,
+        statusText: `${statsByConference.statusText}.`,
       })
     }
 
@@ -86,15 +87,20 @@ const AdminPage = () => {
         </Typography>
       </Box>
       {loading && <Loading />}
-      {allStats && <MainTotalValues stats={allStats} />}
-      {statsByConference && (
-        <TabsSection
-          statsByConferece={statsByConference}
-          countries={countries}
-          setError={setError}
-          setLoading={setLoading}
-        />
-      )}
+
+      <Box>
+        {allStats && !openCreatePage && <MainTotalValues stats={allStats} />}
+        {statsByConference && (
+          <TabsSection
+            statsByConferece={statsByConference}
+            countries={countries}
+            setError={setError}
+            setLoading={setLoading}
+            setOpenCreatePage={setOpenCreatePage}
+            openCreatePage={openCreatePage}
+          />
+        )}
+      </Box>
 
       {error && (
         <SimpleAlertDialog

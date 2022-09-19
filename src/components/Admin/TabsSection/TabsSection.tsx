@@ -6,21 +6,15 @@ import { StatsByConference } from '../../../models/ConferenceStats'
 import useStyles from './TabSection.module'
 import TabPanel from './TabPanel'
 import StatsTable from './StatsTable'
-import { Column } from '..'
+import { Column, SectionValueSelected } from '..'
 import { mapLiveStatsData, mapPastEventsStatsData, mapSpecialGuestsStatsData } from '../../../utils/statsUtils'
 import CountryList from '../MainTotalValues/CountryList'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import useCookies from '../../../hooks/useCookies'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
+import CreateSection from '../CreateSection/CreateSection'
 
 const TABS_SECTION = ['Live Stats', 'Series', 'Past Conferences', 'Special Guests']
-
-interface ITabsSectionProps {
-  statsByConferece: StatsByConference[]
-  countries: { country: string; count: number }[]
-  setError: (value: any) => void
-  setLoading: (value: boolean) => void
-}
 
 const mappingFunctions = (value: number, data: StatsByConference[] | any) => {
   switch (value) {
@@ -46,8 +40,20 @@ const getLabelButton = (value: number) => {
   }[value]
 }
 
-const TabsSection = ({ statsByConferece, countries, setError, setLoading }: ITabsSectionProps) => {
+interface ITabsSectionProps {
+  statsByConferece: StatsByConference[]
+  countries: { country: string; count: number }[]
+  setError: (value: any) => void
+  setLoading: (value: boolean) => void
+  setOpenCreatePage: (value: boolean) => void
+  openCreatePage: boolean
+}
+
+const TabsSection = (props: ITabsSectionProps) => {
+  const { statsByConferece, countries, setError, setLoading, setOpenCreatePage, openCreatePage } = props
   const [value, setValue] = React.useState(0)
+
+  const [pageToOpen, setPageToOpen] = React.useState<string>('')
 
   const [tableHead, setTableHead] = React.useState<Column[]>([])
   const [dataRow, setDataRow] = React.useState<any>([])
@@ -97,54 +103,73 @@ const TabsSection = ({ statsByConferece, countries, setError, setLoading }: ITab
     setValue(newValue)
   }
 
-  const handleOnClick = () => {
-    console.log('handle onclick based on the value selected')
+  const handleOnClick = (value: number) => {
+    setOpenCreatePage(true)
+
+    setPageToOpen(SectionValueSelected[value])
+  }
+
+  const backToPage = async (shouldMapValues: boolean) => {
+    setOpenCreatePage(false)
+
+    if (shouldMapValues && value === 3) {
+      await getData()
+    }
   }
 
   return (
-    <Box sx={{ width: '100%' }} display="flex" flexDirection="column" justifyContent="center" className={classes.root}>
-      <Box display="flex" justifyContent="space-between">
-        <Box sx={{ width: 'fit-content', margin: '15px 2rem' }}>
-          <Tabs className={classes.tabs} value={value} onChange={handleChange}>
-            {TABS_SECTION.map((item: string, index) => (
-              <Tab
-                label={item}
-                id={item}
-                key={item}
-                className={value === index ? classes.currTab : classes.nonCurrTab}
-                sx={{
-                  padding: '10px 15px',
-                  margin: '5px',
-                  minHeight: 'fit-content',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                }}
-              />
-            ))}
-          </Tabs>
-        </Box>
-        {buttonLabel && (
-          <Box marginRight={2}>
-            <CustomButton
-              size={BUTTONSIZE.MEDIUM}
-              type="button"
-              buttonType={BUTTONTYPE.TERTIARY}
-              onClick={handleOnClick}
-            >
-              {buttonLabel}
-            </CustomButton>
+    <>
+      {openCreatePage && pageToOpen && <CreateSection sectionValueSelected={pageToOpen} backToPage={backToPage} />}
+      <Box
+        sx={{ width: '100%' }}
+        display={openCreatePage ? 'none' : 'flex'}
+        flexDirection="column"
+        justifyContent="center"
+        className={classes.root}
+      >
+        <Box display="flex" justifyContent="space-between">
+          <Box sx={{ width: 'fit-content', margin: '15px 2rem' }}>
+            <Tabs className={classes.tabs} value={value} onChange={handleChange}>
+              {TABS_SECTION.map((item: string, index) => (
+                <Tab
+                  label={item}
+                  id={item}
+                  key={item}
+                  className={value === index ? classes.currTab : classes.nonCurrTab}
+                  sx={{
+                    padding: '10px 15px',
+                    margin: '5px',
+                    minHeight: 'fit-content',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                  }}
+                />
+              ))}
+            </Tabs>
           </Box>
-        )}
+          {buttonLabel && (
+            <Box marginRight={2}>
+              <CustomButton
+                size={BUTTONSIZE.MEDIUM}
+                type="button"
+                buttonType={BUTTONTYPE.TERTIARY}
+                onClick={() => handleOnClick(value)}
+              >
+                {buttonLabel}
+              </CustomButton>
+            </Box>
+          )}
+        </Box>
+        <Box display="flex">
+          <>
+            <CountryList countries={countries} />
+            <TabPanel value={value} index={0}>
+              <StatsTable tableHead={tableHead} dataRow={dataRow} />
+            </TabPanel>
+          </>
+        </Box>
       </Box>
-      <Box display="flex">
-        <>
-          <CountryList countries={countries} />
-          <TabPanel value={value} index={0}>
-            <StatsTable tableHead={tableHead} dataRow={dataRow} />
-          </TabPanel>
-        </>
-      </Box>
-    </Box>
+    </>
   )
 }
 
