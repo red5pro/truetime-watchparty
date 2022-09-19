@@ -13,7 +13,7 @@ const MainTotalValues = ({ stats }: IMainTotalValuesProps) => {
       <CardComponent text="Number of active main feed viewers" value={stats.curParticipants} />
       <CardComponent text="Number of active conferences" value={stats.curConferences} />
       <CardComponent text="Average number of participants per conference" value={stats.avgParticipants} />
-      <CardComponent text="Average conference lenght in seconds" value={stats.avgViewTimeS} />
+      <CardComponent text="Average conference length in seconds" value={stats.avgViewTimeS} />
     </Box>
   )
 }
