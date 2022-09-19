@@ -12,6 +12,7 @@ function TabPanel(props: TabPanelProps) {
   return (
     <Box
       component="div"
+      width="100%"
       role="tabpanel"
       id={index.toString()}
       aria-labelledby={index.toString()}
