@@ -2,6 +2,7 @@ import * as React from 'react'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
+
 import { StatsByConference } from '../../../models/ConferenceStats'
 import useStyles from './TabSection.module'
 import TabPanel from './TabPanel'
@@ -46,11 +47,12 @@ interface ITabsSectionProps {
   setError: (value: any) => void
   setLoading: (value: boolean) => void
   setOpenCreatePage: (value: boolean) => void
+  setReady: (value: boolean) => void
   openCreatePage: boolean
 }
 
 const TabsSection = (props: ITabsSectionProps) => {
-  const { statsByConferece, countries, setError, setLoading, setOpenCreatePage, openCreatePage } = props
+  const { statsByConferece, countries, setError, setLoading, setOpenCreatePage, openCreatePage, setReady } = props
   const [value, setValue] = React.useState(0)
 
   const [pageToOpen, setPageToOpen] = React.useState<string>('')
@@ -109,17 +111,23 @@ const TabsSection = (props: ITabsSectionProps) => {
     setPageToOpen(SectionValueSelected[value])
   }
 
-  const backToPage = async (shouldMapValues: boolean) => {
+  const backToPage = async (shouldUpdateValues: boolean) => {
     setOpenCreatePage(false)
-
-    if (shouldMapValues && value === 3) {
-      await getData()
+    if (shouldUpdateValues) {
+      if (value === 3) {
+        await getData()
+      } else if (value === 1) {
+        console.log('get series')
+      } else {
+        setReady(true)
+      }
     }
   }
 
   return (
     <>
       {openCreatePage && pageToOpen && <CreateSection sectionValueSelected={pageToOpen} backToPage={backToPage} />}
+
       <Box
         sx={{ width: '100%' }}
         display={openCreatePage ? 'none' : 'flex'}
