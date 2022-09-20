@@ -177,6 +177,7 @@ export const mergeThemes = () => {
         styleOverrides: {
           root: {
             paddingTop: 0,
+            paddingBottom: 0,
           },
         },
       },
@@ -209,6 +210,13 @@ export const mergeThemes = () => {
         },
       },
       MuiPickersDay: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#999999',
+          },
+        },
+      },
+      MuiClockPicker: {
         styleOverrides: {
           root: {
             backgroundColor: '#999999',

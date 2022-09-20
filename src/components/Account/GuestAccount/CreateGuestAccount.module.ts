@@ -23,7 +23,7 @@ const useStyles = makeStyles()((theme: any) => ({
   },
   title: {
     fontSize: '18px',
-    fontWeight: 600,
+    fontWeight: 400,
   },
   input: {
     marginBottom: '20px',
