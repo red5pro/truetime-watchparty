@@ -1,4 +1,5 @@
 import { createTheme, Theme } from '@mui/material'
+import type {} from '@mui/x-date-pickers/themeAugmentation'
 import '../assets/styles/index.css'
 
 export interface DefaultAppTheme extends Theme {
@@ -197,6 +198,20 @@ export const mergeThemes = () => {
             textTransform: 'capitalize',
             fontWeight: 600,
             fontStyle: 'normal',
+          },
+        },
+      },
+      MuiCalendarPicker: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#655f5f',
+          },
+        },
+      },
+      MuiPickersDay: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#999999',
           },
         },
       },
