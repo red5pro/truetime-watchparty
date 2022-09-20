@@ -55,7 +55,9 @@ const getTime = (milliseconds: number) => {
 }
 
 export const mapLiveStatsData = (stats: StatsByConference[]) => {
-  const data = stats.filter((stat) => stat.endTimeMs >= Date.now())
+  const data = stats.filter(
+    (stat) => (stat.endTimeMs >= Date.now() && stat.curParticipants === 0) || stat.curParticipants > 0
+  )
 
   const head: Column[] = [
     {
