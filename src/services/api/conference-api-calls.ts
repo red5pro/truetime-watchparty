@@ -12,26 +12,6 @@ const ENDPOINT = {
   EPISODE: `${MAIN_ENDPOINT}/episode`,
 }
 
-const getSeriesList = async () => {
-  try {
-    const response: AxiosResponse = await axios.get(ENDPOINT.SERIES)
-    return response
-  } catch (e: any) {
-    console.log(e)
-    let message = e.message
-    const { response } = e
-    if (response && response.data) {
-      const { error } = response.data
-      message = error
-    }
-    return {
-      data: null,
-      status: e.code,
-      statusText: message,
-    } as AxiosResponse
-  }
-}
-
 const getCurrentEpisode = async () => {
   try {
     const response: AxiosResponse = await axios.get(`${ENDPOINT.EPISODE}/current`)
@@ -369,7 +349,6 @@ const banParticipant = async (
 }
 
 export const CONFERENCE_API_CALLS = {
-  getSeriesList,
   getCurrentEpisode,
   getAllEpisodesBySerie,
   getConferenceDetails,

@@ -1,6 +1,9 @@
 import { Box, Typography } from '@mui/material'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
+
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainTotalValues from '../../components/Admin/MainTotalValues/MainTotalValues'
 import TabsSection from '../../components/Admin/TabsSection/TabsSection'
@@ -74,6 +77,7 @@ const AdminPage = () => {
     }
 
     setLoading(false)
+    setReady(false)
   }
 
   return (
@@ -86,18 +90,21 @@ const AdminPage = () => {
           Watch Party Admin
         </Typography>
       </Box>
-      {loading && <Loading />}
 
       {allStats && !openCreatePage && <MainTotalValues stats={allStats} />}
+      {loading && <Loading />}
       {statsByConference && (
-        <TabsSection
-          statsByConferece={statsByConference}
-          countries={countries}
-          setError={setError}
-          setLoading={setLoading}
-          setOpenCreatePage={setOpenCreatePage}
-          openCreatePage={openCreatePage}
-        />
+        <LocalizationProvider dateAdapter={AdapterMoment}>
+          <TabsSection
+            statsByConferece={statsByConference}
+            countries={countries}
+            setError={setError}
+            setLoading={setLoading}
+            setOpenCreatePage={setOpenCreatePage}
+            openCreatePage={openCreatePage}
+            setReady={setReady}
+          />
+        </LocalizationProvider>
       )}
 
       {error && (
