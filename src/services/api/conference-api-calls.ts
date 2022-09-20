@@ -32,26 +32,6 @@ const getCurrentEpisode = async () => {
   }
 }
 
-const getAllEpisodesBySerie = async (serieId: number | string) => {
-  try {
-    const response: AxiosResponse = await axios.get(`${ENDPOINT.SERIES}/${serieId}/episode`)
-    return response
-  } catch (e: any) {
-    console.log(e)
-    let message = e.message
-    const { response } = e
-    if (response && response.data) {
-      const { error } = response.data
-      message = error
-    }
-    return {
-      data: null,
-      status: e.code,
-      statusText: message,
-    } as AxiosResponse
-  }
-}
-
 const getConferenceDetails = async (conferenceId: string, account?: AccountCredentials) => {
   const id = parseInt(conferenceId) // Can come in as an integer or string
 
@@ -350,7 +330,7 @@ const banParticipant = async (
 
 export const CONFERENCE_API_CALLS = {
   getCurrentEpisode,
-  getAllEpisodesBySerie,
+
   getConferenceDetails,
   getJoinDetails,
   createConference,

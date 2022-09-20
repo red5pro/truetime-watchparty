@@ -28,7 +28,7 @@ export const getCurrentEpisode = async (retrieveNextEpisodes = true) => {
       currentSerie = series.find((s: Serie) => s.seriesId === currentEpisode.seriesId)
 
       if (retrieveNextEpisodes) {
-        const allEpisodesResponse = await CONFERENCE_API_CALLS.getAllEpisodesBySerie(currentSerie.seriesId)
+        const allEpisodesResponse = await SERIES_API_CALLS.getAllEpisodesBySerie(currentSerie.seriesId)
         if (allEpisodesResponse.status !== 200) throw allEpisodesResponse
 
         nextEpisodes = allEpisodesResponse.data ?? []

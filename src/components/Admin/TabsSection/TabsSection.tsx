@@ -14,6 +14,7 @@ import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import useCookies from '../../../hooks/useCookies'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import CreateSection from '../CreateSection/CreateSection'
+import { Serie } from '../../../models/Serie'
 
 const TABS_SECTION = ['Live Stats', 'Series', 'Past Conferences', 'Special Guests']
 
@@ -49,10 +50,12 @@ interface ITabsSectionProps {
   setOpenCreatePage: (value: boolean) => void
   setReady: (value: boolean) => void
   openCreatePage: boolean
+  series: Serie[]
 }
 
 const TabsSection = (props: ITabsSectionProps) => {
-  const { statsByConferece, countries, setError, setLoading, setOpenCreatePage, openCreatePage, setReady } = props
+  const { statsByConferece, countries, setError, setLoading, setOpenCreatePage, openCreatePage, setReady, series } =
+    props
   const [value, setValue] = React.useState(0)
 
   const [pageToOpen, setPageToOpen] = React.useState<string>('')
@@ -126,7 +129,9 @@ const TabsSection = (props: ITabsSectionProps) => {
 
   return (
     <>
-      {openCreatePage && pageToOpen && <CreateSection sectionValueSelected={pageToOpen} backToPage={backToPage} />}
+      {openCreatePage && pageToOpen && (
+        <CreateSection sectionValueSelected={pageToOpen} backToPage={backToPage} series={series} />
+      )}
 
       <Box
         sx={{ width: '100%' }}
@@ -136,7 +141,7 @@ const TabsSection = (props: ITabsSectionProps) => {
         className={classes.root}
       >
         <Box display="flex" justifyContent="space-between">
-          <Box sx={{ width: 'fit-content', margin: '15px 2rem' }}>
+          <Box sx={{ width: 'fit-content', margin: '0 2rem' }}>
             <Tabs className={classes.tabs} value={value} onChange={handleChange}>
               {TABS_SECTION.map((item: string, index) => (
                 <Tab

@@ -16,6 +16,8 @@ import { getStatsByConference } from '../../services/conference/stats'
 import { UserRoles } from '../../utils/commonUtils'
 import { getSortedCountryList } from '../../utils/statsUtils'
 import useStyles from './AdminPage.module'
+import { Serie } from '../../models/Serie'
+import { SERIES_API_CALLS } from '../../services/api/serie-api-calls'
 
 const AdminPage = () => {
   const [cookies, setCookies] = React.useState<any>()
@@ -23,6 +25,7 @@ const AdminPage = () => {
   const [loading, setLoading] = React.useState<boolean>(true)
   const [allStats, setAllStats] = React.useState<AllConferenceStats>()
   const [statsByConference, setStatsByConference] = React.useState<StatsByConference[]>()
+  const [series, setSeries] = React.useState<Serie[]>([])
   const [countries, setCountries] = React.useState<{ country: string; count: number }[]>([])
   const [error, setError] = React.useState<any>()
   const [openCreatePage, setOpenCreatePage] = React.useState<boolean>(false)
@@ -76,6 +79,12 @@ const AdminPage = () => {
       })
     }
 
+    const seriesResponse = await SERIES_API_CALLS.getSeriesList()
+
+    if (seriesResponse.status === 200 && seriesResponse.data?.series) {
+      setSeries(seriesResponse.data.series)
+    }
+
     setLoading(false)
     setReady(false)
   }
@@ -103,6 +112,7 @@ const AdminPage = () => {
             setOpenCreatePage={setOpenCreatePage}
             openCreatePage={openCreatePage}
             setReady={setReady}
+            series={series}
           />
         </LocalizationProvider>
       )}
