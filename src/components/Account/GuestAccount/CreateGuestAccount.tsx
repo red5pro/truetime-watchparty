@@ -63,7 +63,7 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
     }
   }
 
-  const handleCancel = async () => await backToPage(true)
+  const handleCancel = async () => await backToPage(false)
 
   return (
     <Box marginY={4} sx={{ position: 'relative', left: '15%' }}>
@@ -85,13 +85,14 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
             const { submitForm, isSubmitting, errors, touched, values, setFieldValue } = props
 
             return (
-              <Form method="post">
+              <Form method="post" autoComplete="false">
                 <Box display="flex" flexDirection="column" className={classes.container}>
                   <FormLabel className={classes.label}>Special guest email</FormLabel>
                   <Field
                     component={TextField}
                     name="email"
-                    label="Email"
+                    placeholder="Email"
+                    hiddenLabel
                     type="email"
                     className={classes.input}
                     fullWidth
@@ -101,7 +102,8 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
                     component={TextField}
                     id="password"
                     name="password"
-                    label="Password"
+                    placeholder="Password"
+                    hiddenLabel
                     className={classes.input}
                     autoComplete="off"
                     fullWidth

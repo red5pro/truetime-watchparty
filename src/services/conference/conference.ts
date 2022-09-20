@@ -1,3 +1,4 @@
+import { SERIES_API_CALLS } from './../api/serie-api-calls'
 import { Serie } from './../../models/Serie'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { CONFERENCE_API_CALLS } from '../api/conference-api-calls'
@@ -10,7 +11,7 @@ export const getCurrentEpisode = async (retrieveNextEpisodes = true) => {
   let nextEpisodes = []
 
   try {
-    const response = await CONFERENCE_API_CALLS.getSeriesList()
+    const response = await SERIES_API_CALLS.getSeriesList()
     const { data } = response
     if (response.status !== 200) throw response
     if (!data) throw { response, error: ERROR_TYPE.NO_SERIES }
