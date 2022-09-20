@@ -82,10 +82,10 @@ const CreateSerie = (props: ICreateSerieProps) => {
   return (
     <Box marginY={4} sx={{ position: 'relative', left: '15%' }}>
       <Typography variant="h4" fontWeight={600}>
-        Serie
+        Series
       </Typography>
       <Typography className={classes.title} marginY={2}>
-        Please configure this serie
+        Please configure this series
       </Typography>
 
       <>
@@ -102,7 +102,7 @@ const CreateSerie = (props: ICreateSerieProps) => {
               <Form method="post">
                 <Box display="flex" flexDirection="column" className={classes.container}>
                   <Box display="flex" flexDirection="column" minHeight={300}>
-                    <FormLabel className={classes.label}>Name of the serie</FormLabel>
+                    <FormLabel className={classes.label}>Name of the series</FormLabel>
                     <Field
                       component={TextField}
                       name="displayName"
