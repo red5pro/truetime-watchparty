@@ -56,8 +56,6 @@ const CreateSerie = (props: ICreateSerieProps) => {
   const { getCookies } = useCookies(['account'])
 
   const handleSubmit = async (values: any) => {
-    // TODO: check if Start and End dates are needed
-
     const { account } = getCookies()
     const cred: AccountCredentials = {
       email: account.username,
@@ -98,9 +96,7 @@ const CreateSerie = (props: ICreateSerieProps) => {
           enableReinitialize
         >
           {(props: any) => {
-            const { submitForm, isSubmitting, values, setFieldValue, errors, touched } = props
-
-            console.log({ values, errors, touched })
+            const { submitForm, isSubmitting } = props
 
             return (
               <Form method="post">
@@ -125,8 +121,8 @@ const CreateSerie = (props: ICreateSerieProps) => {
                       className={classes.input}
                       fullWidth
                     />
-
-                    <Box display="flex" width="100%">
+                    {/* TODO: check if Start and End dates are needed. THE ENDPOINT DOES NOT ALLOW THEM YET */}
+                    {/* <Box display="flex" width="100%">
                       <Box display="flex" flexDirection="column" width="100%">
                         <FormLabel className={classes.label}>Start Date</FormLabel>
                         <DatePicker
@@ -169,8 +165,8 @@ const CreateSerie = (props: ICreateSerieProps) => {
                         />
                       </Box>
                     </Box>
+                 */}
                   </Box>
-
                   <Box display="flex" justifyContent="space-around">
                     <CustomButton
                       disabled={isSubmitting}
