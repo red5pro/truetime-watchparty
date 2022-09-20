@@ -79,6 +79,22 @@ const useStyles = makeStyles()((theme: any) => ({
       color: '#d32f2f',
     },
   },
+  selectField: {
+    width: '100%',
+    '& svg': {
+      fill: 'white',
+    },
+  },
+  item: {},
+  menuItem: {
+    backgroundColor: '#30303099',
+    '&&.Mui-selected': {
+      backgroundColor: '#3030305c',
+    },
+    '&&:hover': {
+      backgroundColor: '#30303073',
+    },
+  },
 }))
 
 export default useStyles
