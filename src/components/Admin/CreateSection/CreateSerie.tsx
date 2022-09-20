@@ -15,8 +15,8 @@ import { SERIES_API_CALLS } from '../../../services/api/serie-api-calls'
 const initialValues = {
   displayName: '',
   maxParticipants: 8,
-  startDatetime: new Date(),
-  endDatetime: new Date(),
+  // startDatetime: new Date(),
+  // endDatetime: new Date(),
 }
 
 const getValidationSchema = () => {
@@ -30,15 +30,15 @@ const getValidationSchema = () => {
     maxParticipants: Yup.number()
       .min(1, 'Max. Participants must be greater than or equal to 1')
       .required('Max. Participants field is required'),
-    startDatetime: Yup.date()
-      .required('Start Date field is required')
-      .min(todayDate, 'Date should be greater than today'),
-    endDatetime: Yup.date()
-      .required('End Date field is required')
-      .when(
-        'startDatetime',
-        (startDatetime, schema) => startDatetime && schema.min(startDatetime, 'End Date must be later that Start Date')
-      ),
+    // startDatetime: Yup.date()
+    //   .required('Start Date field is required')
+    //   .min(todayDate, 'Date should be greater than today'),
+    // endDatetime: Yup.date()
+    //   .required('End Date field is required')
+    //   .when(
+    //     'startDatetime',
+    //     (startDatetime, schema) => startDatetime && schema.min(startDatetime, 'End Date must be later that Start Date')
+    //   ),
   })
   return validationSchema
 }
