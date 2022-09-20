@@ -28,7 +28,7 @@ enum EStepIdentify {
 
 export default function HostAPartySteps() {
   const { classes } = useStyles()
-  const { getCookies, removeCookie } = useCookies(['account'])
+  const { getCookies, removeCookie } = useCookies(['account', 'userAccount'])
 
   const [activeStep, setActiveStep] = React.useState(0)
   const [startPartyData, setStartPartyData] = React.useState<ConferenceDetails | undefined>()
@@ -105,7 +105,6 @@ export default function HostAPartySteps() {
   }
 
   const handleBack = () => {
-    // debugger
     setActiveStep((prevActiveStep) => {
       const prevStep = prevActiveStep - 1
       if (prevStep === EStepIdentify.SIGN_IN && getCookies()?.userAccount?.role === UserRoles.ORGANIZER) {
