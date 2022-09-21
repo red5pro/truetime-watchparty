@@ -106,9 +106,12 @@ const createConference = async (conference: ConferenceDetails, account: AccountC
 
 const getAllConferences = async (account: AccountCredentials) => {
   try {
-    const response: AxiosResponse = await axios.get(
-      `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`
-    )
+    const config =
+      account.email && account.password
+        ? { params: { user: account.email, password: account.password } }
+        : { params: { auth: account.auth }, headers: { Authorization: `bearer ${account.accessToken}` } }
+
+    const response: AxiosResponse = await axios.get(ENDPOINT.CONFERENCE, config)
     return response
   } catch (e: any) {
     console.log(e)
@@ -330,7 +333,6 @@ const banParticipant = async (
 
 export const CONFERENCE_API_CALLS = {
   getCurrentEpisode,
-
   getConferenceDetails,
   getJoinDetails,
   createConference,

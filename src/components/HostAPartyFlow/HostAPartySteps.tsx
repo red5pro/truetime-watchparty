@@ -70,7 +70,7 @@ export default function HostAPartySteps() {
       component: (
         <Signin
           onActions={actions}
-          role={UserRoles.PARTICIPANT}
+          role={UserRoles.ORGANIZER}
           facebookLoaded={facebookLoaded}
           validateAccount={validateAccount}
         />
