@@ -1,4 +1,4 @@
-export const loadFBScriptAsyncronously = () => {
+export const loadFBScriptAsyncronously = (callback: (value: boolean) => void) => {
   let rootElem = document.getElementById('fb-root')
   if (!rootElem) {
     rootElem = document.createElement('div')
@@ -14,6 +14,17 @@ export const loadFBScriptAsyncronously = () => {
   script.src = `https://connect.facebook.net/${location}/sdk.js#xfbml=1&version=v14.0`
   script.nonce = 'Pv4Itb3k'
   script.async = true
+  script.defer = true
+  script.crossOrigin = 'anonymous'
 
   document.body.appendChild(script)
+  script.onload = () => {
+    if (callback) {
+      callback(true)
+    }
+  }
+
+  script.onerror = () => {
+    loadFBScriptAsyncronously(callback)
+  }
 }

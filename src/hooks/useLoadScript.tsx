@@ -7,15 +7,8 @@ export const useLoadScript = () => {
   React.useEffect(() => {
     const fb = document.getElementById('facebook-jssdk')
 
-    fb?.addEventListener('load', () => {
-      setFacebookLoaded(true)
-    })
-    fb?.addEventListener('error', () => {
-      loadFBScriptAsyncronously()
-    })
-
     if (!fb) {
-      loadFBScriptAsyncronously()
+      loadFBScriptAsyncronously(setFacebookLoaded)
     } else if (window.FB) {
       // could be cached or from internal router
       //   and never invoke `load` by the time the event listener is signed.

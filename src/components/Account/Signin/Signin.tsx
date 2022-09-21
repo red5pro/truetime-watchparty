@@ -22,7 +22,7 @@ const Signin = (props: ISignInProps) => {
   const {
     onActions,
     emailSignin,
-    role = UserRoles.PARTICIPANT,
+    role = UserRoles.ORGANIZER,
     redirectAfterLogin,
     facebookLoaded,
     validateAccount,

@@ -115,10 +115,17 @@ const MainStage = () => {
     const cookies = getCookies()
     if (cookies?.account) {
       // Registered User
-      const { email, password } = cookies.account
-      request.username = email
-      request.password = password
+      if (cookies.account.thirdParty) {
+        const { thirdParty, token } = cookies.account
+        request.auth = thirdParty
+        request.accessToken = token
+      } else {
+        const { email, password } = cookies.account
+        request.username = email
+        request.password = password
+      }
     }
+
     return { url: API_SOCKET_HOST, request }
   }
 
