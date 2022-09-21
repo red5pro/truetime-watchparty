@@ -1,7 +1,9 @@
+import { Episode } from './../models/Episode'
 import { UserRoles } from './commonUtils'
 import { Column } from '../components/Admin'
 import { StatsByConference } from '../models/ConferenceStats'
 import { UserAccount } from '../models/UserAccount'
+import { Serie } from '../models/Serie'
 
 const padTo2Digits = (num: number) => {
   return num.toString().padStart(2, '0')
@@ -206,6 +208,57 @@ export const mapSpecialGuestsStatsData = (stats: UserAccount[]) => {
     Parties: 'TODO',
     Type: item.role,
   }))
+
+  return { head, rows }
+}
+
+export const mapSeriesStatsData = (data: Serie[]) => {
+  const head: Column[] = [
+    {
+      id: 'SeriesName',
+      label: 'Series Name',
+      minWidth: 100,
+    },
+    {
+      id: 'StartDate',
+      label: 'Start Date',
+    },
+    {
+      id: 'EndDate',
+      label: 'End Date',
+    },
+    {
+      id: 'TotalViewers',
+      label: 'Total Viewers',
+    },
+    {
+      id: 'TotalEvents',
+      label: 'Total Events',
+    },
+  ]
+
+  // TODO: Need Real Series Stats endpoint here
+  const rows = data.map((item: Serie) => {
+    let startDateTime = item.episodes?.[0]?.startTime
+    let endDateTime = item.episodes?.[0]?.endTime
+
+    item.episodes.forEach((episode: Episode) => {
+      if (episode.startTime < startDateTime) {
+        startDateTime = episode.startTime
+      }
+      if (episode.endTime > endDateTime) {
+        endDateTime = episode.endTime
+      }
+    })
+
+    return {
+      SeriesName: item.displayName,
+      StartDate: startDateTime ? getDate(startDateTime) : '-',
+      EndDate: endDateTime ? getDate(endDateTime) : '-',
+      TotalViewers: item.maxParticipants,
+      TotalEvents: item.episodes.length,
+    }
+  })
 
   return { head, rows }
 }
