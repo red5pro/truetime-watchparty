@@ -93,8 +93,12 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
               role: role,
             }
 
-            setCookie('account', account, { secure: true })
-            setCookie('userAccount', userAccount, { secure: true })
+            // our cookies will expire when the fb cookie expires
+            const date = new Date()
+            date.setSeconds(date.getSeconds() + response.authResponse.expiresIn)
+
+            setCookie('account', account, { secure: true, expires: date.toUTCString() })
+            setCookie('userAccount', userAccount, { secure: true, expires: date.toUTCString() })
 
             setUserData({ token: response.authResponse.accessToken, userId: meResponse.id })
           })
