@@ -14,6 +14,7 @@ import { UserAccount } from '../../../models/UserAccount'
 import SignUp from './SignUp'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import PasswordField from '../../Form/PasswordField'
+import { validationSchema } from '../../../utils/accountUtils'
 
 const initialValues = {
   email: '',
@@ -24,22 +25,6 @@ const adminInitialValues = {
   username: '',
   password: '',
 }
-
-const testPassword = (value?: string) => {
-  if (value) {
-    return /^(?=[^A-Z\n]*[A-Z])(?=[^a-z\n]*[a-z])(?=[^0-9\n]*[0-9]).{8,}$/.test(value)
-  } else return false
-}
-
-const validationSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid Email').required('Email field is required'),
-  password: Yup.string()
-    // .min(8, 'Password must be at least 8 characters')
-    // .test('', 'Password must include at least one number, one uppercase letter and one lowercase letter', (value) =>
-    //   testPassword(value)
-    // )
-    .required('Password field is required'),
-})
 
 const adminValidationSchema = Yup.object().shape({
   username: Yup.string().required('Username field is required'),
