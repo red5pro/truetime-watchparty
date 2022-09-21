@@ -192,7 +192,7 @@ const JoinProvider = (props: JoinContextProps) => {
         if (result.status !== 200) {
           throw { data: null, status: result.status, statusText: `Could not unlock conference.` }
         }
-        dispatch({ type: 'TOGGLE_LOCK', locked: true })
+        dispatch({ type: 'TOGGLE_LOCK', locked: false })
 
         return result
       } catch (e) {
