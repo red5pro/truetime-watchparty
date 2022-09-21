@@ -261,7 +261,7 @@ const MainStage = () => {
 
   const toggleLock = async () => {
     const conferenceId = data.conference.conferenceId
-    if (seriesEpisode.locked) {
+    if (!seriesEpisode.locked) {
       try {
         const result = await lock(conferenceId)
         if (result.status >= 300) {
@@ -428,7 +428,7 @@ const MainStage = () => {
                 </IconButton>
               )}
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
-                <Tooltip title={seriesEpisode.locked ? 'Unlock' : 'Lock'}>
+                <Tooltip title={seriesEpisode.locked ? 'Locked' : 'Unlocked'}>
                   <IconButton
                     sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
                     color="primary"
@@ -436,7 +436,7 @@ const MainStage = () => {
                     component="label"
                     onClick={toggleLock}
                   >
-                    {seriesEpisode.locked ? <LockOpen fontSize="small" /> : <Lock fontSize="small" />}
+                    {seriesEpisode.locked ? <Lock fontSize="small" /> : <LockOpen fontSize="small" />}
                   </IconButton>
                 </Tooltip>
               )}
