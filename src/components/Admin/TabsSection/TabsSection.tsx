@@ -8,7 +8,12 @@ import useStyles from './TabSection.module'
 import TabPanel from './TabPanel'
 import StatsTable from './StatsTable'
 import { Column, SectionValueSelected } from '..'
-import { mapLiveStatsData, mapPastEventsStatsData, mapSpecialGuestsStatsData } from '../../../utils/statsUtils'
+import {
+  mapLiveStatsData,
+  mapPastEventsStatsData,
+  mapSeriesStatsData,
+  mapSpecialGuestsStatsData,
+} from '../../../utils/statsUtils'
 import CountryList from '../MainTotalValues/CountryList'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import useCookies from '../../../hooks/useCookies'
@@ -23,7 +28,7 @@ const mappingFunctions = (value: number, data: StatsByConference[] | any) => {
     case 0:
       return mapLiveStatsData(data)
     case 1:
-      return { head: [], rows: [] }
+      return mapSeriesStatsData(data)
     case 2:
       return mapPastEventsStatsData(data)
     case 3:
@@ -96,7 +101,13 @@ const TabsSection = (props: ITabsSectionProps) => {
       users = response.data.users
     }
 
-    const data = users ? users : statsByConferece
+    let data: any = statsByConferece
+
+    if (value === 1) {
+      data = series
+    } else if (value === 3) {
+      data = users
+    }
 
     const { head, rows } = mappingFunctions(value, data)
 
