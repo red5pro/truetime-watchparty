@@ -6,6 +6,7 @@ import { isMobileScreen, IStepActionsSubComponent, ThirdParties, UserRoles } fro
 
 import { ThirdPartyAccount, ThirdPartyUserAccount } from '../../../models/UserAccount'
 import useCookies from '../../../hooks/useCookies'
+import axios from 'axios'
 
 interface IFBSignInProps {
   onActions?: IStepActionsSubComponent
@@ -15,10 +16,37 @@ interface IFBSignInProps {
 
 const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps) => {
   const { setCookie } = useCookies(['account', 'userAccount'])
+  const [userData, setUserData] = React.useState<any>()
 
   React.useEffect(() => {
     setfbAsyncInit()
   }, [])
+
+  React.useEffect(() => {
+    if (userData) {
+      getMoreDataFromFB()
+    }
+  }, [userData])
+
+  const getMoreDataFromFB = async () => {
+    //TODO GET MORE USER DATA IF NEEDED
+    // https://developers.facebook.com/docs/graph-api/overview
+    // const fbUserDataResponse = await axios.get(
+    //   `https://graph.facebook.com/${userData.userId}?fields=id,name,email,picture&access_token=${userData.token}`
+    // )
+
+    // if (fbUserDataResponse.status === 200) {
+    //   console.log(fbUserDataResponse.data)
+    // }
+
+    if (onActions) {
+      onActions.onNextStep()
+    }
+
+    if (redirectAfterLogin) {
+      redirectAfterLogin()
+    }
+  }
 
   const setfbAsyncInit = () => {
     window.fbAsyncInit = (function () {
@@ -44,7 +72,7 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
 
     const params = {
       client_id: FACEBOOK_APP_ID,
-      redirect_uri: 'https://watchparty-spa.red5pro.net/', // location.href,
+      redirect_uri: location.host.includes('localhost') ? 'https://watchparty-spa.red5pro.net/' : location.host,
       state: 'facebookdirect',
     }
 
@@ -53,11 +81,10 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
     } else {
       window.FB.login(function (response: any) {
         if (response.authResponse) {
-          window.FB.api('/me', function (meResponse: any) {
+          window.FB.api('/me', { fields: 'email' }, function (meResponse: any) {
             const account: ThirdPartyAccount = {
               token: response.authResponse.accessToken,
               thirdParty: ThirdParties.FACEBOOK,
-
               id: meResponse.id,
             }
 
@@ -69,18 +96,7 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
             setCookie('account', account, { secure: true })
             setCookie('userAccount', userAccount, { secure: true })
 
-            //TODO MAKE API CALL
-            //TODO GET MORE USER DATA IF NEEDED
-            // "https://graph.facebook.com/USER-ID?fields=id,name,email,picture&access_token=ACCESS-TOKEN"
-            // https://developers.facebook.com/docs/graph-api/overview
-
-            if (onActions) {
-              onActions.onNextStep()
-            }
-
-            if (redirectAfterLogin) {
-              redirectAfterLogin()
-            }
+            setUserData({ token: response.authResponse.accessToken, userId: meResponse.id })
           })
         }
       })

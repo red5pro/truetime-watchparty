@@ -32,6 +32,8 @@ export interface ConnectionRequest {
   fingerprint?: string
   username?: string
   password?: string
+  auth?: string
+  accessToken?: string
 }
 
 export interface ConnectionResult {
