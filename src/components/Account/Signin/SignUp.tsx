@@ -10,31 +10,14 @@ import useStyles from './Signin.module'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import VerifyEmail from './VerifyEmail'
 import { IStepActionsSubComponent } from '../../../utils/commonUtils'
+import { signUpValidationSchema } from '../../../utils/accountUtils'
+import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 
 const initialValues = {
   email: '',
   password: '',
   passwordConfirmation: '',
 }
-
-const testPassword = (value?: string) => {
-  if (value) {
-    return /^(?=[^A-Z\n]*[A-Z])(?=[^a-z\n]*[a-z])(?=[^0-9\n]*[0-9]).{8,}$/.test(value)
-  } else return false
-}
-
-const validationSchema = Yup.object().shape({
-  email: Yup.string().email('Invalid Email').required('Email field is required'),
-  password: Yup.string()
-    .min(8, 'Password must be at least 8 characters')
-    .test('', 'Password must include at least one number, one uppercase letter and one lowercase letter', (value) =>
-      testPassword(value)
-    )
-    .required('Password field is required'),
-  passwordConfirmation: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
-    .required('Password Confirmation field is required'),
-})
 
 interface ISignUpProps {
   onActions?: IStepActionsSubComponent
@@ -81,7 +64,7 @@ const SignUp = (props: ISignUpProps) => {
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={validationSchema}
+      validationSchema={signUpValidationSchema}
       onSubmit={async (values) => handleSubmit(values)}
       enableReinitialize
     >
@@ -123,9 +106,12 @@ const SignUp = (props: ISignUpProps) => {
               </CustomButton>
               {isSubmitting && <LinearProgress />}
               {errorAfterSubmit && (
-                <Typography sx={{ fontSize: '20px' }} className={classes.errorValidation}>
-                  {errorAfterSubmit}
-                </Typography>
+                <SimpleAlertDialog
+                  title="Warning"
+                  message={errorAfterSubmit}
+                  onConfirm={() => setErrorAfterSubmit(errorAfterSubmit)}
+                  confirmLabel="Ok"
+                />
               )}
             </Box>
           </Form>
