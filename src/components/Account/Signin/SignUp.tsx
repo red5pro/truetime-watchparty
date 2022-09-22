@@ -1,5 +1,4 @@
 import * as React from 'react'
-import * as Yup from 'yup'
 import useCookies from '../../../hooks/useCookies'
 import { Box, LinearProgress, Typography } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
@@ -9,14 +8,12 @@ import useStyles from './Signin.module'
 
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import VerifyEmail from './VerifyEmail'
-import { IStepActionsSubComponent } from '../../../utils/commonUtils'
+import { IStepActionsSubComponent, UserRoles } from '../../../utils/commonUtils'
 import { signUpValidationSchema } from '../../../utils/accountUtils'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 
 const initialValues = {
   email: '',
-  password: '',
-  passwordConfirmation: '',
 }
 
 interface ISignUpProps {
@@ -26,8 +23,9 @@ interface ISignUpProps {
 const SignUp = (props: ISignUpProps) => {
   const { onActions } = props
   const { classes } = useStyles()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { setCookie } = useCookies(['account'])
+
+  //TODO: Remove this when the token is sent by email to the customers
+  const { setCookie } = useCookies(['userToken'])
 
   const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string | undefined>()
   const [shouldVerifyEmail, setShouldVerifyEmail] = React.useState<boolean>(false)
@@ -35,23 +33,15 @@ const SignUp = (props: ISignUpProps) => {
 
   const handleSubmit = async (values: any) => {
     setErrorAfterSubmit(undefined)
-    const response = await USER_API_CALLS.createUser(values.email, values.password)
+
+    const response = await USER_API_CALLS.createUser(values.email, UserRoles.ORGANIZER)
 
     if (response?.status === 201 && response?.data.token) {
-      setCookie('account', { email: values.email, password: values.password }, { secure: true })
       setEmail(values.email)
 
-      //TODO CHECK THIS STEP
-      // setShouldVerifyEmail(true)
-      const verifyResponse = await USER_API_CALLS.verifyAccount(values.email, values.password, response.data.token)
-
-      if (verifyResponse?.status === 200) {
-        onActions?.onNextStep()
-      } else {
-        setErrorAfterSubmit(
-          verifyResponse?.statusText ?? 'There was an error verifying your account, please sign in and try again'
-        )
-      }
+      //TODO: Remove this when the token is sent by email to the customers
+      setCookie('userToken', response.data.token)
+      setShouldVerifyEmail(true)
     } else {
       setErrorAfterSubmit(response?.statusText ?? 'There was an error creating your account, please try again')
     }
@@ -75,9 +65,7 @@ const SignUp = (props: ISignUpProps) => {
           <Form method="post" onChange={() => setErrorAfterSubmit(undefined)}>
             <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
               <Typography className={classes.title}>Sign Up</Typography>
-              <Typography>
-                Please enter a valid email address and a password. We’ll send you a 6-digit code to verify your email.
-              </Typography>
+              <Typography>Please enter a valid email address. We’ll send you a code to verify your email.</Typography>
               <Field
                 component={TextField}
                 name="email"
@@ -85,14 +73,6 @@ const SignUp = (props: ISignUpProps) => {
                 label="Email"
                 placeholder="Email"
                 className={`${classes.input} ${errorAfterSubmit?.includes(email) ? classes.errorTextField : ''}`}
-              />
-              <Field component={TextField} name="password" type="password" label="Password" className={classes.input} />
-              <Field
-                component={TextField}
-                name="passwordConfirmation"
-                type="password"
-                label="Password Confirmation"
-                className={classes.input}
               />
 
               <CustomButton

@@ -8,7 +8,7 @@ const ENDPOINT = {
   USER: `${MAIN_ENDPOINT}/user`,
 }
 
-const createUser = async (email: string, password: string, role?: string, adminCredentials?: AccountCredentials) => {
+const createUser = async (email: string, role?: string, adminCredentials?: AccountCredentials) => {
   try {
     let params = {}
     if (adminCredentials) {
@@ -23,7 +23,6 @@ const createUser = async (email: string, password: string, role?: string, adminC
       {
         role: role ?? UserRoles.ORGANIZER,
         username: email,
-        password: password,
       },
       { params }
     )
