@@ -1,56 +1,132 @@
 import * as React from 'react'
-import * as Yup from 'yup'
 import { Box, LinearProgress, Link, Typography } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './Signin.module'
 import { IStepActionsSubComponent } from '../../../utils/commonUtils'
-const initialValues = {
-  code: '',
-}
-
-const validationSchema = Yup.object().shape({
-  code: Yup.string().max(6).min(6).required('Code field is required'),
-})
+import { accountVerificationSchema } from '../../../utils/accountUtils'
+import useCookies from '../../../hooks/useCookies'
+import { USER_API_CALLS } from '../../../services/api/user-api-calls'
+import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
+import { useNavigate } from 'react-router-dom'
 
 interface IVerifyEmailProps {
-  email: string
+  email?: string
   onActions?: IStepActionsSubComponent
+  validateAccount?: (account: any) => boolean
 }
 
 const VerifyEmail = (props: IVerifyEmailProps) => {
-  const { email, onActions } = props
-  const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string | undefined>()
+  const { email, onActions, validateAccount } = props
+  const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<any | undefined>()
 
+  const navigate = useNavigate()
   const { classes } = useStyles()
+
+  //TODO: Remove this: 'userToken' when the token is sent by email to the customers
+  const { getCookies, setCookie, removeCookie } = useCookies(['userToken', 'account'])
+
+  const initialValues = {
+    email: email ?? '',
+    token: getCookies().userToken ?? '',
+    password: '',
+    passwordConfirmation: '',
+  }
+
+  const handleSubmit = async (values: any) => {
+    setErrorAfterSubmit(undefined)
+    const verifyResponse = await USER_API_CALLS.verifyAccount(values.email, values.password, values.token)
+
+    if (verifyResponse?.status === 200) {
+      const response = await USER_API_CALLS.signin(values.email, values.password)
+
+      if (response.status === 200 && response.data) {
+        let isValid = true
+
+        if (validateAccount) {
+          isValid = validateAccount(response.data)
+        }
+
+        if (!isValid) {
+          setErrorAfterSubmit({
+            title: 'Incorrect Login Account',
+            statusText: 'Please retry with the corresponding login account.',
+            onConfirm: () => navigate('/'),
+          })
+          return
+        }
+
+        setCookie('account', values, { secure: true, samesite: 'Strict' })
+        setCookie('userAccount', response.data, { secure: true, samesite: 'Strict' })
+
+        //TODO: Remove this when the token is sent by email to the customers
+        removeCookie('userToken')
+
+        setErrorAfterSubmit({
+          title: 'The account was successfully verified!',
+          statusText: 'You can continue to the next step.',
+          onConfirm: () => onActions?.onNextStep(),
+        })
+      }
+    } else {
+      setErrorAfterSubmit({
+        title: 'Warning!',
+        statusText: 'There was an error verifying your account, please sign in and try again.',
+        onConfirm: () => setErrorAfterSubmit(errorAfterSubmit),
+      })
+    }
+  }
 
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={validationSchema}
+      validationSchema={accountVerificationSchema}
       onSubmit={async (values) => {
-        console.log({ values })
-        if (onActions) {
-          onActions.onNextStep()
-        }
+        await handleSubmit(values)
       }}
       enableReinitialize
     >
       {(props: any) => {
-        const { submitForm, isSubmitting } = props
+        const { submitForm, isSubmitting, values } = props
+
+        const handleKeyPress = (ev: any) => {
+          if (ev && ev.code === 'Enter') {
+            submitForm()
+          }
+        }
 
         return (
           <Form method="post">
             <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
-              <Typography className={classes.title}>Verify your email</Typography>
-              <Typography>{`Enter the 6-digit code that was sent to ${email} to verify your account.`}</Typography>
-              <Field component={TextField} name="code" type="text" label="Code" className={classes.input} />
+              <Typography className={classes.title}>Verify your account</Typography>
+
+              {/* TODO: Display this when send email code is implemented */}
+              {/*{email && <Typography>{`Enter the 6-digit code that was sent to ${email} to verify your account.`}</Typography>} */}
+              <Field component={TextField} name="email" type="text" label="Email" className={classes.input} />
+              <Field
+                component={TextField}
+                name="token"
+                type="text"
+                label="Code"
+                value={values.token}
+                className={classes.input}
+              />
 
               {/* TODO IMPLEMENT RE- SEND EMAIL WITH CODE */}
-              <Link textAlign="end" onClick={() => console.log('Send email')}>
+              {/* <Link textAlign="end" onClick={() => console.log('Send email')}>
                 Didn’t get a code? Resend code
-              </Link>
+              </Link> */}
+
+              <Field component={TextField} name="password" type="password" label="Password" className={classes.input} />
+              <Field
+                component={TextField}
+                name="passwordConfirmation"
+                type="password"
+                label="Password Confirmation"
+                className={classes.input}
+                onKeyPress={handleKeyPress}
+              />
 
               <CustomButton
                 disabled={isSubmitting}
@@ -63,9 +139,12 @@ const VerifyEmail = (props: IVerifyEmailProps) => {
               </CustomButton>
               {isSubmitting && <LinearProgress />}
               {errorAfterSubmit && (
-                <Typography sx={{ fontSize: '20px' }} className={classes.errorValidation}>
-                  {errorAfterSubmit}
-                </Typography>
+                <SimpleAlertDialog
+                  title={errorAfterSubmit.title}
+                  message={errorAfterSubmit.statusText}
+                  onConfirm={errorAfterSubmit.onConfirm}
+                  confirmLabel="Ok"
+                />
               )}
             </Box>
           </Form>

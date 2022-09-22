@@ -1,14 +1,11 @@
 import { Box, Stepper } from '@mui/material'
 import * as React from 'react'
-import useCookies from '../../hooks/useCookies'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
-import { useLoadScript } from '../../hooks/useLoadScript'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { Episode } from '../../models/Episode'
 import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 
 import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
-import Signin from '../Account/Signin/Signin'
 import Loading from '../Common/Loading/Loading'
 import MediaContext from '../MediaContext/MediaContext'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
@@ -20,6 +17,9 @@ import VipMediaStep from './VipMediaStep/VipMediaStep'
 import useStyles from './VipSteps.module'
 import VipTimerStep from './VipTimer/VipTimerStep'
 import VipView from './VipView/VipView'
+import SignInEmail from '../Account/Signin/SignInEmail'
+import useCookies from '../../hooks/useCookies'
+import { UserAccount } from '../../models/UserAccount'
 
 const useJoinContext = () => React.useContext(VipJoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -40,16 +40,16 @@ const VipSteps = () => {
   const mainVideoRef = React.useRef<SubscriberRef>(null)
 
   const [activeStep, setActiveStep] = React.useState(0)
-  const [accountCredentials, setAccountCredentials] = React.useState<AccountCredentials>()
   const [currentEpisode, setCurrentEpisode] = React.useState<Episode>()
+
+  const { getCookies } = useCookies(['userAccount', 'account'])
 
   const [onBoarding, setOnboarding] = React.useState<boolean>(true)
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
 
   const { classes } = useStyles()
-  const facebookLoaded = useLoadScript()
 
-  const { loading, error, seriesEpisode, account, setAccount, setLoggedIn } = useJoinContext()
+  const { loading, error, seriesEpisode, setAccount, setLoggedIn } = useJoinContext()
   const { mediaStream, setConstraints, setMediaStream } = useMediaContext()
 
   const clearMediaContext = () => {
@@ -66,12 +66,6 @@ const VipSteps = () => {
       clearMediaContext()
     }
   }, [activeStep])
-
-  React.useEffect(() => {
-    if (account) {
-      setAccountCredentials(account)
-    }
-  }, [account])
 
   React.useEffect(() => {
     if (seriesEpisode && seriesEpisode.loaded) {
@@ -94,8 +88,8 @@ const VipSteps = () => {
     window.location.reload()
   }
 
-  const validateAccount = (account: any) => {
-    if (account && account.role === UserRoles.VIP) {
+  const validateAccount = (userAccount: UserAccount, account: AccountCredentials) => {
+    if (account && userAccount && userAccount.role === UserRoles.VIP) {
       setAccount(account)
       return true
     } else {
@@ -106,18 +100,11 @@ const VipSteps = () => {
   const getSteps = (actions: IStepActionsSubComponent) => [
     {
       id: VipStepIdentify.LANDING,
-      component: <VipView loading={loading} onActions={actions} account={accountCredentials} />,
+      component: <VipView loading={loading} onActions={actions} account={getCookies().account} />,
     },
     {
       id: VipStepIdentify.SIGN_IN,
-      component: (
-        <Signin
-          onActions={actions}
-          role={UserRoles.VIP}
-          facebookLoaded={facebookLoaded}
-          validateAccount={validateAccount}
-        />
-      ),
+      component: <SignInEmail onActions={actions} validateAccount={validateAccount} isVipLoggingIn={true} />,
     },
     {
       id: VipStepIdentify.AV_SETUP,
@@ -142,12 +129,13 @@ const VipSteps = () => {
   ]
 
   const handleNext = () => {
+    const { userAccount, account } = getCookies()
     setActiveStep((prevActiveStep) => {
       const nextStep = prevActiveStep + 1
       if (prevActiveStep === VipStepIdentify.SIGN_IN) {
         setLoggedIn(true)
       }
-      if (nextStep === VipStepIdentify.SIGN_IN && account && validateAccount(account)) {
+      if (nextStep === VipStepIdentify.SIGN_IN && userAccount && validateAccount(userAccount, account)) {
         // skip sign in step if account is present
         return nextStep + 1
       }
@@ -156,9 +144,10 @@ const VipSteps = () => {
   }
 
   const handleBack = () => {
+    const { userAccount, account } = getCookies()
     setActiveStep((prevActiveStep) => {
       const prevStep = prevActiveStep - 1
-      if (prevStep === VipStepIdentify.SIGN_IN && account && validateAccount(account)) {
+      if (prevStep === VipStepIdentify.SIGN_IN && userAccount && validateAccount(userAccount, account)) {
         // skip sign in step if account is present
         return prevStep - 1
       }
@@ -212,8 +201,8 @@ const VipSteps = () => {
       <Stepper activeStep={activeStep}></Stepper>
       <Box
         display="flex"
-        flexDirection="column"
         justifyContent="center"
+        alignContent="center"
         height="100%"
         className={!onBoarding ? classes.watchContainer : classes.stepsContainer}
       >

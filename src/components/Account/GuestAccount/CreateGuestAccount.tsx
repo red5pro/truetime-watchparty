@@ -15,7 +15,6 @@ import { UserRoles } from '../../../utils/commonUtils'
 const initialValues = {
   conferenceId: 0,
   email: '',
-  password: '',
   startTime: 0,
   endTime: 0,
   message: '',
@@ -24,7 +23,6 @@ const initialValues = {
 const validationSchema = Yup.object().shape({
   conferenceId: Yup.string().required('Conference field is required'),
   email: Yup.string().email('Invalid Email').required('Email field is required'),
-  password: Yup.string().max(50).required('Password field is required'),
   startTime: Yup.date(),
   endTime: Yup.date(),
   message: Yup.string().max(150).required('Message field is required'),
@@ -40,20 +38,30 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
   const [error, setError] = React.useState<any>()
 
   const { classes } = useStyles()
-  const { getCookies } = useCookies(['account'])
+
+  //TODO: Remove "setCookie" when the token is sent by email to the customers
+  const { getCookies, setCookie } = useCookies(['account', 'userToken'])
 
   const handleSubmit = async (values: any) => {
     // TODO: save message with username, when the endpoint is ready.
-    // TODO: add verification email step
-
     const { account } = getCookies()
     const cred: AccountCredentials = {
       email: account.username,
       password: account.password,
     }
-    const createUserResponse = await USER_API_CALLS.createUser(values.email, values.password, UserRoles.VIP, cred)
+    const createUserResponse = await USER_API_CALLS.createUser(values.email, UserRoles.VIP, cred)
 
     if (createUserResponse.status === 201) {
+      //TODO: Remove this when the token is sent by email to the customers
+      setCookie('userToken', createUserResponse.data.token)
+
+      //TODO: Remove this alert when the token is sent by email to the customers
+      alert(
+        `The token to verify this account is: ${createUserResponse.data.token} copy and paste when you login with the new account created`
+      )
+      console.log(
+        `The token to verify this account is: ${createUserResponse.data.token}. Copy and paste when you login with the new account created`
+      )
       await backToPage(true)
     } else {
       setError({
@@ -97,17 +105,7 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
                     className={classes.input}
                     fullWidth
                   />
-                  <FormLabel className={classes.label}>Password</FormLabel>
-                  <Field
-                    component={TextField}
-                    id="password"
-                    name="password"
-                    placeholder="Password"
-                    hiddenLabel
-                    className={classes.input}
-                    autoComplete="off"
-                    fullWidth
-                  />
+
                   <FormLabel className={classes.label}>Message in this Invite</FormLabel>
                   <Field
                     component={TextareaAutosize}

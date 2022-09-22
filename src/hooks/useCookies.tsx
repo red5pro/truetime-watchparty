@@ -18,8 +18,8 @@ const getNamesCookies = (names: string[]) => {
   let objResponse = {}
   names.map((key: string) =>
     document.cookie.split('; ').reduce((all: any, current: any) => {
-      const item = current.split('=')
-      const storedKey = item[0]
+      const item = current.split(`${key}=`)
+      const storedKey = key
       let storedValue = item[1]
 
       try {
