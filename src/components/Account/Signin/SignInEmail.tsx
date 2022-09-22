@@ -15,6 +15,8 @@ import SignUp from './SignUp'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import PasswordField from '../../Form/PasswordField'
 import { validationSchema } from '../../../utils/accountUtils'
+import VerifyEmail from './VerifyEmail'
+import { AccountCredentials } from '../../../models/AccountCredentials'
 
 const initialValues = {
   email: '',
@@ -34,12 +36,13 @@ const adminValidationSchema = Yup.object().shape({
 interface ISignInEmailProps {
   onActions?: IStepActionsSubComponent
   redirectAfterLogin?: () => void
-  validateAccount?: (account: any) => boolean
+  validateAccount?: ((account: any) => boolean) | ((userAccount: UserAccount, account: AccountCredentials) => boolean)
   isAdminLoggingIn?: boolean
+  isVipLoggingIn?: boolean
 }
 
 const SignInEmail = (props: ISignInEmailProps) => {
-  const { onActions, validateAccount, redirectAfterLogin, isAdminLoggingIn = false } = props
+  const { onActions, validateAccount, redirectAfterLogin, isAdminLoggingIn = false, isVipLoggingIn = false } = props
   const { classes } = useStyles()
   const { getCookies, setCookie } = useCookies(['userAccount', 'account'])
 
@@ -48,6 +51,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
   const [signUp, setSignUp] = React.useState<boolean>(false)
   const [verifyAccount, setVerifyAccount] = React.useState<boolean>(false)
   const [error, setError] = React.useState<any | null>(null)
+  const [email, setEmail] = React.useState<string>()
 
   React.useEffect(() => {
     if (verifyAccount) {
@@ -67,7 +71,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
       let isValid = true
 
       if (validateAccount) {
-        isValid = validateAccount(response.data)
+        isValid = validateAccount(response.data, values)
       }
 
       if (isAdminLoggingIn && response.data.role !== UserRoles.ADMIN) {
@@ -104,9 +108,8 @@ const SignInEmail = (props: ISignInEmailProps) => {
     return <Box>Forgot Password</Box>
   }
 
-  // TODO
   if (accountUnverified) {
-    return <Box>Verify Account</Box>
+    return <VerifyEmail onActions={onActions} email={email} />
   }
 
   if (signUp) {
@@ -122,7 +125,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
         enableReinitialize
       >
         {(props: any) => {
-          const { submitForm, isSubmitting } = props
+          const { submitForm, isSubmitting, setFieldValue } = props
 
           const handleKeyPress = (ev: any) => {
             if (ev && ev.code === 'Enter') {
@@ -130,11 +133,20 @@ const SignInEmail = (props: ISignInEmailProps) => {
             }
           }
 
+          const onEmailChange = (ev: any) => {
+            const value = ev?.target?.value
+
+            setFieldValue('email', value)
+            setEmail(value)
+          }
+
           return (
             <Form method="post">
               <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
                 <Typography className={classes.title}>Sign In</Typography>
-                <Typography>Please verify your account before creating a watch party</Typography>
+                {!(isAdminLoggingIn || isVipLoggingIn) && (
+                  <Typography>Please verify your account before creating a watch party</Typography>
+                )}
                 {isAdminLoggingIn ? (
                   <Field
                     component={TextField}
@@ -153,6 +165,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
                     placeholder="Email"
                     className={classes.input}
                     fullWidth
+                    onChange={onEmailChange}
                   />
                 )}
                 <Field
@@ -167,7 +180,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
                   fullWidth
                   {...props}
                 />
-                {!isAdminLoggingIn && (
+                {!(isAdminLoggingIn || isVipLoggingIn) && (
                   <>
                     {/* TODO IMPLEMENT FORGOT PASSWORD */}
                     <Link textAlign="end" onClick={() => setForgotPassword(true)}>
@@ -179,6 +192,13 @@ const SignInEmail = (props: ISignInEmailProps) => {
                     </Link>
                   </>
                 )}
+
+                {isVipLoggingIn && (
+                  <Link textAlign="end" onClick={() => setAccountUnverified(true)}>
+                    <strong>First Time Logging In as a Vip</strong>
+                  </Link>
+                )}
+
                 <CustomButton
                   disabled={isSubmitting}
                   onClick={submitForm}
