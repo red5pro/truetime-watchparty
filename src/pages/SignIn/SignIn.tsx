@@ -24,6 +24,10 @@ const SignInPage = () => {
     navigate(getLink(query.get('r_id')))
   }
 
+  // NEED this to test in the server
+  console.log('Facebook Script loaded - facebookLoaded: ', facebookLoaded)
+  console.log('Facebook is ready - window.FB: ', window.FB)
+
   return (
     <Signin
       redirectAfterLogin={redirectAfterLogin}
