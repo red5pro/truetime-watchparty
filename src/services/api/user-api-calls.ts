@@ -1,3 +1,4 @@
+import { ThirdParties } from './../../utils/commonUtils'
 import { AccountCredentials } from './../../models/AccountCredentials'
 import axios, { AxiosResponse } from 'axios'
 import { MAIN_ENDPOINT } from '../../settings/variables'
@@ -26,6 +27,28 @@ const createUser = async (email: string, role?: string, adminCredentials?: Accou
       },
       { params }
     )
+
+    return response
+  } catch (e: any) {
+    console.log(e)
+    const msg = apiErrorMapping(e)
+
+    return {
+      data: null,
+      status: msg.status,
+      statusText: msg.statusText,
+    } as AxiosResponse
+  }
+}
+
+const signInFacebookUser = async (token: string) => {
+  try {
+    const params = { auth: ThirdParties.FACEBOOK }
+    const headers = { Authorization: `Bearer ${token}` }
+
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.USER}/whoami`, { params, headers })
+
+    debugger
 
     return response
   } catch (e: any) {
@@ -121,4 +144,5 @@ export const USER_API_CALLS = {
   signin,
   verifyAccount,
   getUsers,
+  signInFacebookUser,
 }
