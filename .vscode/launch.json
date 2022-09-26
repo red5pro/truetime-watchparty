@@ -8,7 +8,7 @@
       "type": "pwa-chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",
-      "url": "http://localhost:3006",
+      "url": "https://localhost:3006",
       "webRoot": "${workspaceFolder}",
       "preLaunchTask": "npm: start:debug"
     },
@@ -16,7 +16,7 @@
       "type": "pwa-chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost with demo",
-      "url": "http://localhost:3006",
+      "url": "https://localhost:3006",
       "webRoot": "${workspaceFolder}",
       "preLaunchTask": "npm: start:demo"
     },
@@ -25,7 +25,7 @@
       "port": 9222,
       "request": "attach",
       "type": "pwa-chrome",
-      "urlFilter": "http://localhost:3006/*", // use urlFilter instead of url!
+      "urlFilter": "https://localhost:3006/*", // use urlFilter instead of url!
       "webRoot": "${workspaceFolder}"
     }
   ]
