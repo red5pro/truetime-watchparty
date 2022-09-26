@@ -44,7 +44,7 @@ const createUser = async (email: string, role?: string, adminCredentials?: Accou
 const signInFacebookUser = async (token: string) => {
   try {
     const params = { auth: ThirdParties.FACEBOOK }
-    const headers = { Authorization: `Bearer ${token}` }
+    const headers = { Authorization: `Bearer ${token}`, 'Access-Control-Allow-Origin': '*' }
 
     const response: AxiosResponse = await axios.get(`${ENDPOINT.USER}/whoami`, { params, headers })
 

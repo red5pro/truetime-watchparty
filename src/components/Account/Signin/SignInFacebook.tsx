@@ -9,6 +9,7 @@ import useCookies from '../../../hooks/useCookies'
 import axios, { AxiosResponse } from 'axios'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import { formControlUnstyledClasses } from '@mui/base'
+import { ConstructionOutlined } from '@mui/icons-material'
 
 interface IFBSignInProps {
   onActions?: IStepActionsSubComponent
@@ -24,11 +25,29 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
     setfbAsyncInit()
   }, [])
 
+  // React.useEffect(() => {
+  //   if (userData) {
+  //     getMoreDataFromFB()
+  //   }
+  // }, [userData])
+
   React.useEffect(() => {
     if (userData) {
-      getMoreDataFromFB()
+      signInWatchparty()
     }
   }, [userData])
+
+  const signInWatchparty = async () => {
+    USER_API_CALLS.signInFacebookUser(userData.account.token)
+      .then((signInResponse: AxiosResponse) => {
+        debugger
+        if (signInResponse.status === 200) {
+          setCookie('account', userData.account, { secure: true, expires: userData.expires })
+          setCookie('userAccount', userData.userAccount, { secure: true, expires: userData.expires })
+        }
+      })
+      .catch((er: any) => console.log('error here!!!', er))
+  }
 
   const getMoreDataFromFB = async () => {
     //TODO GET MORE USER DATA IF NEEDED
@@ -107,6 +126,15 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
         xfbml: true,
         version: 'v2.6',
       })
+      window.FB.getLoginStatus(function (response: any) {
+        if (response.status === 'connected') {
+          console.log('getLoginStatus = ::connected:: -> response: ', response)
+        } else if (response.status === 'not_authorized') {
+          login()
+        } else {
+          login()
+        }
+      })
     })()
   }
 
@@ -121,6 +149,10 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
       return
     }
 
+    login()
+  }
+
+  const login = () => {
     const params = {
       client_id: FACEBOOK_APP_ID,
       redirect_uri: location.host.includes('localhost') ? 'https://watchparty-spa.red5pro.net/' : location.host,
@@ -155,21 +187,11 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
               const date = new Date()
               date.setSeconds(date.getSeconds() + response.authResponse.expiresIn)
 
-              setUserData({ token: response.authResponse.accessToken, userId: meResponse.id })
-              setCookie('account', account, { secure: true, expires: date.toUTCString() })
-              setCookie('userAccount', userAccount, { secure: true, expires: date.toUTCString() })
-
-              // USER_API_CALLS.signInFacebookUser(response.authResponse.accessToken)
-              //   .then((signInResponse: AxiosResponse) => {
-              //     console.log({ signInResponse })
-
-              //     setUserData({ token: response.authResponse.accessToken, userId: meResponse.id })
-              //     setCookie('account', account, { secure: true, expires: date.toUTCString() })
-              //     setCookie('userAccount', userAccount, { secure: true, expires: date.toUTCString() })
-              //   })
-              //   .catch((er: any) => console.log('error here!!!', er))
+              setUserData({ expires: date.toUTCString(), account, userAccount })
             }
           )
+        } else {
+          console.log('login failed', response)
         }
       })
     }
