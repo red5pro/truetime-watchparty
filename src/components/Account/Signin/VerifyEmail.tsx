@@ -10,6 +10,7 @@ import useCookies from '../../../hooks/useCookies'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import { useNavigate } from 'react-router-dom'
+import PasswordField from '../../Form/PasswordField'
 
 interface IVerifyEmailProps {
   email?: string
@@ -118,14 +119,24 @@ const VerifyEmail = (props: IVerifyEmailProps) => {
                 Didn’t get a code? Resend code
               </Link> */}
 
-              <Field component={TextField} name="password" type="password" label="Password" className={classes.input} />
               <Field
-                component={TextField}
+                component={PasswordField}
+                id="password"
+                name="password"
+                type="password"
+                label="Password"
+                className={classes.input}
+                {...props}
+              />
+              <Field
+                component={PasswordField}
+                id="passwordConfirmation"
                 name="passwordConfirmation"
                 type="password"
                 label="Password Confirmation"
                 className={classes.input}
                 onKeyPress={handleKeyPress}
+                {...props}
               />
 
               <CustomButton
