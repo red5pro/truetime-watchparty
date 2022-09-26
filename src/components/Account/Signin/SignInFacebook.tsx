@@ -40,13 +40,12 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
   const signInWatchparty = async () => {
     USER_API_CALLS.signInFacebookUser(userData.account.token)
       .then((signInResponse: AxiosResponse) => {
-        debugger
         if (signInResponse.status === 200) {
           setCookie('account', userData.account, { secure: true, expires: userData.expires })
           setCookie('userAccount', userData.userAccount, { secure: true, expires: userData.expires })
         }
       })
-      .catch((er: any) => console.log('error here!!!', er))
+      .catch((er: any) => console.log('error signInWatchparty!!!', er))
   }
 
   const getMoreDataFromFB = async () => {
