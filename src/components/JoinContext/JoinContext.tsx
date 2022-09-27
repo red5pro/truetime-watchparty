@@ -43,6 +43,7 @@ const JoinProvider = (props: JoinContextProps) => {
 
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
+  const [ready, setReady] = React.useState<boolean>(false)
   const [joinToken, setJoinToken] = React.useState<string | null>(null)
 
   // TODO: Update this based on User record / Auth ?
@@ -71,6 +72,7 @@ const JoinProvider = (props: JoinContextProps) => {
         clearCookies()
       }
     }
+    setReady(true)
   }, [])
 
   React.useEffect(() => {
@@ -101,10 +103,10 @@ const JoinProvider = (props: JoinContextProps) => {
   }, [joinToken])
 
   React.useEffect(() => {
-    if (!seriesEpisode.loaded) {
+    if (!seriesEpisode.loaded && ready) {
       getCurrentSeriesEpisodeData()
     }
-  }, [seriesEpisode])
+  }, [ready])
 
   const clearCookies = () => {
     removeCookie('userAccount')
