@@ -24,8 +24,7 @@ if (bump != 'none') {
     if (error || stderr) {
       throw new Error(error ?? stderr)
     }
-    const file = path.join(process.cwd, 'package.json')
-    console.log('FILE', file)
+    const file = path.join(process.cwd(), 'package.json')
     const pkg = JSON.parse(fs.readFileSync(file))
 
     const options = {
