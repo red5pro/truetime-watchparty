@@ -1,5 +1,8 @@
 import { exec } from 'child_process'
 import chalk from 'chalk'
+import replace from 'replace-in-file'
+import path from 'path'
+import fs from 'fs-extra'
 
 const bump = process.env.BUMP
 
@@ -21,8 +24,7 @@ if (bump != 'none') {
     if (error || stderr) {
       throw new Error(error ?? stderr)
     }
-    const pkg = require('../package.json')
-    const replace = require('replace-in-file')
+    const pkg = JSON.parse(fs.readFileSync(path.join(process.cwd, 'package.json')))
 
     const options = {
       files: './.env*',
