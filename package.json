@@ -37,9 +37,9 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "prestart": "node ./scripts/inject-version.js",
-    "prestar:debug": "node ./scripts/inject-version.js",
-    "prestart:demo": "node ./scripts/inject-version.js",
+    "prestart": "BUMP=none node ./scripts/inject-version.js",
+    "prestar:debug": "BUMP=none node ./scripts/inject-version.js",
+    "prestart:demo": "BUMP=none node ./scripts/inject-version.js",
     "start": "PORT=3006 export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start ",
     "start:debug": "PORT=3006 BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' export HTTPS=true&&SSL_CRT_FILE=~/localhost-ssl/cert.pem&&SSL_KEY_FILE=~/localhost-ssl/key.pem react-scripts start ",
     "start:demo": "PORT=3006 BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' export HTTPS=true&&SSL_CRT_FILE=~/localhost-ssl/cert.pem&&SSL_KEY_FILE=~/localhost-ssl/key.pem env-cmd -f .env-demo react-scripts start ",
