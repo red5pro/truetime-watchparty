@@ -24,16 +24,34 @@ There are 2 different `.env*` files used to build the app:
 For internal testing, the app can be built pointing to `.env` file using the following command:
 
 ```sh
-npm build
+BUMP=patch npm build
 ```
 
 To make a build for demo purposes - of which the endpoints point to servers deployed in Germany - use the following command to compile against the `.env-demo` environment:
 
 ```sh
-npm build:demo
+BUMP=patch npm build:demo
 ```
 
 This will produce deployment files in a `build` directory of the root of this repository. All the files produced from the `build` need to be deployed to a remote location.
+
+## Note on BUMP=
+
+The `BUMP` environement variable is require when running either `build` or `build:demo`. The variable can be any of the following:
+
+* patch
+* minor
+* major
+
+Providing the correct `BUMP` will go ahead and change the semver version within the `package.json` as well as inject the `REACT_APP_VERSION` within the `.env` files. This will ensure that the correct version of the build is properly deployed.
+
+The version will be printed out in the dev console logs, such as the following:
+
+```
+Watch Party Version: 0.2.0
+```
+
+## Build
 
 By convention all the files from within the `build` directory can be deployed to a remote server within a directory on the remote server setup to define the root of a site; for the purposes of this documentation, that will be `/var/www/red5-watchparty`.
 
