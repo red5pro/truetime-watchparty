@@ -48,7 +48,11 @@ const signInFacebookUser = async (token: string) => {
       Authorization: `Bearer ${token}`,
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Credentials': true,
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+      'Access-Control-Allow-Headers': 'Authorization, Origin, X-Requested-With, Content-Type, Accept',
+      'Access-Control-Request-Methods': 'POST, GET, OPTIONS',
+      'Access-Control-Expose-Headers': 'Access-Control-Allow-Origin',
+      Connection: 'keep-alive',
+      'Content-Type': 'application/json;charset=UTF-8',
     }
 
     const response: AxiosResponse = await axios.get(`${ENDPOINT.USER}/whoami`, { params, headers })
