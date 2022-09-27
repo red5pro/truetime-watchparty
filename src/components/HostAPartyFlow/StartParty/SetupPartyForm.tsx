@@ -101,7 +101,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
       if (setData(conference)) {
         // Submit
         const response = await CONFERENCE_API_CALLS.createConference(conference, account!)
-        if (response.status === 200 && response.data) {
+        if (response.status === 201 && response.data) {
           onActions.onNextStep()
         } else {
           if (account) {

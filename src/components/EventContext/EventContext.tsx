@@ -27,6 +27,7 @@ const EventProvider = (props: EventContextProps) => {
 
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
+  const [ready, setReady] = React.useState<boolean>(false)
 
   const [eventData, dispatch] = React.useReducer(eventReducer, {
     loaded: false,
@@ -36,10 +37,14 @@ const EventProvider = (props: EventContextProps) => {
   })
 
   React.useEffect(() => {
-    if (!eventData.loaded) {
+    setReady(true)
+  }, [])
+
+  React.useEffect(() => {
+    if (!eventData.loaded && ready) {
       load()
     }
-  }, [eventData])
+  }, [ready])
 
   const load = async () => {
     setLoading(true)
