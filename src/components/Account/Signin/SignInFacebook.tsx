@@ -6,7 +6,10 @@ import { isMobileScreen, IStepActionsSubComponent, ThirdParties, UserRoles } fro
 
 import { ThirdPartyAccount, ThirdPartyUserAccount } from '../../../models/UserAccount'
 import useCookies from '../../../hooks/useCookies'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
+import { USER_API_CALLS } from '../../../services/api/user-api-calls'
+import { formControlUnstyledClasses } from '@mui/base'
+import { ConstructionOutlined } from '@mui/icons-material'
 
 interface IFBSignInProps {
   onActions?: IStepActionsSubComponent
@@ -22,22 +25,88 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
     setfbAsyncInit()
   }, [])
 
+  // React.useEffect(() => {
+  //   if (userData) {
+  //     getMoreDataFromFB()
+  //   }
+  // }, [userData])
+
   React.useEffect(() => {
     if (userData) {
-      getMoreDataFromFB()
+      signInWatchparty()
     }
   }, [userData])
 
+  const signInWatchparty = async () => {
+    USER_API_CALLS.signInFacebookUser(userData.account.token)
+      .then((signInResponse: AxiosResponse) => {
+        if (signInResponse.status === 200) {
+          setCookie('account', userData.account, { secure: true, expires: userData.expires })
+          setCookie('userAccount', userData.userAccount, { secure: true, expires: userData.expires })
+        }
+      })
+      .catch((er: any) => console.log('error signInWatchparty!!!', er))
+  }
+
   const getMoreDataFromFB = async () => {
     //TODO GET MORE USER DATA IF NEEDED
-    // https://developers.facebook.com/docs/graph-api/overview
-    // const fbUserDataResponse = await axios.get(
-    //   `https://graph.facebook.com/${userData.userId}?fields=id,name,email,picture&access_token=${userData.token}`
-    // )
 
-    // if (fbUserDataResponse.status === 200) {
-    //   console.log(fbUserDataResponse.data)
-    // }
+    // https://developers.facebook.com/docs/graph-api/overview
+    const fbUserDataResponse = await axios.get(
+      `https://graph.facebook.com/${userData.userId}?metadata=1&access_token=${userData.token}`
+    )
+
+    if (fbUserDataResponse.status === 200) {
+      console.log(fbUserDataResponse.data)
+    }
+
+    // https://developers.facebook.com/docs/graph-api/overview
+
+    let fields = fbUserDataResponse.data.metadata.fields.map((item: any) => item.name).join(',')
+
+    try {
+      let fbUserDataResponse2 = await axios.get(
+        `https://graph.facebook.com/${userData.userId}?fields=${fields}&access_token=${userData.token}`
+      )
+
+      if (fbUserDataResponse2.status === 200) {
+        console.log(fbUserDataResponse.data)
+      } else {
+        fields = fbUserDataResponse.data.metadata.fields
+          .filter((item: any) => {
+            if (item.name !== 'public_profile' && item.name !== 'profile_pic' && !item.name.includes('business')) {
+              return item.name
+            }
+          })
+          .map((item2: any) => item2.name)
+          .join(',')
+
+        console.log('updated fields', { fields })
+
+        fbUserDataResponse2 = await axios.get(
+          `https://graph.facebook.com/${userData.userId}?fields=${fields}&access_token=${userData.token}`
+        )
+
+        console.log('updated data', fbUserDataResponse.data)
+      }
+    } catch (er: any) {
+      fields = fbUserDataResponse.data.metadata.fields
+        .filter((item: any) => {
+          if (item.name !== 'public_profile' && item.name !== 'profile_pic' && !item.name.includes('business')) {
+            return item.name
+          }
+        })
+        .map((item2: any) => item2.name)
+        .join(',')
+
+      console.log('updated fields', { fields })
+
+      const fbUserDataResponse2 = await axios.get(
+        `https://graph.facebook.com/${userData.userId}?fields=${fields}&access_token=${userData.token}`
+      )
+
+      console.log('updated data', fbUserDataResponse2.data)
+    }
 
     if (onActions) {
       onActions.onNextStep()
@@ -56,6 +125,15 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
         xfbml: true,
         version: 'v2.6',
       })
+      window.FB.getLoginStatus(function (response: any) {
+        if (response.status === 'connected') {
+          console.log('getLoginStatus = ::connected:: -> response: ', response)
+        } else if (response.status === 'not_authorized') {
+          login()
+        } else {
+          login()
+        }
+      })
     })()
   }
 
@@ -70,6 +148,10 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
       return
     }
 
+    login()
+  }
+
+  const login = () => {
     const params = {
       client_id: FACEBOOK_APP_ID,
       redirect_uri: location.host.includes('localhost') ? 'https://watchparty-spa.red5pro.net/' : location.host,
@@ -81,27 +163,34 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
     } else {
       window.FB.login(function (response: any) {
         if (response.authResponse) {
-          window.FB.api('/me', { fields: 'email' }, function (meResponse: any) {
-            const account: ThirdPartyAccount = {
-              token: response.authResponse.accessToken,
-              thirdParty: ThirdParties.FACEBOOK,
-              id: meResponse.id,
+          window.FB.api(
+            '/me',
+            'GET',
+            {
+              fields:
+                'id,name,about,age_range,education,birthday,email,favorite_athletes,favorite_teams,first_name,gender,hometown,inspirational_people,install_type,meeting_for,location,last_name,languages,is_guest_user,link,friends',
+            },
+            function (meResponse: any) {
+              const account: ThirdPartyAccount = {
+                token: response.authResponse.accessToken,
+                thirdParty: ThirdParties.FACEBOOK,
+                id: meResponse.id,
+              }
+
+              const userAccount: ThirdPartyUserAccount = {
+                name: meResponse.name,
+                role: role,
+              }
+
+              // our cookies will expire when the fb cookie expires
+              const date = new Date()
+              date.setSeconds(date.getSeconds() + response.authResponse.expiresIn)
+
+              setUserData({ expires: date.toUTCString(), account, userAccount })
             }
-
-            const userAccount: ThirdPartyUserAccount = {
-              name: meResponse.name,
-              role: role,
-            }
-
-            // our cookies will expire when the fb cookie expires
-            const date = new Date()
-            date.setSeconds(date.getSeconds() + response.authResponse.expiresIn)
-
-            setCookie('account', account, { secure: true, expires: date.toUTCString() })
-            setCookie('userAccount', userAccount, { secure: true, expires: date.toUTCString() })
-
-            setUserData({ token: response.authResponse.accessToken, userId: meResponse.id })
-          })
+          )
+        } else {
+          console.log('login failed', response)
         }
       })
     }
