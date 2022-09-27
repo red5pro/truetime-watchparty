@@ -134,7 +134,7 @@ const useStyles = (size: BUTTONSIZE) =>
       },
     },
     facebook: {
-      padding: '0 15px',
+      padding: '0 10px',
       boxSizing: 'border-box',
       backgroundColor: '#2050CC',
       borderRadius: '24px',

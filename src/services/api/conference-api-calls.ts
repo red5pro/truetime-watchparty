@@ -61,26 +61,6 @@ const getConferenceDetails = async (conferenceId: string, account?: AccountCrede
   }
 }
 
-const getJoinDetails = async (joinToken: string) => {
-  try {
-    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/lobby?joinToken=${joinToken}`)
-    return response
-  } catch (e: any) {
-    console.log(e)
-    let message = e.message
-    const { response } = e
-    if (response && response.data) {
-      const { error } = response.data
-      message = error
-    }
-    return {
-      data: null,
-      status: e.code,
-      statusText: message,
-    } as AxiosResponse
-  }
-}
-
 const createConference = async (conference: ConferenceDetails, account: AccountCredentials) => {
   try {
     const response: AxiosResponse = await axios.post(
@@ -334,7 +314,6 @@ const banParticipant = async (
 export const CONFERENCE_API_CALLS = {
   getCurrentEpisode,
   getConferenceDetails,
-  getJoinDetails,
   createConference,
   getAllConferences,
   getConferenceParticipants,
