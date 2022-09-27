@@ -125,15 +125,15 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
         xfbml: true,
         version: 'v2.6',
       })
-      window.FB.getLoginStatus(function (response: any) {
-        if (response.status === 'connected') {
-          console.log('getLoginStatus = ::connected:: -> response: ', response)
-        } else if (response.status === 'not_authorized') {
-          login()
-        } else {
-          login()
-        }
-      })
+      // window.FB.getLoginStatus(function (response: any) {
+      //   if (response.status === 'connected') {
+      //     console.log('getLoginStatus = ::connected:: -> response: ', response)
+      //   } else if (response.status === 'not_authorized') {
+      //     login()
+      //   } else {
+      //     login()
+      //   }
+      // })
     })()
   }
 
