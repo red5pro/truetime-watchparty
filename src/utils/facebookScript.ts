@@ -1,3 +1,5 @@
+import { FACEBOOK_APP_ID } from '../settings/variables'
+
 export const loadFBScriptAsyncronously = (callback: (value: boolean) => void) => {
   let rootElem = document.getElementById('fb-root')
   if (!rootElem) {
@@ -21,6 +23,15 @@ export const loadFBScriptAsyncronously = (callback: (value: boolean) => void) =>
   script.onload = () => {
     if (callback) {
       callback(true)
+
+      window.FB.init({
+        appId: FACEBOOK_APP_ID,
+        autoLogAppEvents: true,
+        xfbml: true,
+        version: 'v2.6',
+        cookie: true,
+        status: true,
+      })
     }
   }
 
