@@ -14,5 +14,5 @@ export interface ThirdPartyUserAccount {
 export interface ThirdPartyAccount {
   id: string
   token: string
-  thirdParty: ThirdParties
+  auth: ThirdParties
 }

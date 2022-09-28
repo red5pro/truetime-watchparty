@@ -5,6 +5,7 @@ import { ParticipantMuteState } from './../../models/Participant'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
 import { MOCK_API_CALLS } from './mock'
+import { getOptionsParams } from '../../utils/apiUtils'
 
 const ENDPOINT = {
   SERIES: `${MAIN_ENDPOINT}/series`,
@@ -36,14 +37,9 @@ const getConferenceDetails = async (conferenceId: string, account?: AccountCrede
   const id = parseInt(conferenceId) // Can come in as an integer or string
 
   try {
-    let params = {}
-    if (account) {
-      params = {
-        user: account.email,
-        password: account.password,
-      }
-    }
-    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/${id}`, { params })
+    const config = getOptionsParams(account)
+
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/${id}`, config)
     return response
   } catch (e: any) {
     console.log(e)
@@ -63,10 +59,9 @@ const getConferenceDetails = async (conferenceId: string, account?: AccountCrede
 
 const createConference = async (conference: ConferenceDetails, account: AccountCredentials) => {
   try {
-    const response: AxiosResponse = await axios.post(
-      `${ENDPOINT.CONFERENCE}?user=${account.email}&password=${account.password}`,
-      conference
-    )
+    const config = getOptionsParams(account)
+
+    const response: AxiosResponse = await axios.post(`${ENDPOINT.CONFERENCE}`, conference, config)
     return response
   } catch (e: any) {
     console.log(e)
@@ -86,12 +81,10 @@ const createConference = async (conference: ConferenceDetails, account: AccountC
 
 const getAllConferences = async (account: AccountCredentials) => {
   try {
-    const config =
-      account.email && account.password
-        ? { params: { user: account.email, password: account.password } }
-        : { params: { auth: account.auth }, headers: { Authorization: `bearer ${account.accessToken}` } }
+    const config = getOptionsParams(account)
 
     const response: AxiosResponse = await axios.get(ENDPOINT.CONFERENCE, config)
+
     return response
   } catch (e: any) {
     console.log(e)
@@ -131,9 +124,9 @@ const getConferenceLoby = async (joinToken: string) => {
 
 const getConferenceParticipants = async (conferenceId: string, account: AccountCredentials) => {
   try {
-    const response: AxiosResponse = await axios.get(
-      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants?user=${account.email}&password=${account.password}`
-    )
+    const config = getOptionsParams(account)
+
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/${conferenceId}/participants`, config)
     return response
   } catch (e: any) {
     console.log(e)
@@ -153,15 +146,12 @@ const getConferenceParticipants = async (conferenceId: string, account: AccountC
 
 const getNextVipConference = async (account: AccountCredentials) => {
   try {
-    const params = {
-      user: account.email,
-      password: account.password,
-    }
-    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/nextvip`, { params })
+    const config = getOptionsParams(account)
+
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/nextvip`, config)
 
     return response
   } catch (e: any) {
-    // debugger
     console.log(e)
     let message = e.message
     const { response } = e
@@ -179,15 +169,12 @@ const getNextVipConference = async (account: AccountCredentials) => {
 
 const getVipConferenceList = async (account: AccountCredentials) => {
   try {
-    const params = {
-      user: account.email,
-      password: account.password,
-    }
-    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/nextvip/debug`, { params })
+    const config = getOptionsParams(account)
+
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/nextvip/debug`, config)
 
     return response
   } catch (e: any) {
-    // debugger
     console.log(e)
     let message = e.message
     const { response } = e
@@ -205,9 +192,9 @@ const getVipConferenceList = async (account: AccountCredentials) => {
 
 const lockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
-    const response: AxiosResponse = await axios.put(
-      `${ENDPOINT.CONFERENCE}/${conferenceId}/lock?user=${account.email}&password=${account.password}`
-    )
+    const config = getOptionsParams(account)
+
+    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/lock`, config)
     return response
   } catch (e: any) {
     console.log(e)
@@ -227,9 +214,9 @@ const lockConference = async (conferenceId: string | number, account: AccountCre
 
 const unlockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
-    const response: AxiosResponse = await axios.put(
-      `${ENDPOINT.CONFERENCE}/${conferenceId}/unlock?user=${account.email}&password=${account.password}`
-    )
+    const config = getOptionsParams(account)
+
+    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/unlock`, config)
     return response
   } catch (e: any) {
     console.log(e)
@@ -257,8 +244,11 @@ const muteParticipant = async (
     const id = '' + participantId
     const payload: any = {}
     payload[id] = participantMuteState
+    const config = getOptionsParams(account)
+
     const response: AxiosResponse = await axios.put(
-      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute?user=${account.email}&password=${account.password}`,
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute`,
+      config,
       payload
     )
     return response
@@ -288,8 +278,11 @@ const banParticipant = async (
 ) => {
   try {
     const id = '' + participantId
+    const config = getOptionsParams(account)
+
     const response: AxiosResponse = await axios.delete(
-      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/${id}?user=${account.email}&password=${account.password}`
+      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/${id}`,
+      config
     )
     return response
   } catch (e: any) {
