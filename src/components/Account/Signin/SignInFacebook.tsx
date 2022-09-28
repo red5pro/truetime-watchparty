@@ -8,8 +8,6 @@ import { ThirdPartyAccount, ThirdPartyUserAccount } from '../../../models/UserAc
 import useCookies from '../../../hooks/useCookies'
 import axios, { AxiosResponse } from 'axios'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
-import { formControlUnstyledClasses } from '@mui/base'
-import { ConstructionOutlined } from '@mui/icons-material'
 
 interface IFBSignInProps {
   onActions?: IStepActionsSubComponent
@@ -22,7 +20,7 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
   const [userData, setUserData] = React.useState<any>()
 
   React.useEffect(() => {
-    setfbAsyncInit()
+    window.FB.getLoginStatus(checkLoginStatus)
   }, [])
 
   React.useEffect(() => {
@@ -31,22 +29,27 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
     }
   }, [userData])
 
+  // React.useEffect(() => {
+  //   if (userData) {
+  //     getMoreDataFromFB()
+  //   }
+  // }, [userData])
+
   const signInWatchparty = async () => {
     USER_API_CALLS.signInFacebookUser(userData.account.token)
       .then((signInResponse: AxiosResponse) => {
         if (signInResponse.status === 200) {
           setCookie('account', userData.account, { secure: true, expires: userData.expires })
           setCookie('userAccount', userData.userAccount, { secure: true, expires: userData.expires })
+
+          if (onActions) {
+            onActions.onNextStep()
+          }
         }
       })
       .catch((er: any) => console.log('error signInWatchparty!!!', er))
   }
 
-  // React.useEffect(() => {
-  //   if (userData) {
-  //     getMoreDataFromFB()
-  //   }
-  // }, [userData])
   const getMoreDataFromFB = async () => {
     //TODO GET MORE USER DATA IF NEEDED
     // https://developers.facebook.com/docs/graph-api/overview
@@ -115,16 +118,11 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
     }
   }
 
-  const setfbAsyncInit = () => {
-    window.fbAsyncInit = (function () {
-      window.FB.init({
-        appId: FACEBOOK_APP_ID,
-        autoLogAppEvents: true,
-        xfbml: true,
-        version: 'v2.6',
-        cookie: true,
-      })
-    })()
+  const checkLoginStatus = (response: any) => {
+    if (response && response.status == 'connected') {
+      // Now Personalize the User Experience
+      console.log('Access Token: ' + response.authResponse.accessToken)
+    }
   }
 
   const toQueryString = (object: any) => {
@@ -151,16 +149,10 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
     if (isMobileScreen()) {
       window.location.href = `//www.facebook.com/dialog/oauth?${toQueryString(params)}`
     } else {
-      window.FB.login(function (response: any) {
-        if (response.authResponse) {
-          window.FB.api(
-            '/me',
-            'GET',
-            {
-              fields:
-                'id,name,about,age_range,education,birthday,email,favorite_athletes,favorite_teams,first_name,gender,hometown,inspirational_people,install_type,meeting_for,location,last_name,languages,is_guest_user,link,friends',
-            },
-            function (meResponse: any) {
+      window.FB.login(
+        function (response: any) {
+          if (response.authResponse) {
+            window.FB.api('/me', 'GET', function (meResponse: any) {
               const account: ThirdPartyAccount = {
                 token: response.authResponse.accessToken,
                 thirdParty: ThirdParties.FACEBOOK,
@@ -177,12 +169,13 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
               date.setSeconds(date.getSeconds() + response.authResponse.expiresIn)
 
               setUserData({ expires: date.toUTCString(), account, userAccount })
-            }
-          )
-        } else {
-          console.log('login failed', response)
-        }
-      })
+            })
+          } else {
+            console.log('login failed', response)
+          }
+        },
+        { scope: 'email' }
+      )
     }
   }
 
