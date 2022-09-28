@@ -25,12 +25,6 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
     setfbAsyncInit()
   }, [])
 
-  // React.useEffect(() => {
-  //   if (userData) {
-  //     getMoreDataFromFB()
-  //   }
-  // }, [userData])
-
   React.useEffect(() => {
     if (userData) {
       signInWatchparty()
@@ -48,9 +42,13 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
       .catch((er: any) => console.log('error signInWatchparty!!!', er))
   }
 
+  // React.useEffect(() => {
+  //   if (userData) {
+  //     getMoreDataFromFB()
+  //   }
+  // }, [userData])
   const getMoreDataFromFB = async () => {
     //TODO GET MORE USER DATA IF NEEDED
-
     // https://developers.facebook.com/docs/graph-api/overview
     const fbUserDataResponse = await axios.get(
       `https://graph.facebook.com/${userData.userId}?metadata=1&access_token=${userData.token}`
@@ -124,16 +122,8 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
         autoLogAppEvents: true,
         xfbml: true,
         version: 'v2.6',
+        cookie: true,
       })
-      // window.FB.getLoginStatus(function (response: any) {
-      //   if (response.status === 'connected') {
-      //     console.log('getLoginStatus = ::connected:: -> response: ', response)
-      //   } else if (response.status === 'not_authorized') {
-      //     login()
-      //   } else {
-      //     login()
-      //   }
-      // })
     })()
   }
 
