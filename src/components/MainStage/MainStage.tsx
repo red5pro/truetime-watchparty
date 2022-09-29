@@ -115,9 +115,9 @@ const MainStage = () => {
     const cookies = getCookies()
     if (cookies?.account) {
       // Registered User
-      if (cookies.account.thirdParty) {
-        const { thirdParty, token } = cookies.account
-        request.auth = thirdParty
+      if (cookies.account.token) {
+        const { auth, token } = cookies.account
+        request.auth = auth
         request.accessToken = token
       } else {
         const { email, password } = cookies.account
