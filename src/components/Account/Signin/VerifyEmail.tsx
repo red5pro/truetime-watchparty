@@ -67,7 +67,7 @@ const VerifyEmail = (props: IVerifyEmailProps) => {
         setErrorAfterSubmit({
           title: 'The account was successfully verified!',
           statusText: 'You can continue to the next step.',
-          onConfirm: () => onActions?.onNextStep(),
+          onConfirm: () => (onActions ? onActions.onNextStep() : navigate('/')),
         })
       }
     } else {
@@ -112,6 +112,7 @@ const VerifyEmail = (props: IVerifyEmailProps) => {
                 label="Code"
                 value={values.token}
                 className={classes.input}
+                style={{ display: initialValues.token ? 'none' : 'block' }}
               />
 
               {/* TODO IMPLEMENT RE- SEND EMAIL WITH CODE */}
