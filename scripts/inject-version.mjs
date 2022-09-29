@@ -20,7 +20,7 @@ Example:\r\n\r\n\
 }
 
 if (bump != 'none') {
-  exec(`npm version ${bump}`, (error, stdout, stderr) => {
+  exec(`npm version ${bump} --no-git-tag-version`, (error, stdout, stderr) => {
     if (error || stderr) {
       throw new Error(error ?? stderr)
     }
