@@ -155,7 +155,7 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
             window.FB.api('/me', 'GET', function (meResponse: any) {
               const account: ThirdPartyAccount = {
                 token: response.authResponse.accessToken,
-                thirdParty: ThirdParties.FACEBOOK,
+                auth: ThirdParties.FACEBOOK,
                 id: meResponse.id,
               }
 
@@ -172,6 +172,7 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
             })
           } else {
             console.log('login failed', response)
+            location.reload()
           }
         },
         { scope: 'email' }
