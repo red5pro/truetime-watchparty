@@ -19,30 +19,32 @@ Example:\r\n\r\n\
   )
 }
 
+const inject = async () => {
+  const file = path.join(process.cwd(), 'package.json')
+  const pkg = JSON.parse(fs.readFileSync(file))
+
+  const options = {
+    files: './.env*',
+    from: /REACT_APP_VERSION=.*/g,
+    to: `REACT_APP_VERSION=${pkg.version}`,
+  }
+
+  console.log(`Injecting Version: ${options.to}`)
+  try {
+    const results = await replace(options)
+    console.log('Replacement results:', results)
+  } catch (error) {
+    console.error('Error occurred:', error)
+  }
+}
+
 if (bump != 'none') {
   exec(`npm version ${bump} --no-git-tag-version`, (error, stdout, stderr) => {
     if (error || stderr) {
       throw new Error(error ?? stderr)
     }
-    const file = path.join(process.cwd(), 'package.json')
-    const pkg = JSON.parse(fs.readFileSync(file))
-
-    const options = {
-      files: './.env*',
-      from: /REACT_APP_VERSION=.*/g,
-      to: `REACT_APP_VERSION=${pkg.version}`,
-    }
-
-    const inject = async () => {
-      console.log(`Injecting Version: ${options.to}`)
-      try {
-        const results = await replace(options)
-        console.log('Replacement results:', results)
-      } catch (error) {
-        console.error('Error occurred:', error)
-      }
-    }
-
     inject()
   })
+} else {
+  inject()
 }
