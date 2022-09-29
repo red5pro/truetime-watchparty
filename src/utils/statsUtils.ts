@@ -57,6 +57,10 @@ const getTime = (milliseconds: number) => {
 }
 
 export const mapLiveStatsData = (stats: StatsByConference[]) => {
+  if (!stats || stats.length === 0) {
+    return { head: [], rows: [] }
+  }
+
   const data = stats.filter(
     (stat) => (stat.endTimeMs >= Date.now() && stat.curParticipants === 0) || stat.curParticipants > 0
   )
@@ -112,6 +116,10 @@ export const mapLiveStatsData = (stats: StatsByConference[]) => {
 }
 
 export const mapPastEventsStatsData = (stats: StatsByConference[]) => {
+  if (!stats || stats.length === 0) {
+    return { head: [], rows: [] }
+  }
+
   const data = stats.filter((stat) => stat.endTimeMs < Date.now())
 
   const head: Column[] = [
@@ -165,6 +173,10 @@ export const mapPastEventsStatsData = (stats: StatsByConference[]) => {
 }
 
 export const mapSpecialGuestsStatsData = (stats: UserAccount[]) => {
+  if (!stats || stats.length === 0) {
+    return { head: [], rows: [] }
+  }
+
   const data = stats.filter((stat) => stat.role === UserRoles.VIP)
 
   const head: Column[] = [
@@ -213,6 +225,10 @@ export const mapSpecialGuestsStatsData = (stats: UserAccount[]) => {
 }
 
 export const mapSeriesStatsData = (data: Serie[]) => {
+  if (!data || data.length === 0) {
+    return { head: [], rows: [] }
+  }
+
   const head: Column[] = [
     {
       id: 'SeriesName',
@@ -265,6 +281,10 @@ export const mapSeriesStatsData = (data: Serie[]) => {
 
 export const getSortedCountryList = (stats: StatsByConference[]) => {
   const countries: { country: string; count: number }[] = []
+
+  if (!stats || stats.length === 0) {
+    return []
+  }
 
   stats.forEach((currVall) => {
     if (countries.length === 0) {
