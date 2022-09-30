@@ -40,7 +40,7 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
 
   const { classes } = useStyles()
 
-  //TODO REMOVE THIS WHEN EMAIL SENT TO THE USER EMAIL ACCOUNT
+  //TODO REMOVE THIS WHEN EMAIL IS SENT TO THE USER EMAIL ACCOUNT
   const [token, setToken] = React.useState<string>()
   const [email, setEmail] = React.useState<string>('')
   const navigate = useNavigate()
