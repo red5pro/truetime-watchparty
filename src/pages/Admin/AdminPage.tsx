@@ -79,14 +79,18 @@ const AdminPage = () => {
       })
     }
 
+    await getSeries()
+
+    setLoading(false)
+    setReady(false)
+  }
+
+  const getSeries = async () => {
     const seriesResponse = await SERIES_API_CALLS.getSeriesList()
 
     if (seriesResponse.status === 200 && seriesResponse.data?.series) {
       setSeries(seriesResponse.data.series)
     }
-
-    setLoading(false)
-    setReady(false)
   }
 
   return (
@@ -113,6 +117,7 @@ const AdminPage = () => {
             openCreatePage={openCreatePage}
             setReady={setReady}
             series={series}
+            getSeries={getSeries}
           />
         </LocalizationProvider>
       )}

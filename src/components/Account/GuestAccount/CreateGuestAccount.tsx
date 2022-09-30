@@ -26,7 +26,7 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid Email').required('Email field is required'),
   startTime: Yup.date(),
   endTime: Yup.date(),
-  message: Yup.string().max(150).required('Message field is required'),
+  // message: Yup.string().max(150).required('Message field is required'),
 })
 
 interface ICreateGuestAccount {
@@ -112,7 +112,7 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
                     fullWidth
                   />
 
-                  <FormLabel className={classes.label}>Message in this Invite</FormLabel>
+                  {/* <FormLabel className={classes.label}>Message in this Invite</FormLabel>
                   <Field
                     component={TextareaAutosize}
                     label="Message in this Invite"
@@ -127,7 +127,7 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
                   />
                   {errors.message && touched.message && (
                     <Typography className={classes.errorValidation}>{errors.message}</Typography>
-                  )}
+                  )} */}
                   <Box display="flex" justifyContent="space-around">
                     <CustomButton
                       disabled={isSubmitting}
