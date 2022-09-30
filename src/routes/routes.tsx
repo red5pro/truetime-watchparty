@@ -12,6 +12,7 @@ import ThankYouPage from '../pages/ThankYouPage/ThankYouPage'
 import PartyEndedPage from '../pages/PartyEndedPage/PartyEndedPage'
 import SimpleVipPage from '../pages/SimpleVipPage/SimpleVipPage'
 import AdminPage from '../pages/Admin/AdminPage'
+import VerifyEmailPage from '../pages/VerifyEmailPage/VerifyEmailPage'
 
 const AppRoutes = () => {
   return (
@@ -19,6 +20,7 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Signin />} />
+        <Route path="/verify" element={<VerifyEmailPage />} />
         <Route
           path="/join/:token"
           element={
@@ -49,10 +51,10 @@ const AppRoutes = () => {
             </JoinContext.Provider>
           }
         />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="*" element={<Landing />} />
         {/* TODO: Remove for production. Here for simple VIP entrance in demos. */}
         <Route path="/vip" element={<SimpleVipPage />} />
-        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </BrowserRouter>
   )

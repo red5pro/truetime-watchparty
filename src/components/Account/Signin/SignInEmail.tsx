@@ -15,7 +15,6 @@ import SignUp from './SignUp'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import PasswordField from '../../Form/PasswordField'
 import { validationSchema } from '../../../utils/accountUtils'
-import VerifyEmail from './VerifyEmail'
 import { AccountCredentials } from '../../../models/AccountCredentials'
 
 const initialValues = {
@@ -49,12 +48,12 @@ const SignInEmail = (props: ISignInEmailProps) => {
   const [forgotPassword, setForgotPassword] = React.useState<boolean>(false)
   const [accountUnverified, setAccountUnverified] = React.useState<boolean>(false)
   const [signUp, setSignUp] = React.useState<boolean>(false)
-  const [verifyAccount, setVerifyAccount] = React.useState<boolean>(false)
+  const [accountIsVerified, setAccountIsVerified] = React.useState<boolean>(false)
   const [error, setError] = React.useState<any | null>(null)
   const [email, setEmail] = React.useState<string>()
 
   React.useEffect(() => {
-    if (verifyAccount) {
+    if (accountIsVerified) {
       if (onActions && getCookies()?.account) {
         onActions.onNextStep()
         return
@@ -62,7 +61,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
         redirectAfterLogin()
       }
     }
-  }, [verifyAccount])
+  }, [accountIsVerified])
 
   const handleSubmit = async (values: any) => {
     const response = await USER_API_CALLS.signin(isAdminLoggingIn ? values.username : values.email, values.password)
@@ -91,7 +90,7 @@ const SignInEmail = (props: ISignInEmailProps) => {
         setCookie('account', values, { secure: true, samesite: 'Strict' })
         setCookie('userAccount', response.data, { secure: true, samesite: 'Strict' })
 
-        setVerifyAccount(true)
+        setAccountIsVerified(true)
       } else {
         setAccountUnverified(true)
       }
@@ -108,12 +107,8 @@ const SignInEmail = (props: ISignInEmailProps) => {
     return <Box>Forgot Password</Box>
   }
 
-  if (accountUnverified) {
-    return <VerifyEmail onActions={onActions} email={email} />
-  }
-
   if (signUp) {
-    return <SignUp onActions={onActions} />
+    return <SignUp />
   }
 
   return (
@@ -193,12 +188,6 @@ const SignInEmail = (props: ISignInEmailProps) => {
                   </>
                 )}
 
-                {isVipLoggingIn && (
-                  <Link textAlign="end" onClick={() => setAccountUnverified(true)}>
-                    <strong>First Time Logging In as a Vip</strong>
-                  </Link>
-                )}
-
                 <CustomButton
                   disabled={isSubmitting}
                   onClick={submitForm}
@@ -221,6 +210,15 @@ const SignInEmail = (props: ISignInEmailProps) => {
           message={`${error.status} - ${error.statusText}`}
           confirmLabel="Ok"
           onConfirm={() => setError(null)}
+        />
+      )}
+      {accountUnverified && (
+        <SimpleAlertDialog
+          title="Information!"
+          message={`An email has been sent to ${email}. In order to complete the account setup,
+          please open that email and click the link inside.`}
+          confirmLabel="Ok"
+          onConfirm={() => setAccountUnverified(false)}
         />
       )}
     </>
