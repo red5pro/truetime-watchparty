@@ -29,6 +29,7 @@ const AdminPage = () => {
   const [countries, setCountries] = React.useState<{ country: string; count: number }[]>([])
   const [error, setError] = React.useState<any>()
   const [openCreatePage, setOpenCreatePage] = React.useState<boolean>(false)
+  const [interval, setInt] = React.useState<any>()
 
   const { getCookies, removeCookie } = useCookies(['userAccount', 'account'])
 
@@ -51,7 +52,13 @@ const AdminPage = () => {
 
   React.useEffect(() => {
     if (ready && cookies && cookies.account.username && cookies.account.password) {
-      getStats()
+      setInt(setInterval(async () => await getStats(), 10000))
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval)
+      }
     }
   }, [ready])
 
@@ -105,7 +112,7 @@ const AdminPage = () => {
       </Box>
 
       {allStats && !openCreatePage && <MainTotalValues stats={allStats} />}
-      {loading && <Loading />}
+      {!allStats && loading && <Loading />}
       {statsByConference && (
         <LocalizationProvider dateAdapter={AdapterMoment}>
           <TabsSection
