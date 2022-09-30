@@ -11,6 +11,7 @@ import { AccountCredentials } from '../../../models/AccountCredentials'
 import useCookies from '../../../hooks/useCookies'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import { UserRoles } from '../../../utils/commonUtils'
+import { useNavigate } from 'react-router-dom'
 
 const initialValues = {
   conferenceId: 0,
@@ -39,8 +40,19 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
 
   const { classes } = useStyles()
 
-  //TODO: Remove "setCookie" when the token is sent by email to the customers
-  const { getCookies, setCookie } = useCookies(['account', 'userToken'])
+  //TODO REMOVE THIS WHEN EMAIL SENT TO THE USER EMAIL ACCOUNT
+  const [token, setToken] = React.useState<string>()
+  const [email, setEmail] = React.useState<string>('')
+  const navigate = useNavigate()
+  const [goBack, setGoBack] = React.useState<boolean>(false)
+
+  const { getCookies } = useCookies(['account', 'userToken'])
+
+  React.useEffect(() => {
+    if (goBack) {
+      backToPage(true)
+    }
+  }, [goBack])
 
   const handleSubmit = async (values: any) => {
     // TODO: save message with username, when the endpoint is ready.
@@ -53,16 +65,10 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
 
     if (createUserResponse.status === 201) {
       //TODO: Remove this when the token is sent by email to the customers
-      setCookie('userToken', createUserResponse.data.token)
+      setEmail(values.email)
+      setToken(createUserResponse.data.token)
 
-      //TODO: Remove this alert when the token is sent by email to the customers
-      alert(
-        `The token to verify this account is: ${createUserResponse.data.token} copy and paste when you login with the new account created`
-      )
-      console.log(
-        `The token to verify this account is: ${createUserResponse.data.token}. Copy and paste when you login with the new account created`
-      )
-      await backToPage(true)
+      // await backToPage(true)
     } else {
       setError({
         status: `Error!`,
@@ -154,6 +160,16 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
             message={`${error.status} - ${error.statusText}`}
             confirmLabel="Ok"
             onConfirm={() => setError(null)}
+          />
+        )}
+        {token && email && (
+          <SimpleAlertDialog
+            title="Information!"
+            message="Click the button below to go verify your email account."
+            confirmLabel="Go To Verify Account"
+            onConfirm={() => navigate(`/verify?email=${encodeURI(email)}&token=${encodeURI(token)}`)}
+            denyLabel="Go Back"
+            onDeny={() => setGoBack(true)}
           />
         )}
       </>

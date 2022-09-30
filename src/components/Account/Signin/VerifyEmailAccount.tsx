@@ -1,10 +1,10 @@
 import * as React from 'react'
-import { Box, LinearProgress, Link, Typography } from '@mui/material'
+import { Box, LinearProgress, Typography } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './Signin.module'
-import { IStepActionsSubComponent } from '../../../utils/commonUtils'
+import { UserRoles } from '../../../utils/commonUtils'
 import { accountVerificationSchema } from '../../../utils/accountUtils'
 import useCookies from '../../../hooks/useCookies'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
@@ -12,25 +12,23 @@ import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import { useNavigate } from 'react-router-dom'
 import PasswordField from '../../Form/PasswordField'
 
-interface IVerifyEmailProps {
-  email?: string
-  onActions?: IStepActionsSubComponent
-  validateAccount?: (account: any) => boolean
+interface IVerifyEmailAccountProps {
+  email: string
+  token: string
 }
 
-const VerifyEmail = (props: IVerifyEmailProps) => {
-  const { email, onActions, validateAccount } = props
+const VerifyEmailAccount = (props: IVerifyEmailAccountProps) => {
+  const { email, token } = props
   const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<any | undefined>()
 
   const navigate = useNavigate()
   const { classes } = useStyles()
 
-  //TODO: Remove this: 'userToken' when the token is sent by email to the customers
-  const { getCookies, setCookie, removeCookie } = useCookies(['userToken', 'account'])
+  const { setCookie } = useCookies(['userAccount', 'account'])
 
   const initialValues = {
     email: email ?? '',
-    token: getCookies().userToken ?? '',
+    token: token ?? '',
     password: '',
     passwordConfirmation: '',
   }
@@ -43,37 +41,26 @@ const VerifyEmail = (props: IVerifyEmailProps) => {
       const response = await USER_API_CALLS.signin(values.email, values.password)
 
       if (response.status === 200 && response.data) {
-        let isValid = true
-
-        if (validateAccount) {
-          isValid = validateAccount(response.data)
-        }
-
-        if (!isValid) {
-          setErrorAfterSubmit({
-            title: 'Incorrect Login Account',
-            statusText: 'Please retry with the corresponding login account.',
-            onConfirm: () => navigate('/'),
-          })
-          return
-        }
-
-        setCookie('account', values, { secure: true, samesite: 'Strict' })
+        setCookie('account', { email: values.email, password: values.password }, { secure: true, samesite: 'Strict' })
         setCookie('userAccount', response.data, { secure: true, samesite: 'Strict' })
 
-        //TODO: Remove this when the token is sent by email to the customers
-        removeCookie('userToken')
+        const redirect =
+          response.data.role === UserRoles.ORGANIZER
+            ? '/'
+            : response.data.role === UserRoles.VIP
+            ? '/join/guest'
+            : '/landing'
 
         setErrorAfterSubmit({
           title: 'The account was successfully verified!',
-          statusText: 'You can continue to the next step.',
-          onConfirm: () => (onActions ? onActions.onNextStep() : navigate('/')),
+          statusText: 'You can continue to Watch a Party.',
+          onConfirm: () => navigate(redirect),
         })
       }
     } else {
       setErrorAfterSubmit({
         title: 'Warning!',
-        statusText: 'There was an error verifying your account, please sign in and try again.',
+        statusText: 'There was an error verifying your account.',
         onConfirm: () => setErrorAfterSubmit(errorAfterSubmit),
       })
     }
@@ -98,12 +85,9 @@ const VerifyEmail = (props: IVerifyEmailProps) => {
         }
 
         return (
-          <Form method="post">
+          <Form method="post" autoComplete="false">
             <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
               <Typography className={classes.title}>Verify your account</Typography>
-
-              {/* TODO: Display this when send email code is implemented */}
-              {/*{email && <Typography>{`Enter the 6-digit code that was sent to ${email} to verify your account.`}</Typography>} */}
               <Field component={TextField} name="email" type="text" label="Email" className={classes.input} />
               <Field
                 component={TextField}
@@ -166,4 +150,4 @@ const VerifyEmail = (props: IVerifyEmailProps) => {
   )
 }
 
-export default VerifyEmail
+export default VerifyEmailAccount
