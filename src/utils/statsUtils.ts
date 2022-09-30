@@ -179,8 +179,6 @@ export const mapSpecialGuestsStatsData = (stats: UserAccount[]) => {
 
   const data = stats.filter((stat) => stat.role === UserRoles.VIP)
 
-  console.log({ data })
-
   const head: Column[] = [
     // {
     //   id: 'GuestName',
