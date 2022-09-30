@@ -1,5 +1,4 @@
 import * as React from 'react'
-import useCookies from '../../../hooks/useCookies'
 import { Box, LinearProgress, Typography } from '@mui/material'
 import { Field, Form, Formik } from 'formik'
 import { TextField } from 'formik-mui'
@@ -7,29 +6,25 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/
 import useStyles from './Signin.module'
 
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
-import VerifyEmail from './VerifyEmail'
-import { IStepActionsSubComponent, UserRoles } from '../../../utils/commonUtils'
+import { UserRoles } from '../../../utils/commonUtils'
 import { signUpValidationSchema } from '../../../utils/accountUtils'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
+import { useNavigate } from 'react-router-dom'
 
 const initialValues = {
   email: '',
 }
 
-interface ISignUpProps {
-  onActions?: IStepActionsSubComponent
-}
-
-const SignUp = (props: ISignUpProps) => {
-  const { onActions } = props
+const SignUp = () => {
   const { classes } = useStyles()
-
-  //TODO: Remove this when the token is sent by email to the customers
-  const { setCookie } = useCookies(['userToken'])
 
   const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string | undefined>()
   const [shouldVerifyEmail, setShouldVerifyEmail] = React.useState<boolean>(false)
   const [email, setEmail] = React.useState<string>('')
+
+  //TODO REMOVE THIS WHEN EMAIL VERIFICATION ACCOUNT IS DONE
+  const [token, setToken] = React.useState<string>()
+  const navigate = useNavigate()
 
   const handleSubmit = async (values: any) => {
     setErrorAfterSubmit(undefined)
@@ -40,15 +35,11 @@ const SignUp = (props: ISignUpProps) => {
       setEmail(values.email)
 
       //TODO: Remove this when the token is sent by email to the customers
-      setCookie('userToken', response.data.token)
+      setToken(response.data.token)
       setShouldVerifyEmail(true)
     } else {
       setErrorAfterSubmit(response?.statusText ?? 'There was an error creating your account, please try again')
     }
-  }
-
-  if (shouldVerifyEmail) {
-    return <VerifyEmail email={email} onActions={onActions} />
   }
 
   return (
@@ -91,6 +82,14 @@ const SignUp = (props: ISignUpProps) => {
                   message={errorAfterSubmit}
                   onConfirm={() => setErrorAfterSubmit(errorAfterSubmit)}
                   confirmLabel="Ok"
+                />
+              )}
+              {shouldVerifyEmail && token && email && (
+                <SimpleAlertDialog
+                  title="Information!"
+                  message="Click the button below to go verify your email account."
+                  confirmLabel="Go To Verify Account"
+                  onConfirm={() => navigate(`/verify?email=${encodeURI(email)}&token=${encodeURI(token)}`)}
                 />
               )}
             </Box>
