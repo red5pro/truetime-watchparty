@@ -56,11 +56,21 @@ interface ITabsSectionProps {
   setReady: (value: boolean) => void
   openCreatePage: boolean
   series: Serie[]
+  getSeries: () => Promise<void>
 }
 
 const TabsSection = (props: ITabsSectionProps) => {
-  const { statsByConferece, countries, setError, setLoading, setOpenCreatePage, openCreatePage, setReady, series } =
-    props
+  const {
+    statsByConferece,
+    countries,
+    setError,
+    setLoading,
+    setOpenCreatePage,
+    openCreatePage,
+    setReady,
+    series,
+    getSeries,
+  } = props
   const [value, setValue] = React.useState(0)
 
   const [pageToOpen, setPageToOpen] = React.useState<string>('')
@@ -73,6 +83,15 @@ const TabsSection = (props: ITabsSectionProps) => {
   const { getCookies } = useCookies(['account'])
 
   React.useEffect(() => {
+    if (value === 1) {
+      const { head, rows } = mappingFunctions(value, series)
+
+      setTableHead(head)
+      setDataRow(rows)
+    }
+  }, [series, value])
+
+  React.useEffect(() => {
     if (statsByConferece) {
       getData()
       setButtonLabel(getLabelButton(value) ?? '')
@@ -80,7 +99,7 @@ const TabsSection = (props: ITabsSectionProps) => {
   }, [statsByConferece, value])
 
   const getData = async () => {
-    let users
+    let data: any = statsByConferece
 
     if (value === 3) {
       setLoading(true)
@@ -98,15 +117,7 @@ const TabsSection = (props: ITabsSectionProps) => {
         return
       }
 
-      users = response.data.users
-    }
-
-    let data: any = statsByConferece
-
-    if (value === 1) {
-      data = series
-    } else if (value === 3) {
-      data = users
+      data = response.data.users
     }
 
     const { head, rows } = mappingFunctions(value, data)
@@ -131,7 +142,7 @@ const TabsSection = (props: ITabsSectionProps) => {
       if (value === 3) {
         await getData()
       } else if (value === 1) {
-        console.log('get series')
+        await getSeries()
       } else {
         setReady(true)
       }

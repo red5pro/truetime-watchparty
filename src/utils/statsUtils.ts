@@ -71,10 +71,10 @@ export const mapLiveStatsData = (stats: StatsByConference[]) => {
       label: 'Party Name',
       minWidth: 100,
     },
-    {
-      id: 'HostName',
-      label: 'Host Name',
-    },
+    // {
+    //   id: 'HostName',
+    //   label: 'Host Name',
+    // },
     {
       id: 'Viewers',
       label: 'Viewers',
@@ -103,7 +103,7 @@ export const mapLiveStatsData = (stats: StatsByConference[]) => {
 
   const rows = data.map((item: StatsByConference) => ({
     PartyName: item.displayName,
-    HostName: 'TODO',
+    // HostName: 'TODO',
     Viewers: item.maxParticipants,
     TotalViewers: item.totalParticipants,
     TimeEngaged: getTime(item.totalViewTimeS),
@@ -180,31 +180,35 @@ export const mapSpecialGuestsStatsData = (stats: UserAccount[]) => {
   const data = stats.filter((stat) => stat.role === UserRoles.VIP)
 
   const head: Column[] = [
-    {
-      id: 'GuestName',
-      label: 'Guest Name',
-      minWidth: 100,
-    },
+    // {
+    //   id: 'GuestName',
+    //   label: 'Guest Name',
+    //   minWidth: 100,
+    // },
     {
       id: 'Email',
       label: 'Email',
     },
     {
-      id: 'Event',
-      label: 'Event',
+      id: 'AccountVerified',
+      label: 'Account Is Verified',
     },
-    {
-      id: 'Date',
-      label: 'Date',
-    },
-    {
-      id: 'Duration',
-      label: 'Duration',
-    },
-    {
-      id: 'Parties',
-      label: 'Parties',
-    },
+    // {
+    //   id: 'Event',
+    //   label: 'Event',
+    // },
+    // {
+    //   id: 'Date',
+    //   label: 'Date',
+    // },
+    // {
+    //   id: 'Duration',
+    //   label: 'Duration',
+    // },
+    // {
+    //   id: 'Parties',
+    //   label: 'Parties',
+    // },
     {
       id: 'Type',
       label: 'Type',
@@ -212,12 +216,13 @@ export const mapSpecialGuestsStatsData = (stats: UserAccount[]) => {
   ]
 
   const rows = data.map((item: UserAccount) => ({
-    GuestName: 'TODO',
+    // GuestName: 'TODO',
     Email: item.username,
-    Event: 'TODO',
-    Date: 'TODO',
-    Duration: 'TODO',
-    Parties: 'TODO',
+    AccountVerified: item.isVerified ? 'TRUE' : 'FALSE',
+    // Event: 'TODO',
+    // Date: 'TODO',
+    // Duration: 'TODO',
+    // Parties: 'TODO',
     Type: item.role,
   }))
 
