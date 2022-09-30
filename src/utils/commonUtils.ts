@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { useLocation } from 'react-router-dom'
 
 export const removeFromArray = (arr: any[], args: any[]) => arr.filter((val) => !args.includes(val))
 
@@ -67,3 +68,24 @@ export const generateJoinToken = (length = 16) => {
 }
 
 export const isMobileScreen = () => (window && window.innerWidth <= 600 ? true : false)
+
+export const getQueryParams = (name: string) => {
+  const queryParams = useLocation().search
+
+  let value = ''
+
+  if (queryParams.includes(name)) {
+    const queries = queryParams.split('&')
+
+    queries.forEach((item: string) => {
+      if (item.includes(name)) {
+        const str = item.slice(item.indexOf(`${name}=`), item.length)
+        value = decodeURI(str.substring(`${name}=`.length, item.length))
+      }
+
+      return
+    })
+  }
+
+  return value
+}
