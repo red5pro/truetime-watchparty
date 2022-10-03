@@ -164,12 +164,16 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
         )}
         {token && email && (
           <SimpleAlertDialog
-            title="Information!"
-            message="Click the button below to go verify your email account."
-            confirmLabel="Go To Verify Account"
-            onConfirm={() => navigate(`/verify?email=${encodeURI(email)}&token=${encodeURI(token)}`)}
-            denyLabel="Go Back"
-            onDeny={() => setGoBack(true)}
+            title={`A verification link has been sent to your email account - ${email}`}
+            message="Please click on the link that has just been sent to your email account to verify your email and finish account creation."
+            confirmLabel="Ok"
+            onConfirm={() => setGoBack(true)}
+            denyLabel={process.env.NODE_ENV === 'development' ? 'Go To Verify Account' : undefined}
+            onDeny={
+              process.env.NODE_ENV === 'development'
+                ? () => navigate(`/verify?email=${encodeURI(email)}&token=${encodeURI(token)}`)
+                : undefined
+            }
           />
         )}
       </>
