@@ -37,15 +37,12 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
   const { backToPage } = props
 
   const [error, setError] = React.useState<any>()
-
-  const { classes } = useStyles()
-
-  //TODO REMOVE THIS WHEN EMAIL IS SENT TO THE USER EMAIL ACCOUNT
+  const [goBack, setGoBack] = React.useState<boolean>(false)
   const [token, setToken] = React.useState<string>()
   const [email, setEmail] = React.useState<string>('')
-  const navigate = useNavigate()
-  const [goBack, setGoBack] = React.useState<boolean>(false)
 
+  const { classes } = useStyles()
+  const navigate = useNavigate()
   const { getCookies } = useCookies(['account', 'userToken'])
 
   React.useEffect(() => {
@@ -64,11 +61,8 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
     const createUserResponse = await USER_API_CALLS.createUser(values.email, UserRoles.VIP, cred)
 
     if (createUserResponse.status === 201) {
-      //TODO: Remove this when the token is sent by email to the customers
       setEmail(values.email)
       setToken(createUserResponse.data.token)
-
-      // await backToPage(true)
     } else {
       setError({
         status: `Error!`,
