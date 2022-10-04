@@ -114,6 +114,28 @@ const verifyAccount = async (email: string, password: string, token: string) => 
   }
 }
 
+const resetPassword = async (email: string) => {
+  try {
+    encodeURIComponent
+    const response: AxiosResponse = await axios.put(`${ENDPOINT.USER}/${encodeURIComponent(email)}/reset`)
+
+    return response
+  } catch (e: any) {
+    console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
+    return {
+      data: null,
+      status: e.code,
+      statusText: message,
+    } as AxiosResponse
+  }
+}
+
 const getUsers = async (email: string, password: string) => {
   try {
     const params = {
@@ -145,4 +167,5 @@ export const USER_API_CALLS = {
   verifyAccount,
   getUsers,
   signInFacebookUser,
+  resetPassword,
 }
