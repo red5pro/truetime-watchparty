@@ -16,14 +16,12 @@ const initialValues = {
 }
 
 const SignUp = () => {
-  const { classes } = useStyles()
-
   const [errorAfterSubmit, setErrorAfterSubmit] = React.useState<string | undefined>()
   const [shouldVerifyEmail, setShouldVerifyEmail] = React.useState<boolean>(false)
   const [email, setEmail] = React.useState<string>('')
-
-  //TODO REMOVE THIS WHEN EMAIL VERIFICATION ACCOUNT IS DONE
   const [token, setToken] = React.useState<string>()
+
+  const { classes } = useStyles()
   const navigate = useNavigate()
 
   const handleSubmit = async (values: any) => {
@@ -33,8 +31,6 @@ const SignUp = () => {
 
     if (response?.status === 201 && response?.data.token) {
       setEmail(values.email)
-
-      //TODO: Remove this when the token is sent by email to the customers
       setToken(response.data.token)
       setShouldVerifyEmail(true)
     } else {

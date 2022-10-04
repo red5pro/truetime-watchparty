@@ -16,6 +16,7 @@ import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import PasswordField from '../../Form/PasswordField'
 import { validationSchema } from '../../../utils/accountUtils'
 import { AccountCredentials } from '../../../models/AccountCredentials'
+import ResetPassword from './ResetPasswordForm'
 
 const initialValues = {
   email: '',
@@ -102,9 +103,8 @@ const SignInEmail = (props: ISignInEmailProps) => {
     }
   }
 
-  // TODO
   if (forgotPassword) {
-    return <Box>Forgot Password</Box>
+    return <ResetPassword />
   }
 
   if (signUp) {
@@ -175,17 +175,16 @@ const SignInEmail = (props: ISignInEmailProps) => {
                   fullWidth
                   {...props}
                 />
-                {!(isAdminLoggingIn || isVipLoggingIn) && (
-                  <>
-                    {/* TODO IMPLEMENT FORGOT PASSWORD */}
-                    <Link textAlign="end" onClick={() => setForgotPassword(true)}>
-                      Forgot your password?
-                    </Link>
 
-                    <Link textAlign="end" onClick={() => setSignUp(true)}>
-                      <strong>Need to Create a new Account?</strong>
-                    </Link>
-                  </>
+                {!isAdminLoggingIn && (
+                  <Link textAlign="end" onClick={() => setForgotPassword(true)}>
+                    Forgot your password?
+                  </Link>
+                )}
+                {!(isAdminLoggingIn || isVipLoggingIn) && (
+                  <Link textAlign="end" onClick={() => setSignUp(true)}>
+                    <strong>Need to Create a new Account?</strong>
+                  </Link>
                 )}
 
                 <CustomButton
