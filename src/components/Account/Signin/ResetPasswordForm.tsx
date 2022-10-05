@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 
 const ResetPassword = () => {
   const [error, setError] = React.useState<any>(null)
+  const [success, setSuccess] = React.useState<boolean>(false)
   const [email, setEmail] = React.useState<string>('')
   const [token, setToken] = React.useState<string>('')
 
@@ -21,12 +22,13 @@ const ResetPassword = () => {
     const response = await USER_API_CALLS.resetPassword(values.email)
 
     if (response.status === 202) {
+      setSuccess(true)
       setToken(response.data.token)
       setEmail(values.email)
     } else {
       setError({
         status: 'Warning',
-        statusText: response.statusText,
+        statusText: response.statusText ?? 'There was an error while resetting your password, please try again.',
       })
     }
   }
@@ -79,7 +81,7 @@ const ResetPassword = () => {
           )
         }}
       </Formik>
-      {token && email && (
+      {success && (
         <SimpleAlertDialog
           title={`A link to reset password has been sent to your email account - ${email}`}
           message="Please click on the link that has just been sent to your email account to reset the password."
