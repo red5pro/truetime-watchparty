@@ -1,6 +1,7 @@
 import { describe, expect, test } from '@jest/globals'
 import * as commonUtils from './commonUtils'
 
+jest.clearAllMocks()
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useLocation: () => ({

@@ -57,8 +57,6 @@ export const getStartTimeFromTimestamp = (ts: number) => {
 export const getQueryParams = (name: string) => {
   const queryParams = useLocation().search
 
-  console.log(useLocation())
-
   let value = ''
 
   if (queryParams.includes(name)) {
