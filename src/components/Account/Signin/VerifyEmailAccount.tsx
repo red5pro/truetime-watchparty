@@ -110,6 +110,7 @@ const VerifyEmailAccount = (props: IVerifyEmailAccountProps) => {
                 name="password"
                 type="password"
                 label="Password"
+                autoComplete={false}
                 className={classes.input}
                 {...props}
               />
@@ -118,6 +119,7 @@ const VerifyEmailAccount = (props: IVerifyEmailAccountProps) => {
                 id="passwordConfirmation"
                 name="passwordConfirmation"
                 type="password"
+                autoComplete={false}
                 label="Password Confirmation"
                 className={classes.input}
                 onKeyPress={handleKeyPress}
