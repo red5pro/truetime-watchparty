@@ -19,7 +19,7 @@ export const signUpValidationSchema = Yup.object().shape({
 })
 
 export const accountVerificationSchema = Yup.object().shape({
-  ...validationSchema.shape,
+  ...validationSchema.fields,
   token: Yup.string().required('Token field is required'),
   passwordConfirmation: Yup.string()
     .oneOf([Yup.ref('password'), null], 'Passwords must match')
