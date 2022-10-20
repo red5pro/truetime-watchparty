@@ -45,9 +45,9 @@ export interface IPartyData {
 }
 
 const validationSchema = Yup.object().shape({
-  welcomeMsg: Yup.string().max(50).required('Welcome message field is required'),
-  thankMsg: Yup.string().max(150).required('Thank you message field is required'),
-  partyName: Yup.string().max(150).required('Party Name field is required'),
+  welcomeMsg: Yup.string().min(1).max(2048).required('Welcome message field is required'),
+  thankMsg: Yup.string().min(1).max(2048).required('Thank you message field is required'),
+  partyName: Yup.string().min(1).max(256).required('Party Name field is required'),
   country: Yup.string().max(50).required('Country field is required'),
   vipOkay: Yup.boolean(),
   notifyMe: Yup.boolean(),
