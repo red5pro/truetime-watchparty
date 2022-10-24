@@ -237,7 +237,7 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
         elementId={elementId}
         muted={mute}
         controls={showControls}
-        styles={videoStyles}
+        styles={{ ...videoStyles, display: videoOn ? 'unset' : 'none' }}
         volume={playbackVolume}
       />
       <Stack direction="row" spacing={1} className={classes.iconBar}>
