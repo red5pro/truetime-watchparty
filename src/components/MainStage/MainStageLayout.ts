@@ -67,6 +67,9 @@ const styles = {
       maxHeight: '124px',
       flexGrow: 1,
       height: '100%',
+      borderRadius: '20px',
+      backgroundColor: 'black',
+      width: '100%',
     },
     subscriberVideo: {
       borderRadius: '20px',
@@ -138,6 +141,9 @@ const styles = {
     },
     subscriber: {
       height: '100%',
+      borderRadius: '20px',
+      backgroundColor: 'black',
+      aspectRatio: '1 / 1',
     },
     subscriberVideo: {
       borderRadius: '20px',
@@ -223,6 +229,9 @@ const styles = {
       maxHeight: '124px',
       flexGrow: 1,
       height: '100%',
+      borderRadius: '20px',
+      backgroundColor: 'black',
+      width: '100%',
     },
     subscriberVideo: {
       borderRadius: '20px',
