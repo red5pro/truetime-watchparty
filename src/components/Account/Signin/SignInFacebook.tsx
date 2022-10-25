@@ -8,6 +8,7 @@ import { ThirdPartyAccount, ThirdPartyUserAccount } from '../../../models/UserAc
 import useCookies from '../../../hooks/useCookies'
 import axios, { AxiosResponse } from 'axios'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
+import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 
 interface IFBSignInProps {
   onActions?: IStepActionsSubComponent
@@ -18,6 +19,7 @@ interface IFBSignInProps {
 const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps) => {
   const { setCookie } = useCookies(['account', 'userAccount'])
   const [userData, setUserData] = React.useState<any>()
+  const [error, setError] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     window.FB.getLoginStatus(checkLoginStatus)
@@ -45,9 +47,16 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
           if (onActions) {
             onActions.onNextStep()
           }
+        } else {
+          console.log('error signInWatchparty!!!', signInResponse)
+          setError(true)
         }
       })
-      .catch((er: any) => console.log('error signInWatchparty!!!', er))
+      .catch((er: any) => {
+        debugger
+        console.log('error signInWatchparty!!!', er)
+        setError(true)
+      })
   }
 
   const getMoreDataFromFB = async () => {
@@ -118,10 +127,27 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
     }
   }
 
-  const checkLoginStatus = (response: any) => {
+  const checkLoginStatus = async (response: any) => {
     if (response && response.status == 'connected') {
-      // Now Personalize the User Experience
-      console.log('Access Token: ' + response.authResponse.accessToken)
+      debugger
+      USER_API_CALLS.signInFacebookUser(response.authResponse.accessToken)
+        .then((signInResponse: AxiosResponse) => {
+          if (signInResponse.status === 200) {
+            setCookie('account', userData.account, { secure: true, expires: userData.expires })
+            setCookie('userAccount', userData.userAccount, { secure: true, expires: userData.expires })
+            debugger
+            if (onActions) {
+              onActions.onNextStep()
+            }
+          } else {
+            console.log('error signInWatchparty!!!', signInResponse)
+            setError(true)
+          }
+        })
+        .catch((er: any) => {
+          console.log('error signInWatchparty!!!', er)
+          setError(true)
+        })
     }
   }
 
@@ -172,7 +198,7 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
             })
           } else {
             console.log('login failed', response)
-            location.reload()
+            setError(true)
           }
         },
         { scope: 'email' }
@@ -181,15 +207,30 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
   }
 
   return (
-    <CustomButton
-      fullWidth
-      startIcon={<FacebookIcon />}
-      size={BUTTONSIZE.MEDIUM}
-      buttonType={BUTTONTYPE.FACEBOOK}
-      onClick={click}
-    >
-      Sign In with Facebook
-    </CustomButton>
+    <>
+      <CustomButton
+        fullWidth
+        startIcon={<FacebookIcon />}
+        size={BUTTONSIZE.MEDIUM}
+        buttonType={BUTTONTYPE.FACEBOOK}
+        onClick={click}
+        disabled={error}
+      >
+        Sign In with Facebook
+      </CustomButton>
+      {error && (
+        <SimpleAlertDialog
+          title="Something went wrong"
+          message={`There was an error trying to login to your Facebook account, please try again.`}
+          confirmLabel="Ok"
+          onConfirm={() => {
+            window.FB.logout(function () {
+              setError(false)
+            })
+          }}
+        />
+      )}
+    </>
   )
 }
 

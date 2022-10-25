@@ -183,6 +183,13 @@ export const mergeThemes = () => {
       },
       MuiButton: {
         styleOverrides: {
+          root: {
+            '&.Mui-disabled': {
+              color: 'gray',
+              backgroundColor: 'lightgray',
+              borderColor: 'lightgray',
+            },
+          },
           outlined: {
             padding: '15px',
             borderRadius: '15px',
