@@ -23,6 +23,7 @@ const activateMedia = (sender: RTCRtpSender, active: boolean) => {
 }
 
 interface PublisherRef {
+  shutdown(): any
   toggleCamera(on: boolean): any
   toggleMicrophone(on: boolean): any
 }
@@ -42,7 +43,7 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
   const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt, onFail } = props
   const { classes } = useStyles()
 
-  React.useImperativeHandle(ref, () => ({ toggleCamera, toggleMicrophone }))
+  React.useImperativeHandle(ref, () => ({ shutdown, toggleCamera, toggleMicrophone }))
 
   const [elementId, setElementId] = React.useState<string>('')
   const [context, setContext] = React.useState<string>('')
@@ -144,6 +145,10 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
   const stop = async () => {
     try {
       if (pubRef.current) {
+        const media = (pubRef.current as any).getMediaStream()
+        if (media) {
+          media.getTracks().forEach((t: MediaStreamTrack) => t.stop())
+        }
         ;(pubRef.current as any).off('*', onPublisherEvent)
         await (pubRef.current as any).unpublish()
       }
@@ -154,6 +159,10 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
       console.error(error)
       // startRetry()
     }
+  }
+
+  const shutdown = async () => {
+    await stop()
   }
 
   const toggleCamera = (on: boolean) => {

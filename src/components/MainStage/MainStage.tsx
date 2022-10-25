@@ -60,6 +60,7 @@ interface SubscriberRef {
 }
 
 interface PublisherRef {
+  shutdown(): any
   toggleCamera(on: boolean): any
   toggleMicrophone(on: boolean): any
 }
@@ -195,6 +196,24 @@ const MainStage = () => {
   }, [maxParticipants])
 
   React.useEffect(() => {
+    const shutdown = async () => {
+      if (publisherRef && publisherRef.current) {
+        await publisherRef.current.shutdown()
+      }
+    }
+    if (data.closed) {
+      shutdown()
+      setFatalError({
+        status: 404,
+        title: 'Connection Disruption',
+        statusText: `Your session was interrupted expectedly. You are no longer in the Watch Party.`,
+        closeLabel: 'OK',
+        onClose: onLeave,
+      } as FatalError)
+    }
+  }, [data.closed])
+
+  React.useEffect(() => {
     if (data.connection) {
       const { connection } = data
       if (connection && connection.role) {
@@ -240,7 +259,7 @@ const MainStage = () => {
     setFatalError({
       status: 400,
       title: 'Broadcast Stream Error',
-      statusText: `Your broadcast session was interrupted expectedly. You are no longer streaming.`,
+      statusText: `Your broadcast session was interrupted unexpectedly. You are no longer streaming.`,
       closeLabel: 'Restart',
       onClose: () => {
         setFatalError(undefined)
