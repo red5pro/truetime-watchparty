@@ -53,7 +53,6 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
         }
       })
       .catch((er: any) => {
-        debugger
         console.log('error signInWatchparty!!!', er)
         setError(true)
       })
@@ -129,13 +128,11 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
 
   const checkLoginStatus = async (response: any) => {
     if (response && response.status == 'connected') {
-      debugger
       USER_API_CALLS.signInFacebookUser(response.authResponse.accessToken)
         .then((signInResponse: AxiosResponse) => {
           if (signInResponse.status === 200) {
             setCookie('account', userData.account, { secure: true, expires: userData.expires })
             setCookie('userAccount', userData.userAccount, { secure: true, expires: userData.expires })
-            debugger
             if (onActions) {
               onActions.onNextStep()
             }
