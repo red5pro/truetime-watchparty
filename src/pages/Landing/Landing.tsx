@@ -10,16 +10,19 @@ import useStyles from './Landing.module'
 const Home = () => {
   const { classes } = useStyles()
   const [partyCode, setPartyCode] = React.useState<string>('')
+  const [error, setError] = React.useState<string>('')
 
   const navigate = useNavigate()
   const { getCookies } = useCookies(['account'])
 
   const onInputChange = (ev: any) => setPartyCode(ev?.target?.value ?? '')
 
-  const onClick = () => {
-    if (partyCode.length > 0) {
-      navigate(`/join/${partyCode}`)
+  const onClick = (ev: any) => {
+    if (!partyCode) {
+      setError('Enter a valid Party Code')
     }
+
+    navigate(`/join/${partyCode}`)
   }
 
   const handleKeyPress = (ev: any) => {
@@ -38,12 +41,16 @@ const Home = () => {
         </Box>
         <Typography className={classes.partyCode}>Type Party Code</Typography>
         <Box display="flex">
-          <Input
-            placeholder="Party Code"
-            className={classes.input}
-            onBlur={onInputChange}
-            onKeyPress={handleKeyPress}
-          />
+          <Box display="flex" flexDirection="column">
+            <Input
+              placeholder="Party Code"
+              className={`${classes.input}`}
+              onBlur={onInputChange}
+              onChange={() => setError('')}
+              onKeyPress={handleKeyPress}
+            />
+            {error && <Typography className={classes.errorValidation}>{error}</Typography>}
+          </Box>
           <CustomButton size={BUTTONSIZE.SMALL} buttonType={BUTTONTYPE.PRIMARY} onClick={onClick}>
             Join
           </CustomButton>
