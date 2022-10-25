@@ -1,6 +1,7 @@
 import React from 'react'
 import * as portals from 'react-reverse-portal'
 import { useNavigate } from 'react-router-dom'
+import { grid } from '@mui/system'
 import { IconButton, Box, Typography, Stack, Divider, Tooltip } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-material'
@@ -74,6 +75,9 @@ const MainStage = () => {
   const navigate = useNavigate()
   const { getCookies } = useCookies(['account'])
 
+  let resizeTimeout: any
+  const resizeRef = React.useRef(null)
+
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
   const mainVideoRef = React.useRef<SubscriberRef>(null)
@@ -93,8 +97,7 @@ const MainStage = () => {
   const [relayout, setRelayout] = React.useState<boolean>(false)
   const [chatIsHidden, setChatIsHidden] = React.useState<boolean>(true)
   const [maxParticipantGridColumnStyle, setMaxParticipantGridColumnStyle] = React.useState<any>({
-    gridTemplateColumns:
-      'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
+    gridTemplateColumns: 'repeat(1, 1fr)',
   })
 
   const [nonFatalError, setNonFatalError] = React.useState<any>()
@@ -139,6 +142,7 @@ const MainStage = () => {
     function handleResize() {
       // Set window width/height to state
       setViewportHeight(window.innerHeight)
+      resetResizeTimeout()
     }
     // Add event listener
     window.addEventListener('resize', handleResize)
@@ -184,16 +188,8 @@ const MainStage = () => {
   }, [seriesEpisode])
 
   React.useEffect(() => {
-    if (maxParticipants > 0) {
-      const half = maxParticipants / 2
-      const column = `fit-content(230px)`
-      //      const column = `calc((100% / ${half}) - 12px)`
-      const style = Array(half).fill(column).join(' ')
-      setMaxParticipantGridColumnStyle({
-        gridTemplateColumns: style,
-      })
-    }
-  }, [maxParticipants])
+    resetResizeTimeout()
+  }, [data.list, maxParticipants])
 
   React.useEffect(() => {
     const shutdown = async () => {
@@ -247,6 +243,7 @@ const MainStage = () => {
     } else {
       setRequiresSubscriberScroll(false)
     }
+    resetResizeTimeout()
   }, [data.list, layout, viewportHeight, relayout])
 
   const onPublisherBroadcast = () => {
@@ -283,6 +280,43 @@ const MainStage = () => {
 
   const onLeave = () => {
     navigate(`/thankyou/${joinToken}`)
+  }
+
+  const stopResizeTimeout = () => {
+    if (resizeRef.current) {
+      clearTimeout(resizeRef.current)
+    }
+    clearTimeout(resizeTimeout)
+  }
+
+  const resetResizeTimeout = () => {
+    stopResizeTimeout()
+    resizeTimeout = setTimeout(() => {
+      recalculateGrid()
+    }, 2000)
+    resizeRef.current = resizeTimeout
+  }
+
+  const recalculateGrid = () => {
+    const { maxParticipants } = seriesEpisode.series
+    if (maxParticipants > 0 && subscriberListRef && subscriberListRef.current) {
+      const { clientWidth, clientHeight, children } = subscriberListRef.current.parentNode
+      const half = maxParticipants / 2
+      let width = 230
+      let count = (data.list.length || children.length) + 1
+      let column = `fit-content(${width}px)`
+      count = count < half ? count : half
+      // 20 row spacing defined in MainStageLayout
+      const height = clientHeight / 2 - 20
+      // 94 total padding defined in MainStageLayout
+      width = clientWidth / count - 94 / count
+      column = height < width ? `fit-content(${height}px)` : `fit-content(${width}px)`
+      //      const column = `calc((100% / ${half}) - 12px)`
+      const style = `repeat(${count}, ${column})`
+      setMaxParticipantGridColumnStyle({
+        gridTemplateColumns: style,
+      })
+    }
   }
 
   const toggleLock = async () => {
@@ -491,12 +525,10 @@ const MainStage = () => {
         )}
         {/* Other Participants Video Playback */}
         <Box sx={layout.style.subscriberList}>
-          <div
-            ref={subscriberListRef}
-            style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}
-          >
+          <Box ref={subscriberListRef} sx={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}>
             {data.list.map((s: Participant) => {
               return (
+                // <Box key={s.participantId} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <MainStageSubscriber
                   key={s.participantId}
                   participant={s}
@@ -507,10 +539,11 @@ const MainStage = () => {
                   menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
                   onSubscribeStart={onRelayout}
                 />
+                // </Box>
               )
             })}
             {layout.layout === Layout.FULLSCREEN && <PublisherPortalFullscreen portalNode={portalNode} />}
-          </div>
+          </Box>
           {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
             <CustomButton
               className={classes.moreButton}
