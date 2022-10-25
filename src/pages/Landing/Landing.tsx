@@ -15,20 +15,26 @@ const Home = () => {
   const navigate = useNavigate()
   const { getCookies } = useCookies(['account'])
 
-  const onInputChange = (ev: any) => setPartyCode(ev?.target?.value ?? '')
+  const onInputChange = (ev: any) => {
+    setPartyCode(ev?.target?.value ?? '')
+    setError('')
+  }
 
-  const onClick = (ev: any) => {
-    if (!partyCode) {
+  const onClick = () => {
+    if (!partyCode || partyCode.length < 19) {
       setError('Enter a valid Party Code')
+      return
     }
 
     navigate(`/join/${partyCode}`)
   }
 
   const handleKeyPress = (ev: any) => {
-    if (ev && ev.code === 'Enter' && partyCode.length > 0) {
-      navigate(`/join/${partyCode}`)
+    if (ev && ev.code === 'Enter' && (!partyCode || partyCode.length < 19)) {
+      setError('Enter a valid Party Code')
+      return
     }
+    navigate(`/join/${partyCode}`)
   }
 
   return (
@@ -46,7 +52,7 @@ const Home = () => {
               placeholder="Party Code"
               className={`${classes.input}`}
               onBlur={onInputChange}
-              onChange={() => setError('')}
+              onChange={onInputChange}
               onKeyPress={handleKeyPress}
             />
             {error && <Typography className={classes.errorValidation}>{error}</Typography>}
