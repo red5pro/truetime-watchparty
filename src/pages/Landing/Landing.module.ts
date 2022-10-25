@@ -70,19 +70,9 @@ const useStyles = makeStyles()((theme: any) => {
       objectFit: 'cover',
       objectPosition: 'right',
     },
-    errorTextField: {
+    errorValidation: {
       color: '#d32f2f',
-      border: '1px solid #d32f2f',
-      '& label': {
-        color: '#d32f2f',
-      },
-      '& input': {
-        border: '1px solid #d32f2f',
-      },
-
-      '& fieldset': {
-        border: 'none',
-      },
+      fontSize: '14px',
     },
   }
 })
