@@ -552,7 +552,7 @@ const MainStage = () => {
                   <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
                     <TypingIndicator />
                   </MessageList>
-                  <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" />
+                  {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
                 </Box>
                 <CustomButton
                   size={BUTTONSIZE.SMALL}
