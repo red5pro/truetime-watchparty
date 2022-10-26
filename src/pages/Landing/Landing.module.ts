@@ -70,6 +70,10 @@ const useStyles = makeStyles()((theme: any) => {
       objectFit: 'cover',
       objectPosition: 'right',
     },
+    errorValidation: {
+      color: '#d32f2f',
+      fontSize: '14px',
+    },
   }
 })
 
