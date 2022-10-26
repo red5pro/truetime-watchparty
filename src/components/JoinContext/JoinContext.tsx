@@ -174,7 +174,7 @@ const JoinProvider = (props: JoinContextProps) => {
       try {
         const result = await CONFERENCE_API_CALLS.lockConference(conferenceId, getCookies().account)
         if (result.status !== 200) {
-          throw { data: null, status: result.status, statusText: `Could not unlock conference.` }
+          throw { data: null, status: result.status, statusText: `Could not lock conference.` }
         }
         // setConferenceLocked(true)
         dispatch({ type: 'TOGGLE_LOCK', locked: true })

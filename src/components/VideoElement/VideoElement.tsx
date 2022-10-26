@@ -27,8 +27,6 @@ const VideoElement = ({ elementId, styles, muted, controls, volume }: IVideoElem
     if (videoRef && videoRef.current) {
       videoRef.current.muted = muted
     }
-    // TODO: Remove this!!!
-    console.log('VIDEO MUTED', elementId, muted)
   }, [muted, elementId])
 
   return (

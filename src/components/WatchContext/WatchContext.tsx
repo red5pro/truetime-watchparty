@@ -24,6 +24,8 @@ const listReducer = (state: any, action: any) => {
       return { ...state, conference: action.payload }
     case 'SET_CONFERENCE_ERROR':
       return { ...state, error: action.payload }
+    case 'CONFERENCE_CLOSE':
+      return { ...state, closed: true, list: [], vip: undefined }
   }
 }
 
@@ -40,6 +42,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
 
   const [data, dispatch] = React.useReducer(listReducer, {
     error: undefined,
+    closed: false,
     connection: undefined,
     conference: undefined,
     status: undefined,
@@ -93,12 +96,13 @@ const WatchProvider = (props: IWatchProviderProps) => {
       }
     }
     socket.onclose = (event) => {
-      const { code } = event
-      if (code !== 1000) {
+      const { wasClean, code } = event
+      if (!wasClean || code !== 1000) {
         // Not Expected.
         setError({ data: null, status: code, statusText: 'Connection closed unexpectedly.' })
       }
       console.log('SOCKET CLOSE', event)
+      dispatch({ type: 'CONFERENCE_CLOSE', payload: true })
     }
     setHostSocket(socket)
   }

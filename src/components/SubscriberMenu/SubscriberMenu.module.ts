@@ -2,6 +2,10 @@ import { makeStyles } from 'tss-react/mui'
 
 const useStyles = makeStyles()((theme: any) => {
   return {
+    root: {
+      position: 'relative',
+      zIndex: 1000,
+    },
     listContainer: {
       padding: '4px',
       boxSizing: 'border-box',
@@ -11,7 +15,6 @@ const useStyles = makeStyles()((theme: any) => {
       boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.12)',
       backdropFilter: 'blur(24px)',
       width: '180px',
-      zIndex: 1000,
     },
     listDivider: {
       margin: '2px',
