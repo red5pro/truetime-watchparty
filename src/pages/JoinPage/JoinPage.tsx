@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Box, Stack, Typography } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
 
 import useCookies from '../../hooks/useCookies'
 import Loading from '../../components/Common/Loading/Loading'
@@ -50,6 +51,7 @@ const JoinPage = () => {
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
+  const navigate = useNavigate()
 
   const { getCookies, removeCookie } = useCookies(['userAccount', 'account'])
   const [searchParams, setSearchParams] = useSearchParams()
@@ -116,8 +118,8 @@ const JoinPage = () => {
     setCurrentSection(Section.WatchParty)
   }
 
-  const onRetryRequest = () => {
-    window.location.reload()
+  const onCancelRequest = () => {
+    navigate('/landing')
     return false
   }
 
@@ -126,8 +128,8 @@ const JoinPage = () => {
       <SimpleAlertDialog
         title="Something went wrong"
         message={`${error.status} - ${error.statusText}`}
-        confirmLabel="Retry"
-        onConfirm={onRetryRequest}
+        confirmLabel="Ok"
+        onConfirm={onCancelRequest}
       />
     ) : (
       <Box className={classes.root}>
