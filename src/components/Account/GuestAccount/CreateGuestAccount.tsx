@@ -24,8 +24,8 @@ const initialValues = {
 const validationSchema = Yup.object().shape({
   conferenceId: Yup.string().required('Conference field is required'),
   email: Yup.string().email('Invalid Email').required('Email field is required'),
-  startTime: Yup.date(),
-  endTime: Yup.date(),
+  // startTime: Yup.date(),
+  // endTime: Yup.date(),
   // message: Yup.string().max(150).required('Message field is required'),
 })
 
@@ -151,7 +151,7 @@ const CreateGuestAccount = (props: ICreateGuestAccount) => {
         {error && (
           <SimpleAlertDialog
             title="Something went wrong"
-            message={`${error.status} - ${error.statusText}`}
+            message={`${error.statusText}`}
             confirmLabel="Ok"
             onConfirm={() => setError(null)}
           />
