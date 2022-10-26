@@ -67,7 +67,7 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
   }
 
   const onToggleMenu = (event?: any) => {
-    console.log('Click', event)
+    // console.log('Click', event)
     if (event && menuRef && menuRef.current) {
       ;(menuRef.current as any).style.left = `${event.screenX + 24}px`
       // ;(menuRef.current as any).style.top = `${event.screenY - 6}px`
@@ -94,7 +94,7 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
   }
 
   return (
-    <Stack sx={{ position: 'relative' }}>
+    <Stack className={classes.root}>
       <IconButton ref={ref} color="primary" aria-label="subscriber menu" component="label" onClick={onToggleMenu}>
         <MoreMenuIcon />
       </IconButton>

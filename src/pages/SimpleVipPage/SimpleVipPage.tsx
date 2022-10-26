@@ -29,6 +29,7 @@ const vipReducer = (state: any, action: any) => {
 }
 
 interface PublisherRef {
+  shutdown(): any
   toggleCamera(on: boolean): any
   toggleMicrophone(on: boolean): any
 }
