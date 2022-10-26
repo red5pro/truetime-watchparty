@@ -225,9 +225,8 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
           message={`There was an error trying to login to your Facebook account, please try again.`}
           confirmLabel="Ok"
           onConfirm={() => {
-            window.FB.logout(function () {
-              setError(false)
-            })
+            window.FB.logout()
+            setError(false)
           }}
         />
       )}
