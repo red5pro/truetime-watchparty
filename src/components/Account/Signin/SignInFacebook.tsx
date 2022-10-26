@@ -46,6 +46,8 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
 
           if (onActions) {
             onActions.onNextStep()
+          } else if (redirectAfterLogin) {
+            redirectAfterLogin()
           }
         } else {
           console.log('error signInWatchparty!!!', signInResponse)
@@ -135,6 +137,8 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
             setCookie('userAccount', userData.userAccount, { secure: true, expires: userData.expires })
             if (onActions) {
               onActions.onNextStep()
+            } else if (redirectAfterLogin) {
+              redirectAfterLogin()
             }
           } else {
             console.log('error signInWatchparty!!!', signInResponse)
