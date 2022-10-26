@@ -43,6 +43,7 @@ const MediaControl = (props: MediaControlProps) => {
 
   const onSelect = (selection: MediaControlOption, index: number) => {
     onChange(selection)
+    setSelectedIndex(index)
     setOpen(false)
   }
 

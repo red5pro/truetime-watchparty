@@ -39,6 +39,7 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
   const ref = React.useRef(null)
   const menuRef = React.useRef(null)
 
+  const [menuOffset, setMenuOffset] = React.useState<number>(24)
   const [showMenu, setShowMenu] = React.useState<boolean>(false)
 
   useOutsideClick(ref, () => setShowMenu(false))
@@ -70,6 +71,7 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
     if (event && menuRef && menuRef.current) {
       ;(menuRef.current as any).style.left = `${event.screenX + 24}px`
       // ;(menuRef.current as any).style.top = `${event.screenY - 6}px`
+      setMenuOffset(event.screenX + 24)
     }
     setShowMenu(!showMenu)
   }
@@ -97,7 +99,11 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
         <MoreMenuIcon />
       </IconButton>
       <Fade in={showMenu}>
-        <List ref={menuRef} className={classes.listContainer} sx={{ position: 'fixed' }}>
+        <List
+          ref={menuRef}
+          className={classes.listContainer}
+          sx={{ position: 'fixed', left: `${menuOffset}px!important` }}
+        >
           <ListItemButton onClick={toggleMuteAudio}>
             <ListItemIcon className={classes.listItemIcon}>
               {!participant.muteState?.audioMuted && <Mic sx={{ color: 'white' }} />}
