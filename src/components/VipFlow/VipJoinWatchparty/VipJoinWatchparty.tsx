@@ -139,7 +139,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
     setFatalError({
       status: 400,
       title: 'Broadcast Stream Error',
-      statusText: `Your broadcast session was interrupted expectedly. You are no longer streaming.`,
+      statusText: `Your broadcast session was interrupted unexpectedly. You are no longer streaming.`,
       closeLabel: 'Restart',
       onClose: () => {
         setFatalError(undefined)

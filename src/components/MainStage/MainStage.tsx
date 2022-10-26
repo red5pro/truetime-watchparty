@@ -202,7 +202,7 @@ const MainStage = () => {
       setFatalError({
         status: 404,
         title: 'Connection Disruption',
-        statusText: `Your session was interrupted expectedly. You are no longer in the Watch Party.`,
+        statusText: `Your session was interrupted unexpectedly. You are no longer in the Watch Party.`,
         closeLabel: 'OK',
         onClose: onLeave,
       } as FatalError)
