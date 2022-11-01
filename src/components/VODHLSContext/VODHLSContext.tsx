@@ -1,5 +1,6 @@
 import React, { useReducer } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
+import { number } from 'yup/lib/locale'
 import { VODHLSItem } from '../../models/VODHLSItem'
 import { VOD_CONTEXT, VOD_HOST } from '../../settings/variables'
 
@@ -11,6 +12,8 @@ const vodReducer = (state: any, action: any) => {
       return { ...state, active: action.active }
     case 'SET_LIST':
       return { ...state, list: action.list }
+    case 'SET_CURRENT_TIME':
+      return { ...state, currentTime: action.time }
   }
 }
 
@@ -20,6 +23,7 @@ interface VODHLSContextProps {
 
 interface IVODHLSContextProps {
   vod: any
+  setCurrentTime(value: number): any
 }
 
 const VODHLSContext = React.createContext<IVODHLSContextProps>({} as IVODHLSContextProps)
@@ -33,6 +37,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   const [vod, dispatch] = useReducer(vodReducer, {
     active: false,
     list: [VODHLSItem],
+    currentTime: 0,
   })
 
   React.useEffect(() => {
@@ -67,8 +72,13 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     }
   }, [searchParams])
 
+  const setCurrentTime = (value: number) => {
+    dispatch({ type: 'SET_CURRENT_TIME', time: value })
+  }
+
   const exportedValues = {
     vod,
+    setCurrentTime,
   }
 
   return <VODHLSContext.Provider value={exportedValues}>{children}</VODHLSContext.Provider>
