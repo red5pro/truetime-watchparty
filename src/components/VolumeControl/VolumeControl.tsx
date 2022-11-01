@@ -85,7 +85,7 @@ const VolumeControl = (props: VolumeControlProps) => {
             }}
             orientation={position === 'horizontal' ? 'horizontal' : 'vertical'}
             defaultValue={30}
-            aria-label="Temperature"
+            aria-label="Volume"
             valueLabelDisplay="auto"
             min={min}
             max={max}

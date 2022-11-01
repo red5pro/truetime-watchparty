@@ -19,6 +19,10 @@ import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
 import { UserRoles } from '../../utils/commonUtils'
 
+import VODHLSContext from '../../components/VODHLSContext/VODHLSContext'
+import VODHLSPlaybackReel from '../../components/VODHLSPlaybackReel/VODHLSPlaybackReel'
+const useVODHLSContext = () => React.useContext(VODHLSContext.Context)
+
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
@@ -56,6 +60,15 @@ const JoinPage = () => {
   const { getCookies, removeCookie } = useCookies(['userAccount', 'account'])
   const [searchParams, setSearchParams] = useSearchParams()
   const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
+
+  const { vod } = useVODHLSContext()
+  React.useEffect(() => {
+    if (vod) {
+      const { active, list } = vod
+      console.log('IS VOD?', active)
+      console.log('HLS List', list)
+    }
+  }, [vod])
 
   React.useEffect(() => {
     const cookies = getCookies()
@@ -198,7 +211,6 @@ const JoinPage = () => {
             <MainStage />
           </MainStageWithChatBox>
         )}
-
         <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
           <img
             alt="Join a Party Main Image"
@@ -231,6 +243,8 @@ const JoinPage = () => {
             </Stack>
           </Stack>
         )}
+
+        {vod.active && <VODHLSPlaybackReel style={{ padding: '100px' }} list={vod.list}></VODHLSPlaybackReel>}
       </Box>
     </Box>
   )

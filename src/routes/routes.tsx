@@ -13,6 +13,7 @@ import PartyEndedPage from '../pages/PartyEndedPage/PartyEndedPage'
 import SimpleVipPage from '../pages/SimpleVipPage/SimpleVipPage'
 import AdminPage from '../pages/Admin/AdminPage'
 import VerifyEmailPage from '../pages/VerifyEmailPage/VerifyEmailPage'
+import VODHLSContext from '../components/VODHLSContext/VODHLSContext'
 
 const AppRoutes = () => {
   return (
@@ -28,6 +29,21 @@ const AppRoutes = () => {
               <MediaContext.Provider>
                 <WatchContext.Provider>
                   <JoinPage />
+                </WatchContext.Provider>
+              </MediaContext.Provider>
+            </JoinContext.Provider>
+          }
+        />
+        {/* VOD */}
+        <Route
+          path="/join/vod/:token"
+          element={
+            <JoinContext.Provider>
+              <MediaContext.Provider>
+                <WatchContext.Provider>
+                  <VODHLSContext.Provider>
+                    <JoinPage />
+                  </VODHLSContext.Provider>
                 </WatchContext.Provider>
               </MediaContext.Provider>
             </JoinContext.Provider>

@@ -13,6 +13,9 @@ export const API_SOCKET_HOST = USE_LOCAL_SERVICES
   : `wss://${API_SERVER_HOST}/conferenceapi/1.0/ws/conference`
 export const STREAM_HOST = USE_LOCAL_SERVICES ? 'release-11.red5.net' : SERVER_HOST
 
+export const VOD_HOST = SERVER_HOST
+export const VOD_CONTEXT = 'live'
+
 export const DEFAULT_CONSTRAINTS = {
   audio: true,
   video: true,

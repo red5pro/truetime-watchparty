@@ -37,10 +37,12 @@ import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import { FatalError } from '../../models/FatalError'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
+import VODHLSContext from '../VODHLSContext/VODHLSContext'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
+const useVODHLSContext = () => React.useContext(VODHLSContext.Context)
 
 export enum Layout {
   STAGE = 1,
@@ -66,9 +68,10 @@ interface PublisherRef {
 }
 
 const MainStage = () => {
-  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
   const mediaContext = useMediaContext()
+  const { vod } = useVODHLSContext()
   const { error, loading, data, join, retry } = useWatchContext()
+  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
 
   const { classes } = useStyles()
   const navigate = useNavigate()
@@ -248,6 +251,13 @@ const MainStage = () => {
       setRequiresSubscriberScroll(false)
     }
   }, [data.list, layout, viewportHeight, relayout])
+
+  React.useEffect(() => {
+    if (vod) {
+      const { active } = vod
+      console.log('IS VOD?', active)
+    }
+  }, [vod])
 
   const onPublisherBroadcast = () => {
     const streamGuid = getStreamGuid()
