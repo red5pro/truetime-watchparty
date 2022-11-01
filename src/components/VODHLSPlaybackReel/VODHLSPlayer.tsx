@@ -138,11 +138,23 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   }
 
   return (
-    <Box sx={sx}>
+    <Box sx={sx} style={{ position: 'relative' }}>
       <video ref={videoRef} style={{ width: 'inherit', height: 'inherit' }}>
         {requiresSource && <source src={item.url}></source>}
       </video>
-      <Typography>{item.name}</Typography>
+      <Typography
+        style={{
+          position: 'absolute',
+          bottom: '5px',
+          left: 0,
+          right: '5px',
+          padding: '5px',
+          textAlign: 'right',
+          backdropFilter: 'blur(5px)',
+        }}
+      >
+        {item.name}
+      </Typography>
     </Box>
   )
 })

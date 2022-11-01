@@ -34,6 +34,25 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
   const [value, setValue] = React.useState<number>(0)
   const [maxTime, setMaxTime] = React.useState<number>(0)
 
+  const formatTime = (value: number) => {
+    let hrs = 0
+    let mins = value === 0 ? 0 : value / 60
+    let secs = 0
+    if (mins >= 60) {
+      hrs = mins / 60
+      mins = mins % 60
+    }
+    secs = value === 0 ? 0 : value % 60
+
+    const formattedArr = []
+    if (hrs > 0) {
+      hrs < 10 ? formattedArr.push(`0${Math.round(hrs)}`) : formattedArr.push(Math.round(hrs).toFixed())
+    }
+    formattedArr.push(mins < 10 ? `0${Math.round(mins)}` : Math.round(mins).toFixed())
+    formattedArr.push(secs < 10 ? `0${Math.round(secs)}` : Math.round(secs).toFixed())
+    return formattedArr.join(':')
+  }
+
   const onHLSLoad = (item: VODHLSItem, totalTime: number) => {
     if (totalTime > maxTime) {
       setMaxTime(totalTime)
@@ -57,6 +76,7 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
               flexGrow: 1,
               width: '100%',
               height: '100%',
+              cursor: 'pointer',
             }}
             key={`vod_${index}`}
             ref={playerRefs[index] as RefObject<VODHLSPlayerRef>}
@@ -78,6 +98,7 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
           defaultValue={0}
           aria-label="Playback Time"
           valueLabelDisplay="auto"
+          valueLabelFormat={formatTime}
           min={0}
           max={maxTime}
           step={1}

@@ -14,6 +14,8 @@ const vodReducer = (state: any, action: any) => {
       return { ...state, list: action.list }
     case 'SET_CURRENT_TIME':
       return { ...state, currentTime: action.time }
+    case 'SET_SELECTION':
+      return { ...state, selectedItem: action.item }
   }
 }
 
@@ -24,6 +26,7 @@ interface VODHLSContextProps {
 interface IVODHLSContextProps {
   vod: any
   setCurrentTime(value: number): any
+  setSelectedItem(value: VODHLSItem): any
 }
 
 const VODHLSContext = React.createContext<IVODHLSContextProps>({} as IVODHLSContextProps)
@@ -38,6 +41,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     active: false,
     list: [VODHLSItem],
     currentTime: 0,
+    selectedItem: undefined,
   })
 
   React.useEffect(() => {
@@ -69,6 +73,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         item.url = `https://${host}/${ctx}${item.filename}`
       })
       dispatch({ type: 'SET_LIST', list: list })
+      dispatch({ type: 'SET_SELECTION', item: list.length > 0 ? list[0] : undefined })
     }
   }, [searchParams])
 
@@ -76,9 +81,14 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     dispatch({ type: 'SET_CURRENT_TIME', time: value })
   }
 
+  const setSelectedItem = (value: VODHLSItem) => {
+    dispatch({ type: 'SET_SELECTION', item: value })
+  }
+
   const exportedValues = {
     vod,
     setCurrentTime,
+    setSelectedItem,
   }
 
   return <VODHLSContext.Provider value={exportedValues}>{children}</VODHLSContext.Provider>
