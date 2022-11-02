@@ -13,10 +13,11 @@ export interface VODHLSThumbnailRef {
 interface VODHLSThumbnailProps {
   sx: any
   vodHLSItem: VODHLSItem
+  onSelect(item: VODHLSItem): any
 }
 
 const VODHLSThumbnail = React.forwardRef((props: VODHLSThumbnailProps, ref: React.Ref<VODHLSThumbnailRef>) => {
-  const { sx, vodHLSItem } = props
+  const { sx, vodHLSItem, onSelect } = props
 
   const canvasRef = React.useRef(null)
 
@@ -92,7 +93,7 @@ const VODHLSThumbnail = React.forwardRef((props: VODHLSThumbnailProps, ref: Reac
   }
 
   return (
-    <Box sx={sx} style={{ position: 'relative' }}>
+    <Box sx={sx} style={{ position: 'relative' }} onClick={() => onSelect(vodHLSItem)}>
       <canvas
         ref={canvasRef}
         style={{ position: 'absolute', width: '100%', height: '100%', aspectRatio: '1 / 1' }}

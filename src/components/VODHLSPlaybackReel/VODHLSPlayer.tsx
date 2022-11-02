@@ -1,7 +1,8 @@
 import React from 'react'
-import { Box, Typography } from '@mui/material'
-import { VODHLSItem } from '../../models/VODHLSItem'
 import Hls from 'hls.js'
+import { Box, Button } from '@mui/material'
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
+import { VODHLSItem } from '../../models/VODHLSItem'
 import { supportsHLS } from '../../utils/hlsUtils'
 
 export interface VODHLSPlayerRef {
@@ -16,11 +17,14 @@ interface VODHLSPlayerProps {
   sx: any
   index: number
   item: VODHLSItem
+  muted: boolean
+  onPlay(index: number, item: VODHLSItem): any
+  onPause(index: number, item: VODHLSItem, andResume: boolean): any
   onHLSLoad(index: number, item: VODHLSItem, totalTime: number): any
 }
 
 const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<VODHLSPlayerRef>) => {
-  const { sx, index, item, onHLSLoad } = props
+  const { sx, index, item, muted, onPlay, onPause, onHLSLoad } = props
 
   React.useImperativeHandle(ref, () => ({ play, pause, seek, destroy, getVideo }))
 
@@ -146,11 +150,25 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     return undefined
   }
 
+  const onPlayRequest = () => {
+    if (isPlaying) {
+      onPause(index, item, false)
+    } else {
+      onPlay(index, item)
+    }
+    console.log('PLAY', item.name)
+  }
+
   return (
-    <Box sx={sx}>
-      <video ref={videoRef} style={{ width: 'inherit', height: 'inherit' }}>
+    <Box sx={sx} style={{ position: 'relative' }} display="flex" justifyContent="center" alignItems="center">
+      <video ref={videoRef} style={{ width: 'inherit', height: 'inherit' }} muted={muted}>
         {requiresSource && <source src={item.url}></source>}
       </video>
+      <Button style={{ position: 'absolute', width: '200px', height: '200px' }} color="inherit" onClick={onPlayRequest}>
+        <PlayCircleOutlineIcon
+          style={{ width: '100%', height: '100%', filter: 'drop-shadow(0.3rem 0.3rem 0.3rem #000)' }}
+        />
+      </Button>
     </Box>
   )
 })

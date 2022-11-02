@@ -15,7 +15,7 @@ interface VODHLSPlaybackReelProps {
 const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
   const { style, list } = props
 
-  const { vod, setCurrentTime } = useVODHLSContext()
+  const { vod, setCurrentTime, setSelectedItem } = useVODHLSContext()
 
   const playerRefs = React.useMemo(
     () =>
@@ -50,6 +50,10 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
     }
   }, [])
 
+  React.useEffect(() => {
+    console.log('SELECTION', vod.selectedItem)
+  }, [vod.selectedItem])
+
   const formatTime = (value: number) => {
     let hrs = 0
     let mins = value === 0 ? 0 : value / 60
@@ -78,6 +82,14 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
     })
   }
 
+  const onHLSPlay = (index: number, item: VODHLSItem) => {
+    playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).play())
+  }
+
+  const onHLSPause = (index: number, item: VODHLSItem, andResume: boolean) => {
+    playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).pause(andResume))
+  }
+
   const onHLSLoad = (index: number, item: VODHLSItem, totalTime: number) => {
     if (totalTime > maxTime) {
       setMaxTime(totalTime)
@@ -100,6 +112,10 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
     }
   }
 
+  const onThumbnailSelect = (item: VODHLSItem) => {
+    setSelectedItem(item)
+  }
+
   return (
     <Stack sx={style} direction="column">
       <Stack direction="row" gap={2} alignItems="center" height="150px">
@@ -108,12 +124,15 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
             sx={{
               flexGrow: 1,
               width: '100%',
-              cursor: 'pointer',
+              display: vod.selectedItem === list[index] ? 'flex' : 'none',
             }}
             key={`vod_${index}`}
             ref={playerRefs[index] as RefObject<VODHLSPlayerRef>}
             index={index}
             item={list[index]}
+            muted={!(vod.selectedItem === list[index])}
+            onPlay={onHLSPlay}
+            onPause={onHLSPause}
             onHLSLoad={onHLSLoad}
           ></VODHLSPlayer>
         ))}
@@ -130,6 +149,7 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
             key={`vod_${index}`}
             ref={thumbnailRefs[index] as RefObject<VODHLSThumbnailRef>}
             vodHLSItem={list[index]}
+            onSelect={onThumbnailSelect}
           ></VODHLSThumbnail>
         ))}
       </Stack>
