@@ -4,23 +4,25 @@ import { VODHLSItem } from '../../models/VODHLSItem'
 import Hls from 'hls.js'
 import { supportsHLS } from '../../utils/hlsUtils'
 
-interface VODHLSPlayerRef {
+export interface VODHLSPlayerRef {
   play(): any
   pause(resume: boolean): any
   seek(to: number, andPlay?: boolean): any
   destroy(): any
+  getVideo(): HTMLVideoElement
 }
 
 interface VODHLSPlayerProps {
   sx: any
+  index: number
   item: VODHLSItem
-  onHLSLoad(item: VODHLSItem, totalTime: number): any
+  onHLSLoad(index: number, item: VODHLSItem, totalTime: number): any
 }
 
 const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<VODHLSPlayerRef>) => {
-  const { sx, item, onHLSLoad } = props
+  const { sx, index, item, onHLSLoad } = props
 
-  React.useImperativeHandle(ref, () => ({ play, pause, seek, destroy }))
+  React.useImperativeHandle(ref, () => ({ play, pause, seek, destroy, getVideo }))
 
   const videoRef: any = React.useRef(null)
   let playTimeout: any
@@ -61,7 +63,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     // Firefox needs OR because readyState never gets above 1.
     const targetClause = supportsHLS() ? readyState > 1 && !isNaN(duration) : readyState > 1 || !isNaN(duration)
     if (targetClause && duration > 0) {
-      onHLSLoad(item, duration)
+      onHLSLoad(index, item, duration)
       pause()
       videoRef.current.autoplay = false
       videoRef.current.currentTime = 0
@@ -135,6 +137,13 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     } catch (e) {
       console.log(e)
     }
+  }
+
+  const getVideo = () => {
+    if (videoRef && videoRef.current) {
+      return videoRef.current
+    }
+    return undefined
   }
 
   return (

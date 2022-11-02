@@ -1,17 +1,11 @@
 import React, { RefObject } from 'react'
 import { Box, Slider, Stack } from '@mui/material'
 import { VODHLSItem } from '../../models/VODHLSItem'
-import VODHLSPlayer from './VODHLSPlayer'
 
 import VODHLSContext from '../../components/VODHLSContext/VODHLSContext'
+import VODHLSPlayer, { VODHLSPlayerRef } from './VODHLSPlayer'
+import VODHLSThumbnail, { VODHLSThumbnailRef } from './VODHLSThumbnail'
 const useVODHLSContext = () => React.useContext(VODHLSContext.Context)
-
-interface VODHLSPlayerRef {
-  play(): any
-  pause(resume: boolean): any
-  seek(to: number, andPlay?: boolean): any
-  destroy(): any
-}
 
 interface VODHLSPlaybackReelProps {
   style: any
@@ -24,6 +18,14 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
   const { vod, setCurrentTime } = useVODHLSContext()
 
   const playerRefs = React.useMemo(
+    () =>
+      Array(list.length)
+        .fill(0)
+        .map((i) => React.createRef()),
+    []
+  )
+
+  const thumbnailRefs = React.useMemo(
     () =>
       Array(list.length)
         .fill(0)
@@ -53,9 +55,17 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
     return formattedArr.join(':')
   }
 
-  const onHLSLoad = (item: VODHLSItem, totalTime: number) => {
+  const onHLSLoad = (index: number, item: VODHLSItem, totalTime: number) => {
     if (totalTime > maxTime) {
       setMaxTime(totalTime)
+    }
+    // Assign and watch thumbnails.
+    const thumbnail = thumbnailRefs.find((ref) =>
+      ((ref as RefObject<VODHLSThumbnailRef>).current as VODHLSThumbnailRef).hasItem(item)
+    )
+    const playerRef = playerRefs[index] as RefObject<VODHLSPlayerRef>
+    if (thumbnail && playerRef) {
+      ;(thumbnail.current as VODHLSThumbnailRef).watch(playerRef.current as VODHLSPlayerRef)
     }
   }
 
@@ -80,9 +90,25 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
             }}
             key={`vod_${index}`}
             ref={playerRefs[index] as RefObject<VODHLSPlayerRef>}
+            index={index}
             item={list[index]}
             onHLSLoad={onHLSLoad}
           ></VODHLSPlayer>
+        ))}
+      </Stack>
+      <Stack direction="row" gap={2}>
+        {new Array(list.length).fill(0).map((inp, index) => (
+          <VODHLSThumbnail
+            sx={{
+              flexGrow: 1,
+              width: '100%',
+              height: '100%',
+              cursor: 'pointer',
+            }}
+            key={`vod_${index}`}
+            ref={thumbnailRefs[index] as RefObject<VODHLSThumbnailRef>}
+            vodHLSItem={list[index]}
+          ></VODHLSThumbnail>
         ))}
       </Stack>
       <Box>
