@@ -243,8 +243,10 @@ const JoinPage = () => {
             </Stack>
           </Stack>
         )}
-
-        {vod.active && <VODHLSPlaybackReel style={{ padding: '100px' }} list={vod.list}></VODHLSPlaybackReel>}
+        {/* TODO: Remove after testing */}
+        {vod.active && !loading && conferenceData && currentSection === Section.Landing && (
+          <VODHLSPlaybackReel style={{ padding: '100px' }} list={vod.list}></VODHLSPlaybackReel>
+        )}
       </Box>
     </Box>
   )

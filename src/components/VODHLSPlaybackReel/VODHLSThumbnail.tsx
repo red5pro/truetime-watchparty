@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import React from 'react'
 import { VODHLSItem } from '../../models/VODHLSItem'
 import { supportsHLS } from '../../utils/hlsUtils'
@@ -87,13 +87,29 @@ const VODHLSThumbnail = React.forwardRef((props: VODHLSThumbnailProps, ref: Reac
 
         context.drawImage(video, sx, sy, swidth, sheight, 0, 0, clientWidth, clientHeight)
       }
-      console.log(`REDRAW:: ${vodHLSItem.name} at ${videoWidth}x${videoHeight}`)
+      // console.log(`REDRAW:: ${vodHLSItem.name} at ${videoWidth}x${videoHeight}`)
     }
   }
 
   return (
-    <Box sx={sx}>
-      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', aspectRatio: '1 / 1' }}></canvas>
+    <Box sx={sx} style={{ position: 'relative' }}>
+      <canvas
+        ref={canvasRef}
+        style={{ position: 'absolute', width: '100%', height: '100%', aspectRatio: '1 / 1' }}
+      ></canvas>
+      <Typography
+        style={{
+          position: 'absolute',
+          bottom: '5px',
+          left: 0,
+          right: '5px',
+          padding: '5px',
+          textAlign: 'right',
+          backdropFilter: 'blur(5px)',
+        }}
+      >
+        {vodHLSItem.name}
+      </Typography>
     </Box>
   )
 })

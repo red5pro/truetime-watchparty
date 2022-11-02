@@ -36,6 +36,20 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
   const [value, setValue] = React.useState<number>(0)
   const [maxTime, setMaxTime] = React.useState<number>(0)
 
+  React.useEffect(() => {
+    let isDead = false
+    const draw = () => {
+      screencast()
+      if (!isDead) {
+        requestAnimationFrame(draw)
+      }
+    }
+    draw()
+    return () => {
+      isDead = true
+    }
+  }, [])
+
   const formatTime = (value: number) => {
     let hrs = 0
     let mins = value === 0 ? 0 : value / 60
@@ -53,6 +67,15 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
     formattedArr.push(mins < 10 ? `0${Math.round(mins)}` : Math.round(mins).toFixed())
     formattedArr.push(secs < 10 ? `0${Math.round(secs)}` : Math.round(secs).toFixed())
     return formattedArr.join(':')
+  }
+
+  const screencast = () => {
+    thumbnailRefs.forEach((ref) => {
+      const tRef = ref as RefObject<VODHLSThumbnailRef>
+      if (tRef && tRef.current) {
+        ;(tRef.current as VODHLSThumbnailRef).redraw()
+      }
+    })
   }
 
   const onHLSLoad = (index: number, item: VODHLSItem, totalTime: number) => {
@@ -79,13 +102,12 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
 
   return (
     <Stack sx={style} direction="column">
-      <Stack direction="row" gap={2}>
+      <Stack direction="row" gap={2} alignItems="center" height="150px">
         {new Array(list.length).fill(0).map((inp, index) => (
           <VODHLSPlayer
             sx={{
               flexGrow: 1,
               width: '100%',
-              height: '100%',
               cursor: 'pointer',
             }}
             key={`vod_${index}`}
@@ -96,7 +118,7 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
           ></VODHLSPlayer>
         ))}
       </Stack>
-      <Stack direction="row" gap={2}>
+      <Stack direction="row" gap={2} height="150px">
         {new Array(list.length).fill(0).map((inp, index) => (
           <VODHLSThumbnail
             sx={{
