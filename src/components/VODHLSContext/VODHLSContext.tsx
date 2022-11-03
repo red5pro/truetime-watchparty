@@ -12,6 +12,8 @@ const vodReducer = (state: any, action: any) => {
       return { ...state, active: action.active }
     case 'SET_LIST':
       return { ...state, list: action.list }
+    case 'SET_PLAYING':
+      return { ...state, isPlaying: action.isPlaying }
     case 'SET_CURRENT_TIME':
       return { ...state, currentTime: action.time }
     case 'SET_SELECTION':
@@ -27,6 +29,7 @@ interface IVODHLSContextProps {
   vod: any
   setCurrentTime(value: number): any
   setSelectedItem(value: VODHLSItem): any
+  setIsPlaying(value: boolean): any
 }
 
 const VODHLSContext = React.createContext<IVODHLSContextProps>({} as IVODHLSContextProps)
@@ -39,6 +42,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
 
   const [vod, dispatch] = useReducer(vodReducer, {
     active: false,
+    isPlaying: false,
     list: [VODHLSItem],
     currentTime: 0,
     selectedItem: undefined,
@@ -85,10 +89,15 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     dispatch({ type: 'SET_SELECTION', item: value })
   }
 
+  const setIsPlaying = (value: boolean) => {
+    dispatch({ type: 'SET_PLAYING', isPlaying: value })
+  }
+
   const exportedValues = {
     vod,
     setCurrentTime,
     setSelectedItem,
+    setIsPlaying,
   }
 
   return <VODHLSContext.Provider value={exportedValues}>{children}</VODHLSContext.Provider>

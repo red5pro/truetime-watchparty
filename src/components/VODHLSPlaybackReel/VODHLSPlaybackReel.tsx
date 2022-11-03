@@ -1,5 +1,7 @@
 import React, { RefObject } from 'react'
-import { Box, Slider, Stack } from '@mui/material'
+import { Box, Slider, Stack, Button } from '@mui/material'
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
+import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline'
 import { VODHLSItem } from '../../models/VODHLSItem'
 
 import useStyles from './VODHLSPlayback.module'
@@ -36,7 +38,7 @@ interface VODHLSPlaybackReelProps {
 const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
   const { style, list, volume } = props
 
-  const { vod, setCurrentTime, setSelectedItem } = useVODHLSContext()
+  const { vod, setCurrentTime, setSelectedItem, setIsPlaying } = useVODHLSContext()
 
   const { classes } = useStyles()
 
@@ -77,6 +79,14 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
     playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).setVolume(volume))
   }, [volume])
 
+  React.useEffect(() => {
+    if (vod.isPlaying) {
+      playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).play())
+    } else {
+      playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).pause(true))
+    }
+  }, [vod.isPlaying])
+
   const screencast = () => {
     thumbnailRefs.forEach((ref) => {
       const tRef = ref as RefObject<VODHLSThumbnailRef>
@@ -87,11 +97,11 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
   }
 
   const onHLSPlay = (index: number, item: VODHLSItem) => {
-    playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).play())
+    setIsPlaying(true)
   }
 
   const onHLSPause = (index: number, item: VODHLSItem, andResume: boolean) => {
-    playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).pause(andResume))
+    setIsPlaying(false)
   }
 
   const onHLSTimeUpdate = (index: number, item: VODHLSItem, time: number) => {
@@ -99,6 +109,10 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
       setValue(time)
       setCurrentTime(time)
     }
+  }
+
+  const onPlayRequest = () => {
+    setIsPlaying(!vod.isPlaying)
   }
 
   const onHLSLoad = (index: number, item: VODHLSItem, totalTime: number) => {
@@ -119,7 +133,9 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
     if (typeof newValue === 'number') {
       setValue(newValue)
       setCurrentTime(newValue)
-      playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(newValue))
+      playerRefs.forEach((ref) =>
+        ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(newValue, vod.isPlaying)
+      )
     }
   }
 
@@ -128,15 +144,11 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
   }
 
   return (
-    <Stack className={classes.container} sx={style} direction="column">
-      <Stack direction="row" gap={2} className={classes.videoStack}>
+    <Box className={classes.container} sx={style}>
+      <Stack className={classes.videoStack}>
         {new Array(list.length).fill(0).map((inp, index) => (
           <VODHLSPlayer
-            sx={{
-              flexGrow: 1,
-              width: '100%',
-              display: vod.selectedItem === list[index] ? 'flex' : 'none',
-            }}
+            sx={{ opacity: vod.selectedItem === list[index] ? '1!important' : '0!important' }}
             key={`vod_${index}`}
             ref={playerRefs[index] as RefObject<VODHLSPlayerRef>}
             index={index}
@@ -149,45 +161,57 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
             onHLSLoad={onHLSLoad}
           ></VODHLSPlayer>
         ))}
+        {!vod.isPlaying && (
+          <Button className={classes.playButton} color="inherit" onClick={onPlayRequest}>
+            <PlayCircleOutlineIcon className={classes.playIcon} />
+          </Button>
+        )}
       </Stack>
-      <Stack direction="row" gap={2} className={classes.thumbnailReel}>
-        {new Array(list.length).fill(0).map((inp, index) => (
-          <VODHLSThumbnail
+      <Stack direction="column" gap={2} className={classes.thumbnailControlsContainer}>
+        <Stack direction="row" gap={2} className={classes.thumbnailReel}>
+          {new Array(list.length).fill(0).map((inp, index) => (
+            <VODHLSThumbnail
+              sx={{
+                flexGrow: 1,
+                width: '100%',
+                height: '100%',
+                cursor: 'pointer',
+              }}
+              key={`thumbnail_${index}`}
+              ref={thumbnailRefs[index] as RefObject<VODHLSThumbnailRef>}
+              vodHLSItem={list[index]}
+              onSelect={onThumbnailSelect}
+            ></VODHLSThumbnail>
+          ))}
+        </Stack>
+        <Stack direction="row" gap={1} className={classes.controls}>
+          <Slider
             sx={{
-              flexGrow: 1,
-              width: '100%',
-              height: '100%',
-              cursor: 'pointer',
+              zIndex: 201,
+              '& input[type="range"]': {
+                WebkitAppearance: 'slider-horizontal',
+              },
             }}
-            key={`thumbnail_${index}`}
-            ref={thumbnailRefs[index] as RefObject<VODHLSThumbnailRef>}
-            vodHLSItem={list[index]}
-            onSelect={onThumbnailSelect}
-          ></VODHLSThumbnail>
-        ))}
+            disabled={maxTime === 0}
+            orientation="horizontal"
+            defaultValue={0}
+            aria-label="Playback Time"
+            valueLabelDisplay="auto"
+            valueLabelFormat={formatTime}
+            min={0}
+            max={maxTime}
+            step={1}
+            value={value}
+            onChange={onSliderChange}
+          />
+          {vod.isPlaying && (
+            <Button className={classes.pauseButton} color="inherit" onClick={onPlayRequest}>
+              <PauseCircleOutlineIcon className={classes.pauseIcon} />
+            </Button>
+          )}
+        </Stack>
       </Stack>
-      <Box className={classes.controls}>
-        <Slider
-          sx={{
-            zIndex: 201,
-            '& input[type="range"]': {
-              WebkitAppearance: 'slider-horizontal',
-            },
-          }}
-          disabled={maxTime === 0}
-          orientation="horizontal"
-          defaultValue={0}
-          aria-label="Playback Time"
-          valueLabelDisplay="auto"
-          valueLabelFormat={formatTime}
-          min={0}
-          max={maxTime}
-          step={1}
-          value={value}
-          onChange={onSliderChange}
-        />
-      </Box>
-    </Stack>
+    </Box>
   )
 }
 

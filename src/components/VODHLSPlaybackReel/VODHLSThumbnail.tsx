@@ -1,6 +1,5 @@
 import { Box, Typography } from '@mui/material'
 import React from 'react'
-import { classnames } from 'tss-react/tools/classnames'
 import { VODHLSItem } from '../../models/VODHLSItem'
 import { supportsHLS } from '../../utils/hlsUtils'
 import { VODHLSPlayerRef } from './VODHLSPlayer'

@@ -6,27 +6,37 @@ const useStyles = makeStyles()((theme: any) => {
       backgroundColor: 'black',
     },
     videoStack: {
+      display: 'flex',
+      justifyContent: 'center',
       alignItems: 'center',
-      width: '100%',
-      height: '100%',
+      width: '100wh',
+      height: '100vh',
       backgroundColor: 'black',
     },
-    thumbnailReel: {
+    thumbnailControlsContainer: {
       position: 'absolute',
       left: '60px',
       bottom: '60px',
       right: '60px',
+    },
+    thumbnailReel: {
       height: '120px',
       justifyContent: 'center',
       zIndex: 200,
     },
     controls: {
+      height: '70px',
+      alignItems: 'center',
       padding: '0 60px',
+      filter: 'drop-shadow(0.3rem 0.3rem 0.3rem #000)',
+      zIndex: 201,
     },
     playerContainer: {
-      position: 'relative',
       width: '100%',
       height: '100%',
+      position: 'absolute',
+      flexGrow: 1,
+      zIndex: 1,
     },
     player: {
       width: 'inherit',
@@ -37,11 +47,17 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'absolute',
       width: '200px',
       height: '200px',
+      zIndex: 2,
     },
     playIcon: {
       width: '100%',
       height: '100%',
       filter: 'drop-shadow(0.3rem 0.3rem 0.3rem #000)',
+    },
+    pauseButton: {},
+    pauseIcon: {
+      width: '40px',
+      height: '40px',
     },
     thumbnailContainer: {
       position: 'relative',

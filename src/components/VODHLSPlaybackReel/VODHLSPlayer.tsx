@@ -1,7 +1,6 @@
 import React from 'react'
 import Hls from 'hls.js'
-import { Box, Button } from '@mui/material'
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
+import { Box } from '@mui/material'
 import { VODHLSItem } from '../../models/VODHLSItem'
 import { supportsHLS } from '../../utils/hlsUtils'
 import useStyles from './VODHLSPlayback.module'
@@ -182,23 +181,11 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     onTimeUpdate(index, item, currentTime)
   }
 
-  const onPlayRequest = () => {
-    if (isPlaying) {
-      onPause(index, item, false)
-    } else {
-      onPlay(index, item)
-    }
-    console.log('PLAY', item.name)
-  }
-
   return (
-    <Box sx={sx} className={classes.playerContainer} display="flex" justifyContent="center" alignItems="center">
+    <Box sx={sx} className={classes.playerContainer}>
       <video ref={videoRef} className={classes.player} muted={muted} playsInline={true} loop={true}>
         {requiresSource && <source src={item.url}></source>}
       </video>
-      <Button className={classes.playButton} color="inherit" onClick={onPlayRequest}>
-        <PlayCircleOutlineIcon className={classes.playIcon} />
-      </Button>
     </Box>
   )
 })
