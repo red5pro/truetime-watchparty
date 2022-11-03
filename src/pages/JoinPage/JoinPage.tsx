@@ -248,6 +248,7 @@ const JoinPage = () => {
           <VODHLSPlaybackReel
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
             list={vod.list}
+            volume={1}
           ></VODHLSPlaybackReel>
         )}
       </Box>

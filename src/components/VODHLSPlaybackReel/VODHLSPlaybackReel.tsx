@@ -8,13 +8,33 @@ import VODHLSPlayer, { VODHLSPlayerRef } from './VODHLSPlayer'
 import VODHLSThumbnail, { VODHLSThumbnailRef } from './VODHLSThumbnail'
 const useVODHLSContext = () => React.useContext(VODHLSContext.Context)
 
+const formatTime = (value: number) => {
+  let hrs = 0
+  let mins = value === 0 ? 0 : value / 60
+  let secs = 0
+  if (mins >= 60) {
+    hrs = mins / 60
+    mins = mins % 60
+  }
+  secs = value === 0 ? 0 : value % 60
+
+  const formattedArr = []
+  if (hrs > 0) {
+    hrs < 10 ? formattedArr.push(`0${Math.round(hrs)}`) : formattedArr.push(Math.round(hrs).toFixed())
+  }
+  formattedArr.push(mins < 10 ? `0${Math.round(mins)}` : Math.round(mins).toFixed())
+  formattedArr.push(secs < 10 ? `0${Math.round(secs)}` : Math.round(secs).toFixed())
+  return formattedArr.join(':')
+}
+
 interface VODHLSPlaybackReelProps {
   style: any
   list: [VODHLSItem]
+  volume: number
 }
 
 const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
-  const { style, list } = props
+  const { style, list, volume } = props
 
   const { vod, setCurrentTime, setSelectedItem } = useVODHLSContext()
 
@@ -54,27 +74,8 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
   }, [])
 
   React.useEffect(() => {
-    console.log('SELECTION', vod.selectedItem)
-  }, [vod.selectedItem])
-
-  const formatTime = (value: number) => {
-    let hrs = 0
-    let mins = value === 0 ? 0 : value / 60
-    let secs = 0
-    if (mins >= 60) {
-      hrs = mins / 60
-      mins = mins % 60
-    }
-    secs = value === 0 ? 0 : value % 60
-
-    const formattedArr = []
-    if (hrs > 0) {
-      hrs < 10 ? formattedArr.push(`0${Math.round(hrs)}`) : formattedArr.push(Math.round(hrs).toFixed())
-    }
-    formattedArr.push(mins < 10 ? `0${Math.round(mins)}` : Math.round(mins).toFixed())
-    formattedArr.push(secs < 10 ? `0${Math.round(secs)}` : Math.round(secs).toFixed())
-    return formattedArr.join(':')
-  }
+    playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).setVolume(volume))
+  }, [volume])
 
   const screencast = () => {
     thumbnailRefs.forEach((ref) => {
@@ -91,6 +92,13 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
 
   const onHLSPause = (index: number, item: VODHLSItem, andResume: boolean) => {
     playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).pause(andResume))
+  }
+
+  const onHLSTimeUpdate = (index: number, item: VODHLSItem, time: number) => {
+    if (vod.selectedItem.filename === item.filename) {
+      setValue(time)
+      setCurrentTime(time)
+    }
   }
 
   const onHLSLoad = (index: number, item: VODHLSItem, totalTime: number) => {
@@ -133,9 +141,11 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
             ref={playerRefs[index] as RefObject<VODHLSPlayerRef>}
             index={index}
             item={list[index]}
+            volume={volume || 1}
             muted={!(vod.selectedItem === list[index])}
             onPlay={onHLSPlay}
             onPause={onHLSPause}
+            onTimeUpdate={onHLSTimeUpdate}
             onHLSLoad={onHLSLoad}
           ></VODHLSPlayer>
         ))}
@@ -149,7 +159,7 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
               height: '100%',
               cursor: 'pointer',
             }}
-            key={`vod_${index}`}
+            key={`thumbnail_${index}`}
             ref={thumbnailRefs[index] as RefObject<VODHLSThumbnailRef>}
             vodHLSItem={list[index]}
             onSelect={onThumbnailSelect}

@@ -11,23 +11,27 @@ export interface VODHLSPlayerRef {
   pause(resume: boolean): any
   seek(to: number, andPlay?: boolean): any
   destroy(): any
+  setVolume(value: number): any
   getVideo(): HTMLVideoElement
+  hasItem(item: VODHLSItem): boolean
 }
 
 interface VODHLSPlayerProps {
   sx: any
   index: number
   item: VODHLSItem
+  volume: number
   muted: boolean
   onPlay(index: number, item: VODHLSItem): any
   onPause(index: number, item: VODHLSItem, andResume: boolean): any
+  onTimeUpdate(index: number, item: VODHLSItem, time: number): any
   onHLSLoad(index: number, item: VODHLSItem, totalTime: number): any
 }
 
 const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<VODHLSPlayerRef>) => {
-  const { sx, index, item, muted, onPlay, onPause, onHLSLoad } = props
+  const { sx, index, item, volume, muted, onPlay, onPause, onTimeUpdate, onHLSLoad } = props
 
-  React.useImperativeHandle(ref, () => ({ play, pause, seek, destroy, getVideo }))
+  React.useImperativeHandle(ref, () => ({ play, pause, seek, destroy, setVolume, getVideo, hasItem }))
 
   const { classes } = useStyles()
 
@@ -40,6 +44,13 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   const [requiresSource, setRequiresSource] = React.useState<boolean>(false)
 
   const [control, setControl] = React.useState<any>()
+
+  React.useEffect(() => {
+    setVolume(volume)
+    if (videoRef && videoRef.current) {
+      videoRef.current.ontimeupdate = onVideoTimeUpdate
+    }
+  }, [])
 
   React.useEffect(() => {
     if (!supportsHLS() && videoRef.current) {
@@ -146,11 +157,29 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     }
   }
 
+  const setVolume = (value: number) => {
+    if (videoRef && videoRef.current) {
+      ;(videoRef.current as HTMLVideoElement).volume = value
+    }
+  }
+
   const getVideo = () => {
     if (videoRef && videoRef.current) {
       return videoRef.current
     }
     return undefined
+  }
+
+  const hasItem = (value: VODHLSItem) => {
+    // TODO: Maybe shallow object compare, instead?
+    return item.filename === value.filename
+  }
+
+  const onVideoTimeUpdate = (event: any) => {
+    const {
+      currentTarget: { currentTime },
+    } = event
+    onTimeUpdate(index, item, currentTime)
   }
 
   const onPlayRequest = () => {
