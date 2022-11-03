@@ -38,6 +38,7 @@ import { FatalError } from '../../models/FatalError'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
 import VODHLSContext from '../VODHLSContext/VODHLSContext'
+import VODHLSPlaybackReel, { VODHLSPlaybackReelRef } from '../VODHLSPlaybackReel/VODHLSPlaybackReel'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -69,6 +70,7 @@ interface PublisherRef {
 
 const MainStage = () => {
   const mediaContext = useMediaContext()
+  // Warning! This could be null when not wrapped in VOD. Available for routes with /join/vod/<token>.
   const { vod } = useVODHLSContext()
   const { error, loading, data, join, retry } = useWatchContext()
   const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
@@ -79,6 +81,7 @@ const MainStage = () => {
 
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
+  const vodVideoRef = React.useRef<VODHLSPlaybackReelRef>(null)
   const mainVideoRef = React.useRef<SubscriberRef>(null)
   const publisherRef = React.useRef<PublisherRef>(null)
   const subscriberListRef = React.useRef<any>(null)
@@ -332,6 +335,9 @@ const MainStage = () => {
     if (mainVideoRef && mainVideoRef.current) {
       mainVideoRef.current.setVolume(value / 100)
     }
+    if (vodVideoRef && vodVideoRef.current) {
+      vodVideoRef.current.setVolume(value / 100)
+    }
   }
 
   const onPublisherCameraToggle = (isOn: boolean) => {
@@ -425,7 +431,7 @@ const MainStage = () => {
   return (
     <Box className={classes.rootContainer}>
       {/* Main Video */}
-      {mainStreamGuid && (
+      {!vod && mainStreamGuid && (
         <Box sx={layout.style.mainVideoContainer}>
           <Subscriber
             ref={mainVideoRef}
@@ -439,6 +445,13 @@ const MainStage = () => {
             showControls={false}
           />
         </Box>
+      )}
+      {vod && vod.active && (
+        <VODHLSPlaybackReel
+          ref={vodVideoRef}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+          list={vod.list}
+        ></VODHLSPlaybackReel>
       )}
       <Box className={classes.content}>
         {/* Add / Share Modal */}

@@ -3,6 +3,7 @@ import { makeStyles } from 'tss-react/mui'
 const useStyles = makeStyles()((theme: any) => {
   return {
     container: {
+      zIndex: 0,
       backgroundColor: 'black',
     },
     videoStack: {
@@ -27,7 +28,7 @@ const useStyles = makeStyles()((theme: any) => {
     controls: {
       height: '70px',
       alignItems: 'center',
-      padding: '0 60px',
+      padding: '0 calc(100% / 4)',
       filter: 'drop-shadow(0.3rem 0.3rem 0.3rem #000)',
       zIndex: 201,
     },
@@ -41,7 +42,7 @@ const useStyles = makeStyles()((theme: any) => {
     player: {
       width: 'inherit',
       height: 'inherit',
-      objectFit: 'contain',
+      objectFit: 'cover',
     },
     playButton: {
       position: 'absolute',

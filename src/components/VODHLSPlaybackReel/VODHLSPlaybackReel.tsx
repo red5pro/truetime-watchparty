@@ -29,18 +29,24 @@ const formatTime = (value: number) => {
   return formattedArr.join(':')
 }
 
+export interface VODHLSPlaybackReelRef {
+  setVolume(value: number): any
+}
+
 interface VODHLSPlaybackReelProps {
   style: any
   list: [VODHLSItem]
-  volume: number
 }
 
-const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
-  const { style, list, volume } = props
+const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref: React.Ref<VODHLSPlaybackReelRef>) => {
+  const { style, list } = props
+
+  React.useImperativeHandle(ref, () => ({ setVolume }))
 
   const { vod, setCurrentTime, setSelectedItem, setIsPlaying } = useVODHLSContext()
 
   const { classes } = useStyles()
+  const [volume, setVideoVolume] = React.useState<number>(1)
 
   const playerRefs = React.useMemo(
     () =>
@@ -94,6 +100,10 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
         ;(tRef.current as VODHLSThumbnailRef).redraw()
       }
     })
+  }
+
+  const setVolume = (value: number) => {
+    setVideoVolume(value)
   }
 
   const onHLSPlay = (index: number, item: VODHLSItem) => {
@@ -167,7 +177,7 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
           </Button>
         )}
       </Stack>
-      <Stack direction="column" gap={2} className={classes.thumbnailControlsContainer}>
+      <Stack direction="column" gap={0} className={classes.thumbnailControlsContainer}>
         <Stack direction="row" gap={2} className={classes.thumbnailReel}>
           {new Array(list.length).fill(0).map((inp, index) => (
             <VODHLSThumbnail
@@ -213,6 +223,7 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
       </Stack>
     </Box>
   )
-}
+})
 
+VODHLSPlaybackReel.displayName = 'VODHLSPlaybackReel'
 export default VODHLSPlaybackReel
