@@ -1,8 +1,10 @@
 import { Box, Typography } from '@mui/material'
 import React from 'react'
+import { classnames } from 'tss-react/tools/classnames'
 import { VODHLSItem } from '../../models/VODHLSItem'
 import { supportsHLS } from '../../utils/hlsUtils'
 import { VODHLSPlayerRef } from './VODHLSPlayer'
+import useStyles from './VODHLSPlayback.module'
 
 export interface VODHLSThumbnailRef {
   hasItem(item: VODHLSItem): boolean
@@ -19,6 +21,8 @@ interface VODHLSThumbnailProps {
 const VODHLSThumbnail = React.forwardRef((props: VODHLSThumbnailProps, ref: React.Ref<VODHLSThumbnailRef>) => {
   const { sx, vodHLSItem, onSelect } = props
 
+  const { classes } = useStyles()
+
   const canvasRef = React.useRef(null)
 
   const [target, setTarget] = React.useState<VODHLSPlayerRef>()
@@ -33,7 +37,7 @@ const VODHLSThumbnail = React.forwardRef((props: VODHLSThumbnailProps, ref: Reac
       const ctx = canvas.getContext('2d')
       if (ctx) {
         setContext(ctx)
-        ctx.fillStyle = '#FF0000'
+        ctx.fillStyle = '#000000'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
       }
     }
@@ -93,24 +97,9 @@ const VODHLSThumbnail = React.forwardRef((props: VODHLSThumbnailProps, ref: Reac
   }
 
   return (
-    <Box sx={sx} style={{ position: 'relative' }} onClick={() => onSelect(vodHLSItem)}>
-      <canvas
-        ref={canvasRef}
-        style={{ position: 'absolute', width: '100%', height: '100%', aspectRatio: '1 / 1' }}
-      ></canvas>
-      <Typography
-        style={{
-          position: 'absolute',
-          bottom: '5px',
-          left: 0,
-          right: '5px',
-          padding: '5px',
-          textAlign: 'right',
-          backdropFilter: 'blur(5px)',
-        }}
-      >
-        {vodHLSItem.name}
-      </Typography>
+    <Box sx={sx} className={classes.thumbnailContainer} onClick={() => onSelect(vodHLSItem)}>
+      <canvas ref={canvasRef} className={classes.thumbnail}></canvas>
+      <Typography className={classes.thumbnailLabel}>{vodHLSItem.name}</Typography>
     </Box>
   )
 })

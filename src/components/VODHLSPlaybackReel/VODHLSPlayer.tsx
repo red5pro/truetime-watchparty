@@ -4,6 +4,7 @@ import { Box, Button } from '@mui/material'
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 import { VODHLSItem } from '../../models/VODHLSItem'
 import { supportsHLS } from '../../utils/hlsUtils'
+import useStyles from './VODHLSPlayback.module'
 
 export interface VODHLSPlayerRef {
   play(): any
@@ -27,6 +28,8 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   const { sx, index, item, muted, onPlay, onPause, onHLSLoad } = props
 
   React.useImperativeHandle(ref, () => ({ play, pause, seek, destroy, getVideo }))
+
+  const { classes } = useStyles()
 
   const videoRef: any = React.useRef(null)
   let playTimeout: any
@@ -160,14 +163,12 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   }
 
   return (
-    <Box sx={sx} style={{ position: 'relative' }} display="flex" justifyContent="center" alignItems="center">
-      <video ref={videoRef} style={{ width: 'inherit', height: 'inherit' }} muted={muted}>
+    <Box sx={sx} className={classes.playerContainer} display="flex" justifyContent="center" alignItems="center">
+      <video ref={videoRef} className={classes.player} muted={muted} playsInline={true} loop={true}>
         {requiresSource && <source src={item.url}></source>}
       </video>
-      <Button style={{ position: 'absolute', width: '200px', height: '200px' }} color="inherit" onClick={onPlayRequest}>
-        <PlayCircleOutlineIcon
-          style={{ width: '100%', height: '100%', filter: 'drop-shadow(0.3rem 0.3rem 0.3rem #000)' }}
-        />
+      <Button className={classes.playButton} color="inherit" onClick={onPlayRequest}>
+        <PlayCircleOutlineIcon className={classes.playIcon} />
       </Button>
     </Box>
   )

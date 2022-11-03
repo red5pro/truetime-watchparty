@@ -2,6 +2,7 @@ import React, { RefObject } from 'react'
 import { Box, Slider, Stack } from '@mui/material'
 import { VODHLSItem } from '../../models/VODHLSItem'
 
+import useStyles from './VODHLSPlayback.module'
 import VODHLSContext from '../../components/VODHLSContext/VODHLSContext'
 import VODHLSPlayer, { VODHLSPlayerRef } from './VODHLSPlayer'
 import VODHLSThumbnail, { VODHLSThumbnailRef } from './VODHLSThumbnail'
@@ -16,6 +17,8 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
   const { style, list } = props
 
   const { vod, setCurrentTime, setSelectedItem } = useVODHLSContext()
+
+  const { classes } = useStyles()
 
   const playerRefs = React.useMemo(
     () =>
@@ -117,8 +120,8 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
   }
 
   return (
-    <Stack sx={style} direction="column">
-      <Stack direction="row" gap={2} alignItems="center" height="150px">
+    <Stack className={classes.container} sx={style} direction="column">
+      <Stack direction="row" gap={2} className={classes.videoStack}>
         {new Array(list.length).fill(0).map((inp, index) => (
           <VODHLSPlayer
             sx={{
@@ -137,7 +140,7 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
           ></VODHLSPlayer>
         ))}
       </Stack>
-      <Stack direction="row" gap={2} height="150px">
+      <Stack direction="row" gap={2} className={classes.thumbnailReel}>
         {new Array(list.length).fill(0).map((inp, index) => (
           <VODHLSThumbnail
             sx={{
@@ -153,7 +156,7 @@ const VODHLSPlaybackReel = (props: VODHLSPlaybackReelProps) => {
           ></VODHLSThumbnail>
         ))}
       </Stack>
-      <Box>
+      <Box className={classes.controls}>
         <Slider
           sx={{
             zIndex: 201,

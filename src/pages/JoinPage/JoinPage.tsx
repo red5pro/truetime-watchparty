@@ -245,7 +245,10 @@ const JoinPage = () => {
         )}
         {/* TODO: Remove after testing */}
         {vod.active && !loading && conferenceData && currentSection === Section.Landing && (
-          <VODHLSPlaybackReel style={{ padding: '100px' }} list={vod.list}></VODHLSPlaybackReel>
+          <VODHLSPlaybackReel
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            list={vod.list}
+          ></VODHLSPlaybackReel>
         )}
       </Box>
     </Box>
