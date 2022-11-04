@@ -14,7 +14,7 @@ import { FatalError } from '../../models/FatalError'
 import ErrorModal from '../../components/Modal/ErrorModal'
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
 import { Participant } from '../../models/Participant'
-import Publisher from '../../components/Publisher/Publisher'
+import Publisher, { PublisherRef } from '../../components/Publisher/Publisher'
 import MainStageSubscriber from '../../components/MainStageSubscriber/MainStageSubscriber'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
@@ -26,12 +26,6 @@ const vipReducer = (state: any, action: any) => {
     case 'UPDATE':
       return { ...state, token: action.token, email: action.email, password: action.password }
   }
-}
-
-interface PublisherRef {
-  shutdown(): any
-  toggleCamera(on: boolean): any
-  toggleMicrophone(on: boolean): any
 }
 
 const Page = () => {

@@ -22,10 +22,11 @@ const activateMedia = (sender: RTCRtpSender, active: boolean) => {
   }
 }
 
-interface PublisherRef {
+export interface PublisherRef {
   shutdown(): any
   toggleCamera(on: boolean): any
   toggleMicrophone(on: boolean): any
+  send(type: string, message: any): any
 }
 
 interface PublisherProps {
@@ -43,7 +44,7 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
   const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt, onFail } = props
   const { classes } = useStyles()
 
-  React.useImperativeHandle(ref, () => ({ shutdown, toggleCamera, toggleMicrophone }))
+  React.useImperativeHandle(ref, () => ({ shutdown, toggleCamera, toggleMicrophone, send }))
 
   const [elementId, setElementId] = React.useState<string>('')
   const [context, setContext] = React.useState<string>('')
@@ -193,6 +194,12 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
       }
     }
     setMicOn(on)
+  }
+
+  const send = (type: string, message: any) => {
+    if (pubRef && pubRef.current) {
+      ;(pubRef.current as any).send(type, message)
+    }
   }
 
   return (

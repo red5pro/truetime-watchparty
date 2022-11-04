@@ -9,7 +9,7 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import WatchpartyParticipants from '../WatchpartyParticipants/WatchpartyParticipants'
 import { ConnectionRequest } from '../../../models/ConferenceStatusEvent'
 import WatchContext from '../../WatchContext/WatchContext'
-import Publisher from '../../Publisher/Publisher'
+import Publisher, { PublisherRef } from '../../Publisher/Publisher'
 import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../../settings/variables'
 import { FatalError } from '../../../models/FatalError'
 import ErrorModal from '../../Modal/ErrorModal'
@@ -28,12 +28,6 @@ const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
 const VIDEO_VOLUME = 10
-
-interface PublisherRef {
-  shutdown(): any
-  toggleCamera(on: boolean): any
-  toggleMicrophone(on: boolean): any
-}
 
 interface IVipSeeParticipantsProps {
   currentEpisode?: Episode

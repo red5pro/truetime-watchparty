@@ -17,7 +17,7 @@ import JoinContext from '../JoinContext/JoinContext'
 import WatchContext from '../WatchContext/WatchContext'
 
 import styles from './MainStageLayout'
-import Publisher from '../Publisher/Publisher'
+import Publisher, { PublisherRef } from '../Publisher/Publisher'
 import { Participant } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 import ShareLinkModal from '../Modal/ShareLinkModal'
@@ -62,16 +62,11 @@ interface SubscriberRef {
   setVolume(value: number): any
 }
 
-interface PublisherRef {
-  shutdown(): any
-  toggleCamera(on: boolean): any
-  toggleMicrophone(on: boolean): any
-}
-
 const MainStage = () => {
   const mediaContext = useMediaContext()
   // Warning! This could be null when not wrapped in VOD. Available for routes with /join/vod/<token>.
-  const { vod } = useVODHLSContext()
+  const { vod, setDrivenSeekTime, setSelectedItem, setIsPlaying, setUserDriver } = useVODHLSContext()
+
   const { error, loading, data, join, retry } = useWatchContext()
   const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
 
@@ -255,17 +250,15 @@ const MainStage = () => {
     }
   }, [data.list, layout, viewportHeight, relayout])
 
-  React.useEffect(() => {
-    if (vod) {
-      const { active } = vod
-      console.log('IS VOD?', active)
-    }
-  }, [vod])
-
   const onPublisherBroadcast = () => {
     const streamGuid = getStreamGuid()
     const { url, request } = getSocketUrl(joinToken, nickname, streamGuid)
     join(url, request)
+
+    // Setup Driver for VOD sync.
+    if (setUserDriver && publisherRef && publisherRef.current) {
+      setUserDriver(publisherRef.current)
+    }
   }
 
   const onPublisherBroadcastInterrupt = () => {
@@ -428,6 +421,28 @@ const MainStage = () => {
     }
   }
 
+  const onSubscribeInvoke = (name: string, message: any) => {
+    if (name === VODHLSContext.SyncInvokeEventName) {
+      let msg = message
+      if (typeof message === 'string') {
+        msg = JSON.parse(message)
+      }
+      const { key, value } = msg
+      switch (key) {
+        case VODHLSContext.SyncInvokeKeys.TIME:
+          setDrivenSeekTime(value)
+          return
+        case VODHLSContext.SyncInvokeKeys.PLAY:
+          setIsPlaying(value, false)
+          return
+        case VODHLSContext.SyncInvokeKeys.SELECT:
+          setSelectedItem(JSON.parse(value), false)
+          return
+      }
+      console.log('INVOKE RECV', name, msg)
+    }
+  }
+
   return (
     <Box className={classes.rootContainer}>
       {/* Main Video */}
@@ -529,6 +544,7 @@ const MainStage = () => {
                   useStreamManager={USE_STREAM_MANAGER}
                   menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
                   onSubscribeStart={onRelayout}
+                  onSubscribeInvoke={onSubscribeInvoke}
                 />
               )
             })}

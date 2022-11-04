@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { RTCSubscriber } from 'red5pro-webrtc-sdk'
+import { RTCSubscriber, SubscriberEventTypes } from 'red5pro-webrtc-sdk'
 import VideoElement from '../VideoElement/VideoElement'
 import Loading from '../Common/Loading/Loading'
 import { Box, Stack } from '@mui/material'
@@ -31,6 +31,7 @@ interface ISubscriberProps {
   isAudioOff?: boolean
   isVideoOff?: boolean
   onSubscribeStart?(): any
+  onSubscribeInvoke?(name: string, message: any): any
 }
 
 const DELAY = 2000
@@ -49,6 +50,7 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
     isAudioOff, // from organizer mute
     isVideoOff, // from organizer mute
     onSubscribeStart,
+    onSubscribeInvoke,
   } = props
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
@@ -144,6 +146,13 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
     } else if (type === 'Subscribe.VideoDimensions.Change') {
       if (onSubscribeStart) {
         onSubscribeStart()
+      }
+    } else if (type === SubscriberEventTypes.SUBSCRIBE_SEND_INVOKE) {
+      const { data } = event
+      const message = data.data
+      const name = data.methodName || data.method
+      if (onSubscribeInvoke) {
+        onSubscribeInvoke(name, message)
       }
     }
   }

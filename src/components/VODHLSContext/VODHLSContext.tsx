@@ -1,10 +1,16 @@
+import { DriveEtaRounded } from '@mui/icons-material'
 import React, { useReducer } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
-import { number } from 'yup/lib/locale'
 import { VODHLSItem } from '../../models/VODHLSItem'
 import { VOD_CONTEXT, VOD_HOST } from '../../settings/variables'
 
 const vodReg = /^\/join\/vod/
+const INVOKE_EVENT_NAME = 'VOD_SYNC'
+enum InvokeKeys {
+  PLAY = 'play',
+  TIME = 'time',
+  SELECT = 'select',
+}
 
 const vodReducer = (state: any, action: any) => {
   switch (action.type) {
@@ -12,10 +18,14 @@ const vodReducer = (state: any, action: any) => {
       return { ...state, active: action.active }
     case 'SET_LIST':
       return { ...state, list: action.list }
+    case 'SET_DRIVER':
+      return { ...state, driver: action.driver }
     case 'SET_PLAYING':
       return { ...state, isPlaying: action.isPlaying }
     case 'SET_CURRENT_TIME':
       return { ...state, currentTime: action.time }
+    case 'SET_SEEK_TIME':
+      return { ...state, seekTime: action.time }
     case 'SET_SELECTION':
       return { ...state, selectedItem: action.item }
   }
@@ -27,9 +37,14 @@ interface VODHLSContextProps {
 
 interface IVODHLSContextProps {
   vod: any
-  setCurrentTime(value: number): any
-  setSelectedItem(value: VODHLSItem): any
-  setIsPlaying(value: boolean): any
+  setUserDriver(value: any): any
+  setCurrentTime(value: number, userDriven?: boolean): any
+  setSelectedItem(value: VODHLSItem, userDriven?: boolean): any
+  setIsPlaying(value: boolean, userDriven?: boolean): any
+  // SeekTime is user driven for listening participants.
+  // We don't rely on setting currentTime as that will be dispatched every millisecond
+  // And cause choppy playback.
+  setDrivenSeekTime(value: number): any
 }
 
 const VODHLSContext = React.createContext<IVODHLSContextProps>({} as IVODHLSContextProps)
@@ -46,6 +61,10 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     list: [VODHLSItem],
     currentTime: 0,
     selectedItem: undefined,
+    // Invoke from drive for currentTime on other participants.
+    seekTime: 0,
+    // Use to send out messages to other participants.
+    driver: undefined,
   })
 
   React.useEffect(() => {
@@ -81,16 +100,44 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     }
   }, [searchParams])
 
-  const setCurrentTime = (value: number) => {
+  const setDrivenSeekTime = (value: number) => {
+    // TODO: debounce this?...
+    dispatch({ type: 'SET_SEEK_TIME', time: value })
+  }
+
+  const setCurrentTime = (value: number, userDriven = false) => {
     dispatch({ type: 'SET_CURRENT_TIME', time: value })
+    // TODO: debounce this...
+    if (userDriven && vod.driver) {
+      ;(vod.driver as any).send(INVOKE_EVENT_NAME, {
+        key: InvokeKeys.TIME,
+        value,
+      })
+    }
   }
 
-  const setSelectedItem = (value: VODHLSItem) => {
+  const setSelectedItem = (value: VODHLSItem, userDriven = false) => {
     dispatch({ type: 'SET_SELECTION', item: value })
+    if (userDriven && vod.driver) {
+      ;(vod.driver as any).send(INVOKE_EVENT_NAME, {
+        key: InvokeKeys.SELECT,
+        value: JSON.stringify(value),
+      })
+    }
   }
 
-  const setIsPlaying = (value: boolean) => {
+  const setIsPlaying = (value: boolean, userDriven = false) => {
     dispatch({ type: 'SET_PLAYING', isPlaying: value })
+    if (userDriven && vod.driver) {
+      ;(vod.driver as any).send(INVOKE_EVENT_NAME, {
+        key: InvokeKeys.PLAY,
+        value,
+      })
+    }
+  }
+
+  const setUserDriver = (value: any) => {
+    dispatch({ type: 'SET_DRIVER', driver: value })
   }
 
   const exportedValues = {
@@ -98,6 +145,8 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     setCurrentTime,
     setSelectedItem,
     setIsPlaying,
+    setDrivenSeekTime,
+    setUserDriver,
   }
 
   return <VODHLSContext.Provider value={exportedValues}>{children}</VODHLSContext.Provider>
@@ -107,4 +156,6 @@ export default {
   Context: VODHLSContext,
   Consumer: VODHLSContext.Consumer,
   Provider: VODHLSProvider,
+  SyncInvokeEventName: INVOKE_EVENT_NAME,
+  SyncInvokeKeys: InvokeKeys,
 }

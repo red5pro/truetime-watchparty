@@ -64,7 +64,6 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
     []
   )
 
-  const [value, setValue] = React.useState<number>(0)
   const [maxTime, setMaxTime] = React.useState<number>(0)
 
   React.useEffect(() => {
@@ -84,6 +83,13 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   React.useEffect(() => {
     playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).setVolume(volume))
   }, [volume])
+
+  React.useEffect(() => {
+    playerRefs.forEach((ref) => {
+      console.log(vod.seekTime, ref)
+      ;((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(vod.seekTime, vod.isPlaying)
+    })
+  }, [vod.seekTime])
 
   React.useEffect(() => {
     if (vod.isPlaying) {
@@ -116,13 +122,12 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   const onHLSTimeUpdate = (index: number, item: VODHLSItem, time: number) => {
     if (vod.selectedItem.filename === item.filename) {
-      setValue(time)
       setCurrentTime(time)
     }
   }
 
   const onPlayRequest = () => {
-    setIsPlaying(!vod.isPlaying)
+    setIsPlaying(!vod.isPlaying, true)
   }
 
   const onHLSLoad = (index: number, item: VODHLSItem, totalTime: number) => {
@@ -141,8 +146,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   const onSliderChange = (event: Event, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
-      setValue(newValue)
-      setCurrentTime(newValue)
+      setCurrentTime(newValue, true)
       playerRefs.forEach((ref) =>
         ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(newValue, vod.isPlaying)
       )
@@ -150,7 +154,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   }
 
   const onThumbnailSelect = (item: VODHLSItem) => {
-    setSelectedItem(item)
+    setSelectedItem(item, true)
   }
 
   return (
@@ -158,7 +162,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
       <Stack className={classes.videoStack}>
         {new Array(list.length).fill(0).map((inp, index) => (
           <VODHLSPlayer
-            sx={{ opacity: vod.selectedItem === list[index] ? '1!important' : '0!important' }}
+            sx={{ opacity: vod.selectedItem.filename === list[index].filename ? '1!important' : '0!important' }}
             key={`vod_${index}`}
             ref={playerRefs[index] as RefObject<VODHLSPlayerRef>}
             index={index}
@@ -211,7 +215,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
             min={0}
             max={maxTime}
             step={1}
-            value={value}
+            value={vod.currentTime}
             onChange={onSliderChange}
           />
           {vod.isPlaying && (
