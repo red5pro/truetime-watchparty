@@ -93,11 +93,11 @@ export const mapLiveStatsData = (stats: StatsByConference[]) => {
     },
     {
       id: 'StartTime',
-      label: 'Start Time',
+      label: 'Start Date/Time',
     },
     {
       id: 'EndTime',
-      label: 'End Time',
+      label: 'End Date/Time',
     },
   ]
 
@@ -126,7 +126,7 @@ export const mapPastEventsStatsData = (stats: StatsByConference[]) => {
     {
       id: 'PartyName',
       label: 'Party Name',
-      minWidth: 100,
+      // minWidth: 100,
     },
     {
       id: 'TotalViewers',
@@ -142,11 +142,11 @@ export const mapPastEventsStatsData = (stats: StatsByConference[]) => {
     },
     {
       id: 'StartTime',
-      label: 'Start Time',
+      label: 'Start Date/Time',
     },
     {
       id: 'EndTime',
-      label: 'End Time',
+      label: 'End Date/Time',
     },
     {
       id: 'Duration',
@@ -242,11 +242,11 @@ export const mapSeriesStatsData = (data: Serie[]) => {
     },
     {
       id: 'StartDate',
-      label: 'Start Date',
+      label: 'Start Date/Time',
     },
     {
       id: 'EndDate',
-      label: 'End Date',
+      label: 'End Date/Time',
     },
     {
       id: 'TotalViewers',
