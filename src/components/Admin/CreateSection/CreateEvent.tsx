@@ -22,7 +22,7 @@ const getInitialValues = () => {
     displayName: '',
     startDatetime: todayDate,
     endDatetime: todayDate,
-    serie: -1,
+    serie: '',
   }
 
   return initialValues
@@ -174,7 +174,7 @@ const CreateEvent = (props: ICreateEventProps) => {
                       placeholder="Select a Serie"
                       onChange={setSerieId}
                       className={`${classes.selectField} ${
-                        errors.country && touched.country ? classes.errorTextField : ''
+                        errors.serie && touched.serie ? classes.errorTextField : ''
                       }`}
                       MenuProps={{
                         style: {
@@ -192,8 +192,8 @@ const CreateEvent = (props: ICreateEventProps) => {
                         )
                       })}
                     </Select>
-                    {errors.country && touched.country && (
-                      <Typography className={classes.errorValidation}>{errors.country}</Typography>
+                    {errors.serie && touched.serie && (
+                      <Typography className={classes.errorValidation}>{errors.serie}</Typography>
                     )}
                   </Box>
                   <Box display="flex" justifyContent="space-around">
