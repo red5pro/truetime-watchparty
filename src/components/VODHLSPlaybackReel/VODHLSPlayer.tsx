@@ -76,15 +76,19 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
 
   const checkReadyState = (timeout?: any | undefined) => {
     if (timeout) clearTimeout(timeout)
-    const { readyState, duration } = videoRef.current
-    // Firefox needs OR because readyState never gets above 1.
-    const targetClause = supportsHLS() ? readyState > 1 && !isNaN(duration) : readyState > 1 || !isNaN(duration)
-    if (targetClause && duration > 0) {
-      onHLSLoad(index, item, duration)
-      pause()
-      videoRef.current.autoplay = false
-      videoRef.current.currentTime = 0
-      return
+    if (videoRef && videoRef.current) {
+      const { duration } = videoRef.current
+      // Firefox needs OR because readyState never gets above 1.
+      const targetClause = supportsHLS()
+        ? videoRef.current.readyState > 1 && !isNaN(duration)
+        : videoRef.current.readyState > 1 || !isNaN(duration)
+      if (targetClause && duration > 0) {
+        onHLSLoad(index, item, duration)
+        pause()
+        videoRef.current.autoplay = false
+        videoRef.current.currentTime = 0
+        return
+      }
     }
     const t: any = setTimeout(() => checkReadyState(t), 500)
   }
@@ -183,8 +187,8 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
 
   return (
     <Box sx={sx} className={classes.playerContainer}>
-      <video ref={videoRef} className={classes.player} muted={muted} playsInline={true} loop={true}>
-        {requiresSource && <source src={item.url}></source>}
+      <video ref={videoRef} className={classes.player} muted={muted} playsInline={true} loop={true} preload="none">
+        {requiresSource && <source src={item.url} type="application/x-mpegURL"></source>}
       </video>
     </Box>
   )

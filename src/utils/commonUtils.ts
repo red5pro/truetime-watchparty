@@ -15,7 +15,14 @@ export const getContextAndNameFromGuid = (guid: string) => {
 }
 
 export const generateFingerprint = () => {
-  return crypto.randomUUID()
+  if (crypto && crypto.randomUUID) {
+    return crypto.randomUUID()
+  } else {
+    return 'xxxx-xxxx-xxxx-xxxx-xxxx-xxxx-xxxx-xxxx-xxxx'.replace(/[x]/g, (c) => {
+      const r = Math.floor(Math.random() * 16)
+      return r.toString(16)
+    })
+  }
 }
 
 export const getStartTimeFromTimestamp = (ts: number) => {

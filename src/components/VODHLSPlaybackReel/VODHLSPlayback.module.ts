@@ -24,6 +24,7 @@ const useStyles = makeStyles()((theme: any) => {
       height: '120px',
       justifyContent: 'center',
       zIndex: 200,
+      rowGap: '10px',
     },
     controls: {
       height: '70px',
@@ -85,6 +86,14 @@ const useStyles = makeStyles()((theme: any) => {
       boxSizing: 'border-box',
       paddingRight: '20px',
       borderRadius: '0 0 20px 20px',
+    },
+    driverControl: {
+      zIndex: 10,
+      backgroundColor: 'floralwhite',
+      color: 'black',
+      width: 'fit-content',
+      padding: '5px 20px',
+      margin: '-20px auto 20px auto',
     },
   }
 })

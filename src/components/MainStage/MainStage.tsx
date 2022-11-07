@@ -65,7 +65,7 @@ interface SubscriberRef {
 const MainStage = () => {
   const mediaContext = useMediaContext()
   // Warning! This could be null when not wrapped in VOD. Available for routes with /join/vod/<token>.
-  const { vod, setDrivenSeekTime, setSelectedItem, setIsPlaying, setUserDriver } = useVODHLSContext()
+  const { vod, setEnabled, setDrivenSeekTime, setSelectedItem, setIsPlaying, setUserDriver } = useVODHLSContext()
 
   const { error, loading, data, join, retry } = useWatchContext()
   const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
@@ -82,6 +82,9 @@ const MainStage = () => {
   const subscriberListRef = React.useRef<any>(null)
 
   const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
+
+  const [vodEnabled, setVODEnabled] = React.useState<boolean>(false)
+  const [driverControl, setDriverControl] = React.useState<string | null>(null)
 
   const [showLink, setShowLink] = React.useState<boolean>(false)
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
@@ -163,6 +166,12 @@ const MainStage = () => {
       } as FatalError)
     }
   }, [error])
+
+  React.useEffect(() => {
+    if (vod) {
+      setVODEnabled(vod.active && vod.enabled)
+    }
+  }, [vod])
 
   React.useEffect(() => {
     if (!mediaContext?.mediaStream) {
@@ -256,8 +265,11 @@ const MainStage = () => {
     join(url, request)
 
     // Setup Driver for VOD sync.
-    if (setUserDriver && publisherRef && publisherRef.current) {
-      setUserDriver(publisherRef.current)
+    if (vod && setUserDriver && publisherRef && publisherRef.current) {
+      setUserDriver(publisherRef.current, nickname)
+    }
+    if (vod && setEnabled) {
+      setEnabled(vod.active)
     }
   }
 
@@ -438,6 +450,11 @@ const MainStage = () => {
         case VODHLSContext.SyncInvokeKeys.SELECT:
           setSelectedItem(JSON.parse(value), false)
           return
+        case VODHLSContext.SyncInvokeKeys.CONTROL:
+          if (nickname !== value) {
+            setDriverControl(value)
+          }
+          return
       }
       console.log('INVOKE RECV', name, msg)
     }
@@ -461,9 +478,10 @@ const MainStage = () => {
           />
         </Box>
       )}
-      {vod && vod.active && (
+      {vod && vodEnabled && (
         <VODHLSPlaybackReel
           ref={vodVideoRef}
+          driver={driverControl}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           list={vod.list}
         ></VODHLSPlaybackReel>

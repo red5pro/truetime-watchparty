@@ -10,16 +10,19 @@ enum InvokeKeys {
   PLAY = 'play',
   TIME = 'time',
   SELECT = 'select',
+  CONTROL = 'control',
 }
 
 const vodReducer = (state: any, action: any) => {
   switch (action.type) {
     case 'SET_ACTIVE':
       return { ...state, active: action.active }
+    case 'SET_ENABLED':
+      return { ...state, enabled: action.enabled }
     case 'SET_LIST':
       return { ...state, list: action.list }
     case 'SET_DRIVER':
-      return { ...state, driver: action.driver }
+      return { ...state, driver: action.driver, name: action.name }
     case 'SET_PLAYING':
       return { ...state, isPlaying: action.isPlaying }
     case 'SET_CURRENT_TIME':
@@ -37,7 +40,10 @@ interface VODHLSContextProps {
 
 interface IVODHLSContextProps {
   vod: any
-  setUserDriver(value: any): any
+  setEnabled(value: boolean): any
+  setUserDriver(value: any, name: string): any
+  assumeDriverControl(): any
+  releaseDriverControl(): any
   setCurrentTime(value: number, userDriven?: boolean): any
   setSelectedItem(value: VODHLSItem, userDriven?: boolean): any
   setIsPlaying(value: boolean, userDriven?: boolean): any
@@ -57,6 +63,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
 
   const [vod, dispatch] = useReducer(vodReducer, {
     active: false,
+    enabled: false,
     isPlaying: false,
     list: [VODHLSItem],
     currentTime: 0,
@@ -65,6 +72,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     seekTime: 0,
     // Use to send out messages to other participants.
     driver: undefined,
+    name: undefined,
   })
 
   React.useEffect(() => {
@@ -105,6 +113,10 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     dispatch({ type: 'SET_SEEK_TIME', time: value })
   }
 
+  const setEnabled = (value: boolean) => {
+    dispatch({ type: 'SET_ENABLED', enabled: value })
+  }
+
   const setCurrentTime = (value: number, userDriven = false) => {
     dispatch({ type: 'SET_CURRENT_TIME', time: value })
     // TODO: debounce this...
@@ -136,17 +148,38 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     }
   }
 
-  const setUserDriver = (value: any) => {
-    dispatch({ type: 'SET_DRIVER', driver: value })
+  const setUserDriver = (value: any, name: string) => {
+    dispatch({ type: 'SET_DRIVER', driver: value, name })
+  }
+
+  const assumeDriverControl = () => {
+    if (vod.driver) {
+      ;(vod.driver as any).send(INVOKE_EVENT_NAME, {
+        key: InvokeKeys.CONTROL,
+        name: vod.name,
+      })
+    }
+  }
+
+  const releaseDriverControl = () => {
+    if (vod.driver) {
+      ;(vod.driver as any).send(INVOKE_EVENT_NAME, {
+        key: InvokeKeys.CONTROL,
+        name: null,
+      })
+    }
   }
 
   const exportedValues = {
     vod,
+    setEnabled,
     setCurrentTime,
     setSelectedItem,
     setIsPlaying,
     setDrivenSeekTime,
     setUserDriver,
+    assumeDriverControl,
+    releaseDriverControl,
   }
 
   return <VODHLSContext.Provider value={exportedValues}>{children}</VODHLSContext.Provider>

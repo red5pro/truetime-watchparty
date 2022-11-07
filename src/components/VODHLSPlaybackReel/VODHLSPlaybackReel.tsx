@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react'
-import { Box, Slider, Stack, Button } from '@mui/material'
+import { Box, Slider, Stack, Button, Typography } from '@mui/material'
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline'
 import { VODHLSItem } from '../../models/VODHLSItem'
@@ -35,15 +35,17 @@ export interface VODHLSPlaybackReelRef {
 
 interface VODHLSPlaybackReelProps {
   style: any
+  driver: string | null
   list: [VODHLSItem]
 }
 
 const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref: React.Ref<VODHLSPlaybackReelRef>) => {
-  const { style, list } = props
+  const { style, driver, list } = props
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 
-  const { vod, setCurrentTime, setSelectedItem, setIsPlaying } = useVODHLSContext()
+  const { vod, assumeDriverControl, releaseDriverControl, setCurrentTime, setSelectedItem, setIsPlaying } =
+    useVODHLSContext()
 
   const { classes } = useStyles()
   const [volume, setVideoVolume] = React.useState<number>(1)
@@ -147,10 +149,15 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   const onSliderChange = (event: Event, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
       setCurrentTime(newValue, true)
+      assumeDriverControl()
       playerRefs.forEach((ref) =>
         ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(newValue, vod.isPlaying)
       )
     }
+  }
+
+  const onSliderRelease = () => {
+    releaseDriverControl()
   }
 
   const onThumbnailSelect = (item: VODHLSItem) => {
@@ -176,7 +183,12 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
           ></VODHLSPlayer>
         ))}
         {!vod.isPlaying && (
-          <Button className={classes.playButton} color="inherit" onClick={onPlayRequest}>
+          <Button
+            disabled={driver !== null || !vod.enabled}
+            className={classes.playButton}
+            color="inherit"
+            onClick={onPlayRequest}
+          >
             <PlayCircleOutlineIcon className={classes.playIcon} />
           </Button>
         )}
@@ -206,7 +218,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
                 WebkitAppearance: 'slider-horizontal',
               },
             }}
-            disabled={maxTime === 0}
+            disabled={driver !== null || !vod.enabled || maxTime === 0}
             orientation="horizontal"
             defaultValue={0}
             aria-label="Playback Time"
@@ -217,6 +229,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
             step={1}
             value={vod.currentTime}
             onChange={onSliderChange}
+            onChangeCommitted={onSliderRelease}
           />
           {vod.isPlaying && (
             <Button className={classes.pauseButton} color="inherit" onClick={onPlayRequest}>
@@ -224,6 +237,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
             </Button>
           )}
         </Stack>
+        {driver && <Typography className={classes.driverControl}>{driver} is currently in control.</Typography>}
       </Stack>
     </Box>
   )
