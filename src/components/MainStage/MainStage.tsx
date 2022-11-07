@@ -65,7 +65,7 @@ interface SubscriberRef {
 const MainStage = () => {
   const mediaContext = useMediaContext()
   // Warning! This could be null when not wrapped in VOD. Available for routes with /join/vod/<token>.
-  const { vod, setEnabled, setDrivenSeekTime, setSelectedItem, setIsPlaying, setUserDriver } = useVODHLSContext()
+  const { vod, error: vodError, join: joinVOD, leave: leaveVOD, setEnabled } = useVODHLSContext()
 
   const { error, loading, data, join, retry } = useWatchContext()
   const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
@@ -168,10 +168,31 @@ const MainStage = () => {
   }, [error])
 
   React.useEffect(() => {
+    // Fatal Socket Error.
+    if (vodError) {
+      setFatalError({
+        statusText: (vodError as any).message,
+        title: 'Sync Connection Error',
+        closeLabel: 'RETRY',
+        onClose: () => {
+          setFatalError(undefined)
+          window.location.reload()
+        },
+      } as FatalError)
+    }
+  }, [vodError])
+
+  React.useEffect(() => {
     if (vod) {
       setVODEnabled(vod.active && vod.enabled)
     }
   }, [vod])
+
+  React.useEffect(() => {
+    if (joinToken && vodEnabled) {
+      joinVOD(joinToken, nickname, fingerprint)
+    }
+  }, [joinToken, vodEnabled])
 
   React.useEffect(() => {
     if (!mediaContext?.mediaStream) {
@@ -265,9 +286,6 @@ const MainStage = () => {
     join(url, request)
 
     // Setup Driver for VOD sync.
-    if (vod && setUserDriver && publisherRef && publisherRef.current) {
-      setUserDriver(publisherRef.current, nickname)
-    }
     if (vod && setEnabled) {
       setEnabled(vod.active)
     }
@@ -434,30 +452,7 @@ const MainStage = () => {
   }
 
   const onSubscribeInvoke = (name: string, message: any) => {
-    if (name === VODHLSContext.SyncInvokeEventName) {
-      let msg = message
-      if (typeof message === 'string') {
-        msg = JSON.parse(message)
-      }
-      const { key, value } = msg
-      switch (key) {
-        case VODHLSContext.SyncInvokeKeys.TIME:
-          setDrivenSeekTime(value)
-          return
-        case VODHLSContext.SyncInvokeKeys.PLAY:
-          setIsPlaying(value, false)
-          return
-        case VODHLSContext.SyncInvokeKeys.SELECT:
-          setSelectedItem(JSON.parse(value), false)
-          return
-        case VODHLSContext.SyncInvokeKeys.CONTROL:
-          if (nickname !== value) {
-            setDriverControl(value)
-          }
-          return
-      }
-      console.log('INVOKE RECV', name, msg)
-    }
+    console.log('INVOKE RECV', name, message)
   }
 
   return (
@@ -481,7 +476,7 @@ const MainStage = () => {
       {vod && vodEnabled && (
         <VODHLSPlaybackReel
           ref={vodVideoRef}
-          driver={driverControl}
+          driver={vod.currentDriver}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
           list={vod.list}
         ></VODHLSPlaybackReel>

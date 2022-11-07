@@ -7,11 +7,14 @@ export const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY || '6
 export const RECAPTCHA_SECRET_KEY =
   process.env.REACT_APP_RECAPTCHA_SECRET_KEY || '6LdnYWAhAAAAABLHrGDm34M2M3gZE4Qy-3o0LMKJ'
 
-export const USE_STREAM_MANAGER = process.env.REACT_APP_SM === '0' || true
+export const USE_STREAM_MANAGER = process.env.REACT_APP_SM === '1' || true
 export const API_SOCKET_HOST = USE_LOCAL_SERVICES
   ? 'ws://localhost:8001'
   : `wss://${API_SERVER_HOST}/conferenceapi/1.0/ws/conference`
 export const STREAM_HOST = USE_LOCAL_SERVICES ? 'release-11.red5.net' : SERVER_HOST
+export const VOD_SOCKET_HOST = process.env.REACT_VOD_SOCKET_HOST
+  ? `wss://${process.env.REACT_VOD_SOCKET_HOST}`
+  : 'ws://localhost:3000'
 
 export const VOD_HOST = SERVER_HOST
 export const VOD_CONTEXT = 'live'

@@ -35,7 +35,7 @@ export interface VODHLSPlaybackReelRef {
 
 interface VODHLSPlaybackReelProps {
   style: any
-  driver: string | null
+  driver: string | undefined
   list: [VODHLSItem]
 }
 
@@ -44,8 +44,15 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 
-  const { vod, assumeDriverControl, releaseDriverControl, setCurrentTime, setSelectedItem, setIsPlaying } =
-    useVODHLSContext()
+  const {
+    vod,
+    assumeDriverControl,
+    releaseDriverControl,
+    setDrivenSeekTime,
+    setCurrentTime,
+    setSelectedItem,
+    setIsPlaying,
+  } = useVODHLSContext()
 
   const { classes } = useStyles()
   const [volume, setVideoVolume] = React.useState<number>(1)
@@ -88,7 +95,6 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   React.useEffect(() => {
     playerRefs.forEach((ref) => {
-      console.log(vod.seekTime, ref)
       ;((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(vod.seekTime, vod.isPlaying)
     })
   }, [vod.seekTime])
@@ -149,6 +155,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   const onSliderChange = (event: Event, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
       setCurrentTime(newValue, true)
+      setDrivenSeekTime(newValue)
       assumeDriverControl()
       playerRefs.forEach((ref) =>
         ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(newValue, vod.isPlaying)
@@ -156,7 +163,10 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
     }
   }
 
-  const onSliderRelease = () => {
+  const onSliderRelease = (event: React.SyntheticEvent | Event, newValue: number | number[]) => {
+    if (typeof newValue === 'number') {
+      setCurrentTime(newValue, true)
+    }
     releaseDriverControl()
   }
 
@@ -184,8 +194,9 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
         ))}
         {!vod.isPlaying && (
           <Button
-            disabled={driver !== null || !vod.enabled}
+            disabled={!vod.enabled}
             className={classes.playButton}
+            style={{ display: driver ? 'none' : 'unset' }}
             color="inherit"
             onClick={onPlayRequest}
           >
@@ -218,7 +229,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
                 WebkitAppearance: 'slider-horizontal',
               },
             }}
-            disabled={driver !== null || !vod.enabled || maxTime === 0}
+            disabled={typeof driver !== 'undefined' || !vod.enabled || maxTime === 0}
             orientation="horizontal"
             defaultValue={0}
             aria-label="Playback Time"
