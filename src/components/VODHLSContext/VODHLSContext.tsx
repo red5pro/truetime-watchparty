@@ -136,7 +136,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       console.log('SOCKET MESSAGE', event)
       const { data } = event
       try {
-        const json = JSON.parse(data)
+        const json = JSON.parse(data).manifestUpdate
         if (json.currentTime !== vod.currentTime) {
           dispatch({ type: 'SET_CURRENT_TIME', time: json.currentTime })
         }
@@ -145,6 +145,8 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         }
         if (json.selectedItem) {
           dispatch({ type: 'SET_SELECTION', item: json.selectedItem })
+        } else if (vod && vod.list) {
+          setSelectedItem(vod.list.length > 0 ? vod.list[0] : undefined)
         }
         if (json.currentDriver) {
           dispatch({ type: 'SET_CURRENT_DRIVER', driver: json.currentDriver })
@@ -189,7 +191,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     // TODO: debounce this?...
     dispatch({ type: 'SET_SEEK_TIME', time: value })
     if (socketRef && socketRef.current) {
-      console.log('[socket] SET_SEEK_TIME')
+      console.log('[socket] SET_SEEK_TIME', value)
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.TIME,
@@ -206,7 +208,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
 
   const setCurrentTime = (value: number, userDriven = false) => {
     dispatch({ type: 'SET_CURRENT_TIME', time: value })
-    console.log('[socket] SET_CURRENT_TIME')
+    console.log('[socket] SET_CURRENT_TIME', value)
   }
 
   const setSelectedItem = (value: VODHLSItem, userDriven = false) => {
