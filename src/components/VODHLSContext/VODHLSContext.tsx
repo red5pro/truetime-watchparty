@@ -160,13 +160,13 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       if (type === 'error') {
         console.error('SOCKET ERROR', event)
       }
-      setError(new Error('Socket closed unexepctedly.'))
+      setError(new Error('Socket closed unexpectedly.'))
     }
     socket.onclose = (event) => {
       const { wasClean, code } = event
       if (!wasClean || code !== 1000) {
         // Not Expected.
-        setError(new Error('Socket closed unexepctedly.'))
+        setError(new Error('Socket closed unexpectedly.'))
       }
       console.log('SOCKET CLOSE', event)
     }
@@ -189,6 +189,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     // TODO: debounce this?...
     dispatch({ type: 'SET_SEEK_TIME', time: value })
     if (socketRef && socketRef.current) {
+      console.log('[socket] SET_SEEK_TIME')
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.TIME,
@@ -205,11 +206,13 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
 
   const setCurrentTime = (value: number, userDriven = false) => {
     dispatch({ type: 'SET_CURRENT_TIME', time: value })
+    console.log('[socket] SET_CURRENT_TIME')
   }
 
   const setSelectedItem = (value: VODHLSItem, userDriven = false) => {
     dispatch({ type: 'SET_SELECTION', item: value })
     if (socketRef && socketRef.current) {
+      console.log('[socket] SET_SELECTION')
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.SELECT,
@@ -223,6 +226,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   const setIsPlaying = (value: boolean, userDriven = false) => {
     dispatch({ type: 'SET_PLAYING', isPlaying: value })
     if (socketRef && socketRef.current) {
+      console.log('[socket] SET_PLAYING')
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.PLAY,
