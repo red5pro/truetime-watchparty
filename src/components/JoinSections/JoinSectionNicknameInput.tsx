@@ -12,7 +12,7 @@ import { Participant } from '../../models/Participant'
 import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
 
 const validationSchema = Yup.object().shape({
-  nickname: Yup.string().max(50).required('Nickname field is required'),
+  nickname: Yup.string().max(256).min(4).required('Nickname field is required'),
 })
 
 interface JoinNickNameProps {
