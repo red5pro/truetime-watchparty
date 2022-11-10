@@ -96,3 +96,22 @@ export const getQueryParams = (name: string) => {
 
   return value
 }
+
+export const formatTime = (value: number) => {
+  let hrs = 0
+  let mins = value === 0 ? 0 : value / 60
+  let secs = 0
+  if (mins >= 60) {
+    hrs = mins / 60
+    mins = mins % 60
+  }
+  secs = value === 0 ? 0 : value % 60
+
+  const formattedArr = []
+  if (hrs > 0) {
+    hrs < 10 ? formattedArr.push(`0${Math.floor(hrs)}`) : formattedArr.push(Math.floor(hrs).toFixed())
+  }
+  formattedArr.push(mins < 10 ? `0${Math.floor(mins)}` : Math.floor(mins).toFixed())
+  formattedArr.push(secs < 10 ? `0${Math.floor(secs)}` : Math.floor(secs).toFixed())
+  return formattedArr.join(':')
+}

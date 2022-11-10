@@ -1,8 +1,9 @@
-import { join } from 'lodash'
 import React, { useReducer } from 'react'
+import { useRecoilState } from 'recoil'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { VODHLSItem } from '../../models/VODHLSItem'
 import { VOD_CONTEXT, VOD_HOST, VOD_SOCKET_HOST } from '../../settings/variables'
+import vodPlaybackState from '../../atoms/vod/vod'
 
 const vodReg = /^\/join\/vod/
 const INVOKE_EVENT_NAME = 'VOD_SYNC'
@@ -15,24 +16,8 @@ enum InvokeKeys {
 
 const vodReducer = (state: any, action: any) => {
   switch (action.type) {
-    case 'SET_ACTIVE':
-      return { ...state, active: action.active }
-    case 'SET_ENABLED':
-      return { ...state, enabled: action.enabled }
-    case 'SET_LIST':
-      return { ...state, list: action.list }
     case 'SET_USER':
       return { ...state, userid: action.userid, name: action.name }
-    case 'SET_PLAYING':
-      return { ...state, isPlaying: action.isPlaying }
-    case 'SET_CURRENT_TIME':
-      return { ...state, currentTime: action.time }
-    case 'SET_SEEK_TIME':
-      return { ...state, seekTime: action.time }
-    case 'SET_SELECTION':
-      return { ...state, selectedItem: action.item }
-    case 'SET_CURRENT_DRIVER':
-      return { ...state, currentDriver: action.driver }
   }
 }
 
@@ -48,7 +33,6 @@ interface IVODHLSContextProps {
   setEnabled(value: boolean): any
   assumeDriverControl(): any
   releaseDriverControl(): any
-  setCurrentTime(value: number, userDriven?: boolean): any
   setSelectedItem(value: VODHLSItem, userDriven?: boolean): any
   setIsPlaying(value: boolean, userDriven?: boolean): any
   // SeekTime is user driven for listening participants.
@@ -68,19 +52,14 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   const socketRef = React.useRef()
   const [vodSocket, setVODSocket] = React.useState<any>()
 
+  const [vodState, setVODState] = useRecoilState(vodPlaybackState)
+  const [user, setUser] = React.useState<any>()
+
   const [error, setError] = React.useState<any>()
 
   const [vod, dispatch] = useReducer(vodReducer, {
-    active: false,
-    enabled: false,
-    isPlaying: false,
-    list: [VODHLSItem],
-    currentTime: 0,
-    selectedItem: undefined,
-    currentDriver: undefined,
-    // Invoke from drive for currentTime on other participants.
-    seekTime: 0,
     // Use to send out messages to other participants.
+    id: 0,
     name: undefined,
     userid: undefined,
   })
@@ -96,7 +75,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     if (location) {
       const { pathname } = location
       const yayornay = !!pathname.match(vodReg)
-      dispatch({ type: 'SET_ACTIVE', active: yayornay })
+      setVODState({ ...vodState, ...{ active: yayornay } })
     }
   }, [location])
 
@@ -120,8 +99,14 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         const ctx = context.toLowerCase() === 'root' ? '' : `${context}/`
         item.url = `https://${host}/${ctx}${item.filename}`
       })
-      dispatch({ type: 'SET_LIST', list: list })
-      dispatch({ type: 'SET_SELECTION', item: list.length > 0 ? list[0] : undefined })
+      setVODState({
+        ...vodState,
+        ...{
+          active: true,
+          list,
+          selection: list.length > 0 ? list[0] : undefined,
+        },
+      })
     }
   }, [searchParams])
 
@@ -137,22 +122,17 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       const { data } = event
       try {
         const json = JSON.parse(data).manifestUpdate
-        if (json.currentTime !== vod.currentTime) {
-          dispatch({ type: 'SET_CURRENT_TIME', time: json.currentTime })
+        const newSelection = json.selectedItem || (vodState.list.length > 0 ? vodState.list[0] : undefined)
+        const newState = {
+          ...vodState,
+          isPlaying: json.isPlaying,
+          selection: newSelection,
+          seekTime: json.currentTime,
+          driver: json.currentDriver && json.currentDriver.userid === userid ? undefined : json.currentDriver,
+          updateTs: new Date().getTime(),
         }
-        if (json.isPlaying !== vod.isPlaying) {
-          dispatch({ type: 'SET_PLAYING', isPlaying: json.isPlaying })
-        }
-        if (json.selectedItem) {
-          dispatch({ type: 'SET_SELECTION', item: json.selectedItem })
-        } else if (vod && vod.list) {
-          setSelectedItem(vod.list.length > 0 ? vod.list[0] : undefined)
-        }
-        if (json.currentDriver) {
-          dispatch({ type: 'SET_CURRENT_DRIVER', driver: json.currentDriver })
-        } else {
-          dispatch({ type: 'SET_CURRENT_DRIVER', driver: undefined })
-        }
+        console.log('[help]::NEW STATE', newState)
+        setVODState(newState)
       } catch (e) {
         console.error(e)
       }
@@ -173,6 +153,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       console.log('SOCKET CLOSE', event)
     }
     setVODSocket(socket)
+    setUser({ userid: userid, name: nickname })
   }
 
   const leave = () => {
@@ -187,53 +168,51 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     }
   }
 
-  const setDrivenSeekTime = (value: number) => {
+  const setDrivenSeekTime = (value: number, userDriven: boolean) => {
     // TODO: debounce this?...
-    dispatch({ type: 'SET_SEEK_TIME', time: value })
-    if (socketRef && socketRef.current) {
+    if (!userDriven) {
+      dispatch({ type: 'SET_SEEK_TIME', time: value })
+    } else if (socketRef && socketRef.current) {
       console.log('[socket] SET_SEEK_TIME', value)
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.TIME,
           value,
-          from: vod.userid,
+          from: user.userid,
         })
       )
     }
   }
 
   const setEnabled = (value: boolean) => {
-    dispatch({ type: 'SET_ENABLED', enabled: value })
-  }
-
-  const setCurrentTime = (value: number, userDriven = false) => {
-    dispatch({ type: 'SET_CURRENT_TIME', time: value })
-    console.log('[socket] SET_CURRENT_TIME', value)
+    setVODState({ ...vodState, ...{ enabled: value } })
   }
 
   const setSelectedItem = (value: VODHLSItem, userDriven = false) => {
-    dispatch({ type: 'SET_SELECTION', item: value })
-    if (socketRef && socketRef.current) {
+    if (!userDriven) {
+      setVODState({ ...vodState, ...{ selection: value } })
+    } else if (socketRef && socketRef.current) {
       console.log('[socket] SET_SELECTION')
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.SELECT,
           value,
-          from: vod.userid,
+          from: user.userid,
         })
       )
     }
   }
 
   const setIsPlaying = (value: boolean, userDriven = false) => {
-    dispatch({ type: 'SET_PLAYING', isPlaying: value })
-    if (socketRef && socketRef.current) {
+    if (!userDriven) {
+      setVODState({ ...vodState, ...{ isPlaying: value } })
+    } else if (socketRef && socketRef.current) {
       console.log('[socket] SET_PLAYING')
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.PLAY,
           value,
-          from: vod.userid,
+          from: user.userid,
         })
       )
     }
@@ -244,8 +223,8 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.CONTROL,
-          value: vod.name,
-          from: vod.userid,
+          value: user,
+          from: user.userid,
         })
       )
     }
@@ -257,7 +236,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         JSON.stringify({
           type: InvokeKeys.CONTROL,
           value: undefined,
-          from: vod.userid,
+          from: user.userid,
         })
       )
     }
@@ -269,7 +248,6 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     join,
     leave,
     setEnabled,
-    setCurrentTime,
     setSelectedItem,
     setIsPlaying,
     setDrivenSeekTime,

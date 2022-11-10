@@ -1,48 +1,81 @@
 import React from 'react'
+import { useRecoilValue } from 'recoil'
 import Hls from 'hls.js'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { VODHLSItem } from '../../models/VODHLSItem'
 import { supportsHLS } from '../../utils/hlsUtils'
 import useStyles from './VODHLSPlayback.module'
+import vodPlaybackState from '../../atoms/vod/vod'
+import { formatTime } from '../../utils/commonUtils'
+
+const itemsAreSimilar = (item1: VODHLSItem, item2: VODHLSItem) => {
+  return item2.filename === item1.filename
+}
 
 export interface VODHLSPlayerRef {
   play(): any
   pause(resume: boolean): any
   seek(to: number, andPlay?: boolean): any
+  show(doShow: boolean): any
   destroy(): any
   setVolume(value: number): any
   getVideo(): HTMLVideoElement
+  getDuration(): number
+  syncTime(value: number): any
   hasItem(item: VODHLSItem): boolean
 }
 
 interface VODHLSPlayerProps {
-  sx: any
   index: number
   item: VODHLSItem
+  isPlaying: boolean
+  selectedItem: VODHLSItem
+  seekTime: number
   volume: number
-  muted: boolean
-  onPlay(index: number, item: VODHLSItem): any
-  onPause(index: number, item: VODHLSItem, andResume: boolean): any
   onTimeUpdate(index: number, item: VODHLSItem, time: number): any
   onHLSLoad(index: number, item: VODHLSItem, totalTime: number): any
 }
 
 const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<VODHLSPlayerRef>) => {
-  const { sx, index, item, volume, muted, onPlay, onPause, onTimeUpdate, onHLSLoad } = props
+  const { index, item, isPlaying, seekTime, selectedItem, volume, onTimeUpdate, onHLSLoad } = props
 
-  React.useImperativeHandle(ref, () => ({ play, pause, seek, destroy, setVolume, getVideo, hasItem }))
+  React.useImperativeHandle(ref, () => ({
+    play,
+    pause,
+    seek,
+    show,
+    destroy,
+    setVolume,
+    getVideo,
+    getDuration,
+    syncTime,
+    hasItem,
+  }))
 
   const { classes } = useStyles()
+
+  let isLoaded = false
+  const vodState = useRecoilValue(vodPlaybackState)
+
+  // Have to wrap this in a ref in order to have updated state in loaded callback... :/
+  const [iIsPlaying, setIsPlaying] = React.useState<boolean>(isPlaying)
+  const playingRef = React.useRef(iIsPlaying)
+  const [iSeekTime, setSeekTime] = React.useState<number>(0)
+  const seekRef = React.useRef(iSeekTime)
+  const [iSelectedItem, setSelectedItem] = React.useState<VODHLSItem | undefined>()
+  const selectionRef = React.useRef(iSelectedItem)
 
   const videoRef: any = React.useRef(null)
   let playTimeout: any
   const playRef = React.useRef(null)
 
-  const [isPlaying, setIsPlaying] = React.useState<boolean>(false)
   const [isDestroyed, setIsDestroyed] = React.useState<boolean>(false)
   const [requiresSource, setRequiresSource] = React.useState<boolean>(false)
 
+  const [isVisible, setIsVisible] = React.useState<boolean>(false)
+
   const [control, setControl] = React.useState<any>()
+  const [videoTime, setVideoTime] = React.useState<string>('0')
 
   React.useEffect(() => {
     setVolume(volume)
@@ -74,7 +107,29 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     }
   }, [item, videoRef])
 
-  const checkReadyState = (timeout?: any | undefined) => {
+  React.useEffect(() => {
+    selectionRef.current = selectedItem
+    setSelectedItem(selectedItem)
+    show(itemsAreSimilar(item, selectedItem))
+  }, [item, selectedItem])
+
+  React.useEffect(() => {
+    seekRef.current = seekTime
+    setSeekTime(seekTime)
+    seek(seekTime, isPlaying)
+  }, [seekTime])
+
+  React.useEffect(() => {
+    playingRef.current = isPlaying
+    setIsPlaying(isPlaying)
+    if (isPlaying) {
+      play()
+    } else {
+      pause()
+    }
+  }, [isPlaying])
+
+  const checkReadyState = async (timeout?: any | undefined) => {
     if (timeout) clearTimeout(timeout)
     if (videoRef && videoRef.current) {
       const { duration } = videoRef.current
@@ -82,15 +137,30 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       const targetClause = supportsHLS()
         ? videoRef.current.readyState > 1 && !isNaN(duration)
         : videoRef.current.readyState > 1 || !isNaN(duration)
-      if (targetClause && duration > 0) {
-        onHLSLoad(index, item, duration)
-        pause()
-        videoRef.current.autoplay = false
-        videoRef.current.currentTime = 0
-        return
+      if (targetClause && duration > 0 && !isLoaded) {
+        try {
+          isLoaded = true
+          videoRef.current.autoplay = false
+          videoRef.current.currentTime = seekRef.current
+          if (playingRef.current) {
+            await play()
+          } else {
+            await pause()
+          }
+          if (selectionRef.current) {
+            show(itemsAreSimilar(item, selectionRef.current))
+          }
+          onHLSLoad(index, item, duration)
+          return
+        } catch (e) {
+          console.error(e)
+        }
+      } else {
+        const t: any = setTimeout(() => checkReadyState(t), 500)
       }
+    } else {
+      const t: any = setTimeout(() => checkReadyState(t), 500)
     }
-    const t: any = setTimeout(() => checkReadyState(t), 500)
   }
 
   const stopPlayTimeout = () => {
@@ -113,40 +183,35 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   const play = async () => {
     try {
       await videoRef.current.play()
-      setIsPlaying(true)
     } catch (e: any) {
       console.log(`Could not start playback for ${item.name}: ${e.message}`)
     }
   }
 
   const pause = async (resume = false) => {
-    const wasPlaying = isPlaying
     try {
       await videoRef.current.pause()
-      if (!resume) {
-        setIsPlaying(false)
-      }
     } catch (e: any) {
       console.log(`Could not start playback for ${item.name}: ${e.message}`)
-    } finally {
-      if (resume) {
-        setIsPlaying(wasPlaying)
-      }
     }
   }
 
   const seek = async (to: number, andPlay = false) => {
+    const { duration } = videoRef.current
     try {
       stopPlayTimeout()
       await pause(true)
-      const { duration } = videoRef.current
-      videoRef.current.currentTime = to <= duration ? to : duration
-      if (isPlaying && andPlay && to < videoRef.current.duration) {
+      videoRef.current.currentTime = isNaN(duration) ? to : to <= duration ? to : duration - 1
+      if (isPlaying && andPlay && to < duration) {
         resetPlayTimeout()
       }
     } catch (e) {
       console.warn('SEEK', e)
     }
+  }
+
+  const show = (doShow: boolean) => {
+    setIsVisible(doShow)
   }
 
   const destroy = async () => {
@@ -175,7 +240,27 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
 
   const hasItem = (value: VODHLSItem) => {
     // TODO: Maybe shallow object compare, instead?
-    return item.filename === value.filename
+    return itemsAreSimilar(item, value)
+  }
+
+  const syncTime = async (value: number) => {
+    const video = getVideo()
+    if (video && value >= 0) {
+      const { currentTime } = video
+      await seek(value, isPlaying)
+      console.log('[help] SYNC TIME', value)
+      // video.currentTime = value
+      if (Math.abs(currentTime - value) > 1.5) {
+        // video.currentTime = value
+      }
+    }
+  }
+
+  const getDuration = () => {
+    const video = getVideo()
+    if (video) {
+      return video.duration
+    }
   }
 
   const onVideoTimeUpdate = (event: any) => {
@@ -183,13 +268,15 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       currentTarget: { currentTime },
     } = event
     onTimeUpdate(index, item, currentTime)
+    setVideoTime(formatTime(currentTime))
   }
 
   return (
-    <Box sx={sx} className={classes.playerContainer}>
-      <video ref={videoRef} className={classes.player} muted={muted} playsInline={true} loop={true} preload="none">
+    <Box className={classes.playerContainer} sx={{ opacity: `${isVisible ? 1 : 0}!important` }}>
+      <video ref={videoRef} className={classes.player} controls muted={!isVisible} playsInline={true} loop={true}>
         {requiresSource && <source src={item.url} type="application/x-mpegURL"></source>}
       </video>
+      <Typography sx={{ color: 'white' }}>{videoTime}</Typography>
     </Box>
   )
 })

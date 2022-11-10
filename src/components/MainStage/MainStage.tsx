@@ -1,6 +1,7 @@
 import React from 'react'
 import * as portals from 'react-reverse-portal'
-import { useNavigate } from 'react-router-dom'
+import { useRecoilValue } from 'recoil'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { IconButton, Box, Typography, Stack, Divider, Tooltip } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-material'
@@ -39,6 +40,7 @@ import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
 import VODHLSContext from '../VODHLSContext/VODHLSContext'
 import VODHLSPlaybackReel, { VODHLSPlaybackReelRef } from '../VODHLSPlaybackReel/VODHLSPlaybackReel'
+import vodPlaybackState from '../../atoms/vod/vod'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -66,12 +68,14 @@ const MainStage = () => {
   const mediaContext = useMediaContext()
   // Warning! This could be null when not wrapped in VOD. Available for routes with /join/vod/<token>.
   const { vod, error: vodError, join: joinVOD, leave: leaveVOD, setEnabled } = useVODHLSContext()
+  const vodState = useRecoilValue(vodPlaybackState)
 
   const { error, loading, data, join, retry } = useWatchContext()
   const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
 
   const { classes } = useStyles()
   const navigate = useNavigate()
+  const location = useLocation()
   const { getCookies } = useCookies(['account'])
 
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
@@ -84,7 +88,6 @@ const MainStage = () => {
   const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
 
   const [vodEnabled, setVODEnabled] = React.useState<boolean>(false)
-  const [driverControl, setDriverControl] = React.useState<string | null>(null)
 
   const [showLink, setShowLink] = React.useState<boolean>(false)
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
@@ -183,10 +186,10 @@ const MainStage = () => {
   }, [vodError])
 
   React.useEffect(() => {
-    if (vod) {
-      setVODEnabled(vod.active && vod.enabled)
+    if (vodState) {
+      setVODEnabled(vodState.active && vodState.enabled)
     }
-  }, [vod])
+  }, [vodState])
 
   React.useEffect(() => {
     if (joinToken && vodEnabled) {
@@ -286,8 +289,8 @@ const MainStage = () => {
     join(url, request)
 
     // Setup Driver for VOD sync.
-    if (vod && setEnabled) {
-      setEnabled(vod.active)
+    if (vodState && setEnabled) {
+      setEnabled(true)
     }
   }
 
@@ -458,7 +461,7 @@ const MainStage = () => {
   return (
     <Box className={classes.rootContainer}>
       {/* Main Video */}
-      {!vod && mainStreamGuid && (
+      {!vodState.active && mainStreamGuid && (
         <Box sx={layout.style.mainVideoContainer}>
           <Subscriber
             ref={mainVideoRef}
@@ -473,12 +476,10 @@ const MainStage = () => {
           />
         </Box>
       )}
-      {vod && vodEnabled && (
+      {vodEnabled && (
         <VODHLSPlaybackReel
           ref={vodVideoRef}
-          driver={vod.currentDriver}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-          list={vod.list}
         ></VODHLSPlaybackReel>
       )}
       <Box className={classes.content}>

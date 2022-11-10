@@ -9,3 +9,14 @@ export class VODHLSItem {
     this.url = url
   }
 }
+
+const VODPlaybackStateKeys = {
+  ACTIVE: 'active',
+  ENABLED: 'enabled',
+  PLAYING: 'playing',
+  SELECTION: 'selection',
+  SEEK: 'seek',
+  DRIVER: 'drive',
+}
+
+export { VODPlaybackStateKeys }

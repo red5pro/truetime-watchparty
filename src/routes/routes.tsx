@@ -14,64 +14,67 @@ import SimpleVipPage from '../pages/SimpleVipPage/SimpleVipPage'
 import AdminPage from '../pages/Admin/AdminPage'
 import VerifyEmailPage from '../pages/VerifyEmailPage/VerifyEmailPage'
 import VODHLSContext from '../components/VODHLSContext/VODHLSContext'
+import { RecoilRoot } from 'recoil'
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Signin />} />
-        <Route path="/verify" element={<VerifyEmailPage />} />
-        <Route
-          path="/join/:token"
-          element={
-            <JoinContext.Provider>
-              <MediaContext.Provider>
-                <WatchContext.Provider>
-                  <JoinPage />
-                </WatchContext.Provider>
-              </MediaContext.Provider>
-            </JoinContext.Provider>
-          }
-        />
-        {/* VOD */}
-        <Route
-          path="/join/vod/:token"
-          element={
-            <JoinContext.Provider>
-              <MediaContext.Provider>
-                <WatchContext.Provider>
-                  <VODHLSContext.Provider>
+      <RecoilRoot>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Signin />} />
+          <Route path="/verify" element={<VerifyEmailPage />} />
+          <Route
+            path="/join/:token"
+            element={
+              <JoinContext.Provider>
+                <MediaContext.Provider>
+                  <WatchContext.Provider>
                     <JoinPage />
-                  </VODHLSContext.Provider>
-                </WatchContext.Provider>
-              </MediaContext.Provider>
-            </JoinContext.Provider>
-          }
-        />
-        {/* WAT-70, WAT-73 */}
-        <Route path="/join/guest" element={<VipJoinPage />} />
-        <Route
-          path="/thankyou/:token"
-          element={
-            <JoinContext.Provider>
-              <ThankYouPage />
-            </JoinContext.Provider>
-          }
-        />
-        <Route
-          path="/partyended/:token"
-          element={
-            <JoinContext.Provider>
-              <PartyEndedPage />
-            </JoinContext.Provider>
-          }
-        />
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="*" element={<Landing />} />
-        {/* TODO: Remove for production. Here for simple VIP entrance in demos. */}
-        <Route path="/vip" element={<SimpleVipPage />} />
-      </Routes>
+                  </WatchContext.Provider>
+                </MediaContext.Provider>
+              </JoinContext.Provider>
+            }
+          />
+          {/* VOD */}
+          <Route
+            path="/join/vod/:token"
+            element={
+              <JoinContext.Provider>
+                <MediaContext.Provider>
+                  <WatchContext.Provider>
+                    <VODHLSContext.Provider>
+                      <JoinPage />
+                    </VODHLSContext.Provider>
+                  </WatchContext.Provider>
+                </MediaContext.Provider>
+              </JoinContext.Provider>
+            }
+          />
+          {/* WAT-70, WAT-73 */}
+          <Route path="/join/guest" element={<VipJoinPage />} />
+          <Route
+            path="/thankyou/:token"
+            element={
+              <JoinContext.Provider>
+                <ThankYouPage />
+              </JoinContext.Provider>
+            }
+          />
+          <Route
+            path="/partyended/:token"
+            element={
+              <JoinContext.Provider>
+                <PartyEndedPage />
+              </JoinContext.Provider>
+            }
+          />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="*" element={<Landing />} />
+          {/* TODO: Remove for production. Here for simple VIP entrance in demos. */}
+          <Route path="/vip" element={<SimpleVipPage />} />
+        </Routes>
+      </RecoilRoot>
     </BrowserRouter>
   )
 }

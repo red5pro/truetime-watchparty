@@ -1,4 +1,5 @@
 import React, { RefObject } from 'react'
+import { useRecoilValue } from 'recoil'
 import { Box, Slider, Stack, Button, Typography } from '@mui/material'
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline'
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline'
@@ -8,26 +9,10 @@ import useStyles from './VODHLSPlayback.module'
 import VODHLSContext from '../../components/VODHLSContext/VODHLSContext'
 import VODHLSPlayer, { VODHLSPlayerRef } from './VODHLSPlayer'
 import VODHLSThumbnail, { VODHLSThumbnailRef } from './VODHLSThumbnail'
+import vodPlaybackState from '../../atoms/vod/vod'
+import { formatTime } from '../../utils/commonUtils'
+
 const useVODHLSContext = () => React.useContext(VODHLSContext.Context)
-
-const formatTime = (value: number) => {
-  let hrs = 0
-  let mins = value === 0 ? 0 : value / 60
-  let secs = 0
-  if (mins >= 60) {
-    hrs = mins / 60
-    mins = mins % 60
-  }
-  secs = value === 0 ? 0 : value % 60
-
-  const formattedArr = []
-  if (hrs > 0) {
-    hrs < 10 ? formattedArr.push(`0${Math.round(hrs)}`) : formattedArr.push(Math.round(hrs).toFixed())
-  }
-  formattedArr.push(mins < 10 ? `0${Math.round(mins)}` : Math.round(mins).toFixed())
-  formattedArr.push(secs < 10 ? `0${Math.round(secs)}` : Math.round(secs).toFixed())
-  return formattedArr.join(':')
-}
 
 export interface VODHLSPlaybackReelRef {
   setVolume(value: number): any
@@ -35,31 +20,27 @@ export interface VODHLSPlaybackReelRef {
 
 interface VODHLSPlaybackReelProps {
   style: any
-  driver: string | undefined
-  list: [VODHLSItem]
 }
 
 const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref: React.Ref<VODHLSPlaybackReelRef>) => {
-  const { style, driver, list } = props
+  const { style } = props
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 
-  const {
-    vod,
-    assumeDriverControl,
-    releaseDriverControl,
-    setDrivenSeekTime,
-    setCurrentTime,
-    setSelectedItem,
-    setIsPlaying,
-  } = useVODHLSContext()
+  const vodState = useRecoilValue(vodPlaybackState)
+
+  const { vod, assumeDriverControl, releaseDriverControl, setDrivenSeekTime, setSelectedItem, setIsPlaying } =
+    useVODHLSContext()
+
+  let totalLoad = 0
 
   const { classes } = useStyles()
+  const [timeValue, setTimeValue] = React.useState<number>(0)
   const [volume, setVideoVolume] = React.useState<number>(1)
 
   const playerRefs = React.useMemo(
     () =>
-      Array(list.length)
+      Array(vodState.list.length)
         .fill(0)
         .map((i) => React.createRef()),
     []
@@ -67,7 +48,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   const thumbnailRefs = React.useMemo(
     () =>
-      Array(list.length)
+      Array(vodState.list.length)
         .fill(0)
         .map((i) => React.createRef()),
     []
@@ -94,18 +75,43 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   }, [volume])
 
   React.useEffect(() => {
-    playerRefs.forEach((ref) => {
-      ;((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(vod.seekTime, vod.isPlaying)
-    })
-  }, [vod.seekTime])
+    // seek time comes in seconds
+    // we determine offset in milliseconds
+    console.log('[help]::seek time', vodState.seekTime, vodState)
+    const { seekTime, isPlaying, updateTs } = vodState
+    let seekTo = seekTime
+    if (isPlaying) {
+      const now = new Date().getTime()
+      console.log('[help]::seek offset', now - updateTs, updateTs)
+      const offset = now - updateTs
+      seekTo = seekTime + offset / 1000
+    }
+    // playerRefs.forEach((ref) => {
+    //   ;((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(seekTo, isPlaying)
+    // })
+    // timeValue should be updated based on seek()
+  }, [vodState.seekTime, vodState.isPlaying])
 
   React.useEffect(() => {
-    if (vod.isPlaying) {
-      playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).play())
-    } else {
-      playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).pause(true))
-    }
-  }, [vod.isPlaying])
+    console.log('[help]::is playing', vodState.isPlaying, vodState)
+    // if (vodState.isPlaying) {
+    //   playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).play())
+    // } else {
+    //   playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).pause(true))
+    // }
+  }, [vodState.isPlaying])
+
+  React.useEffect(() => {
+    console.log('[help]::selection', vodState.selection, vodState)
+    // updateSelection(vodState.selection)
+  }, [vodState.selection])
+
+  const updateSelection = (selectedItem: any) => {
+    playerRefs.forEach((ref) => {
+      const player = (ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef
+      player.show(player.hasItem(selectedItem))
+    })
+  }
 
   const screencast = () => {
     thumbnailRefs.forEach((ref) => {
@@ -116,32 +122,40 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
     })
   }
 
+  const itemIsSelected = (item: VODHLSItem) => {
+    return vodState.selection && vodState.selection.filename === item.filename
+  }
+
+  // Can't use vodState here for some reason. Though it is updated, here it is stale?
+  const checkLoad = () => {
+    if (++totalLoad >= vodState.list.length) {
+      let totalTime = -1
+      playerRefs.forEach(async (ref) => {
+        const player = (ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef
+        const duration = player.getDuration()
+        totalTime = totalTime === -1 ? duration : Math.max(totalTime, duration)
+      })
+      setMaxTime(totalTime)
+    }
+  }
+
   const setVolume = (value: number) => {
     setVideoVolume(value)
   }
 
-  const onHLSPlay = (index: number, item: VODHLSItem) => {
-    setIsPlaying(true)
-  }
-
-  const onHLSPause = (index: number, item: VODHLSItem, andResume: boolean) => {
-    setIsPlaying(false)
-  }
-
   const onHLSTimeUpdate = (index: number, item: VODHLSItem, time: number) => {
-    if (vod.selectedItem.filename === item.filename) {
-      setCurrentTime(time)
+    if (itemIsSelected(item)) {
+      // console.log('[help]:scrub', time)
+      setTimeValue(time)
     }
   }
 
   const onPlayRequest = () => {
-    setIsPlaying(!vod.isPlaying, true)
+    setDrivenSeekTime(timeValue)
+    setIsPlaying(!vodState.isPlaying, true)
   }
 
   const onHLSLoad = (index: number, item: VODHLSItem, totalTime: number) => {
-    if (totalTime > maxTime) {
-      setMaxTime(totalTime)
-    }
     // Assign and watch thumbnails.
     const thumbnail = thumbnailRefs.find((ref) =>
       ((ref as RefObject<VODHLSThumbnailRef>).current as VODHLSThumbnailRef).hasItem(item)
@@ -150,53 +164,68 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
     if (thumbnail && playerRef) {
       ;(thumbnail.current as VODHLSThumbnailRef).watch(playerRef.current as VODHLSPlayerRef)
     }
+    requestAnimationFrame(checkLoad)
   }
 
   const onSliderChange = (event: Event, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
-      setCurrentTime(newValue, true)
+      setTimeValue(newValue)
       setDrivenSeekTime(newValue)
+      console.log('[help]:change', newValue, maxTime)
       assumeDriverControl()
-      playerRefs.forEach((ref) =>
-        ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(newValue, vod.isPlaying)
-      )
+      playerRefs.forEach(async (ref) => {
+        const player = (ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef
+        if (player) {
+          player.syncTime(newValue)
+        }
+      })
+      // playerRefs.forEach((ref) =>
+      //   ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(newValue, vodState.isPlaying)
+      // )
     }
   }
 
   const onSliderRelease = (event: React.SyntheticEvent | Event, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
-      setCurrentTime(newValue, true)
+      setTimeValue(newValue)
+      setDrivenSeekTime(newValue)
+      playerRefs.forEach(async (ref) => {
+        const player = (ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef
+        if (player) {
+          player.syncTime(newValue)
+        }
+      })
     }
     releaseDriverControl()
   }
 
   const onThumbnailSelect = (item: VODHLSItem) => {
+    setDrivenSeekTime(timeValue)
     setSelectedItem(item, true)
   }
 
   return (
     <Box className={classes.container} sx={style}>
       <Stack className={classes.videoStack}>
-        {new Array(list.length).fill(0).map((inp, index) => (
+        {new Array(vodState.list.length).fill(0).map((inp, index) => (
           <VODHLSPlayer
-            sx={{ opacity: vod.selectedItem.filename === list[index].filename ? '1!important' : '0!important' }}
             key={`vod_${index}`}
             ref={playerRefs[index] as RefObject<VODHLSPlayerRef>}
             index={index}
-            item={list[index]}
+            item={vodState.list[index]}
             volume={volume || 1}
-            muted={!(vod.selectedItem === list[index])}
-            onPlay={onHLSPlay}
-            onPause={onHLSPause}
+            isPlaying={vodState.isPlaying}
+            selectedItem={vodState.selection}
+            seekTime={vodState.seekTime}
             onTimeUpdate={onHLSTimeUpdate}
             onHLSLoad={onHLSLoad}
           ></VODHLSPlayer>
         ))}
-        {!vod.isPlaying && (
+        {!vodState.isPlaying && (
           <Button
-            disabled={!vod.enabled}
+            disabled={!vodState.enabled}
             className={classes.playButton}
-            style={{ display: driver ? 'none' : 'unset' }}
+            style={{ display: vodState.driver ? 'none' : 'unset' }}
             color="inherit"
             onClick={onPlayRequest}
           >
@@ -206,7 +235,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
       </Stack>
       <Stack direction="column" gap={0} className={classes.thumbnailControlsContainer}>
         <Stack direction="row" gap={2} className={classes.thumbnailReel}>
-          {new Array(list.length).fill(0).map((inp, index) => (
+          {new Array(vodState.list.length).fill(0).map((inp, index) => (
             <VODHLSThumbnail
               sx={{
                 flexGrow: 1,
@@ -216,7 +245,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
               }}
               key={`thumbnail_${index}`}
               ref={thumbnailRefs[index] as RefObject<VODHLSThumbnailRef>}
-              vodHLSItem={list[index]}
+              vodHLSItem={vodState.list[index]}
               onSelect={onThumbnailSelect}
             ></VODHLSThumbnail>
           ))}
@@ -229,7 +258,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
                 WebkitAppearance: 'slider-horizontal',
               },
             }}
-            disabled={typeof driver !== 'undefined' || !vod.enabled || maxTime === 0}
+            disabled={typeof vodState.driver !== 'undefined' || !vodState.enabled || maxTime === 0}
             orientation="horizontal"
             defaultValue={0}
             aria-label="Playback Time"
@@ -237,18 +266,20 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
             valueLabelFormat={formatTime}
             min={0}
             max={maxTime}
-            step={1}
-            value={vod.currentTime}
+            step={0.5}
+            value={timeValue}
             onChange={onSliderChange}
             onChangeCommitted={onSliderRelease}
           />
-          {vod.isPlaying && (
+          {vodState.isPlaying && (
             <Button className={classes.pauseButton} color="inherit" onClick={onPlayRequest}>
               <PauseCircleOutlineIcon className={classes.pauseIcon} />
             </Button>
           )}
         </Stack>
-        {driver && <Typography className={classes.driverControl}>{driver} is currently in control.</Typography>}
+        {vodState.driver && (
+          <Typography className={classes.driverControl}>{vodState.driver.name} is currently in control.</Typography>
+        )}
       </Stack>
     </Box>
   )
