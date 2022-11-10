@@ -30,11 +30,13 @@ const Home = () => {
   }
 
   const handleKeyPress = (ev: any) => {
-    if (ev && ev.code === 'Enter' && (!partyCode || partyCode.length < 19)) {
-      setError('Enter a valid Party Code')
-      return
+    if (ev && ev.code === 'Enter') {
+      if (!partyCode || partyCode.length < 19) {
+        setError('Enter a valid Party Code')
+        return
+      }
+      navigate(`/join/${partyCode}`)
     }
-    navigate(`/join/${partyCode}`)
   }
 
   return (
