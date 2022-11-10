@@ -29,6 +29,7 @@ const getValidationSchema = () => {
     displayName: Yup.string().max(50, 'Serie Name must at most 50 characters').required('Serie Name field is required'),
     maxParticipants: Yup.number()
       .min(1, 'Max. Participants must be greater than or equal to 1')
+      .max(8, 'Max. Participants must be less than or equal to 8')
       .required('Max. Participants field is required'),
     // startDatetime: Yup.date()
     //   .required('Start Date/Time field is required')
