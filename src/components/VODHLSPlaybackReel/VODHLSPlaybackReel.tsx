@@ -29,7 +29,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   const vodState = useRecoilValue(vodPlaybackState)
 
-  const { vod, assumeDriverControl, releaseDriverControl, setDrivenSeekTime, setSelectedItem, setIsPlaying } =
+  const { assumeDriverControl, releaseDriverControl, setDrivenSeekTime, setSelectedItem, setIsPlaying } =
     useVODHLSContext()
 
   let totalLoad = 0
@@ -74,45 +74,6 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
     playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).setVolume(volume))
   }, [volume])
 
-  React.useEffect(() => {
-    // seek time comes in seconds
-    // we determine offset in milliseconds
-    console.log('[help]::seek time', vodState.seekTime, vodState)
-    const { seekTime, isPlaying, updateTs } = vodState
-    let seekTo = seekTime
-    if (isPlaying) {
-      const now = new Date().getTime()
-      console.log('[help]::seek offset', now - updateTs, updateTs)
-      const offset = now - updateTs
-      seekTo = seekTime + offset / 1000
-    }
-    // playerRefs.forEach((ref) => {
-    //   ;((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(seekTo, isPlaying)
-    // })
-    // timeValue should be updated based on seek()
-  }, [vodState.seekTime, vodState.isPlaying])
-
-  React.useEffect(() => {
-    console.log('[help]::is playing', vodState.isPlaying, vodState)
-    // if (vodState.isPlaying) {
-    //   playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).play())
-    // } else {
-    //   playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).pause(true))
-    // }
-  }, [vodState.isPlaying])
-
-  React.useEffect(() => {
-    console.log('[help]::selection', vodState.selection, vodState)
-    // updateSelection(vodState.selection)
-  }, [vodState.selection])
-
-  const updateSelection = (selectedItem: any) => {
-    playerRefs.forEach((ref) => {
-      const player = (ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef
-      player.show(player.hasItem(selectedItem))
-    })
-  }
-
   const screencast = () => {
     thumbnailRefs.forEach((ref) => {
       const tRef = ref as RefObject<VODHLSThumbnailRef>
@@ -120,10 +81,6 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
         ;(tRef.current as VODHLSThumbnailRef).redraw()
       }
     })
-  }
-
-  const itemIsSelected = (item: VODHLSItem) => {
-    return vodState.selection && vodState.selection.filename === item.filename
   }
 
   // Can't use vodState here for some reason. Though it is updated, here it is stale?
@@ -144,14 +101,12 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   }
 
   const onHLSTimeUpdate = (index: number, item: VODHLSItem, time: number) => {
-    if (itemIsSelected(item)) {
-      // console.log('[help]:scrub', time)
-      setTimeValue(time)
-    }
+    // console.log(`[help] Following ${index}, with value ${time}.`)
+    setTimeValue(time)
   }
 
   const onPlayRequest = () => {
-    setDrivenSeekTime(timeValue)
+    setDrivenSeekTime(timeValue, false)
     setIsPlaying(!vodState.isPlaying, true)
   }
 
@@ -170,8 +125,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   const onSliderChange = (event: Event, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
       setTimeValue(newValue)
-      setDrivenSeekTime(newValue)
-      console.log('[help]:change', newValue, maxTime)
+      setDrivenSeekTime(newValue, true)
       assumeDriverControl()
       playerRefs.forEach(async (ref) => {
         const player = (ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef
@@ -179,16 +133,13 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
           player.syncTime(newValue)
         }
       })
-      // playerRefs.forEach((ref) =>
-      //   ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).seek(newValue, vodState.isPlaying)
-      // )
     }
   }
 
   const onSliderRelease = (event: React.SyntheticEvent | Event, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
       setTimeValue(newValue)
-      setDrivenSeekTime(newValue)
+      setDrivenSeekTime(newValue, true)
       playerRefs.forEach(async (ref) => {
         const player = (ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef
         if (player) {
@@ -200,7 +151,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   }
 
   const onThumbnailSelect = (item: VODHLSItem) => {
-    setDrivenSeekTime(timeValue)
+    setDrivenSeekTime(timeValue, true)
     setSelectedItem(item, true)
   }
 

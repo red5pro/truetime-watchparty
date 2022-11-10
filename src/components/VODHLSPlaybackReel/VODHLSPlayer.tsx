@@ -57,7 +57,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   let isLoaded = false
   const vodState = useRecoilValue(vodPlaybackState)
 
-  // Have to wrap this in a ref in order to have updated state in loaded callback... :/
+  // Have to wrap these in refs in order to have updated state in loaded callback... :/
   const [iIsPlaying, setIsPlaying] = React.useState<boolean>(isPlaying)
   const playingRef = React.useRef(iIsPlaying)
   const [iSeekTime, setSeekTime] = React.useState<number>(0)
@@ -65,9 +65,9 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   const [iSelectedItem, setSelectedItem] = React.useState<VODHLSItem | undefined>()
   const selectionRef = React.useRef(iSelectedItem)
 
-  const videoRef: any = React.useRef(null)
   let playTimeout: any
   const playRef = React.useRef(null)
+  const videoRef: any = React.useRef(null)
 
   const [isDestroyed, setIsDestroyed] = React.useState<boolean>(false)
   const [requiresSource, setRequiresSource] = React.useState<boolean>(false)
@@ -114,9 +114,19 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   }, [item, selectedItem])
 
   React.useEffect(() => {
-    seekRef.current = seekTime
-    setSeekTime(seekTime)
-    seek(seekTime, isPlaying)
+    console.log('[help]::seek time', seekTime)
+    const { updateTs } = vodState
+    let seekTo = seekTime
+    if (isPlaying) {
+      const now = new Date().getTime()
+      const offset = now - updateTs
+      // offset is in milliseconds, seekTime is in seconds (because it is derived from HTMLVideoElement.currenTime)
+      seekTo = seekTime + offset / 1000
+      console.log('[help]::seek offset', offset, seekTo)
+    }
+    seekRef.current = seekTo
+    setSeekTime(seekTo)
+    seek(seekTo, isPlaying)
   }, [seekTime])
 
   React.useEffect(() => {
@@ -267,7 +277,9 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     const {
       currentTarget: { currentTime },
     } = event
-    onTimeUpdate(index, item, currentTime)
+    if (selectionRef.current && itemsAreSimilar(item, selectionRef.current)) {
+      onTimeUpdate(index, item, currentTime)
+    }
     setVideoTime(formatTime(currentTime))
   }
 

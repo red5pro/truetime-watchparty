@@ -38,7 +38,7 @@ interface IVODHLSContextProps {
   // SeekTime is user driven for listening participants.
   // We don't rely on setting currentTime as that will be dispatched every millisecond
   // And cause choppy playback.
-  setDrivenSeekTime(value: number): any
+  setDrivenSeekTime(value: number, useDrive?: boolean): any
 }
 
 const VODHLSContext = React.createContext<IVODHLSContextProps>({} as IVODHLSContextProps)
@@ -131,7 +131,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
           driver: json.currentDriver && json.currentDriver.userid === userid ? undefined : json.currentDriver,
           updateTs: new Date().getTime(),
         }
-        console.log('[help]::NEW STATE', newState)
+        // console.log('[help]::NEW STATE', newState)
         setVODState(newState)
       } catch (e) {
         console.error(e)
@@ -189,9 +189,10 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   }
 
   const setSelectedItem = (value: VODHLSItem, userDriven = false) => {
-    if (!userDriven) {
-      setVODState({ ...vodState, ...{ selection: value } })
-    } else if (socketRef && socketRef.current) {
+    // if (!userDriven) {
+    setVODState({ ...vodState, ...{ selection: value } })
+    // } else
+    if (socketRef && socketRef.current) {
       console.log('[socket] SET_SELECTION')
       ;(socketRef.current as any).send(
         JSON.stringify({
@@ -204,9 +205,10 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   }
 
   const setIsPlaying = (value: boolean, userDriven = false) => {
-    if (!userDriven) {
-      setVODState({ ...vodState, ...{ isPlaying: value } })
-    } else if (socketRef && socketRef.current) {
+    // if (!userDriven) {
+    setVODState({ ...vodState, ...{ isPlaying: value } })
+    // } else
+    if (socketRef && socketRef.current) {
       console.log('[socket] SET_PLAYING')
       ;(socketRef.current as any).send(
         JSON.stringify({
