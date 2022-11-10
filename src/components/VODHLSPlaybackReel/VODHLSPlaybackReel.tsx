@@ -29,8 +29,14 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   const vodState = useRecoilValue(vodPlaybackState)
 
-  const { assumeDriverControl, releaseDriverControl, setDrivenSeekTime, setSelectedItem, setIsPlaying } =
-    useVODHLSContext()
+  const {
+    assumeDriverControl,
+    releaseDriverControl,
+    setDrivenSeekTime,
+    setCurrentPlayHead,
+    setSelectedItem,
+    setIsPlaying,
+  } = useVODHLSContext()
 
   let totalLoad = 0
 
@@ -103,6 +109,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   const onHLSTimeUpdate = (index: number, item: VODHLSItem, time: number) => {
     // console.log(`[help] Following ${index}, with value ${time}.`)
     setTimeValue(time)
+    setCurrentPlayHead(time)
   }
 
   const onPlayRequest = () => {

@@ -12,10 +12,13 @@ enum InvokeKeys {
   TIME = 'time',
   SELECT = 'select',
   CONTROL = 'control',
+  RESPONSE = 'response',
 }
 
 const vodReducer = (state: any, action: any) => {
   switch (action.type) {
+    case 'PLAYHEAD':
+      return { ...state, playheadTime: action.time }
     case 'SET_USER':
       return { ...state, userid: action.userid, name: action.name }
   }
@@ -39,6 +42,7 @@ interface IVODHLSContextProps {
   // We don't rely on setting currentTime as that will be dispatched every millisecond
   // And cause choppy playback.
   setDrivenSeekTime(value: number, useDrive?: boolean): any
+  setCurrentPlayHead(value: number): any
 }
 
 const VODHLSContext = React.createContext<IVODHLSContextProps>({} as IVODHLSContextProps)
@@ -62,6 +66,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     id: 0,
     name: undefined,
     userid: undefined,
+    playheadTime: 0,
   })
 
   React.useEffect(() => {
@@ -121,18 +126,35 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       console.log('SOCKET MESSAGE', event)
       const { data } = event
       try {
-        const json = JSON.parse(data).manifestUpdate
-        const newSelection = json.selectedItem || (vodState.list.length > 0 ? vodState.list[0] : undefined)
-        const newState = {
-          ...vodState,
-          isPlaying: json.isPlaying,
-          selection: newSelection,
-          seekTime: json.currentTime,
-          driver: json.currentDriver && json.currentDriver.userid === userid ? undefined : json.currentDriver,
-          updateTs: new Date().getTime(),
+        const json = JSON.parse(data)
+        if (json.manifestUpdate) {
+          const manifest = json.manifestUpdate
+          const { isPlaying, currentTime } = manifest
+          const newSelection = manifest.selectedItem || (vodState.list.length > 0 ? vodState.list[0] : undefined)
+          const newState = {
+            ...vodState,
+            isPlaying: isPlaying,
+            selection: newSelection,
+            seekTime: currentTime,
+            driver:
+              manifest.currentDriver && manifest.currentDriver.userid === userid ? undefined : manifest.currentDriver,
+            updateTs: new Date().getTime(),
+          }
+          // console.log('[help]::NEW STATE', newState)
+          setVODState(newState)
+        } else if (json.request) {
+          const { request } = json
+          if (request === 'sampleTime') {
+            socket.send(
+              JSON.stringify({
+                type: InvokeKeys.RESPONSE,
+                request,
+                response: vod.playheadTime,
+                from: user ? user.userid : vod.userid,
+              })
+            )
+          }
         }
-        // console.log('[help]::NEW STATE', newState)
-        setVODState(newState)
       } catch (e) {
         console.error(e)
       }
@@ -182,6 +204,20 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         })
       )
     }
+  }
+
+  const setCurrentPlayHead = (value: number) => {
+    dispatch({ type: 'PLAYHEAD', time: value })
+    // if (socketRef && socketRef.current) {
+    //   ;(socketRef.current as any).send(
+    //     JSON.stringify({
+    //       type: InvokeKeys.RESPONSE,
+    //       request: 'sampleTime',
+    //       response: vod.playheadTime,
+    //       from: user ? user.userid : vod.userid,
+    //     })
+    //   )
+    // }
   }
 
   const setEnabled = (value: boolean) => {
@@ -253,6 +289,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     setSelectedItem,
     setIsPlaying,
     setDrivenSeekTime,
+    setCurrentPlayHead,
     assumeDriverControl,
     releaseDriverControl,
   }
