@@ -112,7 +112,6 @@ const AdminPage = () => {
       </Box>
 
       {allStats && !openCreatePage && <MainTotalValues stats={allStats} />}
-      {!allStats && loading && <Loading />}
       {statsByConference && (
         <LocalizationProvider dateAdapter={AdapterMoment}>
           <TabsSection
@@ -128,6 +127,7 @@ const AdminPage = () => {
           />
         </LocalizationProvider>
       )}
+      {((!allStats && loading) || (!statsByConference && allStats)) && <Loading />}
 
       {error && (
         <SimpleAlertDialog
