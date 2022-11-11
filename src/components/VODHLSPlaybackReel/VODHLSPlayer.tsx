@@ -76,6 +76,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
 
   const [control, setControl] = React.useState<any>()
   const [videoTime, setVideoTime] = React.useState<string>('0')
+  const [currentTime, setCurrentTime] = React.useState<number>(0)
 
   React.useEffect(() => {
     setVolume(volume)
@@ -114,16 +115,16 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   }, [item, selectedItem])
 
   React.useEffect(() => {
-    console.log('[help]::seek time', seekTime)
+    // console.log('[help]::seek time', seekTime)
     const { updateTs } = vodState
-    let seekTo = seekTime
-    if (isPlaying) {
-      const now = new Date().getTime()
-      const offset = now - updateTs
-      // offset is in milliseconds, seekTime is in seconds (because it is derived from HTMLVideoElement.currenTime)
-      seekTo = seekTime + offset / 1000
-      console.log('[help]::seek offset', offset, seekTo)
-    }
+    const seekTo = seekTime
+    // if (isPlaying) {
+    //   const now = new Date().getTime()
+    //   const offset = now - updateTs
+    //   // offset is in milliseconds, seekTime is in seconds (because it is derived from HTMLVideoElement.currenTime)
+    //   seekTo = seekTime + offset / 1000
+    //   console.log('[help]::seek offset', offset, seekTo)
+    // }
     seekRef.current = seekTo
     setSeekTime(seekTo)
     seek(seekTo, isPlaying)
@@ -280,6 +281,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     if (selectionRef.current && itemsAreSimilar(item, selectionRef.current)) {
       onTimeUpdate(index, item, currentTime)
     }
+    setCurrentTime(currentTime)
     setVideoTime(formatTime(currentTime))
   }
 
@@ -288,7 +290,9 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       <video ref={videoRef} className={classes.player} controls muted={!isVisible} playsInline={true} loop={true}>
         {requiresSource && <source src={item.url} type="application/x-mpegURL"></source>}
       </video>
-      <Typography sx={{ color: 'white' }}>{videoTime}</Typography>
+      <Typography sx={{ color: 'white' }}>
+        {currentTime} - {videoTime}
+      </Typography>
     </Box>
   )
 })

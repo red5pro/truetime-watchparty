@@ -67,7 +67,7 @@ interface SubscriberRef {
 const MainStage = () => {
   const mediaContext = useMediaContext()
   // Warning! This could be null when not wrapped in VOD. Available for routes with /join/vod/<token>.
-  const { vod, error: vodError, join: joinVOD, leave: leaveVOD, setEnabled } = useVODHLSContext()
+  const { error: vodError, join: joinVOD, leave: leaveVOD, setEnabled } = useVODHLSContext()
   const vodState = useRecoilValue(vodPlaybackState)
 
   const { error, loading, data, join, retry } = useWatchContext()

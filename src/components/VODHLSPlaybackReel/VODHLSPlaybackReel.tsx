@@ -114,7 +114,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   const onPlayRequest = () => {
     setDrivenSeekTime(timeValue, false)
-    setIsPlaying(!vodState.isPlaying, true)
+    setIsPlaying(!vodState.isPlaying, timeValue, true)
   }
 
   const onHLSLoad = (index: number, item: VODHLSItem, totalTime: number) => {
@@ -159,7 +159,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   const onThumbnailSelect = (item: VODHLSItem) => {
     setDrivenSeekTime(timeValue, true)
-    setSelectedItem(item, true)
+    setSelectedItem(item, timeValue, true)
   }
 
   return (

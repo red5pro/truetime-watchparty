@@ -15,29 +15,19 @@ enum InvokeKeys {
   RESPONSE = 'response',
 }
 
-const vodReducer = (state: any, action: any) => {
-  switch (action.type) {
-    case 'PLAYHEAD':
-      return { ...state, playheadTime: action.time }
-    case 'SET_USER':
-      return { ...state, userid: action.userid, name: action.name }
-  }
-}
-
 interface VODHLSContextProps {
   children: any
 }
 
 interface IVODHLSContextProps {
-  vod: any
   error: any
   join(token: string, nickname: string, userid: string): any
   leave(): any
   setEnabled(value: boolean): any
   assumeDriverControl(): any
   releaseDriverControl(): any
-  setSelectedItem(value: VODHLSItem, userDriven?: boolean): any
-  setIsPlaying(value: boolean, userDriven?: boolean): any
+  setSelectedItem(value: VODHLSItem, atTime: number, userDriven?: boolean): any
+  setIsPlaying(value: boolean, atTime: number, userDriven?: boolean): any
   // SeekTime is user driven for listening participants.
   // We don't rely on setting currentTime as that will be dispatched every millisecond
   // And cause choppy playback.
@@ -58,21 +48,26 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
 
   const [vodState, setVODState] = useRecoilState(vodPlaybackState)
   const [user, setUser] = React.useState<any>()
+  const userRef = React.useRef(user)
+
+  const [playhead, setPlayhead] = React.useState<number>()
+  const playheadRef = React.useRef(playhead)
+
+  const [interval, setInt] = React.useState<any | undefined>(undefined)
 
   const [error, setError] = React.useState<any>()
 
-  const [vod, dispatch] = useReducer(vodReducer, {
-    // Use to send out messages to other participants.
-    id: 0,
-    name: undefined,
-    userid: undefined,
-    playheadTime: 0,
-  })
-
   React.useEffect(() => {
-    socketRef.current = vodSocket
+    if (vodSocket) {
+      socketRef.current = vodSocket
+      // if (!interval) {
+      //   console.log('[help] SET INTERVAL')
+      //   setInt(setInterval(sendPlayhead, 2000))
+      // }
+    }
     return () => {
       leave()
+      // clearInterval(interval)
     }
   }, [vodSocket])
 
@@ -119,8 +114,12 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     const url = `${VOD_SOCKET_HOST}?token=${token}&userid=${userid}`
     const socket = new WebSocket(url)
     socket.onopen = () => {
-      console.log('SOCKET OPEN')
-      dispatch({ type: 'SET_USER', name: nickname, userid })
+      const u = {
+        name: nickname,
+        userid,
+      }
+      setUser(u)
+      userRef.current = u
     }
     socket.onmessage = (event) => {
       console.log('SOCKET MESSAGE', event)
@@ -145,14 +144,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         } else if (json.request) {
           const { request } = json
           if (request === 'sampleTime') {
-            socket.send(
-              JSON.stringify({
-                type: InvokeKeys.RESPONSE,
-                request,
-                response: vod.playheadTime,
-                from: user ? user.userid : vod.userid,
-              })
-            )
+            sendPlayhead()
           }
         }
       } catch (e) {
@@ -175,7 +167,12 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       console.log('SOCKET CLOSE', event)
     }
     setVODSocket(socket)
-    setUser({ userid: userid, name: nickname })
+    const u = {
+      name: nickname,
+      userid,
+    }
+    setUser(u)
+    userRef.current = u
   }
 
   const leave = () => {
@@ -190,31 +187,47 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     }
   }
 
+  const sendPlayhead = () => {
+    if (socketRef && socketRef.current) {
+      const value = playheadRef.current ? playheadRef.current : 0
+      if (value === 0) return
+      ;(socketRef.current as any).send(
+        JSON.stringify({
+          type: InvokeKeys.RESPONSE,
+          request: 'sampleTime',
+          response: value,
+          from: userRef.current ? userRef.current.userid : user.userid,
+        })
+      )
+    }
+  }
+
   const setDrivenSeekTime = (value: number, userDriven: boolean) => {
     // TODO: debounce this?...
     if (!userDriven) {
-      dispatch({ type: 'SET_SEEK_TIME', time: value })
+      setVODState({ ...vodState, ...{ seekTime: value } })
     } else if (socketRef && socketRef.current) {
       console.log('[socket] SET_SEEK_TIME', value)
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.TIME,
           value,
-          from: user.userid,
+          from: userRef.current ? userRef.current.userid : user.userid,
         })
       )
     }
   }
 
   const setCurrentPlayHead = (value: number) => {
-    dispatch({ type: 'PLAYHEAD', time: value })
+    playheadRef.current = value
+    setPlayhead(value)
     // if (socketRef && socketRef.current) {
     //   ;(socketRef.current as any).send(
     //     JSON.stringify({
     //       type: InvokeKeys.RESPONSE,
     //       request: 'sampleTime',
     //       response: vod.playheadTime,
-    //       from: user ? user.userid : vod.userid,
+    //       from: userRef.current ? userRef.current.userid : user.userid,
     //     })
     //   )
     // }
@@ -224,7 +237,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     setVODState({ ...vodState, ...{ enabled: value } })
   }
 
-  const setSelectedItem = (value: VODHLSItem, userDriven = false) => {
+  const setSelectedItem = (value: VODHLSItem, atTime: number, userDriven = false) => {
     // if (!userDriven) {
     setVODState({ ...vodState, ...{ selection: value } })
     // } else
@@ -234,13 +247,14 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         JSON.stringify({
           type: InvokeKeys.SELECT,
           value,
-          from: user.userid,
+          time: atTime,
+          from: userRef.current ? userRef.current.userid : user.userid,
         })
       )
     }
   }
 
-  const setIsPlaying = (value: boolean, userDriven = false) => {
+  const setIsPlaying = (value: boolean, atTime: number, userDriven = false) => {
     // if (!userDriven) {
     setVODState({ ...vodState, ...{ isPlaying: value } })
     // } else
@@ -250,7 +264,8 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         JSON.stringify({
           type: InvokeKeys.PLAY,
           value,
-          from: user.userid,
+          time: atTime,
+          from: userRef.current ? userRef.current.userid : user.userid,
         })
       )
     }
@@ -262,7 +277,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         JSON.stringify({
           type: InvokeKeys.CONTROL,
           value: user,
-          from: user.userid,
+          from: userRef.current ? userRef.current.userid : user.userid,
         })
       )
     }
@@ -274,14 +289,13 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         JSON.stringify({
           type: InvokeKeys.CONTROL,
           value: undefined,
-          from: user.userid,
+          from: userRef.current ? userRef.current.userid : user.userid,
         })
       )
     }
   }
 
   const exportedValues = {
-    vod,
     error,
     join,
     leave,
