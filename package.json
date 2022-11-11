@@ -22,6 +22,7 @@
     "formik": "^2.2.9",
     "formik-mui": "^5.0.0-alpha.0",
     "hls.js": "^1.2.4",
+    "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "pubnub": "^7.2.0",
     "pubnub-react": "^3.0.1",

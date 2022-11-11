@@ -117,17 +117,24 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   React.useEffect(() => {
     // console.log('[help]::seek time', seekTime)
     const { updateTs } = vodState
-    const seekTo = seekTime
-    // if (isPlaying) {
-    //   const now = new Date().getTime()
-    //   const offset = now - updateTs
-    //   // offset is in milliseconds, seekTime is in seconds (because it is derived from HTMLVideoElement.currenTime)
-    //   seekTo = seekTime + offset / 1000
-    //   console.log('[help]::seek offset', offset, seekTo)
-    // }
+    let seekTo = seekTime
+    if (isPlaying) {
+      // We are here to discuss how we receive data for synchronization and store it in state,
+      // but React batches state updates, so now we have to figure out how long it took
+      // for this playhead time to be updated in state... fun.
+      const now = new Date().getTime()
+      const offset = now - updateTs
+      seekTo = seekTime + offset / 1000
+    }
+    // If we are within a certain time frame, forget it
+    if (Math.abs(currentTime - seekTo) < 1.5) {
+      console.log('[help]::seek BAIL')
+      return
+    }
+    console.log('[help]:: seek update', seekRef.current, seekTo)
     seekRef.current = seekTo
     setSeekTime(seekTo)
-    seek(seekTo, isPlaying)
+    seek(seekTo, false, isPlaying)
   }, [seekTime])
 
   React.useEffect(() => {
@@ -207,13 +214,15 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     }
   }
 
-  const seek = async (to: number, andPlay = false) => {
+  const seek = async (to: number, andPause = true, andPlay = false) => {
     const { duration } = videoRef.current
     try {
-      stopPlayTimeout()
-      await pause(true)
+      if (andPause) {
+        stopPlayTimeout()
+        await pause(true)
+      }
       videoRef.current.currentTime = isNaN(duration) ? to : to <= duration ? to : duration - 1
-      if (isPlaying && andPlay && to < duration) {
+      if (isPlaying && andPause && andPlay && to < duration) {
         resetPlayTimeout()
       }
     } catch (e) {
@@ -258,12 +267,9 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     const video = getVideo()
     if (video && value >= 0) {
       const { currentTime } = video
-      await seek(value, isPlaying)
-      console.log('[help] SYNC TIME', value)
-      // video.currentTime = value
-      if (Math.abs(currentTime - value) > 1.5) {
-        // video.currentTime = value
-      }
+      seekRef.current = currentTime
+      setSeekTime(currentTime)
+      await seek(value, true, isPlaying)
     }
   }
 

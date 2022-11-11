@@ -4,6 +4,7 @@ import { useLocation, useSearchParams } from 'react-router-dom'
 import { VODHLSItem } from '../../models/VODHLSItem'
 import { VOD_CONTEXT, VOD_HOST, VOD_SOCKET_HOST } from '../../settings/variables'
 import vodPlaybackState from '../../atoms/vod/vod'
+import debounce from 'lodash/debounce'
 
 const vodReg = /^\/join\/vod/
 const INVOKE_EVENT_NAME = 'VOD_SYNC'
@@ -56,6 +57,27 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   const [interval, setInt] = React.useState<any | undefined>(undefined)
 
   const [error, setError] = React.useState<any>()
+
+  const dispatchTimeUpdate = React.useCallback(
+    debounce((value) => {
+      console.log('[socket] SET_SEEK_TIME', value)
+      ;(socketRef.current as any).send(
+        JSON.stringify({
+          type: InvokeKeys.TIME,
+          value,
+          from: userRef.current ? userRef.current.userid : user.userid,
+        })
+      )
+    }, 500),
+    []
+  )
+
+  const dispatchManifestUpdate = React.useCallback(
+    debounce((manifest) => {
+      setVODState(manifest)
+    }, 200),
+    []
+  )
 
   React.useEffect(() => {
     if (vodSocket) {
@@ -122,11 +144,20 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       userRef.current = u
     }
     socket.onmessage = (event) => {
-      console.log('SOCKET MESSAGE', event)
+      // console.log('SOCKET MESSAGE', event)
       const { data } = event
       try {
         const json = JSON.parse(data)
-        if (json.manifestUpdate) {
+        if (json.driverUpdate) {
+          const driver = json.driverUpdate
+          const newState = {
+            ...vodState,
+            driver: driver && driver.userid === userid ? undefined : driver,
+            updateTs: new Date().getTime(),
+          }
+          // console.log('[help]::NEW STATE', newState)
+          dispatchManifestUpdate(newState)
+        } else if (json.manifestUpdate) {
           const manifest = json.manifestUpdate
           const { isPlaying, currentTime } = manifest
           const newSelection = manifest.selectedItem || (vodState.list.length > 0 ? vodState.list[0] : undefined)
@@ -140,7 +171,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
             updateTs: new Date().getTime(),
           }
           // console.log('[help]::NEW STATE', newState)
-          setVODState(newState)
+          dispatchManifestUpdate(newState)
         } else if (json.request) {
           const { request } = json
           if (request === 'sampleTime') {
@@ -207,14 +238,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     if (!userDriven) {
       setVODState({ ...vodState, ...{ seekTime: value } })
     } else if (socketRef && socketRef.current) {
-      console.log('[socket] SET_SEEK_TIME', value)
-      ;(socketRef.current as any).send(
-        JSON.stringify({
-          type: InvokeKeys.TIME,
-          value,
-          from: userRef.current ? userRef.current.userid : user.userid,
-        })
-      )
+      dispatchTimeUpdate(value)
     }
   }
 
@@ -276,7 +300,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.CONTROL,
-          value: user,
+          value: user || userRef.current,
           from: userRef.current ? userRef.current.userid : user.userid,
         })
       )
