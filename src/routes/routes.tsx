@@ -30,7 +30,9 @@ const AppRoutes = () => {
               <JoinContext.Provider>
                 <MediaContext.Provider>
                   <WatchContext.Provider>
-                    <JoinPage />
+                    <VODHLSContext.Provider>
+                      <JoinPage />
+                    </VODHLSContext.Provider>
                   </WatchContext.Provider>
                 </MediaContext.Provider>
               </JoinContext.Provider>
@@ -55,6 +57,14 @@ const AppRoutes = () => {
           <Route path="/join/guest" element={<VipJoinPage />} />
           <Route
             path="/thankyou/:token"
+            element={
+              <JoinContext.Provider>
+                <ThankYouPage />
+              </JoinContext.Provider>
+            }
+          />
+          <Route
+            path="/thankyou/vod/:token"
             element={
               <JoinContext.Provider>
                 <ThankYouPage />

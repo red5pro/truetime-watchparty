@@ -11,6 +11,7 @@ import VODHLSPlayer, { VODHLSPlayerRef } from './VODHLSPlayer'
 import VODHLSThumbnail, { VODHLSThumbnailRef } from './VODHLSThumbnail'
 import vodPlaybackState from '../../atoms/vod/vod'
 import { formatTime } from '../../utils/commonUtils'
+import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 
 const useVODHLSContext = () => React.useContext(VODHLSContext.Context)
 
@@ -43,6 +44,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   const { classes } = useStyles()
   const [timeValue, setTimeValue] = React.useState<number>(0)
   const [volume, setVideoVolume] = React.useState<number>(1)
+  const [playbackRestriction, setPlaybackRestriction] = React.useState<boolean>(false)
 
   const playerRefs = React.useMemo(
     () =>
@@ -162,8 +164,31 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
     setSelectedItem(item, timeValue, true)
   }
 
+  // Needed for mobile safari and its silly user-interaction over autoplay...
+  const onPlaybackRestriction = () => {
+    setPlaybackRestriction(true)
+  }
+
+  const onPlaybackRestrictionConfirm = () => {
+    setPlaybackRestriction(false)
+    playerRefs.forEach(async (ref) => {
+      const player = (ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef
+      if (player) {
+        player.play()
+      }
+    })
+  }
+
   return (
     <Box className={classes.container} sx={style}>
+      {playbackRestriction && (
+        <SimpleAlertDialog
+          title="Sync"
+          message={`Would you like to begin synchronize plyaback?`}
+          confirmLabel="Ok"
+          onConfirm={() => onPlaybackRestrictionConfirm()}
+        />
+      )}
       <Stack className={classes.videoStack}>
         {new Array(vodState.list.length).fill(0).map((inp, index) => (
           <VODHLSPlayer
@@ -177,6 +202,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
             seekTime={vodState.seekTime}
             onTimeUpdate={onHLSTimeUpdate}
             onHLSLoad={onHLSLoad}
+            onPlaybackRestriction={onPlaybackRestriction}
           ></VODHLSPlayer>
         ))}
         {!vodState.isPlaying && (

@@ -321,7 +321,11 @@ const MainStage = () => {
   }
 
   const onLeave = () => {
-    navigate(`/thankyou/${joinToken}`)
+    if (vodEnabled) {
+      navigate(`/thankyou/vod/${joinToken}${location.search}`)
+    } else {
+      navigate(`/thankyou/${joinToken}`)
+    }
   }
 
   const toggleLock = async () => {
@@ -476,7 +480,7 @@ const MainStage = () => {
           />
         </Box>
       )}
-      {vodEnabled && (
+      {vodState.active && vodEnabled && (
         <VODHLSPlaybackReel
           ref={vodVideoRef}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}

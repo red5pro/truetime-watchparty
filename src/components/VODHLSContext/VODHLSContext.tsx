@@ -6,7 +6,7 @@ import { VOD_CONTEXT, VOD_HOST, VOD_SOCKET_HOST } from '../../settings/variables
 import vodPlaybackState from '../../atoms/vod/vod'
 import debounce from 'lodash/debounce'
 
-const vodReg = /^\/join\/vod/
+const vodReg = /^\/join\/vod\//
 const INVOKE_EVENT_NAME = 'VOD_SYNC'
 enum InvokeKeys {
   PLAY = 'play',
@@ -102,7 +102,9 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   }, [location])
 
   React.useEffect(() => {
-    if (searchParams) {
+    const { pathname, search } = location
+    const yayornay = !!pathname.match(vodReg)
+    if (yayornay && search.length > 0) {
       let host = VOD_HOST
       let context = VOD_CONTEXT
       const list: VODHLSItem[] = []

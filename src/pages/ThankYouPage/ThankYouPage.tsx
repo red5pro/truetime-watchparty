@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import OracleLogo from '../../assets/logos/OracleLogo'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
@@ -10,6 +10,7 @@ import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
 import useStyles from './ThankYouPage.module'
 
+const vodReg = /^\/thankyou\/vod\//
 const useJoinContext = () => React.useContext(JoinContext.Context)
 
 // TODO: Determine how we are taken here between simple `Leave` and when conference is ended.
@@ -17,11 +18,18 @@ const ThankYouPage = () => {
   const { loading, error, joinToken, conferenceData, seriesEpisode } = useJoinContext()
 
   const { classes } = useStyles()
+  const location = useLocation()
 
   const navigate = useNavigate()
 
   const onRejoin = () => {
-    navigate(`/join/${joinToken}`)
+    const { pathname } = location
+    const isVOD = !!pathname.match(vodReg)
+    if (isVOD) {
+      navigate(`/join/vod/${joinToken}${location.search}`)
+    } else {
+      navigate(`/join/${joinToken}`)
+    }
   }
 
   const onRetryRequest = () => {

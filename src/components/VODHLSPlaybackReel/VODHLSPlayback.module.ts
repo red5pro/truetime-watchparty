@@ -42,8 +42,8 @@ const useStyles = makeStyles()((theme: any) => {
     },
     player: {
       width: 'inherit',
-      // height: 'inherit',
-      height: '400px',
+      height: 'inherit',
+      // height: '400px',
       objectFit: 'cover',
     },
     playButton: {

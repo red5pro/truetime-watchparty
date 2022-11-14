@@ -34,10 +34,12 @@ interface VODHLSPlayerProps {
   volume: number
   onTimeUpdate(index: number, item: VODHLSItem, time: number): any
   onHLSLoad(index: number, item: VODHLSItem, totalTime: number): any
+  onPlaybackRestriction(): any
 }
 
 const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<VODHLSPlayerRef>) => {
-  const { index, item, isPlaying, seekTime, selectedItem, volume, onTimeUpdate, onHLSLoad } = props
+  const { index, item, isPlaying, seekTime, selectedItem, volume, onTimeUpdate, onHLSLoad, onPlaybackRestriction } =
+    props
 
   React.useImperativeHandle(ref, () => ({
     play,
@@ -82,6 +84,34 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     setVolume(volume)
     if (videoRef && videoRef.current) {
       videoRef.current.ontimeupdate = onVideoTimeUpdate
+      if (supportsHLS()) {
+        const update = async () => {
+          videoRef.current.currentTime = seekRef.current
+          if (playingRef.current) {
+            await play()
+          } else {
+            await pause()
+          }
+          if (selectionRef.current) {
+            show(itemsAreSimilar(item, selectionRef.current))
+          }
+          updateMuteStatus()
+        }
+        videoRef.current.oncanplay = () => console.log('[help]::canplay', index)
+        videoRef.current.oncanplaythrough = () => {
+          update()
+          console.log('[help]::canplaythrough', index)
+        }
+        videoRef.current.ondurationchange = () => {
+          update()
+          console.log('[help]::durationchange', index)
+        }
+        videoRef.current.onloadeddata = () => console.log('[help]::loadeddata', index)
+        videoRef.current.onloadedmetadata = () => console.log('[help]::loadedmetadata', index)
+        videoRef.current.onstalled = () => console.log('[help]::stalled', index)
+        videoRef.current.onsuspend = () => console.log('[help]::suspend', index)
+        videoRef.current.onwaiting = () => console.log('[help]::waiting', index)
+      }
     }
   }, [])
 
@@ -97,9 +127,8 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       })
       setControl(hls)
     } else {
+      videoRef.current.addEventListener('loadedmetadata', checkReadyState)
       setRequiresSource(true)
-      videoRef.current.autoplay = true
-      checkReadyState()
       setControl({
         destroy: () => {
           console.log('SOURCE', 'destroy')
@@ -112,6 +141,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     selectionRef.current = selectedItem
     setSelectedItem(selectedItem)
     show(itemsAreSimilar(item, selectedItem))
+    console.log('[help]:: selection', index, itemsAreSimilar(item, selectedItem))
   }, [item, selectedItem])
 
   React.useEffect(() => {
@@ -131,20 +161,25 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       console.log('[help]::seek BAIL')
       return
     }
-    console.log('[help]:: seek update', seekRef.current, seekTo)
+    console.log('[help]:: seek update', seekRef.current, seekTo, index)
     seekRef.current = seekTo
     setSeekTime(seekTo)
-    seek(seekTo, false, isPlaying)
+    // seek(seekTo, false, isPlaying)
+    fastSeek(seekTo)
   }, [seekTime])
 
   React.useEffect(() => {
+    const playPause = async (doPlay: boolean) => {
+      if (doPlay) {
+        await play()
+      } else {
+        await pause()
+      }
+    }
     playingRef.current = isPlaying
     setIsPlaying(isPlaying)
-    if (isPlaying) {
-      play()
-    } else {
-      pause()
-    }
+    playPause(isPlaying)
+    console.log('[help]:: isPlaying', isPlaying, index)
   }, [isPlaying])
 
   const checkReadyState = async (timeout?: any | undefined) => {
@@ -158,7 +193,6 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       if (targetClause && duration > 0 && !isLoaded) {
         try {
           isLoaded = true
-          videoRef.current.autoplay = false
           videoRef.current.currentTime = seekRef.current
           if (playingRef.current) {
             await play()
@@ -168,6 +202,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
           if (selectionRef.current) {
             show(itemsAreSimilar(item, selectionRef.current))
           }
+          updateMuteStatus()
           onHLSLoad(index, item, duration)
           return
         } catch (e) {
@@ -178,6 +213,14 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       }
     } else {
       const t: any = setTimeout(() => checkReadyState(t), 500)
+    }
+  }
+
+  const updateMuteStatus = () => {
+    if (videoRef.current && selectionRef.current) {
+      const isSelected = itemsAreSimilar(item, selectionRef.current)
+      videoRef.current.muted = !isSelected
+      console.log('[help]:: muted', index, !isSelected)
     }
   }
 
@@ -200,14 +243,18 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
 
   const play = async () => {
     try {
+      console.log('[help]::play', index)
       await videoRef.current.play()
+      updateMuteStatus()
     } catch (e: any) {
       console.log(`Could not start playback for ${item.name}: ${e.message}`)
+      onPlaybackRestriction()
     }
   }
 
   const pause = async (resume = false) => {
     try {
+      console.log('[help]::pause', index)
       await videoRef.current.pause()
     } catch (e: any) {
       console.log(`Could not start playback for ${item.name}: ${e.message}`)
@@ -217,12 +264,13 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   const seek = async (to: number, andPause = true, andPlay = false) => {
     const { duration } = videoRef.current
     try {
-      if (andPause) {
-        stopPlayTimeout()
-        await pause(true)
-      }
+      // if (andPause) {
+      stopPlayTimeout()
+      await pause(true)
+      // }
       videoRef.current.currentTime = isNaN(duration) ? to : to <= duration ? to : duration - 1
-      if (isPlaying && andPause && andPlay && to < duration) {
+      // if (isPlaying && andPause && andPlay && to < duration) {
+      if (isPlaying && andPlay && to < duration) {
         resetPlayTimeout()
       }
     } catch (e) {
@@ -230,8 +278,18 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     }
   }
 
-  const show = (doShow: boolean) => {
+  const fastSeek = (to: number) => {
+    const { duration } = videoRef.current
+    videoRef.current.currentTime = isNaN(duration) ? to : to <= duration ? to : duration - 1
+  }
+
+  const show = async (doShow: boolean) => {
     setIsVisible(doShow)
+    if (isPlaying) {
+      await play()
+    } else {
+      await pause()
+    }
   }
 
   const destroy = async () => {
@@ -269,6 +327,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       const { currentTime } = video
       seekRef.current = currentTime
       setSeekTime(currentTime)
+      console.log('[help]::synctime', index)
       await seek(value, true, isPlaying)
     }
   }
@@ -293,12 +352,12 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
 
   return (
     <Box className={classes.playerContainer} sx={{ opacity: `${isVisible ? 1 : 0}!important` }}>
-      <video ref={videoRef} className={classes.player} controls muted={!isVisible} playsInline={true} loop={true}>
+      <video ref={videoRef} className={classes.player} autoPlay={true} playsInline={true} loop={true}>
         {requiresSource && <source src={item.url} type="application/x-mpegURL"></source>}
       </video>
-      <Typography sx={{ color: 'white' }}>
+      {/* <Typography sx={{ color: 'white' }}>
         {currentTime} - {videoTime}
-      </Typography>
+      </Typography> */}
     </Box>
   )
 })
