@@ -29,7 +29,7 @@ interface VODHLSPlayerProps {
   index: number
   item: VODHLSItem
   isPlaying: boolean
-  selectedItem: VODHLSItem
+  // selectedItem: VODHLSItem
   seekTime: number
   volume: number
   onTimeUpdate(index: number, item: VODHLSItem, time: number): any
@@ -38,8 +38,7 @@ interface VODHLSPlayerProps {
 }
 
 const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<VODHLSPlayerRef>) => {
-  const { index, item, isPlaying, seekTime, selectedItem, volume, onTimeUpdate, onHLSLoad, onPlaybackRestriction } =
-    props
+  const { index, item, volume, seekTime, isPlaying, onTimeUpdate, onHLSLoad, onPlaybackRestriction } = props
 
   React.useImperativeHandle(ref, () => ({
     play,
@@ -60,7 +59,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   const vodState = useRecoilValue(vodPlaybackState)
 
   // Have to wrap these in refs in order to have updated state in loaded callback... :/
-  const [iIsPlaying, setIsPlaying] = React.useState<boolean>(isPlaying)
+  const [iIsPlaying, setIsPlaying] = React.useState<boolean>(false)
   const playingRef = React.useRef(iIsPlaying)
   const [iSeekTime, setSeekTime] = React.useState<number>(0)
   const seekRef = React.useRef(iSeekTime)
@@ -116,10 +115,6 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     }
   }, [])
 
-  // React.useEffect(() => {
-  //   console.log('VOD STATE UPDATE', vodState)
-  // }, [vodState])
-
   React.useEffect(() => {
     if (!supportsHLS() && videoRef.current) {
       const hls = new Hls({ debug: false, backBufferLength: 0 })
@@ -143,18 +138,52 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   }, [item, videoRef])
 
   React.useEffect(() => {
-    // if (item && selectionRef.current === selectedItem) {
-    //   return
-    // }
-    if (!item || !selectedItem) return
-    const needsShow = selectionRef.current?.filename !== selectedItem.filename
-    selectionRef.current = selectedItem
-    setSelectedItem(selectedItem)
-    // if (needsShow) {
-    show(itemsAreSimilar(item, selectedItem))
-    // }
-    console.log('[help]:: selection', index, item, iSelectedItem, selectedItem, itemsAreSimilar(item, selectedItem))
-  }, [item, selectedItem])
+    console.log('VOD STATE UPDATE', vodState)
+    const doPlayPause = async (driver: any = undefined) => {
+      if (driver) {
+        await pause()
+      } else if (playingRef.current) {
+        await play()
+      }
+    }
+    const { selection, seekTime, isPlaying, driver } = vodState
+    if (item && selection) {
+      if (selectionRef !== selection) {
+        selectionRef.current = selection
+        setSelectedItem(selection)
+        show(itemsAreSimilar(item, selection))
+      }
+    }
+    if (playRef.current !== isPlaying) {
+      const playPause = async (doPlay: boolean) => {
+        if (doPlay) {
+          console.log('[help]::useEffect, call play')
+          await play()
+        } else {
+          console.log('[help]::useEffect, call pause')
+          await pause()
+        }
+      }
+      playingRef.current = isPlaying
+      setIsPlaying(isPlaying)
+      playPause(isPlaying)
+    }
+    doPlayPause(driver)
+  }, [item, vodState])
+
+  // React.useEffect(() => {
+  //   // if (item && selectionRef.current === selectedItem) {
+  //   //   return
+  //   // }
+  //   if (!item || !selectedItem) return
+  //   const needsShow = selectionRef.current?.filename !== selectedItem.filename
+  //   selectionRef.current = selectedItem
+  //   setSelectedItem(selectedItem)
+  //   // if (needsShow) {
+  //   show(itemsAreSimilar(item, selectedItem))
+  //   // }
+  //   console.log('[help]:: selection', index, item, iSelectedItem, selectedItem, itemsAreSimilar(item, selectedItem))
+  // }, [item, selectedItem])
 
   React.useEffect(() => {
     // if (seekRef.current === seekTime) {
@@ -183,24 +212,24 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     fastSeek(seekTo)
   }, [seekTime])
 
-  React.useEffect(() => {
-    // if (playingRef.current === isPlaying) {
-    //   return
-    // }
-    const playPause = async (doPlay: boolean) => {
-      if (doPlay) {
-        console.log('[help]::useEffect, call play')
-        await play()
-      } else {
-        console.log('[help]::useEffect, call pause')
-        await pause()
-      }
-    }
-    playingRef.current = isPlaying
-    setIsPlaying(isPlaying)
-    playPause(isPlaying)
-    console.log('[help]:: isPlaying', isPlaying, index)
-  }, [isPlaying])
+  // React.useEffect(() => {
+  //   // if (playingRef.current === isPlaying) {
+  //   //   return
+  //   // }
+  //   const playPause = async (doPlay: boolean) => {
+  //     if (doPlay) {
+  //       console.log('[help]::useEffect, call play')
+  //       await play()
+  //     } else {
+  //       console.log('[help]::useEffect, call pause')
+  //       await pause()
+  //     }
+  //   }
+  //   playingRef.current = isPlaying
+  //   setIsPlaying(isPlaying)
+  //   playPause(isPlaying)
+  //   console.log('[help]:: isPlaying', isPlaying, index)
+  // }, [isPlaying])
 
   const checkReadyState = async (timeout?: any | undefined) => {
     if (timeout) clearTimeout(timeout)
@@ -218,7 +247,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
             console.log('[help]::ready state, call play')
             await play()
           } else {
-            console.log('[help]::ready syaye, call pause')
+            console.log('[help]::ready state, call pause')
             await pause()
           }
           if (selectionRef.current) {
@@ -273,7 +302,9 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       updateMuteStatus()
     } catch (e: any) {
       console.warn(`Could not start playback for ${item.name}: ${e.message}`)
-      onPlaybackRestriction()
+      if (!e.message.match('request was interrupted')) {
+        onPlaybackRestriction()
+      }
     }
   }
 
@@ -356,7 +387,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       const { currentTime } = video
       seekRef.current = currentTime
       setSeekTime(currentTime)
-      console.log('[help]::synctime', index)
+      // console.log('[help]::synctime', index)
       await seek(value, true, isPlaying)
     }
   }
@@ -368,20 +399,24 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     }
   }
 
-  const onVideoTimeUpdate = (event: any) => {
+  const onVideoTimeUpdate = async (event: any) => {
     const {
-      currentTarget: { currentTime },
+      currentTarget: { currentTime, paused },
     } = event
     if (selectionRef.current && itemsAreSimilar(item, selectionRef.current)) {
       onTimeUpdate(index, item, currentTime)
     }
     setCurrentTime(currentTime)
     setVideoTime(formatTime(currentTime))
+    // Trying to catch rogue playpack...
+    // if (!paused && !isPlaying) {
+    //   await pause(false)
+    // }
   }
 
   return (
     <Box className={classes.playerContainer} sx={{ opacity: `${isVisible ? 1 : 0}!important` }}>
-      <video ref={videoRef} className={classes.player} autoPlay={true} playsInline={true} loop={true}>
+      <video ref={videoRef} className={classes.player} autoPlay={false} playsInline={true} loop={true}>
         {requiresSource && <source src={item.url} type="application/x-mpegURL"></source>}
       </video>
       {/* <Typography sx={{ color: 'white' }}>

@@ -158,7 +158,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
             updateTs: new Date().getTime(),
           }
           // console.log('[help]::NEW STATE', newState)
-          dispatchManifestUpdate(newState)
+          setVODState(newState)
         } else if (json.manifestUpdate) {
           const manifest = json.manifestUpdate
           const { isPlaying, currentTime, controller } = manifest
@@ -267,6 +267,8 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   }
 
   const setSelectedItem = (value: VODHLSItem, atTime: number, userDriven = false) => {
+    playheadRef.current = atTime
+    setPlayhead(atTime)
     // if (!userDriven) {
     setVODState({ ...vodState, ...{ selection: value } })
     // } else
@@ -284,6 +286,8 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   }
 
   const setIsPlaying = (value: boolean, atTime: number, userDriven = false) => {
+    playheadRef.current = atTime
+    setPlayhead(atTime)
     // if (!userDriven) {
     setVODState({ ...vodState, ...{ isPlaying: value } })
     // } else

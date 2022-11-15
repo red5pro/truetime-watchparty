@@ -184,7 +184,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
       {playbackRestriction && (
         <SimpleAlertDialog
           title="Sync"
-          message={`Would you like to begin synchronize plyaback?`}
+          message={`Would you like to begin synchronize playback?`}
           confirmLabel="Ok"
           onConfirm={() => onPlaybackRestrictionConfirm()}
         />
@@ -198,7 +198,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
             item={vodState.list[index]}
             volume={volume || 1}
             isPlaying={vodState.isPlaying}
-            selectedItem={vodState.selection}
+            // selectedItem={vodState.selection}
             seekTime={vodState.seekTime}
             onTimeUpdate={onHLSTimeUpdate}
             onHLSLoad={onHLSLoad}
