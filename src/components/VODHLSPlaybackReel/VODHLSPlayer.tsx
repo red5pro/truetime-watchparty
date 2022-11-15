@@ -83,6 +83,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   React.useEffect(() => {
     setVolume(volume)
     if (videoRef && videoRef.current) {
+      // console.log('[help] SETUP', index)
       videoRef.current.ontimeupdate = onVideoTimeUpdate
       if (supportsHLS()) {
         const update = async () => {
@@ -99,7 +100,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
         }
         videoRef.current.oncanplay = () => console.log('[help]::canplay', index)
         videoRef.current.oncanplaythrough = () => {
-          update()
+          // update()
           console.log('[help]::canplaythrough', index)
         }
         videoRef.current.ondurationchange = () => {
@@ -114,6 +115,10 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       }
     }
   }, [])
+
+  // React.useEffect(() => {
+  //   console.log('VOD STATE UPDATE', vodState)
+  // }, [vodState])
 
   React.useEffect(() => {
     if (!supportsHLS() && videoRef.current) {
@@ -138,13 +143,23 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   }, [item, videoRef])
 
   React.useEffect(() => {
+    // if (item && selectionRef.current === selectedItem) {
+    //   return
+    // }
+    if (!item || !selectedItem) return
+    const needsShow = selectionRef.current?.filename !== selectedItem.filename
     selectionRef.current = selectedItem
     setSelectedItem(selectedItem)
+    // if (needsShow) {
     show(itemsAreSimilar(item, selectedItem))
-    console.log('[help]:: selection', index, itemsAreSimilar(item, selectedItem))
+    // }
+    console.log('[help]:: selection', index, item, iSelectedItem, selectedItem, itemsAreSimilar(item, selectedItem))
   }, [item, selectedItem])
 
   React.useEffect(() => {
+    // if (seekRef.current === seekTime) {
+    //   return
+    // }
     // console.log('[help]::seek time', seekTime)
     const { updateTs } = vodState
     let seekTo = seekTime
@@ -169,10 +184,15 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   }, [seekTime])
 
   React.useEffect(() => {
+    // if (playingRef.current === isPlaying) {
+    //   return
+    // }
     const playPause = async (doPlay: boolean) => {
       if (doPlay) {
+        console.log('[help]::useEffect, call play')
         await play()
       } else {
+        console.log('[help]::useEffect, call pause')
         await pause()
       }
     }
@@ -195,8 +215,10 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
           isLoaded = true
           videoRef.current.currentTime = seekRef.current
           if (playingRef.current) {
+            console.log('[help]::ready state, call play')
             await play()
           } else {
+            console.log('[help]::ready syaye, call pause')
             await pause()
           }
           if (selectionRef.current) {
@@ -233,9 +255,10 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
 
   const resetPlayTimeout = () => {
     stopPlayTimeout()
-    playTimeout = setTimeout(() => {
+    playTimeout = setTimeout(async () => {
       if (isPlaying) {
-        play()
+        console.log('[help]::timeout, call pause')
+        await play()
       }
     }, 1000)
     playRef.current = playTimeout
@@ -243,21 +266,25 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
 
   const play = async () => {
     try {
+      if (!videoRef.current.paused) return
       console.log('[help]::play', index)
       await videoRef.current.play()
+      playingRef.current = true
       updateMuteStatus()
     } catch (e: any) {
-      console.log(`Could not start playback for ${item.name}: ${e.message}`)
+      console.warn(`Could not start playback for ${item.name}: ${e.message}`)
       onPlaybackRestriction()
     }
   }
 
   const pause = async (resume = false) => {
     try {
+      if (videoRef.current.paused) return
       console.log('[help]::pause', index)
       await videoRef.current.pause()
+      playingRef.current = false
     } catch (e: any) {
-      console.log(`Could not start playback for ${item.name}: ${e.message}`)
+      console.warn(`Could not pause playback for ${item.name}: ${e.message}`)
     }
   }
 
@@ -286,8 +313,10 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   const show = async (doShow: boolean) => {
     setIsVisible(doShow)
     if (isPlaying) {
+      console.log('[help]::show, call play')
       await play()
     } else {
+      console.log('[help]::show, call pause')
       await pause()
     }
   }

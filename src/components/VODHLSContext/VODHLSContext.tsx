@@ -68,7 +68,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
           from: userRef.current ? userRef.current.userid : user.userid,
         })
       )
-    }, 500),
+    }, 200),
     []
   )
 
@@ -161,7 +161,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
           dispatchManifestUpdate(newState)
         } else if (json.manifestUpdate) {
           const manifest = json.manifestUpdate
-          const { isPlaying, currentTime } = manifest
+          const { isPlaying, currentTime, controller } = manifest
           const newSelection = manifest.selectedItem || (vodState.list.length > 0 ? vodState.list[0] : undefined)
           const newState = {
             ...vodState,
@@ -170,10 +170,13 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
             seekTime: currentTime,
             driver:
               manifest.currentDriver && manifest.currentDriver.userid === userid ? undefined : manifest.currentDriver,
+            controller: controller,
             updateTs: new Date().getTime(),
           }
           // console.log('[help]::NEW STATE', newState)
+          // if (controller !== userid) {
           dispatchManifestUpdate(newState)
+          // }
         } else if (json.request) {
           const { request } = json
           if (request === 'sampleTime') {

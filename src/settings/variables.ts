@@ -14,9 +14,8 @@ export const API_SOCKET_HOST = USE_LOCAL_SERVICES
 export const STREAM_HOST = USE_LOCAL_SERVICES ? 'release-11.red5.net' : SERVER_HOST
 export const VOD_SOCKET_HOST = process.env.REACT_VOD_SOCKET_HOST
   ? `wss://${process.env.REACT_VOD_SOCKET_HOST}`
-  : `wss://toddred5dev543.red5pro.net`
-// : 'wss://f6cf-2601-19b-c700-93f0-c0fd-a6dc-6954-46c0.ngrok.io'
-// : 'ws://localhost:3000'
+  : // : `wss://toddred5dev543.red5pro.net`
+    'wss://f6cf-2601-19b-c700-93f0-c0fd-a6dc-6954-46c0.ngrok.io'
 
 export const VOD_HOST = SERVER_HOST
 export const VOD_CONTEXT = 'live'

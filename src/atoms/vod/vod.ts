@@ -14,7 +14,8 @@ export default atom({
     isPlaying: false,
     seekTime: 0,
     selection: selection,
-    driver: driver,
+    driver: driver, // driver is actively scrubbing with updates
+    controller: driver, // controller drives updates across participants based on polling
     updateTs: 0,
   },
 })
