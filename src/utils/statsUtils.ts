@@ -295,9 +295,10 @@ export const getSortedCountryList = (stats: StatsByConference[]) => {
     if (countries.length === 0) {
       return countries.push({ country: currVall.location, count: 1 })
     }
-    const country = countries.find((item: any) => item.country === currVall.location)
-    if (country) {
-      country.count = +1
+    const countryRep = countries.find((i) => i.country === currVall.location)
+
+    if (countryRep) {
+      countryRep.count += 1
       return countries
     }
 
