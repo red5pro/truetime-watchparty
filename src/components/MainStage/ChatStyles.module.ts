@@ -43,6 +43,11 @@ const useChatStyles = makeStyles()((theme: any) => ({
       fontSize: '1rem',
     },
 
+    '& .pn-tooltip:before, .pn-tooltip:after': {
+      left: 0,
+      right: 0,
+    },
+
     '& span': {
       color: '#E6E8EC',
     },
