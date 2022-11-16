@@ -48,6 +48,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   const [vodSocket, setVODSocket] = React.useState<any>()
 
   const [vodState, setVODState] = useRecoilState(vodPlaybackState)
+  const vodRef = React.useRef(vodState)
   const [user, setUser] = React.useState<any>()
   const userRef = React.useRef(user)
 
@@ -75,6 +76,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   const dispatchManifestUpdate = React.useCallback(
     debounce((manifest) => {
       setVODState(manifest)
+      vodRef.current = manifest
     }, 200),
     []
   )
@@ -97,7 +99,9 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
     if (location) {
       const { pathname } = location
       const yayornay = !!pathname.match(vodReg)
-      setVODState({ ...vodState, ...{ active: yayornay } })
+      const updatedState = { ...vodState, ...{ active: yayornay } }
+      setVODState(updatedState)
+      vodRef.current = updatedState
     }
   }, [location])
 
@@ -123,14 +127,16 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         const ctx = context.toLowerCase() === 'root' ? '' : `${context}/`
         item.url = `https://${host}/${ctx}${item.filename}`
       })
-      setVODState({
+      const updatedState = {
         ...vodState,
         ...{
           active: true,
           list,
           selection: list.length > 0 ? list[0] : undefined,
         },
-      })
+      }
+      setVODState(updatedState)
+      vodRef.current = updatedState
     }
   }, [searchParams])
 
@@ -151,20 +157,22 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       try {
         const json = JSON.parse(data)
         if (json.driverUpdate) {
-          const driver = json.driverUpdate
+          const { driver, selection } = json.driverUpdate
           const newState = {
-            ...vodState,
+            ...vodRef.current,
+            selection: selection,
             driver: driver && driver.userid === userid ? undefined : driver,
             updateTs: new Date().getTime(),
           }
           // console.log('[help]::NEW STATE', newState)
           setVODState(newState)
+          vodRef.current = newState
         } else if (json.manifestUpdate) {
           const manifest = json.manifestUpdate
           const { isPlaying, currentTime, controller } = manifest
           const newSelection = manifest.selectedItem || (vodState.list.length > 0 ? vodState.list[0] : undefined)
           const newState = {
-            ...vodState,
+            ...vodRef.current,
             isPlaying: isPlaying,
             selection: newSelection,
             seekTime: currentTime,
@@ -240,11 +248,13 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
 
   const setDrivenSeekTime = (value: number, userDriven: boolean) => {
     // TODO: debounce this?...
+    const updatedState = { ...vodState, ...{ seekTime: value } }
     if (!userDriven) {
-      setVODState({ ...vodState, ...{ seekTime: value } })
+      setVODState(updatedState)
     } else if (socketRef && socketRef.current) {
       dispatchTimeUpdate(value)
     }
+    vodRef.current = updatedState
   }
 
   const setCurrentPlayHead = (value: number) => {
@@ -263,15 +273,19 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   }
 
   const setEnabled = (value: boolean) => {
-    setVODState({ ...vodState, ...{ enabled: value } })
+    const updatedState = { ...vodState, ...{ enabled: value } }
+    setVODState(updatedState)
+    vodRef.current = updatedState
   }
 
   const setSelectedItem = (value: VODHLSItem, atTime: number, userDriven = false) => {
     playheadRef.current = atTime
     setPlayhead(atTime)
+    const updatedState = { ...vodState, ...{ selection: value } }
     // if (!userDriven) {
-    setVODState({ ...vodState, ...{ selection: value } })
+    setVODState(updatedState)
     // } else
+    vodRef.current = updatedState
     if (socketRef && socketRef.current) {
       console.log('[socket] SET_SELECTION')
       ;(socketRef.current as any).send(
@@ -288,9 +302,11 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   const setIsPlaying = (value: boolean, atTime: number, userDriven = false) => {
     playheadRef.current = atTime
     setPlayhead(atTime)
+    const updatedState = { ...vodState, ...{ isPlaying: value } }
     // if (!userDriven) {
-    setVODState({ ...vodState, ...{ isPlaying: value } })
+    setVODState(updatedState)
     // } else
+    vodRef.current = updatedState
     if (socketRef && socketRef.current) {
       console.log('[socket] SET_PLAYING')
       ;(socketRef.current as any).send(
