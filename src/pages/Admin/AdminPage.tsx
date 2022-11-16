@@ -64,6 +64,7 @@ const AdminPage = () => {
 
   const getStats = async () => {
     const allStats = await STATS_API_CALLS.getAllConferenceStats(cookies.account.username, cookies.account.password)
+
     if (allStats.status === 200 && allStats.data) {
       setAllStats(allStats.data as AllConferenceStats)
     } else {

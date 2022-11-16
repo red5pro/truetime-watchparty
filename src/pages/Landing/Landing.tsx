@@ -7,7 +7,7 @@ import WbcLogo from '../../assets/logos/WbcLogo'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import useStyles from './Landing.module'
 
-const Home = () => {
+const Landing = () => {
   const { classes } = useStyles()
   const [partyCode, setPartyCode] = React.useState<string>('')
   const [error, setError] = React.useState<string>('')
@@ -86,4 +86,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Landing
