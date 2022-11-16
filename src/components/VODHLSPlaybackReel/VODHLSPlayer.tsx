@@ -26,6 +26,7 @@ export interface VODHLSPlayerRef {
 }
 
 interface VODHLSPlayerProps {
+  sx: any
   index: number
   item: VODHLSItem
   isPlaying: boolean
@@ -38,7 +39,7 @@ interface VODHLSPlayerProps {
 }
 
 const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<VODHLSPlayerRef>) => {
-  const { index, item, volume, seekTime, isPlaying, onTimeUpdate, onHLSLoad, onPlaybackRestriction } = props
+  const { sx, index, item, volume, seekTime, isPlaying, onTimeUpdate, onHLSLoad, onPlaybackRestriction } = props
 
   React.useImperativeHandle(ref, () => ({
     play,
@@ -415,8 +416,8 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   }
 
   return (
-    <Box className={classes.playerContainer} sx={{ opacity: `${isVisible ? 1 : 0}!important` }}>
-      <video ref={videoRef} className={classes.player} autoPlay={false} playsInline={true} loop={true}>
+    <Box className={classes.playerContainer} sx={{ ...sx, opacity: `${isVisible ? 1 : 0}!important` }}>
+      <video ref={videoRef} className={classes.player} style={sx} autoPlay={false} playsInline={true} loop={true}>
         {requiresSource && <source src={item.url} type="application/x-mpegURL"></source>}
       </video>
       {/* <Typography sx={{ color: 'white' }}>

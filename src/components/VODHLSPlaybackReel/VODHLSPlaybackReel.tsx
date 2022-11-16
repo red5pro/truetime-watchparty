@@ -12,6 +12,8 @@ import VODHLSThumbnail, { VODHLSThumbnailRef } from './VODHLSThumbnail'
 import vodPlaybackState from '../../atoms/vod/vod'
 import { formatTime } from '../../utils/commonUtils'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
+import styles from './VODHLSPlaybackLayout'
+import { Layout } from '../../models/Layout'
 
 const useVODHLSContext = () => React.useContext(VODHLSContext.Context)
 
@@ -20,11 +22,11 @@ export interface VODHLSPlaybackReelRef {
 }
 
 interface VODHLSPlaybackReelProps {
-  style: any
+  layout: Layout
 }
 
 const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref: React.Ref<VODHLSPlaybackReelRef>) => {
-  const { style } = props
+  const { layout } = props
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 
@@ -44,6 +46,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   const { classes } = useStyles()
   const [timeValue, setTimeValue] = React.useState<number>(0)
   const [volume, setVideoVolume] = React.useState<number>(1)
+  const [vodLayout, setVODLayout] = React.useState<any>(styles.stage)
   const [playbackRestriction, setPlaybackRestriction] = React.useState<boolean>(false)
 
   const playerRefs = React.useMemo(
@@ -77,6 +80,16 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
       isDead = true
     }
   }, [])
+
+  React.useEffect(() => {
+    let useLayout: any = styles.stage
+    if (layout === Layout.FULLSCREEN) {
+      useLayout = styles.fullscreen
+    } else if (layout === Layout.EMPTY) {
+      useLayout = styles.empty
+    }
+    setVODLayout(useLayout)
+  }, [layout])
 
   React.useEffect(() => {
     playerRefs.forEach((ref) => ((ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef).setVolume(volume))
@@ -180,7 +193,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   }
 
   return (
-    <Box className={classes.container} sx={style}>
+    <Box className={classes.container} sx={vodLayout.container}>
       {playbackRestriction && (
         <SimpleAlertDialog
           title="Sync"
@@ -189,9 +202,10 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
           onConfirm={() => onPlaybackRestrictionConfirm()}
         />
       )}
-      <Stack className={classes.videoStack}>
+      <Stack className={classes.videoStack} sx={vodLayout.stack}>
         {new Array(vodState.list.length).fill(0).map((inp, index) => (
           <VODHLSPlayer
+            sx={vodLayout.vodPlayer}
             key={`vod_${index}`}
             ref={playerRefs[index] as RefObject<VODHLSPlayerRef>}
             index={index}
@@ -217,16 +231,16 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
           </Button>
         )}
       </Stack>
-      <Stack direction="column" gap={0} className={classes.thumbnailControlsContainer}>
-        <Stack direction="row" gap={2} className={classes.thumbnailReel}>
+      <Stack
+        direction="column"
+        gap={0}
+        className={classes.thumbnailControlsContainer}
+        sx={vodLayout.thumbnailContainer}
+      >
+        <Stack direction="row" gap={2} className={classes.thumbnailReel} sx={vodLayout.reel}>
           {new Array(vodState.list.length).fill(0).map((inp, index) => (
             <VODHLSThumbnail
-              sx={{
-                flexGrow: 1,
-                width: '100%',
-                height: '100%',
-                cursor: 'pointer',
-              }}
+              sx={vodLayout.thumbnail}
               key={`thumbnail_${index}`}
               ref={thumbnailRefs[index] as RefObject<VODHLSThumbnailRef>}
               vodHLSItem={vodState.list[index]}
@@ -234,7 +248,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
             ></VODHLSThumbnail>
           ))}
         </Stack>
-        <Stack direction="row" gap={1} className={classes.controls}>
+        <Stack direction="row" gap={1} className={classes.controls} sx={vodLayout.controls}>
           <Slider
             sx={{
               zIndex: 201,

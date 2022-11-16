@@ -29,6 +29,13 @@ const styles = {
       height: '100%',
       borderRadius: 'unset',
     },
+    vodVideo: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    },
     publisherContainer: {
       bottom: '73px',
       left: '24px',
@@ -105,6 +112,15 @@ const styles = {
     mainVideo: {
       width: '100%',
       height: '100%',
+      borderRadius: '20px',
+    },
+    vodVideo: {
+      position: 'absolute',
+      right: 24,
+      bottom: 86,
+      height: '250px',
+      maxWidth: '390px',
+      zIndex: -100,
       borderRadius: '20px',
     },
     publisherContainer: {
@@ -189,6 +205,13 @@ const styles = {
       width: '100%',
       height: '100%',
       borderRadius: 'unset',
+    },
+    vodVideo: {
+      position: 'absolute',
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
     },
     publisherContainer: {
       bottom: '73px',

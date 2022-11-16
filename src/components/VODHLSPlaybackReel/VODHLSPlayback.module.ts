@@ -10,8 +10,8 @@ const useStyles = makeStyles()((theme: any) => {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      width: '100wh',
-      height: '100vh',
+      width: '100%',
+      height: '100%',
       backgroundColor: 'black',
     },
     thumbnailControlsContainer: {
@@ -87,6 +87,8 @@ const useStyles = makeStyles()((theme: any) => {
       boxSizing: 'border-box',
       paddingRight: '20px',
       borderRadius: '0 0 20px 20px',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
     },
     driverControl: {
       zIndex: 10,

@@ -41,17 +41,12 @@ import useChatStyles from './ChatStyles.module'
 import VODHLSContext from '../VODHLSContext/VODHLSContext'
 import VODHLSPlaybackReel, { VODHLSPlaybackReelRef } from '../VODHLSPlaybackReel/VODHLSPlaybackReel'
 import vodPlaybackState from '../../atoms/vod/vod'
+import { Layout } from '../../models/Layout'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 const useVODHLSContext = () => React.useContext(VODHLSContext.Context)
-
-export enum Layout {
-  STAGE = 1,
-  FULLSCREEN,
-  EMPTY,
-}
 
 const layoutReducer = (state: any, action: any) => {
   switch (action.type) {
@@ -481,10 +476,7 @@ const MainStage = () => {
         </Box>
       )}
       {vodState.active && vodEnabled && (
-        <VODHLSPlaybackReel
-          ref={vodVideoRef}
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-        ></VODHLSPlaybackReel>
+        <VODHLSPlaybackReel ref={vodVideoRef} layout={layout.layout}></VODHLSPlaybackReel>
       )}
       <Box className={classes.content}>
         {/* Add / Share Modal */}
