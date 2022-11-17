@@ -1,26 +1,9 @@
 import '@testing-library/jest-dom'
 import * as React from 'react'
-import { render, screen, queryByTestId, waitFor, getByTestId, getByText } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import ThankYouPage from './ThankYouPage'
 import JoinContext from '../../components/JoinContext/JoinContext'
-
-const series = [
-  {
-    displayName: 'New serie from fx',
-    episodes: [
-      {
-        displayName: 'Serie 1',
-        endTime: 1667250000000,
-        episodeId: 3,
-        seriesId: 7,
-        startTime: 1667242800000,
-      },
-    ],
-    maxParticipants: 8,
-    seriesId: 7,
-  },
-]
 
 const currEpisode = {
   description:
@@ -31,6 +14,21 @@ const currEpisode = {
   seriesId: 1,
   startTime: 1663001739719,
   streamGuid: 'live/demo-stream',
+}
+
+const singleSerie = {
+  displayName: 'New serie from fx',
+  episodes: [
+    {
+      displayName: 'Serie 1',
+      endTime: 1667250000000,
+      episodeId: 3,
+      seriesId: 7,
+      startTime: 1667242800000,
+    },
+  ],
+  maxParticipants: 8,
+  seriesId: 7,
 }
 
 jest.mock('../../hooks/useCookies', () => {
@@ -48,7 +46,7 @@ jest.mock('react-router-dom', () => ({
 }))
 
 jest.mock('../../services/conference/conference', () => {
-  const currentSerie = series[0]
+  const currentSerie = singleSerie
   const currentEpisode = currEpisode
   const nextEpisodes = []
 
@@ -64,7 +62,7 @@ jest.mock('../../services/api/conference-api-calls', () => {
 })
 jest.mock('../../services/api/serie-api-calls', () => {
   return {
-    getSeriesList: jest.fn(() => Promise.resolve(series)),
+    getSeriesList: jest.fn(() => Promise.resolve([singleSerie])),
   }
 })
 
