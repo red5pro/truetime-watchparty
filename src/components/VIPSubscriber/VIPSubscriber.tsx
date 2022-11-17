@@ -30,7 +30,7 @@ const VIPSubscriber = (props: VIPSubscriber) => {
           width="100%"
           height="100%"
           alt="Logo Placeholder"
-          src={require('../../assets/logos/sponsor-placeholder-logo.png')}
+          src="../../assets/logos/sponsor-placeholder-logo.png"
           style={{
             borderRadius: '6px',
             backdropFilter: 'contrast(0.5)',

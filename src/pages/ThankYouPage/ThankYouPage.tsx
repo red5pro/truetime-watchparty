@@ -30,14 +30,14 @@ const ThankYouPage = () => {
   }
 
   return (
-    <Box className={classes.root}>
+    <Box data-testid="thankyou-page" className={classes.root}>
       <Box padding={2} className={classes.brandLogo}>
         <WbcLogoSmall />
       </Box>
       {loading && <Loading />}
       <Stack className={classes.container}>
         {!loading && seriesEpisode && (
-          <Stack>
+          <Stack data-testid="series-episode-load">
             <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{seriesEpisode.episode.displayName}</Typography>
             <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>
               {getStartTimeFromTimestamp(seriesEpisode.episode.startTime)}
@@ -61,7 +61,7 @@ const ThankYouPage = () => {
                   <img
                     height="70px"
                     alt="Logo Placeholder"
-                    src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
+                    src="../../assets/logos/sponsor-placeholder-2-logo.png"
                   ></img>
                 </Box>
               </Stack>
@@ -80,7 +80,7 @@ const ThankYouPage = () => {
       <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: '20%' }}>
         <img
           alt="Thank you Page Main Image"
-          src={require('../../assets/images/BoxingSession.png')}
+          src="../../assets/images/BoxingSession.png"
           style={{ maxWidth: '70%' }}
         ></img>
       </Box>

@@ -8,7 +8,7 @@ interface ILoadingProps {
 const Loading = (props: ILoadingProps) => {
   const { text } = props
   return (
-    <Grid item container alignItems="center" direction="column">
+    <Grid data-testid="loading" item container alignItems="center" direction="column">
       <CircularProgress color="inherit" />
       {text && <Typography>{text}</Typography>}
     </Grid>

@@ -8,7 +8,6 @@ import { MOCK_API_CALLS } from './mock'
 import { getOptionsParams } from '../../utils/apiUtils'
 
 const ENDPOINT = {
-  SERIES: `${MAIN_ENDPOINT}/series`,
   CONFERENCE: `${MAIN_ENDPOINT}/conference`,
   EPISODE: `${MAIN_ENDPOINT}/episode`,
 }
