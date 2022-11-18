@@ -5,6 +5,7 @@ import { VODHLSItem } from '../../models/VODHLSItem'
 import { VOD_CONTEXT, VOD_HOST, VOD_SOCKET_HOST } from '../../settings/variables'
 import vodPlaybackState from '../../atoms/vod/vod'
 import debounce from 'lodash/debounce'
+import vod from '../../atoms/vod/vod'
 
 const vodReg = /^\/join\/vod\//
 const INVOKE_EVENT_NAME = 'VOD_SYNC'
@@ -106,6 +107,14 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   }, [location])
 
   React.useEffect(() => {
+    if (vodRef.current.list.length === 0) {
+      const newState = { ...vodRef.current, list: getVODListing() }
+      setVODState(newState)
+      vodRef.current = newState
+    }
+  }, [searchParams])
+
+  const getVODListing = () => {
     const { pathname, search } = location
     const yayornay = !!pathname.match(vodReg)
     if (yayornay && search.length > 0) {
@@ -127,18 +136,10 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
         const ctx = context.toLowerCase() === 'root' ? '' : `${context}/`
         item.url = `https://${host}/${ctx}${item.filename}`
       })
-      const updatedState = {
-        ...vodState,
-        ...{
-          active: true,
-          list,
-          selection: list.length > 0 ? list[0] : undefined,
-        },
-      }
-      setVODState(updatedState)
-      vodRef.current = updatedState
+      return list
     }
-  }, [searchParams])
+    return []
+  }
 
   const join = (token: string, nickname: string, userid: string) => {
     const url = `${VOD_SOCKET_HOST}?token=${token}&userid=${userid}`
@@ -171,7 +172,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
           const manifest = json.manifestUpdate
           const { isPlaying, currentTime, controller } = manifest
           const newSelection = manifest.selectedItem || (vodState.list.length > 0 ? vodState.list[0] : undefined)
-          const newState = {
+          let newState = {
             ...vodRef.current,
             isPlaying: isPlaying,
             selection: newSelection,
@@ -180,6 +181,9 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
               manifest.currentDriver && manifest.currentDriver.userid === userid ? undefined : manifest.currentDriver,
             controller: controller,
             updateTs: new Date().getTime(),
+          }
+          if (vodRef.current.list.length === 0) {
+            newState = { ...newState, list: getVODListing() }
           }
           // console.log('[help]::NEW STATE', newState)
           // if (controller !== userid) {

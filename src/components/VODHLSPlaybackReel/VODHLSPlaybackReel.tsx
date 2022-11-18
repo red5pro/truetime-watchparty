@@ -23,10 +23,12 @@ export interface VODHLSPlaybackReelRef {
 
 interface VODHLSPlaybackReelProps {
   layout: Layout
+  onAlert(data: any): any
+  onFatalError(data: any): any
 }
 
 const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref: React.Ref<VODHLSPlaybackReelRef>) => {
-  const { layout } = props
+  const { layout, onAlert, onFatalError } = props
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 
@@ -47,7 +49,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   const [timeValue, setTimeValue] = React.useState<number>(0)
   const [volume, setVideoVolume] = React.useState<number>(1)
   const [vodLayout, setVODLayout] = React.useState<any>(styles.stage)
-  const [playbackRestriction, setPlaybackRestriction] = React.useState<boolean>(false)
+  const [maxTime, setMaxTime] = React.useState<number>(0)
 
   const playerRefs = React.useMemo(
     () =>
@@ -64,8 +66,6 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
         .map((i) => React.createRef()),
     []
   )
-
-  const [maxTime, setMaxTime] = React.useState<number>(0)
 
   React.useEffect(() => {
     let isDead = false
@@ -108,7 +108,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
   const checkLoad = () => {
     if (++totalLoad >= vodState.list.length) {
       let totalTime = -1
-      playerRefs.forEach(async (ref) => {
+      playerRefs.forEach((ref) => {
         const player = (ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef
         const duration = player.getDuration()
         totalTime = totalTime === -1 ? duration : Math.max(totalTime, duration)
@@ -141,6 +141,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
     if (thumbnail && playerRef) {
       ;(thumbnail.current as VODHLSThumbnailRef).watch(playerRef.current as VODHLSPlayerRef)
     }
+    console.log('[loaded]', index, item, totalTime)
     requestAnimationFrame(checkLoad)
   }
 
@@ -179,11 +180,26 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   // Needed for mobile safari and its silly user-interaction over autoplay...
   const onPlaybackRestriction = () => {
-    setPlaybackRestriction(true)
+    onAlert({
+      title: 'Sync',
+      statusText: 'Would you like to begin synchronize playback?',
+      confirmLabel: 'OK',
+      onConfirm: onPlaybackRestrictionConfirm,
+    })
+  }
+
+  const onHLSFatalError = (index: number, item: VODHLSItem, error: string) => {
+    onFatalError({
+      title: 'Stream Load Error',
+      statusText: error,
+      closeLabel: 'Reload',
+      onClose: () => {
+        window.location.reload()
+      },
+    })
   }
 
   const onPlaybackRestrictionConfirm = () => {
-    setPlaybackRestriction(false)
     playerRefs.forEach(async (ref) => {
       const player = (ref as RefObject<VODHLSPlayerRef>).current as VODHLSPlayerRef
       if (player) {
@@ -194,14 +210,6 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
 
   return (
     <Box className={classes.container} sx={vodLayout.container}>
-      {playbackRestriction && (
-        <SimpleAlertDialog
-          title="Sync"
-          message={`Would you like to begin synchronize playback?`}
-          confirmLabel="Ok"
-          onConfirm={() => onPlaybackRestrictionConfirm()}
-        />
-      )}
       <Stack className={classes.videoStack} sx={vodLayout.stack}>
         {new Array(vodState.list.length).fill(0).map((inp, index) => (
           <VODHLSPlayer
@@ -216,14 +224,18 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
             seekTime={vodState.seekTime}
             onTimeUpdate={onHLSTimeUpdate}
             onHLSLoad={onHLSLoad}
+            onHLSFatalError={onHLSFatalError}
             onPlaybackRestriction={onPlaybackRestriction}
           ></VODHLSPlayer>
         ))}
         {!vodState.isPlaying && (
           <Button
-            disabled={!vodState.enabled}
+            disabled={!vodState.enabled || maxTime === 0}
             className={classes.playButton}
-            style={{ display: vodState.driver ? 'none' : 'unset' }}
+            style={{
+              display: vodState.driver ? 'none' : 'unset',
+              backgroundColor: 'unset',
+            }}
             color="inherit"
             onClick={onPlayRequest}
           >
@@ -270,7 +282,16 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
             onChangeCommitted={onSliderRelease}
           />
           {vodState.isPlaying && (
-            <Button className={classes.pauseButton} color="inherit" onClick={onPlayRequest}>
+            <Button
+              className={classes.pauseButton}
+              color="inherit"
+              style={{
+                display: vodState.driver ? 'none' : 'unset',
+                backgroundColor: 'unset',
+              }}
+              onClick={onPlayRequest}
+              disabled={typeof vodState.driver !== 'undefined'}
+            >
               <PauseCircleOutlineIcon className={classes.pauseIcon} />
             </Button>
           )}

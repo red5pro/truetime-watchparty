@@ -35,11 +35,23 @@ interface VODHLSPlayerProps {
   volume: number
   onTimeUpdate(index: number, item: VODHLSItem, time: number): any
   onHLSLoad(index: number, item: VODHLSItem, totalTime: number): any
+  onHLSFatalError(index: number, item: VODHLSItem, error: string): any
   onPlaybackRestriction(): any
 }
 
 const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<VODHLSPlayerRef>) => {
-  const { sx, index, item, volume, seekTime, isPlaying, onTimeUpdate, onHLSLoad, onPlaybackRestriction } = props
+  const {
+    sx,
+    index,
+    item,
+    volume,
+    seekTime,
+    isPlaying,
+    onTimeUpdate,
+    onHLSLoad,
+    onHLSFatalError,
+    onPlaybackRestriction,
+  } = props
 
   React.useImperativeHandle(ref, () => ({
     play,
@@ -126,6 +138,27 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       hls.on(Hls.Events.MANIFEST_LOADED, (event: any, data: any) => {
         checkReadyState()
       })
+      hls.on(Hls.Events.ERROR, (event: any, data: any) => {
+        if (data.fatal) {
+          const { type, details, response } = data
+          switch (type) {
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              // try to recover network error
+              console.warn('fatal network error encountered, try to recover')
+              hls.startLoad()
+              break
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              console.warn('fatal media error encountered, try to recover')
+              hls.recoverMediaError()
+              break
+            default:
+              // cannot recover
+              hls.destroy()
+              onHLSFatalError(index, item, `${details} - ${response.code}:: ${response.text}`)
+              break
+          }
+        }
+      })
       setControl(hls)
     } else {
       videoRef.current.addEventListener('loadedmetadata', checkReadyState)
@@ -139,6 +172,18 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
   }, [item, videoRef])
 
   React.useEffect(() => {
+    console.log('VOD SELECTION UPDATE', vodState)
+    const { selection } = vodState
+    if (item && selection) {
+      if (selectionRef !== selection) {
+        selectionRef.current = selection
+        setSelectedItem(selection)
+        show(itemsAreSimilar(item, selection))
+      }
+    }
+  }, [item, vodState.selection])
+
+  React.useEffect(() => {
     console.log('VOD STATE UPDATE', vodState)
     const doPlayPause = async (driver: any = undefined) => {
       if (driver) {
@@ -147,15 +192,8 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
         await play()
       }
     }
-    const { selection, seekTime, isPlaying, driver } = vodState
-    if (item && selection) {
-      if (selectionRef !== selection) {
-        selectionRef.current = selection
-        setSelectedItem(selection)
-        show(itemsAreSimilar(item, selection))
-      }
-    }
-    if (playRef.current !== isPlaying) {
+    const { isPlaying, driver } = vodState
+    if (playingRef.current !== isPlaying) {
       const playPause = async (doPlay: boolean) => {
         if (doPlay) {
           // console.log('[help]::useEffect, call play')
@@ -170,7 +208,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       playPause(isPlaying)
     }
     doPlayPause(driver)
-  }, [item, vodState])
+  }, [vodState.isPlaying, vodState.driver])
 
   // React.useEffect(() => {
   //   // if (item && selectionRef.current === selectedItem) {
@@ -191,6 +229,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     //   return
     // }
     // console.log('[help]::seek time', seekTime)
+    if (seekRef.current == seekTime) return
     const { updateTs } = vodState
     let seekTo = seekTime
     if (isPlaying) {
@@ -204,6 +243,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     // If we are within a certain time frame, forget it
     if (Math.abs(currentTime - seekTo) < 1.5) {
       // console.log('[help]::seek BAIL')
+      seekRef.current = seekTo
       return
     }
     // console.log('[help]:: seek update', seekRef.current, seekTo, index)

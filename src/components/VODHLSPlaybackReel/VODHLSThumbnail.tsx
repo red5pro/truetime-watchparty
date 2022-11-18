@@ -4,6 +4,7 @@ import { VODHLSItem } from '../../models/VODHLSItem'
 import { supportsHLS } from '../../utils/hlsUtils'
 import { VODHLSPlayerRef } from './VODHLSPlayer'
 import useStyles from './VODHLSPlayback.module'
+import Loading from '../Common/Loading/Loading'
 
 export interface VODHLSThumbnailRef {
   hasItem(item: VODHLSItem): boolean
@@ -27,6 +28,7 @@ const VODHLSThumbnail = React.forwardRef((props: VODHLSThumbnailProps, ref: Reac
   const [target, setTarget] = React.useState<VODHLSPlayerRef>()
   const [video, setVideo] = React.useState<HTMLVideoElement>()
   const [context, setContext] = React.useState<CanvasRenderingContext2D>()
+  const [loading, setLoading] = React.useState<boolean>(true)
 
   React.useImperativeHandle(ref, () => ({ hasItem, redraw, watch }))
 
@@ -44,6 +46,8 @@ const VODHLSThumbnail = React.forwardRef((props: VODHLSThumbnailProps, ref: Reac
 
   React.useEffect(() => {
     if (target) {
+      setLoading(false)
+      console.log('[load]:: target found, redraw', vodHLSItem)
       redraw()
     }
   }, [target])
@@ -98,6 +102,7 @@ const VODHLSThumbnail = React.forwardRef((props: VODHLSThumbnailProps, ref: Reac
   return (
     <Box sx={sx} className={classes.thumbnailContainer} onClick={() => onSelect(vodHLSItem)}>
       <canvas ref={canvasRef} className={classes.thumbnail}></canvas>
+      {loading && <Loading />}
       <Typography className={classes.thumbnailLabel}>{vodHLSItem.name}</Typography>
     </Box>
   )

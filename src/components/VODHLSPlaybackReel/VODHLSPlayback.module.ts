@@ -39,6 +39,12 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'absolute',
       flexGrow: 1,
       zIndex: 1,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    playerLoad: {
+      position: 'absolute',
     },
     player: {
       width: 'inherit',
@@ -67,6 +73,11 @@ const useStyles = makeStyles()((theme: any) => {
       borderRadius: '20px',
       backgroundColor: 'black',
       maxWidth: '120px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      border: '1px solid white',
+      boxSizing: 'border-box',
     },
     thumbnail: {
       position: 'absolute',

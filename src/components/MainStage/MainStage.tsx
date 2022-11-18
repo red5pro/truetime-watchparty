@@ -158,7 +158,6 @@ const MainStage = () => {
         title: 'Connection Error',
         closeLabel: 'RETRY',
         onClose: () => {
-          setFatalError(undefined)
           window.location.reload()
         },
       } as FatalError)
@@ -173,7 +172,6 @@ const MainStage = () => {
         title: 'Sync Connection Error',
         closeLabel: 'RETRY',
         onClose: () => {
-          setFatalError(undefined)
           window.location.reload()
         },
       } as FatalError)
@@ -296,7 +294,6 @@ const MainStage = () => {
       statusText: `Your broadcast session was interrupted unexpectedly. You are no longer streaming.`,
       closeLabel: 'Restart',
       onClose: () => {
-        setFatalError(undefined)
         window.location.reload()
       },
     } as FatalError)
@@ -309,7 +306,6 @@ const MainStage = () => {
       statusText: `Could not start a broadcast.`,
       closeLabel: 'Retry',
       onClose: () => {
-        setFatalError(undefined)
         window.location.reload()
       },
     } as FatalError)
@@ -457,6 +453,14 @@ const MainStage = () => {
     console.log('INVOKE RECV', name, message)
   }
 
+  const showAlert = (data: any) => {
+    setNonFatalError(data)
+  }
+
+  const showFatalError = (data: any) => {
+    setFatalError(data)
+  }
+
   return (
     <Box className={classes.rootContainer}>
       {/* Main Video */}
@@ -476,7 +480,12 @@ const MainStage = () => {
         </Box>
       )}
       {vodState.active && vodEnabled && (
-        <VODHLSPlaybackReel ref={vodVideoRef} layout={layout.layout}></VODHLSPlaybackReel>
+        <VODHLSPlaybackReel
+          ref={vodVideoRef}
+          layout={layout.layout}
+          onAlert={showAlert}
+          onFatalError={showFatalError}
+        ></VODHLSPlaybackReel>
       )}
       <Box className={classes.content}>
         {/* Add / Share Modal */}
@@ -667,16 +676,26 @@ const MainStage = () => {
           title={fatalError.title || 'Error'}
           message={fatalError.statusText}
           closeLabel={fatalError.closeLabel || 'OK'}
-          onClose={fatalError.onClose}
+          onClose={() => {
+            if (fatalError.onClose) {
+              fatalError.onClose.call(null)
+            }
+            setFatalError(undefined)
+          }}
         ></ErrorModal>
       )}
       {/* Non-Fatal Error */}
       {nonFatalError && (
         <SimpleAlertDialog
           title={nonFatalError.title || 'Error'}
-          message={`${nonFatalError.status} - ${nonFatalError.statusText}`}
-          confirmLabel="OK"
-          onConfirm={() => setNonFatalError(undefined)}
+          message={`${nonFatalError.status ? nonFatalError.status + ' - ' : ''}${nonFatalError.statusText}`}
+          confirmLabel={nonFatalError.confirmLabel || 'OK'}
+          onConfirm={() => {
+            if (nonFatalError.onConfirm) {
+              nonFatalError.onConfirm.call(null)
+            }
+            setNonFatalError(undefined)
+          }}
         />
       )}
       {showBanConfirmation && (
