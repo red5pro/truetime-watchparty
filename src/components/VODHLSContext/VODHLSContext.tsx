@@ -7,6 +7,7 @@ import vodPlaybackState from '../../atoms/vod/vod'
 import debounce from 'lodash/debounce'
 import vod from '../../atoms/vod/vod'
 
+const PING = 30 * 1000 // every minute
 const vodReg = /^\/join\/vod\//
 const INVOKE_EVENT_NAME = 'VOD_SYNC'
 enum InvokeKeys {
@@ -59,6 +60,9 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   const [interval, setInt] = React.useState<any | undefined>(undefined)
 
   const [error, setError] = React.useState<any>()
+
+  let pingInterval: any
+  const pingRef = React.useRef(null)
 
   const dispatchTimeUpdate = React.useCallback(
     debounce((value) => {
@@ -151,6 +155,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       }
       setUser(u)
       userRef.current = u
+      pingpong()
     }
     socket.onmessage = (event) => {
       // console.log('SOCKET MESSAGE', event)
@@ -210,7 +215,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       const { wasClean, code } = event
       if (!wasClean || code !== 1000) {
         // Not Expected.
-        setError(new Error('Socket closed unexpectedly.'))
+        setError(new Error(`${code} - Socket closed unexpectedly.`))
       }
       console.log('SOCKET CLOSE', event)
     }
@@ -224,6 +229,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   }
 
   const leave = () => {
+    killpingpong()
     if (socketRef.current) {
       try {
         ;(socketRef.current as WebSocket).close(1000)
@@ -233,6 +239,25 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       socketRef.current = undefined
       setVODSocket(undefined)
     }
+  }
+
+  const pingpong = () => {
+    killpingpong()
+    if (socketRef && socketRef.current) {
+      pingInterval = setInterval(() => {
+        if (socketRef && socketRef.current) {
+          ;(socketRef.current as any).send(JSON.stringify({ ping: 1 }))
+        }
+      }, PING)
+      pingRef.current = pingInterval
+    }
+  }
+
+  const killpingpong = () => {
+    if (pingRef && pingRef.current) {
+      clearInterval(pingInterval)
+    }
+    pingRef.current = pingInterval
   }
 
   const sendPlayhead = () => {
@@ -251,7 +276,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
   }
 
   const setDrivenSeekTime = (value: number, userDriven: boolean) => {
-    // TODO: debounce this?...
+    if (vodRef.current.seekTime === value) return
     const updatedState = { ...vodState, ...{ seekTime: value } }
     if (!userDriven) {
       setVODState(updatedState)
