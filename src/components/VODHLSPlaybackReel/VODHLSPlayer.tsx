@@ -130,7 +130,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
 
   React.useEffect(() => {
     if (!supportsHLS() && videoRef.current) {
-      const hls = new Hls({ debug: false, backBufferLength: 0 })
+      const hls = new Hls({ debug: false, backBufferLength: 0, maxBufferLength: 120 })
       hls.attachMedia(videoRef.current)
       hls.on(Hls.Events.MEDIA_ATTACHED, () => {
         hls.loadSource(item.url!)
@@ -139,8 +139,9 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
         checkReadyState()
       })
       hls.on(Hls.Events.ERROR, (event: any, data: any) => {
+        const { type } = data
         if (data.fatal) {
-          const { type, details, response } = data
+          const { details, response } = data
           switch (type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
               // try to recover network error
@@ -155,6 +156,15 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
               // cannot recover
               hls.destroy()
               onHLSFatalError(index, item, `${details} - ${response.code}:: ${response.text}`)
+              break
+          }
+        } else {
+          switch (type) {
+            case Hls.ErrorDetails.BUFFER_STALLED_ERROR:
+              console.warn('buffer stalled error')
+              break
+            case Hls.ErrorDetails.BUFFER_FULL_ERROR:
+              console.warn('buffer full')
               break
           }
         }
