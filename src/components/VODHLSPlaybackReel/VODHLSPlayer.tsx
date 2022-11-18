@@ -251,13 +251,14 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
       seekTo = seekTime + offset / 1000
     }
     // If we are within a certain time frame, forget it
-    if (Math.abs(currentTime - seekTo) < 1.5) {
+    const diff = Math.abs(currentTime - seekTo)
+    if (diff < 1.5) {
       console.log('[load]::seek BAIL')
       seekRef.current = seekTo
       return
     }
-    console.log('[load]:: seek update', seekRef.current, seekTo, index)
-    seekRef.current = seekTo
+    console.log('[load]:: seek update', seekRef.current, seekTo, seekTo + diff * 0.5, index)
+    seekRef.current = seekTo + diff * 0.5
     setSeekTime(seekTo)
     // seek(seekTo, false, isPlaying)
     fastSeek(seekTo)
