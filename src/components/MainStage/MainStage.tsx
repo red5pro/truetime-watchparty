@@ -218,9 +218,10 @@ const MainStage = () => {
       const style = Array(half).fill(column).join(' ')
       setMaxParticipantGridColumnStyle({
         gridTemplateColumns: style,
+        justifyContent: vodEnabled ? 'start' : 'center',
       })
     }
-  }, [maxParticipants])
+  }, [maxParticipants, vodEnabled])
 
   React.useEffect(() => {
     const shutdown = async () => {

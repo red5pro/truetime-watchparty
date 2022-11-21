@@ -36,6 +36,7 @@ const styles = {
       aspectRatio: '1 / 1',
       maxHeight: '240px!important',
       position: 'relative!important',
+      borderRadius: '20px',
     },
     vodPlayer: {
       borderRadius: '20px!important',

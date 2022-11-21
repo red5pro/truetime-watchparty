@@ -153,7 +153,6 @@ const styles = {
         'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
       height: '100%',
       marginTop: '0!important',
-      justifyContent: 'center',
     },
     subscriber: {
       height: '100%',
