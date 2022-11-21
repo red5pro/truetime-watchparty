@@ -47,7 +47,7 @@ const VODHLSThumbnail = React.forwardRef((props: VODHLSThumbnailProps, ref: Reac
   React.useEffect(() => {
     if (target) {
       setLoading(false)
-      console.log('[load]:: target found, redraw', vodHLSItem)
+      // console.log('[load]:: target found, redraw', vodHLSItem)
       redraw()
     }
   }, [target])

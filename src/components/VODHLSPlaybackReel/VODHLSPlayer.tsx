@@ -185,7 +185,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     const { selection } = vodState
     if (item && selection) {
       if (!selectionRef.current || !itemsAreSimilar(selectionRef.current, selection)) {
-        console.log('VOD SELECTION UPDATE', selection, selectionRef.current)
+        // console.log('VOD SELECTION UPDATE', selection, selectionRef.current)
         selectionRef.current = selection
         setSelectedItem(selection)
         show(itemsAreSimilar(item, selection))
@@ -203,7 +203,7 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     }
     const { isPlaying, driver } = vodState
     if (playingRef.current !== isPlaying) {
-      console.log('VOD STATE UPDATE', index, vodState)
+      // console.log('VOD STATE UPDATE', index, vodState)
       const playPause = async (doPlay: boolean) => {
         if (doPlay) {
           // console.log('[help]::useEffect, call play')
@@ -253,11 +253,11 @@ const VODHLSPlayer = React.forwardRef((props: VODHLSPlayerProps, ref: React.Ref<
     // If we are within a certain time frame, forget it
     const diff = Math.abs(currentTime - seekTo)
     if (diff < 1.5) {
-      console.log('[load]::seek BAIL')
+      // console.log('[load]::seek BAIL')
       seekRef.current = seekTo
       return
     }
-    console.log('[load]:: seek update', seekRef.current, seekTo, seekTo + diff * 0.5, index)
+    // console.log('[load]:: seek update', seekRef.current, seekTo, seekTo + diff * 0.5, index)
     seekRef.current = seekTo + diff * 0.5
     setSeekTime(seekTo)
     // seek(seekTo, false, isPlaying)

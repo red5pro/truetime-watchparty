@@ -66,7 +66,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
 
   const dispatchTimeUpdate = React.useCallback(
     debounce((value) => {
-      console.log('[socket] SET_SEEK_TIME', value)
+      // console.log('[socket] SET_SEEK_TIME', value)
       ;(socketRef.current as any).send(
         JSON.stringify({
           type: InvokeKeys.TIME,

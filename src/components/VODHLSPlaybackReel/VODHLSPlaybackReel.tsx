@@ -141,7 +141,7 @@ const VODHLSPlaybackReel = React.forwardRef((props: VODHLSPlaybackReelProps, ref
     if (thumbnail && playerRef) {
       ;(thumbnail.current as VODHLSThumbnailRef).watch(playerRef.current as VODHLSPlayerRef)
     }
-    console.log('[loaded]', index, item, totalTime)
+    // console.log('[loaded]', index, item, totalTime)
     requestAnimationFrame(checkLoad)
   }
 
