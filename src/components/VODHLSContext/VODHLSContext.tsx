@@ -155,7 +155,7 @@ const VODHLSProvider = (props: VODHLSContextProps) => {
       }
       setUser(u)
       userRef.current = u
-      pingpong()
+      // pingpong()
     }
     socket.onmessage = (event) => {
       // console.log('SOCKET MESSAGE', event)

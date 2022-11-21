@@ -16,6 +16,7 @@ import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup
 import MainStage from '../../components/MainStage/MainStage'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import Red5ProLogoSmall from '../../assets/logos/Red5ProLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
 import { UserRoles } from '../../utils/commonUtils'
 
@@ -155,7 +156,7 @@ const JoinPage = () => {
       {currentSection !== Section.WatchParty && (
         <Box>
           <Box padding={2} className={classes.brandLogo}>
-            <WbcLogoSmall />
+            <Red5ProLogoSmall />
           </Box>
           <Box>
             <Typography padding={2} className={classes.joinTitleSmall}>
@@ -217,14 +218,15 @@ const JoinPage = () => {
             className={classes.sponsorContainer}
             sx={currentSection === Section.AVSetup ? { alignItems: 'center', width: 'calc(100vw - 158px)' } : {}}
           >
-            <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
+            <Typography sx={{ fontSize: '12px' }}>Powered by</Typography>
             <Stack spacing={2} direction="row">
               {/* <OracleLogo /> */}
               <Box sx={{ width: 'auto', height: '70px' }}>
                 <img
-                  height="70px"
+                  // height="70px"
+                  style={{ maxWidth: '160px' }}
                   alt="Logo Placeholder"
-                  src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
+                  src={require('../../assets/logos/Red5Pro_logo_white_red_v2.png')}
                 ></img>
               </Box>
             </Stack>

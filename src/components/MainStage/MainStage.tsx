@@ -35,6 +35,7 @@ import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelec
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import Red5ProLogoSmall from '../../assets/logos/Red5ProLogoSmall'
 import { FatalError } from '../../models/FatalError'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
@@ -495,7 +496,7 @@ const MainStage = () => {
         {data.conference && (
           <Box className={classes.topBar} sx={layout.style.topBar}>
             <Stack direction="row" alignItems="center" justifyContent="center" className={classes.header}>
-              <WbcLogoSmall />
+              <Red5ProLogoSmall />
               <Divider orientation="vertical" flexItem className={classes.headerDivider} />
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
             </Stack>

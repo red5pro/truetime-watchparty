@@ -3,6 +3,7 @@ import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import OracleLogo from '../../assets/logos/OracleLogo'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import Red5ProLogoSmall from '../../assets/logos/Red5ProLogoSmall'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import JoinContext from '../../components/JoinContext/JoinContext'
 import Loading from '../../components/Common/Loading/Loading'
@@ -40,7 +41,7 @@ const ThankYouPage = () => {
   return (
     <Box className={classes.root}>
       <Box padding={2} className={classes.brandLogo}>
-        <WbcLogoSmall />
+        <Red5ProLogoSmall />
       </Box>
       {loading && <Loading />}
       <Stack className={classes.container}>
@@ -62,14 +63,15 @@ const ThankYouPage = () => {
               Rejoin Party
             </CustomButton>
             <Stack spacing={2} direction="column">
-              <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
+              <Typography sx={{ fontSize: '12px' }}>Powered by</Typography>
               <Stack spacing={2} direction="row">
                 {/* <OracleLogo /> */}
                 <Box sx={{ width: 'auto', height: '70px' }}>
                   <img
-                    height="70px"
+                    // height="70px"
+                    style={{ maxWidth: '160px' }}
                     alt="Logo Placeholder"
-                    src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
+                    src={require('../../assets/logos/Red5Pro_logo_white_red_v2.png')}
                   ></img>
                 </Box>
               </Stack>
