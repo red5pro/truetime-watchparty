@@ -11,7 +11,7 @@ const useStyles = makeStyles()((theme: any) => {
       },
     },
     leftContainer: {
-      background: 'linear-gradient(to bottom right, #1b1828,#2a448a)',
+      background: 'linear-gradient(to bottom right, #1b1828,#000000)',
       backdropFilter: 'blur(88px)',
       display: 'flex',
       flexDirection: 'column',

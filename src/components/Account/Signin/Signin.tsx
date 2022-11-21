@@ -6,6 +6,7 @@ import useStyles from './Signin.module'
 import SignInEmail from './SignInEmail'
 import { IStepActionsSubComponent, UserRoles } from '../../../utils/commonUtils'
 import WbcLogoSmall from '../../../assets/logos/WbcLogoSmall'
+import Red5ProLogoSmall from '../../../assets/logos/Red5ProLogoSmall'
 import SignInFacebook from './SignInFacebook'
 
 interface ISignInProps {
@@ -35,7 +36,7 @@ const Signin = (props: ISignInProps) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" className={classes.root}>
       <Box padding={2} className={classes.brandLogo}>
-        <WbcLogoSmall />
+        <Red5ProLogoSmall />
       </Box>
       {!signInEmail && (
         <Box display="flex" flexDirection="column" className={classes.container}>

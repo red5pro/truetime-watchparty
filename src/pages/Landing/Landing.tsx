@@ -42,7 +42,15 @@ const Home = () => {
   return (
     <Box className={classes.container} display="flex">
       <Box className={classes.leftContainer}>
-        <WbcLogo />
+        {/* <WbcLogo /> */}
+        <Box sx={{ width: 'auto' }}>
+          <img
+            // height="70px"
+            style={{ maxWidth: '220px' }}
+            alt="Logo Placeholder"
+            src={require('../../assets/logos/Red5Pro_logo_white_red_v2.png')}
+          ></img>
+        </Box>
         <Box className={classes.titleContainer}>
           <Typography className={classes.title}>Watch Party</Typography>
           <Typography className={classes.subtitle}>Unlimited events, special guest and more.</Typography>

@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material'
 import * as React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
+import Red5ProLogoSmall from '../../assets/logos/Red5ProLogoSmall'
 import VerifyEmailAccount from '../../components/Account/Signin/VerifyEmailAccount'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import useCookies from '../../hooks/useCookies'
@@ -25,7 +26,7 @@ const VerifyEmailPage = () => {
     <Box className={classes.root}>
       <Box>
         <Box padding={2} className={classes.brandLogo}>
-          <WbcLogoSmall />
+          <Red5ProLogoSmall />
         </Box>
         <Box>
           <Typography padding={2} className={classes.joinTitleSmall}>
