@@ -45,7 +45,7 @@ const ViewEvents = (props: IViewEventsProps) => {
     <Box
       className={classes.root}
       sx={{
-        backgroundImage: !error ? `url(${require('../../../assets/images/BoxMainImage.png')})` : '',
+        backgroundImage: !error ? `url(${require('../../../assets/images/AirMainImage.png')})` : '',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: '40% 100%',
       }}

@@ -90,7 +90,7 @@ const ThankYouPage = () => {
       <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: '20%' }}>
         <img
           alt="Thank you Page Main Image"
-          src={require('../../assets/images/BoxingSession.png')}
+          src={require('../../assets/images/AirshowSession.png')}
           style={{ maxWidth: '70%' }}
         ></img>
       </Box>

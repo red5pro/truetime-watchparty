@@ -72,7 +72,7 @@ const StartParty = (props: IStartPartyProps) => {
       <img
         className={classes.image}
         alt="Start Party Main Image"
-        src={require('../../../assets/images/BoxMainImage.png')}
+        src={require('../../../assets/images/AirMainImage.png')}
       ></img>
     </Box>
   )

@@ -199,10 +199,10 @@ const JoinPage = () => {
             <MainStage />
           </MainStageWithChatBox>
         )}
-        <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
+        <Box sx={{ width: '50%', position: 'absolute', right: '20px', bottom: 0 }}>
           <img
             alt="Join a Party Main Image"
-            src={require('../../assets/images/BoxMainImage.png')}
+            src={require('../../assets/images/AirMainImage.png')}
             style={{
               width: '100%',
               opacity: currentSection === Section.Nickname ? 0.5 : 1,
