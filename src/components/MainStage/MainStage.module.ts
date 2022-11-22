@@ -94,6 +94,12 @@ const useStyles = makeStyles()((theme: any) => {
         height: '32px',
       },
     },
+    qr: {
+      position: 'absolute',
+      right: '30px',
+      bottom: '70px',
+      width: '100px',
+    },
   }
 })
 

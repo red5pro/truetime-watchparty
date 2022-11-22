@@ -614,6 +614,13 @@ const MainStage = () => {
               </Box>
             </Stack>
           )}
+          <Box className={classes.qr}>
+            <img
+              alt="AWS Sports QR Code"
+              src={require('../../assets/logos/red5pro-com-AWS-Sports.png')}
+              style={{ width: 'inherit' }}
+            ></img>
+          </Box>
           <Stack direction="row" spacing={1} className={classes.partyControls}>
             {mainStreamGuid && (
               <VolumeControl
