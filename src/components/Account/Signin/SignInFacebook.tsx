@@ -46,6 +46,8 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
 
           if (onActions) {
             onActions.onNextStep()
+          } else if (redirectAfterLogin) {
+            redirectAfterLogin()
           }
         } else {
           console.log('error signInWatchparty!!!', signInResponse)
@@ -135,6 +137,8 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
             setCookie('userAccount', userData.userAccount, { secure: true, expires: userData.expires })
             if (onActions) {
               onActions.onNextStep()
+            } else if (redirectAfterLogin) {
+              redirectAfterLogin()
             }
           } else {
             console.log('error signInWatchparty!!!', signInResponse)
@@ -221,9 +225,8 @@ const SignInFacebook = ({ onActions, role, redirectAfterLogin }: IFBSignInProps)
           message={`There was an error trying to login to your Facebook account, please try again.`}
           confirmLabel="Ok"
           onConfirm={() => {
-            window.FB.logout(function () {
-              setError(false)
-            })
+            window.FB.logout()
+            setError(false)
           }}
         />
       )}

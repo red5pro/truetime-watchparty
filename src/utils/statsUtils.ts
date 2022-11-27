@@ -93,11 +93,11 @@ export const mapLiveStatsData = (stats: StatsByConference[]) => {
     },
     {
       id: 'StartTime',
-      label: 'Start Time',
+      label: 'Start Date/Time',
     },
     {
       id: 'EndTime',
-      label: 'End Time',
+      label: 'End Date/Time',
     },
   ]
 
@@ -126,7 +126,7 @@ export const mapPastEventsStatsData = (stats: StatsByConference[]) => {
     {
       id: 'PartyName',
       label: 'Party Name',
-      minWidth: 100,
+      // minWidth: 100,
     },
     {
       id: 'TotalViewers',
@@ -142,11 +142,11 @@ export const mapPastEventsStatsData = (stats: StatsByConference[]) => {
     },
     {
       id: 'StartTime',
-      label: 'Start Time',
+      label: 'Start Date/Time',
     },
     {
       id: 'EndTime',
-      label: 'End Time',
+      label: 'End Date/Time',
     },
     {
       id: 'Duration',
@@ -242,11 +242,11 @@ export const mapSeriesStatsData = (data: Serie[]) => {
     },
     {
       id: 'StartDate',
-      label: 'Start Date',
+      label: 'Start Date/Time',
     },
     {
       id: 'EndDate',
-      label: 'End Date',
+      label: 'End Date/Time',
     },
     {
       id: 'TotalViewers',
@@ -295,9 +295,10 @@ export const getSortedCountryList = (stats: StatsByConference[]) => {
     if (countries.length === 0) {
       return countries.push({ country: currVall.location, count: 1 })
     }
-    const country = countries.find((item: any) => item.country === currVall.location)
-    if (country) {
-      country.count = +1
+    const countryRep = countries.find((i) => i.country === currVall.location)
+
+    if (countryRep) {
+      countryRep.count += 1
       return countries
     }
 

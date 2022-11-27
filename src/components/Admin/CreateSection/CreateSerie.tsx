@@ -29,15 +29,16 @@ const getValidationSchema = () => {
     displayName: Yup.string().max(50, 'Serie Name must at most 50 characters').required('Serie Name field is required'),
     maxParticipants: Yup.number()
       .min(1, 'Max. Participants must be greater than or equal to 1')
+      .max(8, 'Max. Participants must be less than or equal to 8')
       .required('Max. Participants field is required'),
     // startDatetime: Yup.date()
-    //   .required('Start Date field is required')
-    //   .min(todayDate, 'Date should be greater than today'),
+    //   .required('Start Date/Time field is required')
+    //   .min(todayDate, 'Date/Time should be greater than today'),
     // endDatetime: Yup.date()
-    //   .required('End Date field is required')
+    //   .required('End Date/Time field is required')
     //   .when(
     //     'startDatetime',
-    //     (startDatetime, schema) => startDatetime && schema.min(startDatetime, 'End Date must be later that Start Date')
+    //     (startDatetime, schema) => startDatetime && schema.min(startDatetime, 'End Date/Time must be later that Start Date/Time')
     //   ),
   })
   return validationSchema
@@ -124,7 +125,7 @@ const CreateSerie = (props: ICreateSerieProps) => {
                     {/* TODO: check if Start and End dates are needed. THE ENDPOINT DOES NOT ALLOW THEM YET */}
                     {/* <Box display="flex" width="100%">
                       <Box display="flex" flexDirection="column" width="100%">
-                        <FormLabel className={classes.label}>Start Date</FormLabel>
+                        <FormLabel className={classes.label}>Start Date/Time</FormLabel>
                         <DatePicker
                           renderInput={(props: any) => (
                             <Field
@@ -144,7 +145,7 @@ const CreateSerie = (props: ICreateSerieProps) => {
                         />
                       </Box>
                       <Box display="flex" flexDirection="column" marginLeft="10px" width="100%">
-                        <FormLabel className={classes.label}>End Date</FormLabel>
+                        <FormLabel className={classes.label}>End Date/Time</FormLabel>
                         <DatePicker
                           renderInput={(props: any) => (
                             <Field

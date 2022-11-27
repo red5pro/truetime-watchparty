@@ -22,7 +22,7 @@ const getInitialValues = () => {
     displayName: '',
     startDatetime: todayDate,
     endDatetime: todayDate,
-    serie: -1,
+    serie: '',
   }
 
   return initialValues
@@ -35,13 +35,14 @@ const getValidationSchema = () => {
   const validationSchema = Yup.object().shape({
     displayName: Yup.string().max(50, 'Event Name must at most 50 characters').required('Event Name field is required'),
     startDatetime: Yup.date()
-      .required('Start Date field is required')
-      .min(todayDate, 'Date should be greater than today'),
+      .required('Start Date/Time field is required')
+      .min(todayDate, 'Date/Time should be greater than today'),
     endDatetime: Yup.date()
-      .required('End Date field is required')
+      .required('End Date/Time field is required')
       .when(
         'startDatetime',
-        (startDatetime, schema) => startDatetime && schema.min(startDatetime, 'End Date must be later that Start Date')
+        (startDatetime, schema) =>
+          startDatetime && schema.min(startDatetime, 'End Date/Time must be later that Start Date/Time')
       ),
     serie: Yup.number().required('Serie field is required'),
   })
@@ -126,7 +127,7 @@ const CreateEvent = (props: ICreateEventProps) => {
                     />
                     <Box display="flex" width="100%">
                       <Box display="flex" flexDirection="column" width="100%">
-                        <FormLabel className={classes.label}>Start Date</FormLabel>
+                        <FormLabel className={classes.label}>Start Date/Time</FormLabel>
                         <DateTimePicker
                           renderInput={(props: any) => (
                             <Field
@@ -146,14 +147,13 @@ const CreateEvent = (props: ICreateEventProps) => {
                         />
                       </Box>
                       <Box display="flex" flexDirection="column" marginLeft="10px" width="100%">
-                        <FormLabel className={classes.label}>End Date</FormLabel>
+                        <FormLabel className={classes.label}>End Date/Time</FormLabel>
                         <DateTimePicker
                           renderInput={(props: any) => (
                             <Field
                               component={TextField}
                               name="endDatetime"
                               hiddenLabel
-                              placeholder="Date"
                               type="text"
                               fullWidth
                               {...props}
@@ -174,7 +174,7 @@ const CreateEvent = (props: ICreateEventProps) => {
                       placeholder="Select a Serie"
                       onChange={setSerieId}
                       className={`${classes.selectField} ${
-                        errors.country && touched.country ? classes.errorTextField : ''
+                        errors.serie && touched.serie ? classes.errorTextField : ''
                       }`}
                       MenuProps={{
                         style: {
@@ -192,8 +192,8 @@ const CreateEvent = (props: ICreateEventProps) => {
                         )
                       })}
                     </Select>
-                    {errors.country && touched.country && (
-                      <Typography className={classes.errorValidation}>{errors.country}</Typography>
+                    {errors.serie && touched.serie && (
+                      <Typography className={classes.errorValidation}>{errors.serie}</Typography>
                     )}
                   </Box>
                   <Box display="flex" justifyContent="space-around">
