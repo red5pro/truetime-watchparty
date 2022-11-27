@@ -1,6 +1,6 @@
 {
   "name": "watchparty-frontend",
-  "version": "0.2.16",
+  "version": "0.2.17",
   "private": true,
   "dependencies": {
     "@date-io/moment": "^2.15.0",
@@ -42,11 +42,11 @@
     "prestar:debug": "BUMP=none node ./scripts/inject-version.mjs",
     "prestart:demo": "BUMP=none node ./scripts/inject-version.mjs",
     "start": "PORT=3006 export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start ",
-    "start:debug": "PORT=3006 BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' export HTTPS=true&&SSL_CRT_FILE=~/localhost-ssl/cert.pem&&SSL_KEY_FILE=~/localhost-ssl/key.pem react-scripts start ",
+    "start:debug": "PORT=3006 BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' export HTTPS=true&&SSL_CRT_FILE=~/localhost-ssl/cert.pem&&SSL_KEY_FILE=~/localhost-ssl/key.pem env-cmd -f .env.development.local react-scripts start ",
     "start:demo": "PORT=3006 BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' export HTTPS=true&&SSL_CRT_FILE=~/localhost-ssl/cert.pem&&SSL_KEY_FILE=~/localhost-ssl/key.pem env-cmd -f .env-demo react-scripts start ",
     "prebuild": "node ./scripts/inject-version.mjs",
     "prebuild:demo": "node ./scripts/inject-version.mjs",
-    "build": "react-scripts build",
+    "build": "env-cmd -f .env.development.local react-scripts build",
     "build:demo": "env-cmd -f .env-demo react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
