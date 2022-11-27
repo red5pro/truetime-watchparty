@@ -1,17 +1,16 @@
 export const USE_LOCAL_SERVICES = false
 
-export const SERVER_HOST = process.env.REACT_APP_SERVER_HOST || 'wat-142-sm.red5.net'
-export const API_SERVER_HOST = process.env.REACT_APP_API_SERVER_HOST || 'wat-142-sm.red5.net'
+export const SERVER_HOST = process.env.REACT_APP_SERVER_HOST || 'localhost'
+export const API_SERVER_HOST = process.env.REACT_APP_API_SERVER_HOST || 'localhost'
 export const MAIN_ENDPOINT = `https://${API_SERVER_HOST}/conferenceapi/1.0`
-export const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY || '6LdnYWAhAAAAALa4NtXnet5rmzV-dLTDeuVcIP2a'
-export const RECAPTCHA_SECRET_KEY =
-  process.env.REACT_APP_RECAPTCHA_SECRET_KEY || '6LdnYWAhAAAAABLHrGDm34M2M3gZE4Qy-3o0LMKJ'
+export const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY || 'ADDME'
+export const RECAPTCHA_SECRET_KEY = process.env.REACT_APP_RECAPTCHA_SECRET_KEY || 'ADDME'
 
-export const USE_STREAM_MANAGER = process.env.REACT_APP_SM === '1' || true
+export const USE_STREAM_MANAGER = process.env.REACT_APP_SM === '0' || true
 export const API_SOCKET_HOST = USE_LOCAL_SERVICES
   ? 'ws://localhost:8001'
   : `wss://${API_SERVER_HOST}/conferenceapi/1.0/ws/conference`
-export const STREAM_HOST = USE_LOCAL_SERVICES ? 'release-11.red5.net' : SERVER_HOST
+export const STREAM_HOST = USE_LOCAL_SERVICES ? 'localhost' : SERVER_HOST
 export const VOD_SOCKET_HOST = process.env.REACT_VOD_SOCKET_HOST
   ? `wss://${process.env.REACT_VOD_SOCKET_HOST}`
   : `wss://toddred5dev543.red5.net`
