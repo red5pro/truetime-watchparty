@@ -1,0 +1,94 @@
+{
+  "name": "watchparty-frontend",
+  "version": "0.2.17",
+  "private": true,
+  "dependencies": {
+    "@date-io/moment": "^2.15.0",
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/material": "^5.9.0",
+    "@mui/styled-engine-sc": "^5.8.0",
+    "@mui/x-date-pickers": "^5.0.2",
+    "@pubnub/react-chat-components": "^0.12.0",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^0.27.2",
+    "chalk": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "emoji-picker-react": "^3.6.1",
+    "env-cmd": "^10.1.0",
+    "formik": "^2.2.9",
+    "formik-mui": "^5.0.0-alpha.0",
+    "moment": "^2.29.4",
+    "pubnub": "^7.2.0",
+    "pubnub-react": "^3.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-google-recaptcha-v3": "^1.10.0",
+    "react-reverse-portal": "^2.1.1",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "5.0.1",
+    "react-use-websocket": "^4.2.0",
+    "styled-components": "^5.3.5",
+    "typescript": "^4.8.2",
+    "web-vitals": "^2.1.4",
+    "webrtc-adapter": "^8.1.1",
+    "yup": "^0.32.11"
+  },
+  "scripts": {
+    "prestart": "BUMP=none node ./scripts/inject-version.mjs",
+    "prestar:debug": "BUMP=none node ./scripts/inject-version.mjs",
+    "prestart:demo": "BUMP=none node ./scripts/inject-version.mjs",
+    "start": "PORT=3006 export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start ",
+    "start:debug": "PORT=3006 BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' export HTTPS=true&&SSL_CRT_FILE=~/localhost-ssl/cert.pem&&SSL_KEY_FILE=~/localhost-ssl/key.pem env-cmd -f .env.development.local react-scripts start ",
+    "start:demo": "PORT=3006 BROWSER='google chrome' BROWSER_ARGS='--remote-debugging-port=9222' export HTTPS=true&&SSL_CRT_FILE=~/localhost-ssl/cert.pem&&SSL_KEY_FILE=~/localhost-ssl/key.pem env-cmd -f .env-demo react-scripts start ",
+    "prebuild": "node ./scripts/inject-version.mjs",
+    "prebuild:demo": "node ./scripts/inject-version.mjs",
+    "build": "env-cmd -f .env.development.local react-scripts build",
+    "build:demo": "env-cmd -f .env-demo react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint:check": "eslint src/**/*.{tsx,ts,js}",
+    "lint:fix": "eslint src/**/*.{tsx,ts,js} --fix",
+    "pretty:check": "prettier --config .prettierrc.json  --check --ignore-unknown ./src/**/*.{tsx,ts,js}",
+    "pretty:fix": "prettier --config .prettierrc.json  --write --ignore-unknown ./src/**/*.{tsx,ts,js}",
+    "prepare": "husky install"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.18.6",
+    "@types/pubnub": "^7.2.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.6",
+    "@typescript-eslint/parser": "^5.30.6",
+    "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.30.1",
+    "eslint-webpack-plugin": "^3.2.0",
+    "husky": "^8.0.1",
+    "prettier": "2.7.1",
+    "red5pro-webrtc-sdk": "^10.3.0",
+    "replace-in-file": "^6.3.5",
+    "tss-react": "^3.7.1"
+  }
+}

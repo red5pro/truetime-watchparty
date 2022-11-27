@@ -1,0 +1,898 @@
+{
+	"info": {
+		"_postman_id": "c752f57a-b993-4d18-9017-68418b27a64d",
+		"name": "Conference API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Conferences",
+			"item": [
+				{
+					"name": "Create Conference",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"streamGuid\": \"live/mainscreen\",\r\n  \"displayName\": \"My Conference\",\r\n  \"maxParticipants\": 10,\r\n  \"joinToken\": \"kXQu9dEH\",\r\n  \"joinLocked\": false,\r\n  \"vipOkay\": true,\r\n  \"startTime\": 1659455680108\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference?user={{organizerUser}}&password={{organizerPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{organizerUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{organizerPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetConferenceParticipants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference/3/participants?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference",
+								"3",
+								"participants"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetConferenceParticipantsDeep",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference/1/participants/deep?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference",
+								"1",
+								"participants",
+								"deep"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllConferenceDetails",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference/1?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference",
+								"1"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ListAllConferences",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteConference",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference/4?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference",
+								"4"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAllConferences",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "List All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/user?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"user"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"role\": \"ORGANIZER\",\r\n  \"username\": \"some.dude3@red5pro.com\",\r\n  \"password\": \"abc123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/user?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"user"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"token\": \"LTiM+hAxc6PpAvEgzTMC9XD6Oq3vlB6Ymmhjjx31V2EJL6LtO6cPNGSvkXClv70GBX+Q3vcyaQHwlP59r2JBVdSLJk8WIOvtvNIHw4qKyN+ZdNghEbjU6PHUdul5gMfDDqpGqJEth7pX95aaImvAv8fvZbDkbQR3QOt4gB2GFiY=\",\r\n  \"password\": \"123abc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/user/some.dude2@red5pro.com?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"user",
+								"some.dude2@red5pro.com"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"role\": \"ORGANIZER\",\r\n  \"username\": \"some.dude@red5pro.com\",\r\n  \"password\": \"abc123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/user/some.dude@red5pro.com?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"user",
+								"some.dude@red5pro.com"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Series and Episodes",
+			"item": [
+				{
+					"name": "Create Series",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"displayName\": \"Series 1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/series?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"series"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Series",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/series?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"series"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Series",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"displayName\": \"Series Uno\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/series/1?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"series",
+								"1"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Series",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/series/1?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"series",
+								"1"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Episode",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"displayName\": \"Event 1\",\r\n  \"startTime\": 1658677171000,\r\n  \"endTime\": 1659598391232\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/series/3/episode?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"series",
+								"3",
+								"episode"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List All Episodes By Series",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/series/2/episode?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"series",
+								"2",
+								"episode"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Current Episode",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/series/3/episode/current?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"series",
+								"3",
+								"episode",
+								"current"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Episode",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"displayName\": \"Event One\",\r\n  \"startTime\": 1658677171000,\r\n  \"endTime\": 1658691571000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/series/2/episode/6?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"series",
+								"2",
+								"episode",
+								"6"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Episode",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/series/2/episode/6?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"series",
+								"2",
+								"episode",
+								"6"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Participants",
+			"item": [
+				{
+					"name": "Mute Participants",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"7\": {\r\n    \"audioMuted\": false,\r\n    \"videoMuted\": true,\r\n    \"chatMuted\": true\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference/1/participants/mute?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference",
+								"1",
+								"participants",
+								"mute"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Focus on a Participant",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference/1/participants/7/focus?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference",
+								"1",
+								"participants",
+								"7",
+								"focus"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove a Participant",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference/1/participants/7?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference",
+								"1",
+								"participants",
+								"7"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lock Conference",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference/1/lock?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference",
+								"1",
+								"lock"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unlock Conference",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{scheme}}://{{host}}/conferenceapi/1.0/conference/1/unlock?user={{adminUser}}&password={{adminPassword}}",
+							"protocol": "{{scheme}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"conferenceapi",
+								"1.0",
+								"conference",
+								"1",
+								"unlock"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "{{adminUser}}"
+								},
+								{
+									"key": "password",
+									"value": "{{adminPassword}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

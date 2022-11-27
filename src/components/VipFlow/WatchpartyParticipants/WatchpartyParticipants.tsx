@@ -1,0 +1,102 @@
+import * as React from 'react'
+import { Box, Typography } from '@mui/material'
+import { Participant } from '../../../models/Participant'
+import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
+import useStyles from './WatchpartyParticipants.module'
+import { ConferenceDetails } from '../../../models/ConferenceDetails'
+
+interface IWatchpartyParticipantsProps {
+  disabled: boolean
+  conferenceDetails?: ConferenceDetails
+  participants: Participant[]
+  skipNextConference: () => void
+  buttonPrimary?: boolean
+  showNextConference?: boolean
+  onJoinNextParty(): Promise<any>
+}
+
+const WatchpartyParticipants = (props: IWatchpartyParticipantsProps) => {
+  const {
+    disabled,
+    conferenceDetails,
+    participants,
+    skipNextConference,
+    onJoinNextParty,
+    showNextConference = false,
+  } = props
+
+  const { classes } = useStyles()
+
+  if (!conferenceDetails) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        flexDirection="column"
+        marginLeft={2}
+        className={classes.container}
+      >
+        <Typography>There are no more conferences.</Typography>
+        <CustomButton
+          labelStyle={classes.enabledButton}
+          onClick={() => skipNextConference()}
+          size={BUTTONSIZE.MEDIUM}
+          buttonType={disabled ? BUTTONTYPE.TERTIARY : BUTTONTYPE.SECONDARY}
+        >
+          {'Get Next Conference'}
+        </CustomButton>
+      </Box>
+    )
+  }
+
+  return (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      flexDirection="column"
+      marginLeft={2}
+      className={classes.container}
+    >
+      <Typography className={classes.title}>{conferenceDetails?.displayName}</Typography>
+      <Typography>{`${participants?.length} Attendee(s)`}</Typography>
+      {/* Participants moved to Stage */}
+      {/* <Box>
+        {participants && (
+          <Grid container spacing={2} marginY={2}>
+            {participants.map((participant: Participant, i: number) => {
+              return (
+                <Grid key={`${participant.participantId}-${i}`} item xs={3}>
+                  <Box>{participant.displayName}</Box>
+                </Grid>
+              )
+            })}
+          </Grid>
+        )}
+      </Box> */}
+      <Box display="flex" justifyContent="space-evenly" className={classes.buttonContainer}>
+        <CustomButton
+          labelStyle={disabled ? classes.disabledButton : classes.enabledButton}
+          disabled={disabled}
+          onClick={() => onJoinNextParty()}
+          size={BUTTONSIZE.SMALL}
+          buttonType={disabled ? BUTTONTYPE.TERTIARY : BUTTONTYPE.SECONDARY}
+        >
+          {showNextConference ? 'Join Next Party' : 'Join The Party'}
+        </CustomButton>
+        <CustomButton
+          labelStyle={disabled ? classes.disabledButton : classes.enabledButton}
+          disabled={disabled}
+          onClick={skipNextConference}
+          size={BUTTONSIZE.SMALL}
+          buttonType={BUTTONTYPE.TERTIARY}
+        >
+          Skip
+        </CustomButton>
+      </Box>
+    </Box>
+  )
+}
+
+export default WatchpartyParticipants
