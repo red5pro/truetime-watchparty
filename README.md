@@ -1,9 +1,42 @@
-# Red5Pro Watch Party
+# Red5 Pro Watch Party
 
-> [See it in action!](https://www.youtube.com/watch?v=EhleTDPz-B8&list=TLGGpEZCWusB0F4yODExMjAyMg)
+![Red5 Pro Watch Party](docs/watchparty-vod.png)
 
+[See it in action!](https://www.youtube.com/watch?v=EhleTDPz-B8&list=TLGGpEZCWusB0F4yODExMjAyMg)
 
-# Getting Started with Red5Pro Watch Party
+This repository contains code for the React-based client-side Red5 Pro Watch Party web application.
+
+> If you are looking for a basic Vanilla JS version, please visit: [https://github.com/red5pro/red5pro-watch-party-VANILLA](https://github.com/red5pro/red5pro-watch-party-VANILLA)
+
+## Requirements
+
+### Client Side
+
+The Watch Party web application has a few environment configuration details required to build and properly run. You can view the required variables in the [.env.example](.env.example) file.
+
+It is recommended to make a copy of the [.env.example](.env.example) file, rename to `.env.development.local` (or other desired naming convention) and update these variables with their respective values for your own version of this product.
+
+The variables are:
+
+* `REACT_APP_VERSION` - The version of the product that will be printed in the dev console of the browser.
+* `REACT_APP_SM` - Flag to utilize the `Stream Manager` capabilities of the Red5 Pro Server. Set to `1` for `true`.
+* `REACT_APP_API_SERVER_HOST` - The endpoint base URL for the `Conference API`. (**Coming Soon**)
+* `REACT_APP_SERVER_HOST` - The endpoint base URL fro the Red5 Pro Streaming Server.
+* `REACT_APP_PUBLISH_API_KEY` - The publish API key for [PubNub](https://www.pubnub.com/) chat integration.
+* `REACT_APP_SUBSCRIBE_API_KEY` - The subscribe API key for [PubNub](https://www.pubnub.com/) chat integration.
+* `REACT_APP_RECAPTCHA_SITE_KEY` - The public key for [Recaptcha](https://developers.google.com/recaptcha/) integration.
+* `REACT_APP_RECAPTCHA_SECRET_KEY` - The private key for [Recaptcha](https://developers.google.com/recaptcha/) integration.
+* `REACT_APP_FACEBOOK_APP_ID` - The Facebook ID for Facebook Log In integration.
+
+> See [Get Started](#get-started) for further instruction on build and run.
+
+### Server Side
+
+The Watch Party web application utilizes [Red5 Pro Server](https://www.red5pro.com/) for streaming sub-second live video of all party participants and main video feed(s).
+
+Additionally, the Red5 Pro Watch Party application requires communication with the **upcoming** release of the `Conference API` for the [Red5 Pro Server](https://www.red5pro.com/).
+
+# Getting Started with Red5 Pro Watch Party
 
 ### `git clone git@github.com:red5pro/red5pro-watch-party.git`
 
