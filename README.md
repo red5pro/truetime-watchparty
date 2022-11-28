@@ -1,6 +1,11 @@
-# Getting Started with Infrared5 WatchParty
+# Red5Pro Watch Party
 
-### `git clone git@github.com:infrared5/watchparty.git`
+> [See it in action!](https://www.youtube.com/watch?v=EhleTDPz-B8&list=TLGGpEZCWusB0F4yODExMjAyMg)
+
+
+# Getting Started with Red5Pro Watch Party
+
+### `git clone git@github.com:red5pro/red5pro-watch-party.git`
 
 ## Get started
 
@@ -17,7 +22,7 @@ Your app is ready to be deployed!
 ### `npm run start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3006](http://localhost:3006) to view it in your browser.
+Open [https://localhost:3006](https://localhost:3006) to view it in your browser.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.

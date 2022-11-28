@@ -19,7 +19,7 @@ There are 2 different `.env*` files used to build the app:
 * `.env` - the default environment to build the app for internal testing.
 * `.env-demo` - an environment pointing to the remote endpoints used for the demo in Europe.
 
-> You can find these environment files in Confluence at: [https://infrared5.atlassian.net/wiki/spaces/CUS/pages/2730262628/Watchparty+Deployments](https://infrared5.atlassian.net/wiki/spaces/CUS/pages/2730262628/Watchparty+Deployments).
+> You can find these environment files in Confluence at: ***.
 
 For internal testing, the app can be built pointing to `.env` file using the following command:
 
