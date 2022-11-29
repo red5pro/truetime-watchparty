@@ -8,6 +8,12 @@ This repository contains code for the React-based client-side Red5 Pro Watch Par
 
 > If you are looking for a basic Vanilla JS version, please visit: [https://github.com/red5pro/red5pro-watch-party-VANILLA](https://github.com/red5pro/red5pro-watch-party-VANILLA)
 
+# VOD Orchestration
+
+This branch integrates the concept of VOD synchonized playback of multiple streams among multiple participants.
+
+It requires a socket server to store the orchestrated state of the VOD playback (the `VOD_SOCKET_HOST` endpoint defined in the next section). A basic example of such a socket server can be found at [https://github.com/red5pro/red5pro-watch-party-vod-socket](https://github.com/red5pro/red5pro-watch-party-vod-socket).
+
 ## Requirements
 
 ### Client Side
@@ -27,6 +33,9 @@ The variables are:
 * `REACT_APP_RECAPTCHA_SITE_KEY` - The public key for [Recaptcha](https://developers.google.com/recaptcha/) integration.
 * `REACT_APP_RECAPTCHA_SECRET_KEY` - The private key for [Recaptcha](https://developers.google.com/recaptcha/) integration.
 * `REACT_APP_FACEBOOK_APP_ID` - The Facebook ID for Facebook Log In integration.
+* `VOD_SOCKET_HOST` - The Socket Server that orchestrates the state of VOD playback across all participants.
+* `VOD_HOST` - The endpoint to access VOD files for playback.
+* `VOD_CONTEXT` - The webapp context that the VOD files are stored in on `VOD_HOST`.
 
 > See [Get Started](#get-started) for further instruction on build and run.
 
