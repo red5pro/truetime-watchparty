@@ -31,6 +31,12 @@ const singleSerie = {
   seriesId: 7,
 }
 
+Object.defineProperty(global.self, 'crypto', {
+  value: {
+    randomUUID: (arr) => arr,
+  },
+})
+
 jest.mock('../../hooks/useCookies', () => {
   return () => ({
     getCookies: () => ({

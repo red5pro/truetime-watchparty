@@ -31,6 +31,12 @@ const singleSerie = {
   seriesId: 7,
 }
 
+Object.defineProperty(global.self, 'crypto', {
+  value: {
+    randomUUID: (arr) => arr,
+  },
+})
+
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => jest.fn(),

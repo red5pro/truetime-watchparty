@@ -30,14 +30,14 @@ const ThankYouPage = () => {
   }
 
   return (
-    <Box className={classes.root}>
+    <Box data-testid="thankyou-page" className={classes.root}>
       <Box padding={2} className={classes.brandLogo}>
         <WbcLogoSmall />
       </Box>
       {loading && <Loading />}
       <Stack className={classes.container}>
         {!loading && seriesEpisode && (
-          <Stack>
+          <Stack data-testid="series-episode-load">
             <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{seriesEpisode.episode.displayName}</Typography>
             <Typography sx={{ fontSize: '14px', fontWeight: 400 }}>
               {getStartTimeFromTimestamp(seriesEpisode.episode.startTime)}
