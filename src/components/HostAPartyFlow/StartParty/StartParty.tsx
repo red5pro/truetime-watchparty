@@ -69,11 +69,7 @@ const StartParty = (props: IStartPartyProps) => {
           <SetupPartyForm onActions={onActions} data={data} setData={setData} account={account} />
         </Box>
       )}
-      <img
-        className={classes.image}
-        alt="Start Party Main Image"
-        src={require('../../../assets/images/BoxMainImage.png')}
-      ></img>
+      <img className={classes.image} alt="Start Party Main Image" src={'../../../assets/images/BoxMainImage.png'}></img>
     </Box>
   )
 }
