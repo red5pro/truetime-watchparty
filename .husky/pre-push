@@ -2,5 +2,6 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 BUMP=none npm run build
-# npm run test --silent -- --watchAll=false --passWithNoTests
+
+npm run test --silent -- --watchAll=false --passWithNoTests
 
