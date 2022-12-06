@@ -1,5 +1,6 @@
 import React from 'react'
-import { getCurrentEpisode } from '../../services/conference/conference'
+import { getCurrentEpisode } from '../../services/conference'
+
 
 const cannedSeries = { displayName: 'Accessing Information...' }
 const cannedEpisode = { displayName: '...', startTime: new Date().getTime() }
