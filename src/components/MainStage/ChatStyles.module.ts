@@ -134,9 +134,9 @@ const useChatStyles = makeStyles()((theme: any) => ({
   },
 
   fullScreenChatContainer: {
-    position: 'relative',
-    left: '-65px',
-    bottom: 0,
+    position: 'absolute',
+    left: '36%',
+    bottom: '4rem',
 
     '& .pn-msg-list': {
       height: '30vh !important',

@@ -5,13 +5,15 @@ const useStyles = makeStyles()((theme: any) => {
     rootContainer: {
       width: '100vw',
       height: '100vh',
-      left: 0,
-      top: 0,
-      position: 'relative',
+      maxHeight: '100vh',
+      maxWidth: '100vw',
+      display: 'flex',
     },
     loadingContainer: {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
       alignItems: 'center',
-      marginTop: '10%',
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
     },
     mainVideo: {
@@ -25,6 +27,13 @@ const useStyles = makeStyles()((theme: any) => {
     content: {
       zIndex: 1,
     },
+    organizerTopControls: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      width: '100%',
+      maxHeight: '5rem',
+      zIndex: 1,
+    },
     topBar: {
       padding: '20px',
       display: 'flex',
@@ -32,11 +41,10 @@ const useStyles = makeStyles()((theme: any) => {
       justifyContent: 'flex-end',
     },
     header: {
-      width: '100%',
-      position: 'absolute',
-      top: 20,
-      zIndex: 0,
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingLeft: '20%',
     },
     headerTitle: {
       fontSize: '16px',
@@ -50,7 +58,7 @@ const useStyles = makeStyles()((theme: any) => {
       margin: '10px',
     },
     topControls: {
-      zIndex: 1,
+      justifyContent: 'flex-end',
     },
     bottomBar: {
       width: '100%',
@@ -59,9 +67,10 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'absolute',
       left: 0,
       bottom: 0,
-      padding: '20px',
+      padding: '15px',
       display: 'flex',
       flexDirection: 'row',
+      maxHeight: '6rem',
     },
     layoutContainer: {
       width: '100%',
