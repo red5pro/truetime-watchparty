@@ -25,9 +25,10 @@ const styles = {
       left: '13rem',
     },
     mainVideo: {
-      width: '100%',
+      width: 'fit-content',
       height: '100%',
       borderRadius: '20px',
+      objectFit: 'contain',
     },
     publisherContainer: {
       bottom: '73px',

@@ -182,26 +182,7 @@ const JoinWebinarPage = () => {
           </MainStageWithChatBox>
         )}
 
-        {currentSection !== Section.WatchParty && (
-          <Stack
-            spacing={2}
-            direction="column"
-            className={classes.sponsorContainer}
-            sx={currentSection === Section.AVSetup ? { alignItems: 'center', width: 'calc(100vw - 158px)' } : {}}
-          >
-            <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
-            <Stack spacing={2} direction="row">
-              {/* <OracleLogo /> */}
-              <Box sx={{ width: 'auto', height: '70px' }}>
-                <img
-                  height="70px"
-                  alt="Logo Placeholder"
-                  src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
-                ></img>
-              </Box>
-            </Stack>
-          </Stack>
-        )}
+
       </Box>
     </Box>
   )

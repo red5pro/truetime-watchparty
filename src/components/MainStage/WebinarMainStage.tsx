@@ -23,7 +23,7 @@ import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 import ShareLinkModal from '../Modal/ShareLinkModal'
 import ErrorModal from '../Modal/ErrorModal'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
-import { UserRoles } from '../../utils/commonUtils'
+import { noop, UserRoles } from '../../utils/commonUtils'
 import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
 import PublisherPortalStage from './PublisherPortalStage'
 import PublisherPortalFullscreen from './PublisherPortalFullscreen'
@@ -37,6 +37,7 @@ import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import { FatalError } from '../../models/FatalError'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
+import ScreenShare from '../ScreenShare/ScreenShare'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -80,7 +81,7 @@ const WebinarMainStage = () => {
   const publisherRef = React.useRef<PublisherRef>(null)
   const subscriberListRef = React.useRef<any>(null)
 
-  const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.FULLSCREEN, style: styles.stage })
+  const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.FULLSCREEN, style: styles.fullscreen })
 
   const [showLink, setShowLink] = React.useState<boolean>(false)
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
@@ -100,6 +101,7 @@ const WebinarMainStage = () => {
   const [nonFatalError, setNonFatalError] = React.useState<any>()
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
   const [showBanConfirmation, setShowBanConfirmation] = React.useState<Participant | undefined>()
+  const [screenShare, setScreenShare] = React.useState<boolean>(false)
 
   const { classes: chatClasses } = useChatStyles()
 
@@ -327,14 +329,18 @@ const WebinarMainStage = () => {
     setRelayout(true)
   }
 
-  const noop = () => {
-    /* no operation */
-  }
-
   const onLayoutSelect = (layout: number) => {
     const newStyle =
       layout === Layout.FULLSCREEN ? styles.fullscreen : layout === Layout.EMPTY ? styles.empty : styles.stage
     dispatch({ type: 'LAYOUT', layout: layout, style: newStyle })
+  }
+
+  const onShareScreen = async () => {
+
+    console.log("WebinarMainStage - Click on Share screen")
+
+    setScreenShare(!screenShare)
+    onLayoutSelect(Layout.STAGE)
   }
 
   const subscriberMenuActions = {
@@ -423,6 +429,12 @@ const WebinarMainStage = () => {
           <Typography>Loading Watch Party</Typography>
         </Stack>
       )}
+      {screenShare && layout.layout !== Layout.FULLSCREEN && (
+        <Box id="main-video-container" sx={layout.style.mainVideoContainer}>
+          <ScreenShare styles={layout.style.mainVideo} videoStyles={layout.style.mainVideo} />
+        </Box>
+      )}
+
       {/* Other Participants Video Playback */}
       <Box id="participants-video-container" sx={layout.style.subscriberList}>
         <Grid
@@ -573,6 +585,10 @@ const WebinarMainStage = () => {
         {data.conference && (
           <Stack direction="row" spacing={1} alignItems="flex-end" justifyContent="center">
             <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+
+            <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.PRIMARY} onClick={onShareScreen}>
+              Share Screen
+            </CustomButton>
 
             <Box className={chatClasses.inputChatContainer}>
               {layout.layout === Layout.FULLSCREEN && (

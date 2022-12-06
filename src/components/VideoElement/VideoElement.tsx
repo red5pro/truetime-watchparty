@@ -8,9 +8,19 @@ interface IVideoElementProps {
   muted: boolean
   controls: boolean
   volume?: number
+  setVideoMedia?: () => Promise<any>
+  initScreenShare?: boolean
 }
 
-const VideoElement = ({ elementId, styles, muted, controls, volume }: IVideoElementProps) => {
+const VideoElement = ({
+  elementId,
+  styles,
+  muted,
+  controls,
+  volume,
+  setVideoMedia,
+  initScreenShare,
+}: IVideoElementProps) => {
   const videoRef: any = React.useRef(null)
   const { classes } = useVideoStyles()
 
@@ -28,6 +38,18 @@ const VideoElement = ({ elementId, styles, muted, controls, volume }: IVideoElem
       videoRef.current.muted = muted
     }
   }, [muted, elementId])
+
+  const setScreenShare = async () => {
+    console.log('setting screen share')
+    console.log({ videoRef, initScreenShare, setVideoMedia })
+    if (videoRef && videoRef.current && initScreenShare && setVideoMedia) {
+      videoRef.current.srcObject = await setVideoMedia()
+    }
+  }
+
+  React.useEffect(() => {
+    setScreenShare()
+  }, [initScreenShare])
 
   return (
     <Box className={classes.container}>
