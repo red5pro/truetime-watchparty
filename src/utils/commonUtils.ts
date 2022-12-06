@@ -89,3 +89,7 @@ export const getQueryParams = (name: string) => {
 
   return value
 }
+
+export const noop = () => {
+  /* no operation */
+}

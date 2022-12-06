@@ -23,7 +23,7 @@ import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 import ShareLinkModal from '../Modal/ShareLinkModal'
 import ErrorModal from '../Modal/ErrorModal'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
-import { noop, UserRoles } from '../../utils/commonUtils'
+import { UserRoles } from '../../utils/commonUtils'
 import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
 import PublisherPortalStage from './PublisherPortalStage'
 import PublisherPortalFullscreen from './PublisherPortalFullscreen'
@@ -65,8 +65,8 @@ interface PublisherRef {
   toggleMicrophone(on: boolean): any
 }
 
-const MainStage = () => {
-  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
+const WebinarMainStage = () => {
+  const { joinToken, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
   const mediaContext = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
 
@@ -80,11 +80,11 @@ const MainStage = () => {
   const publisherRef = React.useRef<PublisherRef>(null)
   const subscriberListRef = React.useRef<any>(null)
 
-  const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
+  const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.FULLSCREEN, style: styles.stage })
 
   const [showLink, setShowLink] = React.useState<boolean>(false)
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
-  const [maxParticipants, setMaxParticipants] = React.useState<number>(0)
+  const [maxParticipants, setMaxParticipants] = React.useState<number>(8) // CHECK WHERE THIS VALUE WILL COME FROM
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
   const [availableVipParticipant, setAvailableVipParticipant] = React.useState<Participant | undefined>()
@@ -130,7 +130,7 @@ const MainStage = () => {
     return { url: API_SOCKET_HOST, request }
   }
 
-  if (!mediaContext?.mediaStream || !getStreamGuid()) {
+  if (!mediaContext?.mediaStream) {
     navigate(`/join/${joinToken}`)
   }
 
@@ -173,17 +173,6 @@ const MainStage = () => {
   }, [mediaContext?.mediaStream])
 
   React.useEffect(() => {
-    if (seriesEpisode && seriesEpisode.loaded) {
-      const { maxParticipants } = seriesEpisode.series
-      const { streamGuid } = seriesEpisode.episode
-      if (streamGuid !== mainStreamGuid) {
-        setMainStreamGuid(streamGuid)
-      }
-      setMaxParticipants(maxParticipants)
-    }
-  }, [seriesEpisode])
-
-  React.useEffect(() => {
     if (maxParticipants > 0) {
       const half = Math.floor(maxParticipants / 2)
       const column = `fit-content(230px)`
@@ -221,14 +210,6 @@ const MainStage = () => {
       }
     }
   }, [data.connection])
-
-  React.useEffect(() => {
-    if (data.vip && data.vip.participantId !== availableVipParticipant?.participantId) {
-      setAvailableVipParticipant(data.vip)
-    } else if (!data.vip) {
-      setAvailableVipParticipant(undefined)
-    }
-  }, [data.vip])
 
   React.useEffect(() => {
     if (layout.layout === Layout.STAGE && viewportHeight > 0 && subscriberListRef.current) {
@@ -287,27 +268,27 @@ const MainStage = () => {
 
   const toggleLock = async () => {
     const conferenceId = data.conference.conferenceId
-    if (!seriesEpisode.locked) {
-      try {
-        const result = await lock(conferenceId)
-        if (result.status >= 300) {
-          throw result
-        }
-      } catch (e) {
-        console.error(e)
-        setNonFatalError({ ...(e as any), title: 'Error in locking party.' })
+    // if (!seriesEpisode.locked) {
+    try {
+      const result = await lock(conferenceId)
+      if (result.status >= 300) {
+        throw result
       }
-    } else {
-      try {
-        const result = await unlock(conferenceId)
-        if (result.status >= 300) {
-          throw result
-        }
-      } catch (e) {
-        console.error(e)
-        setNonFatalError({ ...(e as any), title: 'Error in unlocking party.' })
-      }
+    } catch (e) {
+      console.error(e)
+      setNonFatalError({ ...(e as any), title: 'Error in locking party.' })
     }
+    // } else {
+    //   try {
+    //     const result = await unlock(conferenceId)
+    //     if (result.status >= 300) {
+    //       throw result
+    //     }
+    //   } catch (e) {
+    //     console.error(e)
+    //     setNonFatalError({ ...(e as any), title: 'Error in unlocking party.' })
+    //   }
+    // }
   }
 
   const toggleLink = () => {
@@ -344,6 +325,10 @@ const MainStage = () => {
 
   const onRelayout = () => {
     setRelayout(true)
+  }
+
+  const noop = () => {
+    /* no operation */
   }
 
   const onLayoutSelect = (layout: number) => {
@@ -521,11 +506,11 @@ const MainStage = () => {
         {/* Role-based Controls */}
         {data.conference && (
           <Grid container className={classes.topBar} sx={layout.style.topBar}>
-            <Grid item xs={9} display="flex" alignItems="center" justifyContent="center" className={classes.header}>
+            {/* <Grid item xs={9} display="flex" alignItems="center" justifyContent="center" className={classes.header}>
               <WbcLogoSmall />
               <Divider orientation="vertical" flexItem className={classes.headerDivider} />
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
-            </Grid>
+            </Grid> */}
             <Grid item xs={3} display="flex" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <IconButton
@@ -538,7 +523,9 @@ const MainStage = () => {
                   <GroupAdd fontSize="small" />
                 </IconButton>
               )}
-              {userRole === UserRoles.ORGANIZER.toLowerCase() && (
+
+              {/** LOCK NOT WORKING FOR NOW */}
+              {/* {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <Tooltip title={seriesEpisode.locked ? 'Locked' : 'Unlocked'}>
                   <IconButton
                     sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
@@ -550,7 +537,9 @@ const MainStage = () => {
                     {seriesEpisode.locked ? <Lock fontSize="small" /> : <LockOpen fontSize="small" />}
                   </IconButton>
                 </Tooltip>
-              )}
+              )} */}
+              <Lock fontSize="small" />
+
               <CustomButton
                 size={BUTTONSIZE.SMALL}
                 buttonType={BUTTONTYPE.LEAVE}
@@ -562,36 +551,7 @@ const MainStage = () => {
             </Grid>
           </Grid>
         )}
-        {/* VIP Video Playback */}
-        {availableVipParticipant && (
-          <Box sx={layout.style.vipContainer}>
-            <VIPSubscriber
-              participant={availableVipParticipant}
-              styles={layout.style.vipsubscriber}
-              videoStyles={layout.style.vipsubscriberVideo}
-              host={STREAM_HOST}
-              useStreamManager={USE_STREAM_MANAGER}
-            />
-          </Box>
-        )}
       </Box>
-      {/* Main Video */}
-      {mainStreamGuid && layout.layout !== Layout.FULLSCREEN && (
-        <Box id="main-video-container" sx={layout.style.mainVideoContainer}>
-          <Subscriber
-            ref={mainVideoRef}
-            useStreamManager={USE_STREAM_MANAGER}
-            host={STREAM_HOST}
-            streamGuid={mainStreamGuid}
-            resubscribe={true}
-            styles={layout.style.mainVideo}
-            videoStyles={layout.style.mainVideo}
-            mute={false}
-            showControls={false}
-            isMainVideo
-          />
-        </Box>
-      )}
       {/* Bottom Controls / Chat */}
       <Stack
         id="bottom-controls-chat-container"
@@ -720,4 +680,4 @@ const MainStage = () => {
   )
 }
 
-export default MainStage
+export default WebinarMainStage

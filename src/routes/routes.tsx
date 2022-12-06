@@ -13,6 +13,7 @@ import PartyEndedPage from '../pages/PartyEndedPage/PartyEndedPage'
 import SimpleVipPage from '../pages/SimpleVipPage/SimpleVipPage'
 import AdminPage from '../pages/Admin/AdminPage'
 import VerifyEmailPage from '../pages/VerifyEmailPage/VerifyEmailPage'
+import JoinWebinarPage from '../pages/JoinWebinarPage/JoinWebinarPage'
 
 const AppRoutes = () => {
   return (
@@ -28,6 +29,18 @@ const AppRoutes = () => {
               <MediaContext.Provider>
                 <WatchContext.Provider>
                   <JoinPage />
+                </WatchContext.Provider>
+              </MediaContext.Provider>
+            </JoinContext.Provider>
+          }
+        />
+        <Route
+          path="/webinar/:token"
+          element={
+            <JoinContext.Provider>
+              <MediaContext.Provider>
+                <WatchContext.Provider>
+                  <JoinWebinarPage />
                 </WatchContext.Provider>
               </MediaContext.Provider>
             </JoinContext.Provider>
