@@ -588,7 +588,7 @@ const MainStage = () => {
             host={STREAM_HOST}
             streamGuid={mainStreamGuid}
             resubscribe={true}
-            styles={layout.style.mainVideo}
+            styles={layout.style.subscriberMainVideoContainer}
             videoStyles={layout.style.mainVideo}
             mute={false}
             showControls={false}

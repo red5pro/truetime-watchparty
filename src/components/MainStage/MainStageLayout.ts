@@ -20,14 +20,19 @@ const styles = {
       zIndex: -100,
       position: 'absolute',
       width: 'calc(100vw - 14rem)',
-      height: 'calc(100vh - 10rem)',
-      top: '5rem',
+      height: 'calc(100vh - 8rem)',
+      top: '4rem',
       left: '13rem',
     },
     mainVideo: {
-      width: '100%',
+      width: 'fit-content',
       height: '100%',
       borderRadius: '20px',
+      objectFit: 'contain',
+    },
+    subscriberMainVideoContainer: {
+      width: '100%',
+      height: '100%',
     },
     publisherContainer: {
       bottom: '73px',
