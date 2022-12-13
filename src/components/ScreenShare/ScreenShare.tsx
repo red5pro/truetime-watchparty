@@ -10,13 +10,6 @@ import useStyles from './Screenshare.module'
 
 const SimpleAlertDialog = React.lazy(() => import('../Modal/SimpleAlertDialog'))
 
-enum StreamingModes {
-  AV = 'Video/Audio',
-  Audio = 'Audio',
-  Video = 'Video',
-  Empty = 'Empty',
-}
-
 interface SubscriberRef {
   setVolume(value: number): any
 }
@@ -24,10 +17,12 @@ interface SubscriberRef {
 interface ISubscriberProps {
   styles: any
   videoStyles: AnalyserOptions | any
+  isSharingScreen: boolean
+  onShareScreen: (value: boolean) => void
 }
 
 const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps, ref: React.Ref<SubscriberRef>) {
-  const { styles, videoStyles } = props
+  const { styles, videoStyles, isSharingScreen, onShareScreen } = props
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 
@@ -78,18 +73,40 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
     subRef.current = subscriber
   }, [subscriber])
 
-  const setVideoMedia = async () => {
+  const stopVideoMedia = (captureStream?: MediaStream | null) => {
+    const tracks = captureStream ? captureStream.getTracks() : mediaStream.srcObject.getTracks()
+    tracks.forEach((track: any) => track.stop())
+
+    if (mediaStream) {
+      mediaStream.srcObject = null
+    }
+
+    setMediaStream(undefined)
+    onShareScreen(false)
+  }
+
+  const startVideoMedia = async () => {
     const displayMediaOptions: DisplayMediaStreamConstraints = {
       video: true,
       audio: false,
     }
 
-    let captureStream = null
+    let captureStream: MediaStream | null = null
 
     try {
       captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+
+      captureStream.getTracks()[0].onended = () => {
+        stopVideoMedia(captureStream)
+      }
+
       setMediaStream(captureStream)
-    } catch (err) {
+    } catch (err: any) {
+      if (err.message === 'Permission denied') {
+        setMediaStream(undefined)
+        onShareScreen(false)
+        return
+      }
       console.error(`Error: ${err}`)
 
       setError({ ...(err as any), title: 'Error on sharing your screen.' })
@@ -98,12 +115,16 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
   }
 
   React.useEffect(() => {
-    if (elementId.length > 0 && streamName?.length > 0) {
-      console.log('ScreenShare - Init screen share')
-
+    if (isSharingScreen) {
       setInit(true)
     }
-  }, [])
+  }, [isSharingScreen])
+
+  React.useEffect(() => {
+    if (initScreenShare) {
+      startVideoMedia()
+    }
+  }, [initScreenShare])
 
   const setVolume = (value: number) => {
     setPlaybackVolume(value)
@@ -198,7 +219,7 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
         controls={false}
         styles={{ ...videoStyles }}
         initScreenShare
-        setVideoMedia={setVideoMedia}
+        videoMedia={mediaStream}
       />
       {error && (
         <SimpleAlertDialog

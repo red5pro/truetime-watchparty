@@ -54,7 +54,7 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
         <Tooltip title={`${participant.displayName}`} arrow>
           <InfoIcon
             fontSize="small"
-            sx={{ position: 'absolute', top: 4, right: `${isLayoutFullscreen ? '17%' : '4px'}` }}
+            sx={{ position: 'absolute', top: 4, right: `${isLayoutFullscreen ? '4px' : '4px'}` }}
           />
         </Tooltip>
       )}

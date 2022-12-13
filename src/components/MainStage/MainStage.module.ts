@@ -103,6 +103,13 @@ const useStyles = makeStyles()((theme: any) => {
         height: '32px',
       },
     },
+
+    shareScreenButton: {
+      width: 'fit-content !important',
+      minWidth: 'fit-content',
+      margin: 0,
+      padding: '20px 10px',
+    },
   }
 })
 

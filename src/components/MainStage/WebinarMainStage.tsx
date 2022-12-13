@@ -3,7 +3,15 @@ import * as portals from 'react-reverse-portal'
 import { useNavigate } from 'react-router-dom'
 import { IconButton, Box, Typography, Stack, Divider, Tooltip, Grid } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
-import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-material'
+import {
+  Lock,
+  LockOpen,
+  GroupAdd,
+  ChatBubble,
+  ExpandMore,
+  ScreenShareOutlined,
+  StopScreenShareOutlined,
+} from '@mui/icons-material'
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
 
 import useCookies from '../../hooks/useCookies'
@@ -67,11 +75,13 @@ interface PublisherRef {
 }
 
 const WebinarMainStage = () => {
-  const { joinToken, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
+  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
   const mediaContext = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
 
   const { classes } = useStyles()
+  const { classes: chatClasses } = useChatStyles()
+
   const navigate = useNavigate()
   const { getCookies } = useCookies(['account'])
 
@@ -102,8 +112,7 @@ const WebinarMainStage = () => {
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
   const [showBanConfirmation, setShowBanConfirmation] = React.useState<Participant | undefined>()
   const [screenShare, setScreenShare] = React.useState<boolean>(false)
-
-  const { classes: chatClasses } = useChatStyles()
+  const [startConference, setStartConference] = React.useState<boolean>(false)
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     const request: ConnectionRequest = {
@@ -233,6 +242,7 @@ const WebinarMainStage = () => {
   }, [data.list, layout, viewportHeight, relayout])
 
   const onPublisherBroadcast = () => {
+    setStartConference(true)
     const streamGuid = getStreamGuid()
     const { url, request } = getSocketUrl(joinToken, nickname, streamGuid)
     join(url, request)
@@ -270,27 +280,27 @@ const WebinarMainStage = () => {
 
   const toggleLock = async () => {
     const conferenceId = data.conference.conferenceId
-    // if (!seriesEpisode.locked) {
-    try {
-      const result = await lock(conferenceId)
-      if (result.status >= 300) {
-        throw result
+    if (!seriesEpisode.locked) {
+      try {
+        const result = await lock(conferenceId)
+        if (result.status >= 300) {
+          throw result
+        }
+      } catch (e) {
+        console.error(e)
+        setNonFatalError({ ...(e as any), title: 'Error in locking party.' })
       }
-    } catch (e) {
-      console.error(e)
-      setNonFatalError({ ...(e as any), title: 'Error in locking party.' })
+    } else {
+      try {
+        const result = await unlock(conferenceId)
+        if (result.status >= 300) {
+          throw result
+        }
+      } catch (e) {
+        console.error(e)
+        setNonFatalError({ ...(e as any), title: 'Error in unlocking party.' })
+      }
     }
-    // } else {
-    //   try {
-    //     const result = await unlock(conferenceId)
-    //     if (result.status >= 300) {
-    //       throw result
-    //     }
-    //   } catch (e) {
-    //     console.error(e)
-    //     setNonFatalError({ ...(e as any), title: 'Error in unlocking party.' })
-    //   }
-    // }
   }
 
   const toggleLink = () => {
@@ -335,12 +345,13 @@ const WebinarMainStage = () => {
     dispatch({ type: 'LAYOUT', layout: layout, style: newStyle })
   }
 
-  const onShareScreen = async () => {
-
-    console.log("WebinarMainStage - Click on Share screen")
-
-    setScreenShare(!screenShare)
-    onLayoutSelect(Layout.STAGE)
+  const onShareScreen = (value: boolean) => {
+    if (value) {
+      onLayoutSelect(Layout.STAGE)
+    } else {
+      onLayoutSelect(Layout.FULLSCREEN)
+    }
+    setScreenShare(value)
   }
 
   const subscriberMenuActions = {
@@ -431,10 +442,14 @@ const WebinarMainStage = () => {
       )}
       {screenShare && layout.layout !== Layout.FULLSCREEN && (
         <Box id="main-video-container" sx={layout.style.mainVideoContainer}>
-          <ScreenShare styles={layout.style.mainVideo} videoStyles={layout.style.mainVideo} />
+          <ScreenShare
+            styles={layout.style.subscriberMainVideoContainer}
+            videoStyles={layout.style.mainVideo}
+            isSharingScreen={screenShare}
+            onShareScreen={onShareScreen}
+          />
         </Box>
       )}
-
       {/* Other Participants Video Playback */}
       <Box id="participants-video-container" sx={layout.style.subscriberList}>
         <Grid
@@ -447,15 +462,13 @@ const WebinarMainStage = () => {
               ? { ...layout.style.subscriberContainer }
               : { ...layout.style.subscriberContainerFull }
           }
-          // style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}
         >
           <Grid
+            id="grid-stage-publisher"
             item
             sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
             xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-            // maxHeight={layout.layout !== Layout.FULLSCREEN ? 'auto' : `${(12 / (data.list.length + 1) / 12) * 100}%`}
             maxHeight={layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)}
-            // padding={layout.layout !== Layout.FULLSCREEN ? 0 : '20px'}
           >
             <Publisher
               key="publisher"
@@ -476,14 +489,13 @@ const WebinarMainStage = () => {
           </Grid>
           {data.list.map((s: Participant) => (
             <Grid
+              id="grid-stage-subscriber"
               item
               key={s.participantId}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-              // maxHeight={layout.layout !== Layout.FULLSCREEN ? 'auto' : `${(12 / (data.list.length + 1) / 12) * 100}%`}
               maxHeight={
                 layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)
               }
-              // padding={layout.layout !== Layout.FULLSCREEN ? 0 : '20px'}
             >
               <MainStageSubscriber
                 participant={s}
@@ -497,7 +509,6 @@ const WebinarMainStage = () => {
               />
             </Grid>
           ))}
-          {/* {layout.layout === Layout.FULLSCREEN && <PublisherPortalFullscreen portalNode={portalNode} />} */}
         </Grid>
         {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
           <CustomButton
@@ -518,11 +529,9 @@ const WebinarMainStage = () => {
         {/* Role-based Controls */}
         {data.conference && (
           <Grid container className={classes.topBar} sx={layout.style.topBar}>
-            {/* <Grid item xs={9} display="flex" alignItems="center" justifyContent="center" className={classes.header}>
-              <WbcLogoSmall />
-              <Divider orientation="vertical" flexItem className={classes.headerDivider} />
+            <Grid item xs={9} display="flex" alignItems="center" justifyContent="center" className={classes.header}>
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
-            </Grid> */}
+            </Grid>
             <Grid item xs={3} display="flex" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <IconButton
@@ -537,7 +546,7 @@ const WebinarMainStage = () => {
               )}
 
               {/** LOCK NOT WORKING FOR NOW */}
-              {/* {userRole === UserRoles.ORGANIZER.toLowerCase() && (
+              {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <Tooltip title={seriesEpisode.locked ? 'Locked' : 'Unlocked'}>
                   <IconButton
                     sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
@@ -549,7 +558,7 @@ const WebinarMainStage = () => {
                     {seriesEpisode.locked ? <Lock fontSize="small" /> : <LockOpen fontSize="small" />}
                   </IconButton>
                 </Tooltip>
-              )} */}
+              )}
               <Lock fontSize="small" />
 
               <CustomButton
@@ -583,12 +592,27 @@ const WebinarMainStage = () => {
           </Stack>
         )}
         {data.conference && (
-          <Stack direction="row" spacing={1} alignItems="flex-end" justifyContent="center">
+          <Stack direction="row" marginY={1} spacing={1} alignItems="flex-end" justifyContent="center">
+            {!screenShare ? (
+              <CustomButton
+                size={BUTTONSIZE.MEDIUM}
+                buttonType={BUTTONTYPE.TRANSPARENT}
+                onClick={() => onShareScreen(true)}
+                className={classes.shareScreenButton}
+              >
+                <ScreenShareOutlined />
+              </CustomButton>
+            ) : (
+              <CustomButton
+                size={BUTTONSIZE.MEDIUM}
+                buttonType={BUTTONTYPE.LEAVE}
+                onClick={() => onShareScreen(false)}
+                className={classes.shareScreenButton}
+              >
+                <StopScreenShareOutlined />
+              </CustomButton>
+            )}
             <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
-
-            <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.PRIMARY} onClick={onShareScreen}>
-              Share Screen
-            </CustomButton>
 
             <Box className={chatClasses.inputChatContainer}>
               {layout.layout === Layout.FULLSCREEN && (
@@ -613,17 +637,7 @@ const WebinarMainStage = () => {
           </Stack>
         )}
         <Stack direction="row" spacing={1} className={classes.partyControls}>
-          {mainStreamGuid && (
-            <VolumeControl
-              isOpen={false}
-              min={0}
-              max={100}
-              step={1}
-              currentValue={50}
-              onVolumeChange={onVolumeChange}
-            />
-          )}
-          {data.conference && layout.layout !== Layout.FULLSCREEN && (
+          {data.conference && (
             <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
               <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
                 <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
