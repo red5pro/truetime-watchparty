@@ -46,6 +46,15 @@ const AppRoutes = () => {
             </JoinContext.Provider>
           }
         />
+        <Route
+          path="/thankyou/webinar/:token"
+          element={
+            <JoinContext.Provider>
+              <ThankYouPage />
+            </JoinContext.Provider>
+          }
+        />
+
         {/* WAT-70, WAT-73 */}
         <Route path="/join/guest" element={<VipJoinPage />} />
         <Route

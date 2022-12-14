@@ -32,20 +32,17 @@ import ShareLinkModal from '../Modal/ShareLinkModal'
 import ErrorModal from '../Modal/ErrorModal'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 import { noop, UserRoles } from '../../utils/commonUtils'
-import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
 import PublisherPortalStage from './PublisherPortalStage'
-import PublisherPortalFullscreen from './PublisherPortalFullscreen'
-import VolumeControl from '../VolumeControl/VolumeControl'
 import PublisherControls from '../PublisherControls/PublisherControls'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
-import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import { FatalError } from '../../models/FatalError'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
 import ScreenShare from '../ScreenShare/ScreenShare'
+import { PublisherRef } from '../Publisher'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -66,12 +63,6 @@ const layoutReducer = (state: any, action: any) => {
 
 interface SubscriberRef {
   setVolume(value: number): any
-}
-
-interface PublisherRef {
-  shutdown(): any
-  toggleCamera(on: boolean): any
-  toggleMicrophone(on: boolean): any
 }
 
 const WebinarMainStage = () => {
@@ -141,10 +132,6 @@ const WebinarMainStage = () => {
     return { url: API_SOCKET_HOST, request }
   }
 
-  if (!mediaContext?.mediaStream) {
-    navigate(`/join/${joinToken}`)
-  }
-
   React.useEffect(() => {
     // Handler to call on window resize
     function handleResize() {
@@ -179,9 +166,16 @@ const WebinarMainStage = () => {
       navigate(`/join/${joinToken}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
       const { mediaStream } = mediaContext
+
       setPublishMediaStream(mediaStream)
     }
   }, [mediaContext?.mediaStream])
+
+  React.useEffect(() => {
+    if (!mediaContext?.screenshareMediaStream) {
+      onShareScreen(false)
+    }
+  }, [mediaContext?.screenshareMediaStream])
 
   React.useEffect(() => {
     if (maxParticipants > 0) {
@@ -244,7 +238,7 @@ const WebinarMainStage = () => {
   const onPublisherBroadcast = () => {
     setStartConference(true)
     const streamGuid = getStreamGuid()
-    const { url, request } = getSocketUrl(joinToken, nickname, streamGuid)
+    const { url, request } = getSocketUrl(joinToken, `${nickname}_screenshare`, streamGuid)
     join(url, request)
   }
 
@@ -275,7 +269,7 @@ const WebinarMainStage = () => {
   }
 
   const onLeave = () => {
-    navigate(`/thankyou/${joinToken}`)
+    navigate(`/thankyou/webinar/${joinToken}`)
   }
 
   const toggleLock = async () => {
@@ -311,20 +305,14 @@ const WebinarMainStage = () => {
     setChatIsHidden(!chatIsHidden)
   }
 
-  const onVolumeChange = (value: number) => {
-    if (mainVideoRef && mainVideoRef.current) {
-      mainVideoRef.current.setVolume(value / 100)
-    }
-  }
-
   const onPublisherCameraToggle = (isOn: boolean) => {
-    if (publisherRef && publisherRef.current) {
+    if (publisherRef && publisherRef.current && publisherRef.current.toggleCamera) {
       publisherRef.current.toggleCamera(isOn)
     }
   }
 
   const onPublisherMicrophoneToggle = (isOn: boolean) => {
-    if (publisherRef && publisherRef.current) {
+    if (publisherRef && publisherRef.current && publisherRef.current.toggleMicrophone) {
       publisherRef.current.toggleMicrophone(isOn)
     }
   }

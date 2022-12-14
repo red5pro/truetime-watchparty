@@ -32,6 +32,9 @@ const MediaProvider = (props: IMediaProviderProps) => {
   const [cameraSelected, setCameraSelected] = React.useState<string | undefined>()
   const [microphoneSelected, setMicrophoneSelected] = React.useState<string | undefined>()
 
+  const [screenshareMediaStream, setScreenshareMediaStream] = React.useState<MediaStream | undefined>()
+  const [screenShare, setScreenShare] = React.useState<boolean>(false)
+
   React.useEffect(() => {
     startAdapter()
   }, [])
@@ -89,6 +92,55 @@ const MediaProvider = (props: IMediaProviderProps) => {
     getMediaStream()
   }
 
+  const stopVideoMedia = (captureStream?: MediaStream | null) => {
+    const tracks = captureStream
+      ? captureStream.getTracks()
+      : screenshareMediaStream
+      ? screenshareMediaStream.getTracks()
+      : null
+    if (tracks) {
+      tracks.forEach((track: any) => track.stop())
+
+      setScreenshareMediaStream(undefined)
+      setScreenShare(false)
+    }
+  }
+
+  const startVideoMedia = async () => {
+    const displayMediaOptions: DisplayMediaStreamConstraints = {
+      audio: false,
+      video: {
+        aspectRatio: 4 / 3,
+        height: {
+          ideal: 480,
+        },
+      },
+    }
+
+    let captureStream: MediaStream | null = null
+
+    try {
+      captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+
+      captureStream.getTracks()[0].onended = () => {
+        stopVideoMedia(captureStream)
+      }
+
+      setScreenshareMediaStream(captureStream)
+      setMediaStream(captureStream)
+    } catch (err: any) {
+      if (err.message === 'Permission denied') {
+        setScreenshareMediaStream(undefined)
+        setScreenShare(false)
+        return
+      }
+      console.error(`Error: ${err}`)
+
+      setError({ ...(err as any), title: 'Error on sharing your screen.' })
+    }
+    return captureStream
+  }
+
   const values = {
     error,
     loading,
@@ -101,6 +153,8 @@ const MediaProvider = (props: IMediaProviderProps) => {
     setConstraints,
     setMediaStream,
     retry,
+    startVideoMedia,
+    screenshareMediaStream,
   }
 
   return <MediaContext.Provider value={values}>{children}</MediaContext.Provider>

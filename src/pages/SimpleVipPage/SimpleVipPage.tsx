@@ -16,6 +16,7 @@ import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup
 import { Participant } from '../../models/Participant'
 import Publisher from '../../components/Publisher/Publisher'
 import MainStageSubscriber from '../../components/MainStageSubscriber/MainStageSubscriber'
+import { PublisherRef } from '../../components/Publisher'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -26,12 +27,6 @@ const vipReducer = (state: any, action: any) => {
     case 'UPDATE':
       return { ...state, token: action.token, email: action.email, password: action.password }
   }
-}
-
-interface PublisherRef {
-  shutdown(): any
-  toggleCamera(on: boolean): any
-  toggleMicrophone(on: boolean): any
 }
 
 const Page = () => {

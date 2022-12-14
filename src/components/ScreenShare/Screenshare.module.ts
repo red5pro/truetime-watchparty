@@ -20,6 +20,14 @@ const useStyles = makeStyles()((theme: any) => {
     accountIcon: {
       position: 'absolute',
     },
+    publisher: {
+      height: '100%',
+      borderRadius: '20px',
+      display: 'flex',
+      justifyContent: 'center',
+      transform: 'none !import',
+      aspectRatio: 'unset',
+    },
   }
 })
 

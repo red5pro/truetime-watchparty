@@ -37,6 +37,7 @@ import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import { FatalError } from '../../models/FatalError'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
+import { PublisherRef } from '../Publisher'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -57,12 +58,6 @@ const layoutReducer = (state: any, action: any) => {
 
 interface SubscriberRef {
   setVolume(value: number): any
-}
-
-interface PublisherRef {
-  shutdown(): any
-  toggleCamera(on: boolean): any
-  toggleMicrophone(on: boolean): any
 }
 
 const MainStage = () => {
@@ -325,13 +320,13 @@ const MainStage = () => {
   }
 
   const onPublisherCameraToggle = (isOn: boolean) => {
-    if (publisherRef && publisherRef.current) {
+    if (publisherRef && publisherRef.current && publisherRef.current.toggleCamera) {
       publisherRef.current.toggleCamera(isOn)
     }
   }
 
   const onPublisherMicrophoneToggle = (isOn: boolean) => {
-    if (publisherRef && publisherRef.current) {
+    if (publisherRef && publisherRef.current && publisherRef.current.toggleMicrophone) {
       publisherRef.current.toggleMicrophone(isOn)
     }
   }

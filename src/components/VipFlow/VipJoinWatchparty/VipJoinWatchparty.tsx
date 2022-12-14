@@ -22,18 +22,13 @@ import Loading from '../../Common/Loading/Loading'
 import MainStageSubscriber from '../../MainStageSubscriber/MainStageSubscriber'
 import VipJoinContext from '../../VipJoinContext/VipJoinContext'
 import useCookies from '../../../hooks/useCookies'
+import { PublisherRef } from '../../Publisher'
 
 const useJoinContext = () => React.useContext(VipJoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
 const VIDEO_VOLUME = 10
-
-interface PublisherRef {
-  shutdown(): any
-  toggleCamera(on: boolean): any
-  toggleMicrophone(on: boolean): any
-}
 
 interface IVipSeeParticipantsProps {
   currentEpisode?: Episode

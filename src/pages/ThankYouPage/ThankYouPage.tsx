@@ -1,7 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import OracleLogo from '../../assets/logos/OracleLogo'
+import { useNavigate, useLocation } from 'react-router-dom'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import JoinContext from '../../components/JoinContext/JoinContext'
@@ -19,9 +18,16 @@ const ThankYouPage = () => {
   const { classes } = useStyles()
 
   const navigate = useNavigate()
+  const location = useLocation()
 
   const onRejoin = () => {
-    navigate(`/join/${joinToken}`)
+    if (location.pathname.includes('webinar')) {
+      navigate(`/webinar/${joinToken}`)
+    } else {
+      navigate(`/join/${joinToken}`)
+    }
+
+    return
   }
 
   const onRetryRequest = () => {
