@@ -43,8 +43,6 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
 
   const [initScreenShare, setInit] = React.useState<boolean>(false)
 
-  const [playbackVolume, setPlaybackVolume] = React.useState<number>(1.0)
-
   const [subscriber, setSubscriber] = React.useState<any | undefined>()
   const [error, setError] = React.useState<any>()
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
@@ -130,23 +128,21 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
   return (
     <Box className={classes.container} sx={styles}>
       {!initScreenShare && <AccountBox fontSize="large" className={classes.accountIcon} />}
-      {/* <VideoElement
-        elementId={elementId}
-        muted={true}
-        controls={false}
-        styles={{ ...videoStyles }}
-        initScreenShare
-        videoMedia={mediaStream}
-      /> */}
       {screenshareMediaStream && (
         <Publisher
-          key="screenshare-publisher"
           ref={screensharePublisherRef}
           useStreamManager={USE_STREAM_MANAGER}
           host={STREAM_HOST}
           streamGuid={getSharescreenStreamGuid()}
           stream={screenshareMediaStream}
-          styles={classes.publisher}
+          styles={{
+            height: '100%',
+            borderRadius: '20px',
+            display: 'flex',
+            justifyContent: 'center',
+            transform: 'none !import',
+            aspectRatio: 'unset',
+          }}
           onFail={onPublisherFail}
           onStart={onPublisherBroadcast}
           onInterrupt={onPublisherBroadcastInterrupt}
@@ -156,6 +152,14 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
         <SimpleAlertDialog
           title={error.title || 'Error'}
           message={`${error.status} - ${error.statusText}`}
+          confirmLabel="OK"
+          onConfirm={() => setError(undefined)}
+        />
+      )}
+      {fatalError && (
+        <SimpleAlertDialog
+          title={fatalError.title || 'Error'}
+          message={`${fatalError.status} - ${fatalError.statusText}`}
           confirmLabel="OK"
           onConfirm={() => setError(undefined)}
         />
