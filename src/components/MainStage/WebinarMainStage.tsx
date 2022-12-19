@@ -175,6 +175,10 @@ const WebinarMainStage = () => {
     if (!mediaContext?.screenshareMediaStream) {
       onShareScreen(false)
     }
+
+    return () => {
+      mediaContext?.stopVideoMedia(mediaContext?.screenshareMediaStream)
+    }
   }, [mediaContext?.screenshareMediaStream])
 
   React.useEffect(() => {

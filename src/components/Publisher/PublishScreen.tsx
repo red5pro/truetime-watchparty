@@ -16,7 +16,6 @@ const getSenderFromConnection = (connection: RTCPeerConnection, type: string) =>
 }
 
 const activateMedia = (sender: RTCRtpSender, active: boolean) => {
-  debugger
   const params = sender.getParameters()
   const encodings = params.encodings
   if (encodings && encodings.length > 0) {
@@ -77,17 +76,18 @@ const PublishScreen = React.forwardRef((props: PublisherProps, ref: React.Ref<Pu
     }
   }, [])
 
-  React.useEffect(() => {
-    if (screenshareMediaStream) {
-      if (pubRef && pubRef.current) {
-        const connection = (pubRef.current as any).getPeerConnection()
-        connection.addTrack(screenshareMediaStream.getVideoTracks()[0])
-        const sender = connection.getSenders().filter((s: RTCRtpSender) => s.track?.kind === 'video')[1]
+  // THIS DIDN'T WORK
+  // React.useEffect(() => {
+  //   if (screenshareMediaStream) {
+  //     if (pubRef && pubRef.current) {
+  //       const connection = (pubRef.current as any).getPeerConnection()
+  //       connection.addTrack(screenshareMediaStream.getVideoTracks()[0])
+  //       const sender = connection.getSenders().filter((s: RTCRtpSender) => s.track?.kind === 'video')[1]
 
-        if (sender) activateMedia(sender, true)
-      }
-    }
-  }, [screenshareMediaStream])
+  //       if (sender) activateMedia(sender, true)
+  //     }
+  //   }
+  // }, [screenshareMediaStream])
 
   React.useEffect(() => {
     pubRef.current = publisher
@@ -117,20 +117,6 @@ const PublishScreen = React.forwardRef((props: PublisherProps, ref: React.Ref<Pu
     }
   }
 
-  const createEmptyStreamTrack = (mediaStream: MediaStream | undefined) => {
-    if (mediaStream) {
-      debugger
-      const videoTrack = new MediaStreamTrack()
-
-      mediaStream?.addTrack(videoTrack)
-      const streamTrack = new MediaStream(mediaStream)
-
-      return streamTrack
-    }
-
-    return mediaStream
-  }
-
   const start = async () => {
     setIsPublishing(true)
     const pub = new RTCPublisher()
@@ -151,9 +137,7 @@ const PublishScreen = React.forwardRef((props: PublisherProps, ref: React.Ref<Pu
       }
       pub.on('*', onPublisherEvent)
 
-      const newStream = createEmptyStreamTrack(stream)
-
-      await pub.initWithStream(config, newStream)
+      await pub.initWithStream(config, stream)
       await pub.publish()
       setPublisher(pub)
       setIsPublishing(false)

@@ -31,7 +31,7 @@ const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
 
 const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps, ref: React.Ref<SubscriberRef>) {
-  const { styles, isSharingScreen /*onShareScreen, publishMediaStream, setPublishMediaStream*/ } = props
+  const { styles, isSharingScreen, onShareScreen /*, publishMediaStream, setPublishMediaStream*/ } = props
 
   const { startVideoMedia, screenshareMediaStream } = useMediaContext()
   const { joinToken, fingerprint, nickname, getSharescreenStreamGuid } = useJoinContext()
@@ -57,9 +57,17 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
 
   React.useEffect(() => {
     if (initScreenShare) {
-      startVideoMedia()
+      startScreenShare()
     }
   }, [initScreenShare])
+
+  const startScreenShare = async () => {
+    const videoStarted = await startVideoMedia()
+
+    if (!videoStarted) {
+      onShareScreen(false)
+    }
+  }
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     const request: ConnectionRequest = {

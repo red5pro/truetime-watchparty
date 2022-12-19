@@ -110,9 +110,9 @@ const MediaProvider = (props: IMediaProviderProps) => {
     const displayMediaOptions: DisplayMediaStreamConstraints = {
       audio: false,
       video: {
-        aspectRatio: 4 / 3,
+        aspectRatio: 1 / 1,
         height: {
-          ideal: 480,
+          ideal: 780,
         },
       },
     }
@@ -154,6 +154,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
     retry,
     startVideoMedia,
     screenshareMediaStream,
+    stopVideoMedia,
   }
 
   return <MediaContext.Provider value={values}>{children}</MediaContext.Provider>
