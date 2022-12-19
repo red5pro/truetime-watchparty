@@ -92,7 +92,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
     getMediaStream()
   }
 
-  const stopVideoMedia = (captureStream?: MediaStream | null) => {
+  const stopScreenShareMedia = (captureStream?: MediaStream | null) => {
     const tracks = captureStream
       ? captureStream.getTracks()
       : screenshareMediaStream
@@ -100,13 +100,12 @@ const MediaProvider = (props: IMediaProviderProps) => {
       : null
     if (tracks) {
       tracks.forEach((track: any) => track.stop())
-
       setScreenshareMediaStream(undefined)
       setScreenShare(false)
     }
   }
 
-  const startVideoMedia = async () => {
+  const startScreenShareMedia = async () => {
     const displayMediaOptions: DisplayMediaStreamConstraints = {
       audio: false,
       video: {
@@ -118,26 +117,11 @@ const MediaProvider = (props: IMediaProviderProps) => {
     }
 
     let captureStream: MediaStream | null = null
-
-    try {
-      captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
-
-      captureStream.getTracks()[0].onended = () => {
-        stopVideoMedia(captureStream)
-      }
-
-      setScreenshareMediaStream(captureStream)
-      setMediaStream(captureStream)
-    } catch (err: any) {
-      if (err.message === 'Permission denied') {
-        setScreenshareMediaStream(undefined)
-        setScreenShare(false)
-        return
-      }
-      console.error(`Error: ${err}`)
-
-      setError({ ...(err as any), title: 'Error on sharing your screen.' })
+    captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+    captureStream.getVideoTracks()[0].onended = () => {
+      stopScreenShareMedia(captureStream)
     }
+    setScreenshareMediaStream(captureStream)
     return captureStream
   }
 
@@ -153,8 +137,9 @@ const MediaProvider = (props: IMediaProviderProps) => {
     setConstraints,
     setMediaStream,
     retry,
-    startVideoMedia,
-    screenshareMediaStream,
+    startScreenShareMedia,
+    stopScreenShareMedia,
+    // screenshareMediaStream,
   }
 
   return <MediaContext.Provider value={values}>{children}</MediaContext.Provider>

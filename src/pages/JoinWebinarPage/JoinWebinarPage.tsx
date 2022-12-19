@@ -181,8 +181,6 @@ const JoinWebinarPage = () => {
             <WebinarMainStage />
           </MainStageWithChatBox>
         )}
-
-
       </Box>
     </Box>
   )

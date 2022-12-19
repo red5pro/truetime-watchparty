@@ -43,6 +43,7 @@ import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
 import ScreenShare from '../ScreenShare/ScreenShare'
 import { PublisherRef } from '../Publisher'
+import ScreenShare2 from '../ScreenShare/ScreenShare2'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -67,7 +68,7 @@ interface SubscriberRef {
 
 const WebinarMainStage = () => {
   const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
-  const mediaContext = useMediaContext()
+  const { mediaStream } = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
 
   const { classes } = useStyles()
@@ -162,20 +163,12 @@ const WebinarMainStage = () => {
   }, [error])
 
   React.useEffect(() => {
-    if (!mediaContext?.mediaStream) {
+    if (!mediaStream) {
       navigate(`/join/${joinToken}`)
-    } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
-      const { mediaStream } = mediaContext
-
+    } else if (!publishMediaStream || publishMediaStream.id !== mediaStream.id) {
       setPublishMediaStream(mediaStream)
     }
-  }, [mediaContext?.mediaStream])
-
-  React.useEffect(() => {
-    if (!mediaContext?.screenshareMediaStream) {
-      onShareScreen(false)
-    }
-  }, [mediaContext?.screenshareMediaStream])
+  }, [mediaStream])
 
   React.useEffect(() => {
     if (maxParticipants > 0) {
@@ -238,7 +231,7 @@ const WebinarMainStage = () => {
   const onPublisherBroadcast = () => {
     setStartConference(true)
     const streamGuid = getStreamGuid()
-    const { url, request } = getSocketUrl(joinToken, `${nickname}_screenshare`, streamGuid)
+    const { url, request } = getSocketUrl(joinToken, nickname, streamGuid)
     join(url, request)
   }
 
@@ -402,6 +395,11 @@ const WebinarMainStage = () => {
     }
   }
 
+  const onScreenShareEnd = () => {
+    setScreenShare(false)
+    onShareScreen(false)
+  }
+
   const calculateParticipantHeight = (totalParticipants: number) => {
     if (totalParticipants > 2) {
       const total = totalParticipants > 4 ? 4 : totalParticipants
@@ -430,16 +428,24 @@ const WebinarMainStage = () => {
       )}
       {screenShare && layout.layout !== Layout.FULLSCREEN && (
         <Box id="main-video-container" sx={layout.style.mainVideoContainer}>
-          <ScreenShare
+          {/* <ScreenShare
             styles={layout.style.subscriberMainVideoContainer}
             videoStyles={layout.style.mainVideo}
             isSharingScreen={screenShare}
             onShareScreen={onShareScreen}
+          /> */}
+          <ScreenShare2
+            owner={getStreamGuid()}
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            styles={layout.style.subscriberMainVideoContainer}
+            isSharingScreen={screenShare}
+            onEnded={onScreenShareEnd}
           />
         </Box>
       )}
       {/* Other Participants Video Playback */}
-      <Box id="participants-video-container" sx={layout.style.subscriberList}>
+      <Box id={layout.layout === Layout.FULLSCREEN ? 'FULL' : 'STAGE'} sx={layout.style.subscriberList}>
         <Grid
           container
           xs={layout.layout === Layout.FULLSCREEN ? 12 : 4}
@@ -464,11 +470,11 @@ const WebinarMainStage = () => {
               useStreamManager={USE_STREAM_MANAGER}
               host={STREAM_HOST}
               streamGuid={getStreamGuid()}
-              stream={mediaContext?.mediaStream}
+              stream={mediaStream}
               styles={
                 layout.layout !== Layout.FULLSCREEN
-                  ? layout.style.subscriber
-                  : { ...layout.style.publisherVideo, ...layout.style.subscriber }
+                  ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
+                  : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
               }
               onFail={onPublisherFail}
               onStart={onPublisherBroadcast}
@@ -477,7 +483,7 @@ const WebinarMainStage = () => {
           </Grid>
           {data.list.map((s: Participant) => (
             <Grid
-              id="grid-stage-subscriber"
+              // id="grid-stage-subscriber"
               item
               key={s.participantId}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
@@ -509,7 +515,7 @@ const WebinarMainStage = () => {
           </CustomButton>
         )}
         {/* Publisher View - STAGE LAYOUT */}
-        {publishMediaStream && layout.layout !== Layout.FULLSCREEN && <PublisherPortalStage portalNode={portalNode} />}
+        {/* {publishMediaStream && layout.layout !== Layout.FULLSCREEN && <PublisherPortalStage portalNode={portalNode} />} */}
       </Box>
       <Box id="organizer-controls-container" className={classes.organizerTopControls}>
         {/* Add / Share Modal */}
@@ -655,7 +661,7 @@ const WebinarMainStage = () => {
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
             streamGuid={getStreamGuid()}
-            stream={mediaContext?.mediaStream}
+            stream={mediaStream}
             styles={layout.layout !== Layout.FULLSCREEN ? layout.style.publisher : layout.style.publisherVideo}
             onFail={onPublisherFail}
             onStart={onPublisherBroadcast}

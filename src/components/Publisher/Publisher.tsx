@@ -8,7 +8,7 @@ import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import useStyles from './Publisher.module'
 import { getOrigin } from '../../utils/streamManagerUtils'
 import { ENABLE_DEBUG_UTILS } from '../../settings/variables'
-import { PublisherRef } from '.'
+import { PublisherPost, PublisherRef } from '.'
 
 const getSenderFromConnection = (connection: RTCPeerConnection, type: string) => {
   return connection.getSenders().find((s: RTCRtpSender) => s.track?.kind === type)
@@ -34,11 +34,11 @@ interface PublisherProps {
   onFail(): any
 }
 
-const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<PublisherRef>) => {
+const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref: React.Ref<PublisherRef>) {
   const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt, onFail } = props
   const { classes } = useStyles()
 
-  React.useImperativeHandle(ref, () => ({ shutdown, toggleCamera, toggleMicrophone }))
+  React.useImperativeHandle(ref, () => ({ shutdown, send, toggleCamera, toggleMicrophone }))
 
   const [elementId, setElementId] = React.useState<string>('')
   const [context, setContext] = React.useState<string>('')
@@ -58,7 +58,7 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
     setContext(context)
 
     if (name) {
-      const elemId = `${name}-publisher-screenshare`
+      const elemId = `${name}-publisher`
       setElementId(elemId)
       setStreamName(name)
     }
@@ -160,6 +160,13 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
     await stop()
   }
 
+  const send = (post: PublisherPost) => {
+    if (pubRef.current) {
+      const { messageType, message } = post
+      ;(pubRef.current as any).send(messageType, typeof post === 'string' ? { message } : message)
+    }
+  }
+
   const toggleCamera = (on: boolean) => {
     if (pubRef && pubRef.current) {
       const connection = (pubRef.current as any).getPeerConnection()
@@ -198,12 +205,14 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
         </Box>
       )}
       {!cameraOn && <AccountBox fontSize="large" className={classes.accountIcon} />}
-      <VideoElement
-        elementId={elementId}
-        muted={true}
-        controls={false}
-        styles={{ transform: 'scaleX(-1)', ...styles, display: cameraOn ? 'unset' : 'none' }}
-      />
+      {elementId && elementId.length > 0 && (
+        <VideoElement
+          elementId={elementId}
+          muted={true}
+          controls={false}
+          styles={{ ...styles, display: cameraOn ? 'unset' : 'none' }}
+        />
+      )}
       <Stack direction="row" spacing={1} className={classes.iconBar}>
         {!micOn && <MicOff />}
         {!cameraOn && <VideocamOff />}

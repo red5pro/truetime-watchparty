@@ -32,7 +32,7 @@ const useWatchContext = () => React.useContext(WatchContext.Context)
 const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps, ref: React.Ref<SubscriberRef>) {
   const { styles, isSharingScreen /*onShareScreen, publishMediaStream, setPublishMediaStream*/ } = props
 
-  const { startVideoMedia, screenshareMediaStream } = useMediaContext()
+  const { startScreenShareMedia, screenshareMediaStream } = useMediaContext()
   const { joinToken, fingerprint, nickname, getSharescreenStreamGuid } = useJoinContext()
   const { join } = useWatchContext()
 
@@ -63,7 +63,7 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
 
   React.useEffect(() => {
     if (initScreenShare) {
-      startVideoMedia()
+      startScreenShareMedia()
     }
   }, [initScreenShare])
 

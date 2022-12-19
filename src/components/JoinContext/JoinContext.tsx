@@ -173,7 +173,8 @@ const JoinProvider = (props: JoinContextProps) => {
       guid = `${append?.split('-').join('')}/${stripped}_${uid}`
     }
 
-    return guid
+    // return guid
+    return `${getStreamGuid()}_SCREENSHARE`
   }
 
   const getMainStreamGuid = () => {
