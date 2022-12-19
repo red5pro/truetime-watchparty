@@ -31,12 +31,13 @@ interface ISubscriberProps {
   isAudioOff?: boolean
   isVideoOff?: boolean
   onSubscribeStart?(): any
+  isMainVideo?: boolean
 }
 
 const DELAY = 2000
 const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
 
-const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<SubscriberRef>) => {
+const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps, ref: React.Ref<SubscriberRef>) {
   const {
     useStreamManager,
     resubscribe,
@@ -49,6 +50,7 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
     isAudioOff, // from organizer mute
     isVideoOff, // from organizer mute
     onSubscribeStart,
+    isMainVideo,
   } = props
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
@@ -180,7 +182,10 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
       setIsSubscribed(false)
       setIsSubscribing(false)
       setSubscriber(undefined)
-      startRetry()
+
+      if (!isMainVideo) {
+        startRetry()
+      }
     }
   }
 
@@ -225,13 +230,12 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
     }
   }
 
+  // if (!subscriber && isMainVideo) {
+  //   return null
+  // }
+
   return (
     <Box className={classes.container} sx={styles}>
-      {!isSubscribed && (
-        <Box className={classes.loading}>
-          <Loading />
-        </Box>
-      )}
       {(!videoOn || isVideoOff) && <AccountBox fontSize="large" className={classes.accountIcon} />}
       <VideoElement
         elementId={elementId}

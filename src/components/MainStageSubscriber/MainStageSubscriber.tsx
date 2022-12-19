@@ -13,10 +13,20 @@ interface MainStageSubscriberProps {
   videoStyles: any
   menuActions?: any
   onSubscribeStart?(): any
+  isLayoutFullscreen?: boolean
 }
 
 const MainStageSubscriber = (props: MainStageSubscriberProps) => {
-  const { participant, host, useStreamManager, styles, videoStyles, menuActions, onSubscribeStart } = props
+  const {
+    participant,
+    host,
+    useStreamManager,
+    styles,
+    videoStyles,
+    menuActions,
+    onSubscribeStart,
+    isLayoutFullscreen,
+  } = props
 
   return (
     // TODO: Set `mute` to false for production
@@ -36,13 +46,16 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
         onSubscribeStart={onSubscribeStart}
       />
       {participant && menuActions && (
-        <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
+        <Box sx={{ position: 'absolute', top: 4, right: `${isLayoutFullscreen ? '17%' : '4px'}` }}>
           <SubscriberMenu participant={participant} actions={menuActions} />
         </Box>
       )}
       {participant && !menuActions && ENABLE_DEBUG_UTILS && (
         <Tooltip title={`${participant.displayName}`} arrow>
-          <InfoIcon fontSize="small" sx={{ position: 'absolute', top: 4, right: 4 }} />
+          <InfoIcon
+            fontSize="small"
+            sx={{ position: 'absolute', top: 4, right: `${isLayoutFullscreen ? '17%' : '4px'}` }}
+          />
         </Tooltip>
       )}
     </Box>

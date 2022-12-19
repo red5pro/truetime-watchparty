@@ -1,7 +1,7 @@
 import React from 'react'
 import * as portals from 'react-reverse-portal'
 import { useNavigate } from 'react-router-dom'
-import { IconButton, Box, Typography, Stack, Divider, Tooltip } from '@mui/material'
+import { IconButton, Box, Typography, Stack, Divider, Tooltip, Grid } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-material'
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
@@ -346,6 +346,10 @@ const MainStage = () => {
     setRelayout(true)
   }
 
+  const noop = () => {
+    /* no operation */
+  }
+
   const onLayoutSelect = (layout: number) => {
     const newStyle =
       layout === Layout.FULLSCREEN ? styles.fullscreen : layout === Layout.EMPTY ? styles.empty : styles.stage
@@ -412,36 +416,121 @@ const MainStage = () => {
     }
   }
 
+  const calculateParticipantHeight = (totalParticipants: number) => {
+    if (totalParticipants > 2) {
+      const total = totalParticipants > 4 ? 4 : totalParticipants
+      return `calc(100% - ${total * 4}rem)`
+    }
+
+    return '100%'
+  }
+
+  const calculateGrid = (totalParticipants: number) => {
+    if (totalParticipants < 5) {
+      return 12 / totalParticipants
+    } else {
+      return 3
+    }
+  }
+
   return (
-    <Box className={classes.rootContainer}>
-      {/* Main Video */}
-      {mainStreamGuid && (
-        <Box sx={layout.style.mainVideoContainer}>
-          <Subscriber
-            ref={mainVideoRef}
-            useStreamManager={USE_STREAM_MANAGER}
-            host={STREAM_HOST}
-            streamGuid={mainStreamGuid}
-            resubscribe={true}
-            styles={layout.style.mainVideo}
-            videoStyles={layout.style.mainVideo}
-            mute={false}
-            showControls={false}
-          />
-        </Box>
+    <Box id="root-container" className={classes.rootContainer}>
+      {/* Loading Message */}
+      {(!data.conference || loading) && (
+        <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
+          <Loading />
+          <Typography>Loading Watch Party</Typography>
+        </Stack>
       )}
-      <Box className={classes.content}>
+      {/* Other Participants Video Playback */}
+      <Box id="participants-video-container" sx={layout.style.subscriberList}>
+        <Grid
+          container
+          xs={layout.layout === Layout.FULLSCREEN ? 12 : 4}
+          ref={subscriberListRef}
+          maxHeight={layout.layout !== Layout.FULLSCREEN ? 'calc(100vh - 10rem)' : '100%'}
+          style={
+            layout.layout !== Layout.FULLSCREEN
+              ? { ...layout.style.subscriberContainer }
+              : { ...layout.style.subscriberContainerFull }
+          }
+          // style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}
+        >
+          <Grid
+            item
+            sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
+            xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
+            // maxHeight={layout.layout !== Layout.FULLSCREEN ? 'auto' : `${(12 / (data.list.length + 1) / 12) * 100}%`}
+            maxHeight={layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)}
+            // padding={layout.layout !== Layout.FULLSCREEN ? 0 : '20px'}
+          >
+            <Publisher
+              key="publisher"
+              ref={publisherRef}
+              useStreamManager={USE_STREAM_MANAGER}
+              host={STREAM_HOST}
+              streamGuid={getStreamGuid()}
+              stream={mediaContext?.mediaStream}
+              styles={
+                layout.layout !== Layout.FULLSCREEN
+                  ? layout.style.subscriber
+                  : { ...layout.style.publisherVideo, ...layout.style.subscriber }
+              }
+              onFail={onPublisherFail}
+              onStart={onPublisherBroadcast}
+              onInterrupt={onPublisherBroadcastInterrupt}
+            />
+          </Grid>
+          {data.list.map((s: Participant) => (
+            <Grid
+              item
+              key={s.participantId}
+              xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
+              // maxHeight={layout.layout !== Layout.FULLSCREEN ? 'auto' : `${(12 / (data.list.length + 1) / 12) * 100}%`}
+              maxHeight={
+                layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)
+              }
+              // padding={layout.layout !== Layout.FULLSCREEN ? 0 : '20px'}
+            >
+              <MainStageSubscriber
+                participant={s}
+                styles={layout.style.subscriber}
+                videoStyles={layout.style.subscriberVideo}
+                host={STREAM_HOST}
+                useStreamManager={USE_STREAM_MANAGER}
+                menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
+                onSubscribeStart={onRelayout}
+                isLayoutFullscreen={layout.layout === Layout.FULLSCREEN}
+              />
+            </Grid>
+          ))}
+          {/* {layout.layout === Layout.FULLSCREEN && <PublisherPortalFullscreen portalNode={portalNode} />} */}
+        </Grid>
+        {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
+          <CustomButton
+            className={classes.moreButton}
+            size={BUTTONSIZE.SMALL}
+            buttonType={BUTTONTYPE.TRANSPARENT}
+            onClick={onMoreScroll}
+          >
+            <ExpandMore />
+          </CustomButton>
+        )}
+        {/* Publisher View - STAGE LAYOUT */}
+        {publishMediaStream && layout.layout !== Layout.FULLSCREEN && <PublisherPortalStage portalNode={portalNode} />}
+      </Box>
+      <Box id="organizer-controls-container" className={classes.organizerTopControls}>
         {/* Add / Share Modal */}
         <ShareLinkModal joinToken={joinToken} open={showLink} onDismiss={() => setShowLink(false)} />
         {/* Role-based Controls */}
         {data.conference && (
-          <Box className={classes.topBar} sx={layout.style.topBar}>
-            <Stack direction="row" alignItems="center" justifyContent="center" className={classes.header}>
+          <Grid container className={classes.topBar} sx={layout.style.topBar}>
+            <Grid item xs={9} display="flex" alignItems="center" justifyContent="center" className={classes.header}>
               <WbcLogoSmall />
               <Divider orientation="vertical" flexItem className={classes.headerDivider} />
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
-            </Stack>
-            <Stack direction="row" alignItems="center" className={classes.topControls}>
+            </Grid>
+            <Grid item xs={3} display="flex" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <IconButton
                   sx={{ backdropFilter: 'contrast(0.5)' }}
@@ -474,8 +563,8 @@ const MainStage = () => {
               >
                 Leave
               </CustomButton>
-            </Stack>
-          </Box>
+            </Grid>
+          </Grid>
         )}
         {/* VIP Video Playback */}
         {availableVipParticipant && (
@@ -489,113 +578,102 @@ const MainStage = () => {
             />
           </Box>
         )}
-        {/* Other Participants Video Playback */}
-        <Box sx={layout.style.subscriberList}>
-          <div
-            ref={subscriberListRef}
-            style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}
-          >
-            {data.list.map((s: Participant) => {
-              return (
-                <MainStageSubscriber
-                  key={s.participantId}
-                  participant={s}
-                  styles={layout.style.subscriber}
-                  videoStyles={layout.style.subscriberVideo}
-                  host={STREAM_HOST}
-                  useStreamManager={USE_STREAM_MANAGER}
-                  menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
-                  onSubscribeStart={onRelayout}
-                />
-              )
-            })}
-            {layout.layout === Layout.FULLSCREEN && <PublisherPortalFullscreen portalNode={portalNode} />}
-          </div>
-          {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
-            <CustomButton
-              className={classes.moreButton}
-              size={BUTTONSIZE.SMALL}
-              buttonType={BUTTONTYPE.TRANSPARENT}
-              onClick={onMoreScroll}
-            >
-              <ExpandMore />
-            </CustomButton>
-          )}
-          {/* Publisher View - STAGE LAYOUT */}
-          {publishMediaStream && layout.layout !== Layout.FULLSCREEN && (
-            <PublisherPortalStage portalNode={portalNode} />
-          )}
+      </Box>
+      {/* Main Video */}
+      {mainStreamGuid && layout.layout !== Layout.FULLSCREEN && (
+        <Box id="main-video-container" sx={layout.style.mainVideoContainer}>
+          <Subscriber
+            ref={mainVideoRef}
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            streamGuid={mainStreamGuid}
+            resubscribe={true}
+            styles={layout.style.subscriberMainVideoContainer}
+            videoStyles={layout.style.mainVideo}
+            mute={false}
+            showControls={false}
+            isMainVideo
+          />
         </Box>
-        {/* Bottom Controls / Chat */}
-        <Stack className={classes.bottomBar} direction="row" alignItems="bottom" spacing={2}>
-          {publishMediaStream && ENABLE_MUTE_API && (
-            <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
-              <PublisherControls
-                cameraOn={true}
-                microphoneOn={true}
-                onCameraToggle={onPublisherCameraToggle}
-                onMicrophoneToggle={onPublisherMicrophoneToggle}
-              />
-            </Stack>
-          )}
-          {data.conference && (
-            <Stack direction="row" spacing={1} alignItems="flex-end" justifyContent="center">
-              <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+      )}
+      {/* Bottom Controls / Chat */}
+      <Stack
+        id="bottom-controls-chat-container"
+        className={classes.bottomBar}
+        direction="row"
+        alignItems="bottom"
+        spacing={2}
+      >
+        {publishMediaStream && ENABLE_MUTE_API && (
+          <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
+            <PublisherControls
+              cameraOn={true}
+              microphoneOn={true}
+              onCameraToggle={onPublisherCameraToggle}
+              onMicrophoneToggle={onPublisherMicrophoneToggle}
+            />
+          </Stack>
+        )}
+        {data.conference && (
+          <Stack direction="row" spacing={1} alignItems="flex-end" justifyContent="center">
+            <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
 
-              <Box className={chatClasses.inputChatContainer}>
-                {layout.layout === Layout.FULLSCREEN && (
-                  <Box className={`${chatClasses.fullScreenChatContainer} ${chatClasses.chatContainer} `}>
-                    <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
-                      <TypingIndicator />
-                    </MessageList>
-                  </Box>
-                )}
-                <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" />
-              </Box>
-            </Stack>
-          )}
-          <Stack direction="row" spacing={1} className={classes.partyControls}>
-            {mainStreamGuid && (
-              <VolumeControl
-                isOpen={false}
-                min={0}
-                max={100}
-                step={1}
-                currentValue={50}
-                onVolumeChange={onVolumeChange}
-              />
-            )}
-            {data.conference && layout.layout !== Layout.FULLSCREEN && (
-              <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
-                <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
+            <Box className={chatClasses.inputChatContainer}>
+              {layout.layout === Layout.FULLSCREEN && (
+                <Box
+                  sx={{ display: chatIsHidden ? 'none' : 'block' }}
+                  className={`${chatClasses.fullScreenChatContainer} ${chatClasses.chatContainer} `}
+                >
                   <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
                     <TypingIndicator />
                   </MessageList>
-                  {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
                 </Box>
-                <CustomButton
-                  size={BUTTONSIZE.SMALL}
-                  buttonType={BUTTONTYPE.TRANSPARENT}
-                  startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
-                  onClick={toggleChat}
-                >
-                  {chatIsHidden ? 'Show' : 'Hide'} Chat
-                </CustomButton>
+              )}
+              <Box onClick={() => toggleChat()}>
+                <MessageInput
+                  typingIndicator
+                  emojiPicker={<PickerAdapter />}
+                  placeholder="Chat Message"
+                  onSend={chatIsHidden ? () => toggleChat() : () => noop()}
+                />
               </Box>
-            )}
-          </Stack>
-        </Stack>
-
-        {/* Loading Message */}
-        {(!data.conference || loading) && (
-          <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
-            <Loading />
-            <Typography>Loading Watch Party</Typography>
+            </Box>
           </Stack>
         )}
-      </Box>
+        <Stack direction="row" spacing={1} className={classes.partyControls}>
+          {mainStreamGuid && (
+            <VolumeControl
+              isOpen={false}
+              min={0}
+              max={100}
+              step={1}
+              currentValue={50}
+              onVolumeChange={onVolumeChange}
+            />
+          )}
+          {data.conference && layout.layout !== Layout.FULLSCREEN && (
+            <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
+              <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
+                <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
+                  <TypingIndicator />
+                </MessageList>
+                {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
+              </Box>
+              <CustomButton
+                size={BUTTONSIZE.SMALL}
+                buttonType={BUTTONTYPE.TRANSPARENT}
+                startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
+                onClick={toggleChat}
+              >
+                {chatIsHidden ? 'Show' : 'Hide'} Chat
+              </CustomButton>
+            </Box>
+          )}
+        </Stack>
+      </Stack>
+
       {/* Publisher Portal to be moved from one view layout state to another */}
-      <portals.InPortal node={portalNode}>
+      {/* <portals.InPortal node={portalNode}>
         <Box sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}>
           <Publisher
             key="publisher"
@@ -610,7 +688,7 @@ const MainStage = () => {
             onInterrupt={onPublisherBroadcastInterrupt}
           />
         </Box>
-      </portals.InPortal>
+      </portals.InPortal> */}
       {/* Fatal Error */}
       {fatalError && (
         <ErrorModal
