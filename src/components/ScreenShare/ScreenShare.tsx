@@ -3,7 +3,6 @@ import { Box } from '@mui/material'
 import { AccountBox } from '@mui/icons-material'
 import useStyles from './Screenshare.module'
 import MediaContext from '../MediaContext/MediaContext'
-import Publisher from '../Publisher/Publisher'
 import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import JoinContext from '../JoinContext/JoinContext'
 import { FatalError } from '../../models/FatalError'
@@ -11,6 +10,8 @@ import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 import WatchContext from '../WatchContext/WatchContext'
 import useCookies from '../../hooks/useCookies'
 import { PublisherRef } from '../Publisher'
+import VideoElement from '../VideoElement/VideoElement'
+import PublishScreen from '../Publisher/PublishScreen'
 
 const SimpleAlertDialog = React.lazy(() => import('../Modal/SimpleAlertDialog'))
 
@@ -43,15 +44,10 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
 
   const [initScreenShare, setInit] = React.useState<boolean>(false)
 
-  const [subscriber, setSubscriber] = React.useState<any | undefined>()
   const [error, setError] = React.useState<any>()
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
 
   const subRef = React.useRef()
-
-  React.useEffect(() => {
-    subRef.current = subscriber
-  }, [subscriber])
 
   React.useEffect(() => {
     if (isSharingScreen) {
@@ -129,24 +125,27 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
     <Box className={classes.container} sx={styles}>
       {!initScreenShare && <AccountBox fontSize="large" className={classes.accountIcon} />}
       {screenshareMediaStream && (
-        <Publisher
-          ref={screensharePublisherRef}
-          useStreamManager={USE_STREAM_MANAGER}
-          host={STREAM_HOST}
-          streamGuid={getSharescreenStreamGuid()}
-          stream={screenshareMediaStream}
-          styles={{
-            height: '100%',
-            borderRadius: '20px',
-            display: 'flex',
-            justifyContent: 'center',
-            transform: 'none !import',
-            aspectRatio: 'unset',
-          }}
-          onFail={onPublisherFail}
-          onStart={onPublisherBroadcast}
-          onInterrupt={onPublisherBroadcastInterrupt}
-        />
+        <>
+          {/* <PublishScreen
+            ref={screensharePublisherRef}
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            streamGuid={getSharescreenStreamGuid()}
+            stream={screenshareMediaStream}
+            styles={{}}
+            onFail={onPublisherFail}
+            onStart={onPublisherBroadcast}
+            onInterrupt={onPublisherBroadcastInterrupt}
+          /> */}
+          <VideoElement
+            elementId={screenshareMediaStream.id}
+            muted={true}
+            controls={false}
+            styles={{}}
+            initScreenShare
+            videoMedia={screenshareMediaStream}
+          />
+        </>
       )}
       {error && (
         <SimpleAlertDialog

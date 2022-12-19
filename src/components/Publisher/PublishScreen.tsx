@@ -1,20 +1,22 @@
-import { setLogLevel, RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
+import { setLogLevel, RTCPublisher } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
 import Loading from '../Common/Loading/Loading'
 import VideoElement from '../VideoElement/VideoElement'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 import { MicOff, VideocamOff, AccountBox } from '@mui/icons-material'
 import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import useStyles from './Publisher.module'
 import { getOrigin } from '../../utils/streamManagerUtils'
 import { ENABLE_DEBUG_UTILS } from '../../settings/variables'
 import { PublisherRef } from '.'
+import MediaContext from '../MediaContext/MediaContext'
 
 const getSenderFromConnection = (connection: RTCPeerConnection, type: string) => {
   return connection.getSenders().find((s: RTCRtpSender) => s.track?.kind === type)
 }
 
 const activateMedia = (sender: RTCRtpSender, active: boolean) => {
+  debugger
   const params = sender.getParameters()
   const encodings = params.encodings
   if (encodings && encodings.length > 0) {
@@ -34,9 +36,12 @@ interface PublisherProps {
   onFail(): any
 }
 
-const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<PublisherRef>) => {
+const useMediaContext = () => React.useContext(MediaContext.Context)
+
+const PublishScreen = React.forwardRef((props: PublisherProps, ref: React.Ref<PublisherRef>) => {
   const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt, onFail } = props
   const { classes } = useStyles()
+  const { screenshareMediaStream } = useMediaContext()
 
   React.useImperativeHandle(ref, () => ({ shutdown, toggleCamera, toggleMicrophone }))
 
@@ -73,6 +78,18 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
   }, [])
 
   React.useEffect(() => {
+    if (screenshareMediaStream) {
+      if (pubRef && pubRef.current) {
+        const connection = (pubRef.current as any).getPeerConnection()
+        connection.addTrack(screenshareMediaStream.getVideoTracks()[0])
+        const sender = connection.getSenders().filter((s: RTCRtpSender) => s.track?.kind === 'video')[1]
+
+        if (sender) activateMedia(sender, true)
+      }
+    }
+  }, [screenshareMediaStream])
+
+  React.useEffect(() => {
     pubRef.current = publisher
   }, [publisher])
 
@@ -100,6 +117,20 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
     }
   }
 
+  const createEmptyStreamTrack = (mediaStream: MediaStream | undefined) => {
+    if (mediaStream) {
+      debugger
+      const videoTrack = new MediaStreamTrack()
+
+      mediaStream?.addTrack(videoTrack)
+      const streamTrack = new MediaStream(mediaStream)
+
+      return streamTrack
+    }
+
+    return mediaStream
+  }
+
   const start = async () => {
     setIsPublishing(true)
     const pub = new RTCPublisher()
@@ -119,7 +150,10 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
         config.connectionParams = { ...config.connectionParams, host: payload.serverAddress, app: payload.scope }
       }
       pub.on('*', onPublisherEvent)
-      await pub.initWithStream(config, stream)
+
+      const newStream = createEmptyStreamTrack(stream)
+
+      await pub.initWithStream(config, newStream)
       await pub.publish()
       setPublisher(pub)
       setIsPublishing(false)
@@ -212,5 +246,5 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
   )
 })
 
-Publisher.displayName = 'Publisher'
-export default Publisher
+PublishScreen.displayName = 'PublishScreen'
+export default PublishScreen

@@ -127,7 +127,6 @@ const MediaProvider = (props: IMediaProviderProps) => {
       }
 
       setScreenshareMediaStream(captureStream)
-      setMediaStream(captureStream)
     } catch (err: any) {
       if (err.message === 'Permission denied') {
         setScreenshareMediaStream(undefined)

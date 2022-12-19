@@ -17,7 +17,6 @@ import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-c
 import useCookies from '../../hooks/useCookies'
 import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Common/Loading/Loading'
-import Subscriber from '../Subscriber/Subscriber'
 
 import useStyles from './MainStage.module'
 import MediaContext from '../MediaContext/MediaContext'
@@ -43,6 +42,7 @@ import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
 import ScreenShare from '../ScreenShare/ScreenShare'
 import { PublisherRef } from '../Publisher'
+import PublishScreen from '../Publisher/PublishScreen'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
@@ -210,6 +210,7 @@ const WebinarMainStage = () => {
   React.useEffect(() => {
     if (data.connection) {
       const { connection } = data
+
       if (connection && connection.role) {
         setUserRole(connection.role.toLowerCase())
       }
@@ -238,7 +239,7 @@ const WebinarMainStage = () => {
   const onPublisherBroadcast = () => {
     setStartConference(true)
     const streamGuid = getStreamGuid()
-    const { url, request } = getSocketUrl(joinToken, `${nickname}_screenshare`, streamGuid)
+    const { url, request } = getSocketUrl(joinToken, `${nickname}`, streamGuid)
     join(url, request)
   }
 
@@ -458,7 +459,7 @@ const WebinarMainStage = () => {
             xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
             maxHeight={layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)}
           >
-            <Publisher
+            <PublishScreen
               key="publisher"
               ref={publisherRef}
               useStreamManager={USE_STREAM_MANAGER}

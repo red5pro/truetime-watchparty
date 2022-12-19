@@ -41,15 +41,14 @@ const VideoElement = ({
 
   const setScreenShare = () => {
     console.log('setting screen share')
-    console.log({ videoRef, initScreenShare, videoMedia })
-    if (videoRef && videoRef.current && initScreenShare && videoMedia) {
+    if (videoRef && videoRef.current && videoMedia) {
       videoRef.current.srcObject = videoMedia
     }
   }
 
   React.useEffect(() => {
     setScreenShare()
-  }, [initScreenShare, videoMedia])
+  }, [videoMedia])
 
   return (
     <Box className={classes.container}>
