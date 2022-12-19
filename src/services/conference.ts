@@ -1,9 +1,9 @@
-import { SERIES_API_CALLS } from './../api/serie-api-calls'
-import { Serie } from './../../models/Serie'
-import { AccountCredentials } from '../../models/AccountCredentials'
-import { CONFERENCE_API_CALLS } from '../api/conference-api-calls'
-import { ERROR_TYPE } from '../../utils/apiErrorMapping'
-import { NextConferenceToJoin } from '../../models/ConferenceStatusEvent'
+import { SERIES_API_CALLS } from './api/serie-api-calls'
+import { Serie } from '../models/Serie'
+import { AccountCredentials } from '../models/AccountCredentials'
+import { CONFERENCE_API_CALLS } from './api/conference-api-calls'
+import { ERROR_TYPE } from '../utils/apiErrorMapping'
+import { NextConferenceToJoin } from '../models/ConferenceStatusEvent'
 
 export const getCurrentEpisode = async (retrieveNextEpisodes = true) => {
   let currentSerie: any

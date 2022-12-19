@@ -9,6 +9,7 @@ import TabPanel from './TabPanel'
 import StatsTable from './StatsTable'
 import { Column, SectionValueSelected } from '..'
 import {
+  getSortedCountryList,
   mapLiveStatsData,
   mapPastEventsStatsData,
   mapSeriesStatsData,
@@ -16,10 +17,10 @@ import {
 } from '../../../utils/statsUtils'
 import CountryList from '../MainTotalValues/CountryList'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
-import useCookies from '../../../hooks/useCookies'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import CreateSection from '../CreateSection/CreateSection'
 import { Serie } from '../../../models/Serie'
+import { SERIES_API_CALLS } from '../../../services/api/serie-api-calls'
 
 const TABS_SECTION = ['Live Stats', 'Series', 'Past Conferences', 'Special Guests']
 
@@ -48,104 +49,93 @@ const getLabelButton = (value: number) => {
 }
 
 interface ITabsSectionProps {
-  statsByConferece: StatsByConference[]
-  countries: { country: string; count: number }[]
+  statsByConference: StatsByConference[]
   setError: (value: any) => void
-  setLoading: (value: boolean) => void
   setOpenCreatePage: (value: boolean) => void
-  setReady: (value: boolean) => void
   openCreatePage: boolean
-  series: Serie[]
-  getSeries: () => Promise<void>
+  cookies: any
 }
 
 const TabsSection = (props: ITabsSectionProps) => {
-  const {
-    statsByConferece,
-    countries,
-    setError,
-    setLoading,
-    setOpenCreatePage,
-    openCreatePage,
-    setReady,
-    series,
-    getSeries,
-  } = props
+  const { setError, setOpenCreatePage, openCreatePage, cookies, statsByConference } = props
   const [value, setValue] = React.useState(0)
 
   const [pageToOpen, setPageToOpen] = React.useState<string>('')
 
   const [tableHead, setTableHead] = React.useState<Column[]>([])
   const [dataRow, setDataRow] = React.useState<any>([])
-  const [buttonLabel, setButtonLabel] = React.useState<string>('')
+  const [buttonLabel, setButtonLabel] = React.useState<string>(getLabelButton(0) ?? '')
 
   const { classes } = useStyles()
-  const { getCookies } = useCookies(['account'])
+
+  const [data, setData] = React.useState<any>(statsByConference)
+  const [series, setSeries] = React.useState<Serie[]>([])
+  const [users, setUsers] = React.useState<any>([])
+  const [countries, setCountries] = React.useState<{ country: string; count: number }[]>([])
 
   React.useEffect(() => {
-    if (value === 1) {
-      const { head, rows } = mappingFunctions(value, series)
+    if (data) {
+      const { head, rows } = mappingFunctions(value, data)
 
       setTableHead(head)
       setDataRow(rows)
+      setCountries(getSortedCountryList(statsByConference))
     }
-  }, [series, value])
+  }, [data])
 
-  React.useEffect(() => {
-    if (statsByConferece) {
-      getData()
-      setButtonLabel(getLabelButton(value) ?? '')
-    }
-  }, [statsByConferece, value])
+  const getData = async (tabValue: number, shouldUpdateValues: boolean) => {
+    setButtonLabel(getLabelButton(tabValue) ?? '')
 
-  const getData = async () => {
-    let data: any = statsByConferece
+    if (tabValue === 1) {
+      if (!series?.length || shouldUpdateValues) {
+        const response = await SERIES_API_CALLS.getSeriesList()
 
-    if (value === 3) {
-      setLoading(true)
-
-      const { account } = getCookies()
-
-      const response = await USER_API_CALLS.getUsers(account.username, account.password)
-
-      setLoading(false)
-      if (response.status !== 200) {
-        setError({
-          status: `Warning!`,
-          statusText: `${response.statusText}`,
-        })
-        return
+        if (response.status !== 200) {
+          setError({
+            status: `Warning!`,
+            statusText: `${response.statusText}`,
+          })
+          return
+        }
+        setSeries(response.data.series)
+        setData(response.data.series)
+      } else {
+        setData(series)
       }
-
-      data = response.data.users
+    } else if (tabValue === 0 || tabValue === 2) {
+      setData(statsByConference)
+    } else {
+      if (!users?.length || shouldUpdateValues) {
+        const response = await USER_API_CALLS.getUsers(cookies.account.username, cookies.account.password)
+        if (response.status !== 200) {
+          setError({
+            status: `Warning!`,
+            statusText: `${response.statusText}`,
+          })
+          return
+        }
+        setUsers(response.data.users)
+        setData(response.data.users)
+      } else {
+        setData(users)
+      }
     }
-
-    const { head, rows } = mappingFunctions(value, data)
-
-    setTableHead(head)
-    setDataRow(rows)
   }
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = async (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
+    await getData(newValue, false)
   }
 
   const handleOnClick = (value: number) => {
     setOpenCreatePage(true)
-
     setPageToOpen(SectionValueSelected[value])
   }
 
   const backToPage = async (shouldUpdateValues: boolean) => {
     setOpenCreatePage(false)
     if (shouldUpdateValues) {
-      if (value === 3) {
-        await getData()
-      } else if (value === 1) {
-        await getSeries()
-      } else {
-        setReady(true)
-      }
+      await getData(value, shouldUpdateValues)
     }
   }
 
@@ -196,12 +186,10 @@ const TabsSection = (props: ITabsSectionProps) => {
           )}
         </Box>
         <Box display="flex">
-          <>
-            <CountryList countries={countries} />
-            <TabPanel value={value} index={0}>
-              <StatsTable tableHead={tableHead} dataRow={dataRow} />
-            </TabPanel>
-          </>
+          <CountryList countries={countries} />
+          <TabPanel value={value} index={0}>
+            <StatsTable tableHead={tableHead} dataRow={dataRow} />
+          </TabPanel>
         </Box>
       </Box>
     </>
@@ -209,3 +197,4 @@ const TabsSection = (props: ITabsSectionProps) => {
 }
 
 export default TabsSection
+
