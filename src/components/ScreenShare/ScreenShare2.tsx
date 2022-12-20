@@ -109,19 +109,19 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
     <Box className={classes.container} sx={styles}>
       {!mediaStream && <Typography>Starting...</Typography>}
       {mediaStream && (
-        // <Publisher
-        //   key="screenshare"
-        //   ref={screensharePubRef}
-        //   host={host}
-        //   styles={classes.publisher}
-        //   useStreamManager={useStreamManager}
-        //   stream={screenshareMediaStream}
-        //   streamGuid={getSharescreenStreamGuid()}
-        //   onStart={onStart}
-        //   onFail={onFail}
-        //   onInterrupt={onInterrupt}
-        // />
-        <Typography>Yup {mediaStream.id}</Typography>
+        <Publisher
+          key="screenshare"
+          ref={screensharePubRef}
+          host={host}
+          styles={classes.publisher}
+          useStreamManager={useStreamManager}
+          stream={mediaStream}
+          streamGuid={getSharescreenStreamGuid()}
+          onStart={onStart}
+          onFail={onFail}
+          onInterrupt={onInterrupt}
+        />
+        // <Typography>Yup {mediaStream.id}</Typography>
       )}
     </Box>
   )
