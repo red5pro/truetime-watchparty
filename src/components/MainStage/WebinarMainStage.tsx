@@ -474,7 +474,7 @@ const WebinarMainStage = () => {
               styles={
                 layout.layout !== Layout.FULLSCREEN
                   ? layout.style.subscriber
-                  : { ...layout.style.publisherVideo, ...layout.style.subscriber } }
+                  : { ...layout.style.publisherVideo, ...layout.style.subscriber }
               }
               onFail={onPublisherFail}
               onStart={onPublisherBroadcast}
