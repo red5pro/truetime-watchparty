@@ -57,6 +57,7 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
         // a) Browser restriction.
         // b) User explicitily declined to share media.
         setMediaStream(undefined)
+        onScreenShareEnded()
       }
     }
     if (initScreenShare && !mediaStream) {
@@ -113,7 +114,14 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
           key="screenshare"
           ref={screensharePubRef}
           host={host}
-          styles={classes.publisher}
+          styles={{
+            height: '100%',
+            borderRadius: '20px',
+            display: 'flex',
+            justifyContent: 'center',
+            transform: 'none !import',
+            aspectRatio: 'unset',
+          }}
           useStreamManager={useStreamManager}
           stream={mediaStream}
           streamGuid={getSharescreenStreamGuid()}
@@ -121,11 +129,10 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
           onFail={onFail}
           onInterrupt={onInterrupt}
         />
-        // <Typography>Yup {mediaStream.id}</Typography>
       )}
     </Box>
   )
 })
 
-ScreenShare2.displayName = 'ScreenShare'
+ScreenShare2.displayName = 'ScreenShare2'
 export default ScreenShare2

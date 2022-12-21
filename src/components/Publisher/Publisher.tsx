@@ -23,6 +23,13 @@ const activateMedia = (sender: RTCRtpSender, active: boolean) => {
   }
 }
 
+const publisherReducer = (state: any, action: any) => {
+  switch (action.type) {
+    case 'ELEMENT_UPDATE':
+      return { ...state, id: action.id, context: action.context, streamName: action.name }
+  }
+}
+
 interface PublisherProps {
   useStreamManager: boolean
   stream?: MediaStream
@@ -40,9 +47,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
 
   React.useImperativeHandle(ref, () => ({ shutdown, send, toggleCamera, toggleMicrophone }))
 
-  const [elementId, setElementId] = React.useState<string>('')
-  const [context, setContext] = React.useState<string>('')
-  const [streamName, setStreamName] = React.useState<string>('')
+  const [elementId, setElementId] = React.useState<string | undefined>()
   const [isPublished, setIsPublished] = React.useState<boolean>(false)
   const [isPublishing, setIsPublishing] = React.useState<boolean>(false)
   const [micOn, setMicOn] = React.useState<boolean>(true)
@@ -51,40 +56,48 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
   const [publisher, setPublisher] = React.useState<any>()
   const pubRef = React.useRef()
 
+  const [element, dispatch] = React.useReducer(publisherReducer, {
+    id: undefined,
+    context: undefined,
+    streamName: undefined,
+  })
+
   React.useEffect(() => {
     setLogLevel(ENABLE_DEBUG_UTILS ? 'debug' : 'info')
-
-    const { context, name } = getContextAndNameFromGuid(streamGuid)
-    setContext(context)
-
-    if (name) {
-      const elemId = `${name}-publisher`
-      setElementId(elemId)
-      setStreamName(name)
-    }
 
     return () => {
       //      stopRetry()
       if (pubRef.current) {
-        console.warn(`[Red5ProPublisher(${streamName})] - STOP`)
+        console.warn(`[Red5ProPublisher(${element.streamName})] - STOP`)
         stop()
       }
     }
   }, [])
 
   React.useEffect(() => {
+    const { context, name } = getContextAndNameFromGuid(streamGuid)
+    const id = `${name}-publisher`
+    if (!isPublished && name) {
+      dispatch({ type: 'ELEMENT_UPDATE', id, context, name })
+      setElementId(id)
+    }
+  }, [streamGuid])
+
+  React.useEffect(() => {
     pubRef.current = publisher
   }, [publisher])
 
   React.useEffect(() => {
-    if (elementId.length > 0 && streamName?.length > 0 && context.length > 0) {
+    const { context, name } = getContextAndNameFromGuid(streamGuid)
+    if (elementId && context && name) {
       if (!isPublished) {
-        start()
+        start(elementId, context, name)
       }
     }
-  }, [elementId, streamName, context])
+  }, [elementId])
 
   const onPublisherEvent = (event: any) => {
+    const { streamName } = element
     console.log(`[Red5ProPublisher(${streamName})]: PublisherEvent - ${event.type}.`)
     // if (event.type === 'WebSocket.Message.Unhandled') {
     //   console.log(event)
@@ -100,7 +113,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
     }
   }
 
-  const start = async () => {
+  const start = async (id: string | undefined, context: string, streamName: string) => {
     setIsPublishing(true)
     const pub = new RTCPublisher()
     try {
@@ -108,7 +121,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
         app: useStreamManager ? 'streammanager' : context,
         host: host,
         streamName: streamName,
-        mediaElementId: elementId,
+        mediaElementId: id,
         clearMediaOnUnpublish: true,
         connectionParams: {
           /* username, password, token? */
@@ -149,6 +162,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
       }
       setPublisher(undefined)
     } catch (error: any) {
+      const { streamName } = element
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error(`[Red5ProPublisher(${streamName})] :: Error in unpublishing -  ${jsonError}`)
       console.error(error)
@@ -205,7 +219,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
         </Box>
       )}
       {!cameraOn && <AccountBox fontSize="large" className={classes.accountIcon} />}
-      {elementId && elementId.length > 0 && (
+      {elementId && (
         <VideoElement
           elementId={elementId}
           muted={true}

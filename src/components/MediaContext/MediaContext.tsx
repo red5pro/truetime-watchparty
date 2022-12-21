@@ -101,7 +101,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
     if (tracks) {
       tracks.forEach((track: any) => track.stop())
       setScreenshareMediaStream(undefined)
-      setScreenShare(false)
+      // setScreenShare(false)
     }
   }
 
