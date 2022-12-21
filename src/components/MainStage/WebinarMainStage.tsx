@@ -445,7 +445,7 @@ const WebinarMainStage = () => {
         </Box>
       )}
       {/* Other Participants Video Playback */}
-      <Box id={layout.layout === Layout.FULLSCREEN ? 'FULL' : 'STAGE'} sx={layout.style.subscriberList}>
+      <Box id="participants-video-container" sx={layout.style.subscriberList}>
         <Grid
           container
           xs={layout.layout === Layout.FULLSCREEN ? 12 : 4}
@@ -473,8 +473,8 @@ const WebinarMainStage = () => {
               stream={mediaStream}
               styles={
                 layout.layout !== Layout.FULLSCREEN
-                  ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
-                  : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
+                  ? layout.style.subscriber
+                  : { ...layout.style.publisherVideo, ...layout.style.subscriber } }
               }
               onFail={onPublisherFail}
               onStart={onPublisherBroadcast}
@@ -483,7 +483,7 @@ const WebinarMainStage = () => {
           </Grid>
           {data.list.map((s: Participant) => (
             <Grid
-              // id="grid-stage-subscriber"
+              id="grid-stage-subscriber"
               item
               key={s.participantId}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
