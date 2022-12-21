@@ -1,8 +1,8 @@
 import { AxiosResponse } from 'axios'
-import { STATS_API_CALLS } from './../api/stats-api-calls'
-import { AccountCredentials } from '../../models/AccountCredentials'
-import { CONFERENCE_API_CALLS } from '../api/conference-api-calls'
-import { StatsByConference } from '../../models/ConferenceStats'
+import { STATS_API_CALLS } from './api/stats-api-calls'
+import { AccountCredentials } from '../models/AccountCredentials'
+import { CONFERENCE_API_CALLS } from './api/conference-api-calls'
+import { StatsByConference } from '../models/ConferenceStats'
 
 export const getStatsByConference = async (user: string, password: string) => {
   const account: AccountCredentials = {
@@ -28,8 +28,17 @@ export const getStatsByConference = async (user: string, password: string) => {
       }
     }
 
+    const allConferecesStatsResponse = await STATS_API_CALLS.getAllConferenceStats(user, password)
+
+    if (allConferecesStatsResponse.status === 200 && allConferecesStatsResponse.data) {
+      return {
+        data: { statsByConferences, allConferecesStats: allConferecesStatsResponse.data },
+        status: 200,
+      } as AxiosResponse
+    }
+
     return {
-      data: statsByConferences,
+      data: { statsByConferences },
       status: 200,
     } as AxiosResponse
   } else {

@@ -109,9 +109,9 @@ const MediaProvider = (props: IMediaProviderProps) => {
     const displayMediaOptions: DisplayMediaStreamConstraints = {
       audio: false,
       video: {
-        aspectRatio: 4 / 3,
+        aspectRatio: 1 / 1,
         height: {
-          ideal: 480,
+          ideal: 780,
         },
       },
     }

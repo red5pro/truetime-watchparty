@@ -17,7 +17,6 @@ import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-c
 import useCookies from '../../hooks/useCookies'
 import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Common/Loading/Loading'
-import Subscriber from '../Subscriber/Subscriber'
 
 import useStyles from './MainStage.module'
 import MediaContext from '../MediaContext/MediaContext'
@@ -203,6 +202,7 @@ const WebinarMainStage = () => {
   React.useEffect(() => {
     if (data.connection) {
       const { connection } = data
+
       if (connection && connection.role) {
         setUserRole(connection.role.toLowerCase())
       }
@@ -473,8 +473,8 @@ const WebinarMainStage = () => {
               stream={mediaStream}
               styles={
                 layout.layout !== Layout.FULLSCREEN
-                  ? layout.style.subscriber
-                  : { ...layout.style.publisherVideo, ...layout.style.subscriber }
+                  ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
+                  : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
               }
               onFail={onPublisherFail}
               onStart={onPublisherBroadcast}

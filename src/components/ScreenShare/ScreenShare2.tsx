@@ -102,8 +102,13 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
   }
 
   const onScreenShareEnded = async () => {
-    await shutdown()
-    onEnded()
+    try {
+      await shutdown()
+    } catch (e) {
+      console.warn(e)
+    } finally {
+      onEnded()
+    }
   }
 
   return (

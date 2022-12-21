@@ -3,7 +3,6 @@ import { Box } from '@mui/material'
 import { AccountBox } from '@mui/icons-material'
 import useStyles from './Screenshare.module'
 import MediaContext from '../MediaContext/MediaContext'
-import Publisher from '../Publisher/Publisher'
 import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import JoinContext from '../JoinContext/JoinContext'
 import { FatalError } from '../../models/FatalError'
@@ -11,6 +10,8 @@ import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 import WatchContext from '../WatchContext/WatchContext'
 import useCookies from '../../hooks/useCookies'
 import { PublisherRef } from '../Publisher'
+import VideoElement from '../VideoElement/VideoElement'
+import PublishScreen from '../Publisher/PublishScreen'
 
 const SimpleAlertDialog = React.lazy(() => import('../Modal/SimpleAlertDialog'))
 
@@ -30,7 +31,7 @@ const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
 
 const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps, ref: React.Ref<SubscriberRef>) {
-  const { styles, isSharingScreen /*onShareScreen, publishMediaStream, setPublishMediaStream*/ } = props
+  const { styles, isSharingScreen, onShareScreen /*, publishMediaStream, setPublishMediaStream*/ } = props
 
   const { startScreenShareMedia, screenshareMediaStream } = useMediaContext()
   const { joinToken, fingerprint, nickname, getSharescreenStreamGuid } = useJoinContext()
@@ -43,17 +44,10 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
 
   const [initScreenShare, setInit] = React.useState<boolean>(false)
 
-  const [playbackVolume, setPlaybackVolume] = React.useState<number>(1.0)
-
-  const [subscriber, setSubscriber] = React.useState<any | undefined>()
   const [error, setError] = React.useState<any>()
   const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
 
   const subRef = React.useRef()
-
-  React.useEffect(() => {
-    subRef.current = subscriber
-  }, [subscriber])
 
   React.useEffect(() => {
     if (isSharingScreen) {
@@ -130,32 +124,34 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
   return (
     <Box className={classes.container} sx={styles}>
       {!initScreenShare && <AccountBox fontSize="large" className={classes.accountIcon} />}
-      {/* <VideoElement
-        elementId={elementId}
-        muted={true}
-        controls={false}
-        styles={{ ...videoStyles }}
-        initScreenShare
-        videoMedia={mediaStream}
-      /> */}
       {screenshareMediaStream && (
-        <Publisher
-          key="screenshare-publisher"
-          ref={screensharePublisherRef}
-          useStreamManager={USE_STREAM_MANAGER}
-          host={STREAM_HOST}
-          streamGuid={getSharescreenStreamGuid()}
-          stream={screenshareMediaStream}
-          styles={classes.publisher}
-          onFail={onPublisherFail}
-          onStart={onPublisherBroadcast}
-          onInterrupt={onPublisherBroadcastInterrupt}
-        />
+        <>
+          {/* <PublishScreen
+            ref={screensharePublisherRef}
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            streamGuid={getSharescreenStreamGuid()}
+            stream={screenshareMediaStream}
+            styles={{}}
+            onFail={onPublisherFail}
+            onStart={onPublisherBroadcast}
+            onInterrupt={onPublisherBroadcastInterrupt}
+          /> */}
+          <VideoElement elementId={screenshareMediaStream.id} muted={true} controls={false} styles={{}} />
+        </>
       )}
       {error && (
         <SimpleAlertDialog
           title={error.title || 'Error'}
           message={`${error.status} - ${error.statusText}`}
+          confirmLabel="OK"
+          onConfirm={() => setError(undefined)}
+        />
+      )}
+      {fatalError && (
+        <SimpleAlertDialog
+          title={fatalError.title || 'Error'}
+          message={`${fatalError.status} - ${fatalError.statusText}`}
           confirmLabel="OK"
           onConfirm={() => setError(undefined)}
         />
