@@ -47,16 +47,19 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
     const start = async () => {
       try {
         const stream = await startScreenShareMedia()
-        stream.getVideoTracks()[0].onended = () => {
+        stream.getVideoTracks()[0].addEventListener('ended', () => {
           onScreenShareEnded()
-        }
+        })
+        // stream.getVideoTracks()[0].onended = () => {
+        //   onScreenShareEnded()
+        // }
         setMediaStream(stream)
         s = stream
       } catch (e) {
         // TODO: Show error. This could be from:
         // a) Browser restriction.
         // b) User explicitily declined to share media.
-        setMediaStream(undefined)
+
         onScreenShareEnded()
       }
     }
@@ -103,7 +106,8 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
 
   const onScreenShareEnded = async () => {
     try {
-      await shutdown()
+      shutdown()
+      setMediaStream(undefined)
     } catch (e) {
       console.warn(e)
     } finally {
