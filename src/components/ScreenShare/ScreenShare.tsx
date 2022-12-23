@@ -126,7 +126,7 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
       {!initScreenShare && <AccountBox fontSize="large" className={classes.accountIcon} />}
       {screenshareMediaStream && (
         <>
-          {/* <PublishScreen
+          <PublishScreen
             ref={screensharePublisherRef}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
@@ -136,8 +136,8 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
             onFail={onPublisherFail}
             onStart={onPublisherBroadcast}
             onInterrupt={onPublisherBroadcastInterrupt}
-          /> */}
-          <VideoElement elementId={screenshareMediaStream.id} muted={true} controls={false} styles={{}} />
+          />
+          {/* <VideoElement elementId={screenshareMediaStream.id} muted={true} controls={false} styles={{}} /> */}
         </>
       )}
       {error && (
