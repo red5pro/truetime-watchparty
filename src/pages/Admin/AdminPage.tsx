@@ -45,8 +45,8 @@ const AdminPage = () => {
     const response = await getStatsByConference(cookies.account.username, cookies.account.password)
 
     if (response.status === 200 && response.data) {
-      setStatsByConference(response.data.statsByConferences)
-      setAllConferenceStats(response.data.allConferecesStats)
+      setStatsByConference(response.data.statsByConferences || [])
+      setAllConferenceStats(response.data.allConferecesStats || ({} as AllConferenceStats))
     } else {
       setError({
         status: `Warning!`,
