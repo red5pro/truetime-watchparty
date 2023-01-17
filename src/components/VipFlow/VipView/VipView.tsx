@@ -35,7 +35,7 @@ const VipView = (props: IVipViewProps) => {
       <Box sx={{ width: '45%' }}>
         <img
           alt="Vip View Main Image"
-          src={require('../../../assets/images/BoxingSession.png')}
+          src={'../../../assets/images/BoxingSession.png'}
           style={{ maxWidth: '70%' }}
         ></img>
       </Box>
