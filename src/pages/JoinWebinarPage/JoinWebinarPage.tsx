@@ -1,9 +1,8 @@
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
-import useCookies from '../../hooks/useCookies'
 import Loading from '../../components/Common/Loading/Loading'
 import useStyles from './JoinWebinarPage.module'
 import { Participant } from '../../models/Participant'
@@ -15,11 +14,9 @@ import JoinSectionNicknameInput from '../../components/JoinSections/JoinSectionN
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
 
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
-import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
-import { UserRoles } from '../../utils/commonUtils'
 
-const WebinarMainStage = React.lazy(() => import('../../components/MainStage/WebinarMainStage'))
+const MainStageWrapper = React.lazy(() => import('../../components/MainStage/MainStageWrapper'))
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -178,11 +175,9 @@ const JoinWebinarPage = () => {
         )}
         {!loading && currentSection === Section.WatchParty && (
           <MainStageWithChatBox>
-            <WebinarMainStage />
+            <MainStageWrapper isWebinarStage />
           </MainStageWithChatBox>
         )}
-
-
       </Box>
     </Box>
   )

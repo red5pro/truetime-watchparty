@@ -3,25 +3,16 @@ import * as React from 'react'
 import useVideoStyles from './VideoElement.module'
 
 interface IVideoElementProps {
-  elementId: string
+  elementId?: string
   styles: any
   muted: boolean
   controls: boolean
   volume?: number
-  initScreenShare?: boolean
-  videoMedia?: any
 }
 
-const VideoElement = ({
-  elementId,
-  styles,
-  muted,
-  controls,
-  volume,
-  videoMedia,
-  initScreenShare,
-}: IVideoElementProps) => {
-  const videoRef: any = React.useRef(null)
+const VideoElement = (props: IVideoElementProps) => {
+  const { elementId, styles, muted, controls, volume } = props
+  const videoRef = React.useRef<HTMLVideoElement>(null)
   const { classes } = useVideoStyles()
 
   React.useEffect(() => {
@@ -39,17 +30,6 @@ const VideoElement = ({
     }
   }, [muted, elementId])
 
-  const setScreenShare = () => {
-    console.log('setting screen share')
-    if (videoRef && videoRef.current && videoMedia) {
-      videoRef.current.srcObject = videoMedia
-    }
-  }
-
-  React.useEffect(() => {
-    setScreenShare()
-  }, [videoMedia])
-
   return (
     <Box className={classes.container}>
       <video
@@ -64,7 +44,7 @@ const VideoElement = ({
         onContextMenu={() => false}
         style={styles}
         className={`${classes.video}`}
-      />
+      ></video>
     </Box>
   )
 }

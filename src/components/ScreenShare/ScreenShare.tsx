@@ -33,7 +33,7 @@ const useWatchContext = () => React.useContext(WatchContext.Context)
 const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps, ref: React.Ref<SubscriberRef>) {
   const { styles, isSharingScreen, onShareScreen /*, publishMediaStream, setPublishMediaStream*/ } = props
 
-  const { startVideoMedia, screenshareMediaStream } = useMediaContext()
+  const { startScreenShareMedia, screenshareMediaStream } = useMediaContext()
   const { joinToken, fingerprint, nickname, getSharescreenStreamGuid } = useJoinContext()
   const { join } = useWatchContext()
 
@@ -57,17 +57,9 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
 
   React.useEffect(() => {
     if (initScreenShare) {
-      startScreenShare()
+      startScreenShareMedia()
     }
   }, [initScreenShare])
-
-  const startScreenShare = async () => {
-    const videoStarted = await startVideoMedia()
-
-    if (!videoStarted) {
-      onShareScreen(false)
-    }
-  }
 
   const getSocketUrl = (token: string, name: string, guid: string) => {
     const request: ConnectionRequest = {
@@ -134,7 +126,7 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
       {!initScreenShare && <AccountBox fontSize="large" className={classes.accountIcon} />}
       {screenshareMediaStream && (
         <>
-          {/* <PublishScreen
+          <PublishScreen
             ref={screensharePublisherRef}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
@@ -144,15 +136,8 @@ const ScreenShare = React.forwardRef(function Subscriber(props: ISubscriberProps
             onFail={onPublisherFail}
             onStart={onPublisherBroadcast}
             onInterrupt={onPublisherBroadcastInterrupt}
-          /> */}
-          <VideoElement
-            elementId={screenshareMediaStream.id}
-            muted={true}
-            controls={false}
-            styles={{}}
-            initScreenShare
-            videoMedia={screenshareMediaStream}
           />
+          {/* <VideoElement elementId={screenshareMediaStream.id} muted={true} controls={false} styles={{}} /> */}
         </>
       )}
       {error && (
