@@ -38,7 +38,14 @@ const useStyles = makeStyles()((theme: any) => {
       padding: '20px',
       display: 'flex',
       flexDirection: 'row',
-      justifyContent: 'flex-end',
+      justifyContent: 'space-between',
+      width: '100vw',
+    },
+    webinarTopBar: {
+      padding: '20px',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
     },
     header: {
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',

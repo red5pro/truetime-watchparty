@@ -13,11 +13,12 @@ import MediaContext from '../../components/MediaContext/MediaContext'
 import JoinSectionLanding from '../../components/JoinSections/JoinSectionLanding'
 import JoinSectionNicknameInput from '../../components/JoinSections/JoinSectionNicknameInput'
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
-import MainStage from '../../components/MainStage/MainStage'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
 import { UserRoles } from '../../utils/commonUtils'
+
+const MainStageWrapper = React.lazy(() => import('../../components/MainStage/MainStageWrapper'))
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -195,7 +196,7 @@ const JoinPage = () => {
         )}
         {!loading && conferenceData && currentSection === Section.WatchParty && (
           <MainStageWithChatBox>
-            <MainStage />
+            <MainStageWrapper isWebinarStage={false} />
           </MainStageWithChatBox>
         )}
 
