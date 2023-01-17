@@ -1,11 +1,10 @@
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
-import useCookies from '../../hooks/useCookies'
 import Loading from '../../components/Common/Loading/Loading'
-import useStyles from './JoinPage.module'
+import useStyles from './JoinWebinarPage.module'
 import { Participant } from '../../models/Participant'
 
 import JoinContext from '../../components/JoinContext/JoinContext'
@@ -13,10 +12,9 @@ import MediaContext from '../../components/MediaContext/MediaContext'
 import JoinSectionLanding from '../../components/JoinSections/JoinSectionLanding'
 import JoinSectionNicknameInput from '../../components/JoinSections/JoinSectionNicknameInput'
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
+
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
-import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
-import { UserRoles } from '../../utils/commonUtils'
 
 const MainStageWrapper = React.lazy(() => import('../../components/MainStage/MainStageWrapper'))
 
@@ -47,29 +45,15 @@ const getParticipantText = (participants: Participant[] | undefined) => {
   } other(s) are already here.`
 }
 
-const JoinPage = () => {
-  const { loading, error, joinToken, seriesEpisode, conferenceData, nickname, updateNickname } = useJoinContext()
+const JoinWebinarPage = () => {
+  const { loading, error, joinToken, nickname, updateNickname } = useJoinContext()
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
   const navigate = useNavigate()
 
-  const { getCookies, removeCookie } = useCookies(['userAccount', 'account'])
   const [searchParams, setSearchParams] = useSearchParams()
-  const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
-
-  React.useEffect(() => {
-    const cookies = getCookies()
-    if (cookies.userAccount) {
-      const acc = cookies.userAccount
-      const { role } = acc
-      // VIPs can't join as a VIP though the main stage.
-      if (role === UserRoles.VIP) {
-        removeCookie('userAccount')
-        removeCookie('account')
-      }
-    }
-  }, [])
+  const [currentSection, setCurrentSection] = React.useState<Section>(Section.Nickname)
 
   React.useEffect(() => {
     if (searchParams.get('s_id')) {
@@ -153,7 +137,7 @@ const JoinPage = () => {
           <Loading text="Loading Watch Party" />
         </Box>
       )}
-      {currentSection !== Section.WatchParty && (
+      {/* {currentSection !== Section.WatchParty && (
         <Box>
           <Box padding={2} className={classes.brandLogo}>
             <WbcLogoSmall />
@@ -164,27 +148,22 @@ const JoinPage = () => {
             </Typography>
           </Box>
         </Box>
-      )}
+      )} */}
       <Box display="flex" flexDirection="column" justifyContent="space-around" width="100%" height="100%">
-        {!loading && conferenceData && currentSection === Section.Landing && (
+        {!loading && currentSection === Section.Landing && (
           <Box className={classes.joinSection}>
             <JoinSectionLanding
               joinToken={joinToken}
-              seriesEpisode={seriesEpisode}
-              conferenceData={conferenceData}
               conferenceParticipantsStringBuilder={getParticipantText}
               onStartJoin={onStartJoin}
             />
           </Box>
         )}
-        {!loading && conferenceData && currentSection === Section.Nickname && (
+        {!loading && currentSection === Section.Nickname && (
           <Box className={classes.joinSection}>
             <JoinSectionNicknameInput
               nickname={nickname}
-              seriesEpisode={seriesEpisode}
-              conferenceData={conferenceData}
               conferenceParticipantsStringBuilder={getParticipantText}
-              onBack={onReturnToLanding}
               onStartSetup={onStartSetup}
             />
           </Box>
@@ -194,47 +173,14 @@ const JoinPage = () => {
             <JoinSectionAVSetup onBack={onReturnToNickname} onJoin={onJoin} />
           </Box>
         )}
-        {!loading && conferenceData && currentSection === Section.WatchParty && (
+        {!loading && currentSection === Section.WatchParty && (
           <MainStageWithChatBox>
-            <MainStageWrapper isWebinarStage={false} />
+            <MainStageWrapper isWebinarStage />
           </MainStageWithChatBox>
-        )}
-
-        <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
-          <img
-            alt="Join a Party Main Image"
-            src={require('../../assets/images/BoxMainImage.png')}
-            style={{
-              width: '100%',
-              opacity: currentSection === Section.Nickname ? 0.5 : 1,
-              display: currentSection === Section.Landing || currentSection === Section.Nickname ? 'block' : 'none',
-            }}
-          ></img>
-        </Box>
-
-        {currentSection !== Section.WatchParty && (
-          <Stack
-            spacing={2}
-            direction="column"
-            className={classes.sponsorContainer}
-            sx={currentSection === Section.AVSetup ? { alignItems: 'center', width: 'calc(100vw - 158px)' } : {}}
-          >
-            <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
-            <Stack spacing={2} direction="row">
-              {/* <OracleLogo /> */}
-              <Box sx={{ width: 'auto', height: '70px' }}>
-                <img
-                  height="70px"
-                  alt="Logo Placeholder"
-                  src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
-                ></img>
-              </Box>
-            </Stack>
-          </Stack>
         )}
       </Box>
     </Box>
   )
 }
 
-export default JoinPage
+export default JoinWebinarPage

@@ -14,8 +14,8 @@ import useCookies from '../../hooks/useCookies'
 
 interface JoinLandingProps {
   joinToken: string
-  seriesEpisode: any
-  conferenceData: ConferenceDetails
+  seriesEpisode?: any
+  conferenceData?: ConferenceDetails
   conferenceParticipantsStringBuilder(participants: Participant[]): string
   onStartJoin(): any
 }
@@ -42,26 +42,34 @@ const JoinSectionLanding = (props: JoinLandingProps) => {
 
   return (
     <Box className={classes.landingContainer}>
-      <Typography sx={{ fontSize: '24px' }}>{seriesEpisode.series.displayName}</Typography>
-      <Typography variant="h1">{seriesEpisode.episode.displayName}</Typography>
-      <Box display="flex" alignItems="center" sx={{ marginTop: '24px' }}>
-        <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>
-          {getStartTimeFromTimestamp(seriesEpisode.episode.startTime)}
-        </Typography>
-        <Tooltip
-          title={seriesEpisode.episode.description ?? 'Additional Information...'}
-          arrow
-          sx={{ marginLeft: '12px' }}
-        >
-          <InfoIcon fontSize="small" />
-        </Tooltip>
-      </Box>
+      {seriesEpisode && (
+        <>
+          <Typography sx={{ fontSize: '24px' }}>{seriesEpisode.series.displayName}</Typography>
+          <Typography variant="h1">{seriesEpisode.episode.displayName}</Typography>
+          <Box display="flex" alignItems="center" sx={{ marginTop: '24px' }}>
+            <Typography sx={{ fontSize: '18px', fontWeight: 600 }}>
+              {getStartTimeFromTimestamp(seriesEpisode.episode.startTime)}
+            </Typography>
+            <Tooltip
+              title={seriesEpisode.episode.description ?? 'Additional Information...'}
+              arrow
+              sx={{ marginLeft: '12px' }}
+            >
+              <InfoIcon fontSize="small" />
+            </Tooltip>
+          </Box>
+        </>
+      )}
       <Box className={classes.conferenceDetails}>
-        <Typography sx={{ fontSize: '36px', fontWeight: 600 }}>{conferenceData.displayName}</Typography>
-        <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{conferenceData.welcomeMessage}</Typography>
-        <Typography paddingTop={2} sx={{ fontSize: '12px', fontWeight: 500 }}>
-          {conferenceParticipantsStringBuilder(conferenceData.participants)}
-        </Typography>
+        {conferenceData && (
+          <>
+            <Typography sx={{ fontSize: '36px', fontWeight: 600 }}>{conferenceData.displayName}</Typography>
+            <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{conferenceData.welcomeMessage}</Typography>
+            <Typography paddingTop={2} sx={{ fontSize: '12px', fontWeight: 500 }}>
+              {conferenceParticipantsStringBuilder(conferenceData.participants)}
+            </Typography>
+          </>
+        )}
         <Box className={classes.joinControls}>
           <CustomButton
             className={classes.landingJoin}

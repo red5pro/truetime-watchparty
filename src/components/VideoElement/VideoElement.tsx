@@ -3,15 +3,16 @@ import * as React from 'react'
 import useVideoStyles from './VideoElement.module'
 
 interface IVideoElementProps {
-  elementId: string
+  elementId?: string
   styles: any
   muted: boolean
   controls: boolean
   volume?: number
 }
 
-const VideoElement = ({ elementId, styles, muted, controls, volume }: IVideoElementProps) => {
-  const videoRef: any = React.useRef(null)
+const VideoElement = (props: IVideoElementProps) => {
+  const { elementId, styles, muted, controls, volume } = props
+  const videoRef = React.useRef<HTMLVideoElement>(null)
   const { classes } = useVideoStyles()
 
   React.useEffect(() => {
@@ -43,7 +44,7 @@ const VideoElement = ({ elementId, styles, muted, controls, volume }: IVideoElem
         onContextMenu={() => false}
         style={styles}
         className={`${classes.video}`}
-      />
+      ></video>
     </Box>
   )
 }

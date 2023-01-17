@@ -230,9 +230,6 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
     }
   }
 
-  // if (!subscriber && isMainVideo) {
-  //   return null
-  // }
 
   return (
     <Box className={classes.container} sx={styles}>

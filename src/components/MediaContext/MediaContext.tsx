@@ -32,6 +32,9 @@ const MediaProvider = (props: IMediaProviderProps) => {
   const [cameraSelected, setCameraSelected] = React.useState<string | undefined>()
   const [microphoneSelected, setMicrophoneSelected] = React.useState<string | undefined>()
 
+  const [screenshareMediaStream, setScreenshareMediaStream] = React.useState<MediaStream | undefined>()
+  const [screenShare, setScreenShare] = React.useState<boolean>(false)
+
   React.useEffect(() => {
     startAdapter()
   }, [])
@@ -89,6 +92,39 @@ const MediaProvider = (props: IMediaProviderProps) => {
     getMediaStream()
   }
 
+  const stopScreenShareMedia = (captureStream?: MediaStream | null) => {
+    const tracks = captureStream
+      ? captureStream.getTracks()
+      : screenshareMediaStream
+      ? screenshareMediaStream.getTracks()
+      : null
+    if (tracks) {
+      tracks.forEach((track: any) => track.stop())
+      setScreenshareMediaStream(undefined)
+      // setScreenShare(false)
+    }
+  }
+
+  const startScreenShareMedia = async () => {
+    const displayMediaOptions: DisplayMediaStreamConstraints = {
+      audio: false,
+      video: {
+        aspectRatio: 1 / 1,
+        height: {
+          ideal: 780,
+        },
+      },
+    }
+
+    let captureStream: MediaStream | null = null
+    captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+    captureStream.getVideoTracks()[0].onended = () => {
+      stopScreenShareMedia(captureStream)
+    }
+    setScreenshareMediaStream(captureStream)
+    return captureStream
+  }
+
   const values = {
     error,
     loading,
@@ -101,6 +137,9 @@ const MediaProvider = (props: IMediaProviderProps) => {
     setConstraints,
     setMediaStream,
     retry,
+    startScreenShareMedia,
+    stopScreenShareMedia,
+    // screenshareMediaStream,
   }
 
   return <MediaContext.Provider value={values}>{children}</MediaContext.Provider>

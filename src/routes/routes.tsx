@@ -16,6 +16,7 @@ const SimpleVipPage = React.lazy(() => import('../pages/SimpleVipPage/SimpleVipP
 const VerifyEmailPage = React.lazy(() => import('../pages/VerifyEmailPage/VerifyEmailPage'))
 const Loading = React.lazy(() => import('../components/Common/Loading/Loading'))
 const AdminPage = React.lazy(() => import('../pages/Admin/AdminPage'))
+const JoinWebinarPage = React.lazy(() => import('../pages/JoinWebinarPage/JoinWebinarPage'))
 
 const AppRoutes = () => {
   return (
@@ -34,6 +35,26 @@ const AppRoutes = () => {
                     <JoinPage />
                   </WatchContext.Provider>
                 </MediaContext.Provider>
+              </JoinContext.Provider>
+            }
+          />
+          <Route
+            path="/webinar/:token"
+            element={
+              <JoinContext.Provider>
+                <MediaContext.Provider>
+                  <WatchContext.Provider>
+                    <JoinWebinarPage />
+                  </WatchContext.Provider>
+                </MediaContext.Provider>
+              </JoinContext.Provider>
+            }
+          />
+          <Route
+            path="/thankyou/webinar/:token"
+            element={
+              <JoinContext.Provider>
+                <ThankYouPage />
               </JoinContext.Provider>
             }
           />

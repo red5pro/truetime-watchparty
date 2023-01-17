@@ -10,7 +10,6 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/Cu
 import MediaContext from '../MediaContext/MediaContext'
 
 interface JoinSectionAVSetupProps {
-  conferenceData?: ConferenceDetails
   onBack?: () => void
   onJoin?: () => void
   shouldDisplayBackButton?: boolean

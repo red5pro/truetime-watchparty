@@ -1,14 +1,15 @@
-import { setLogLevel, RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
+import { setLogLevel, RTCPublisher } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
 import Loading from '../Common/Loading/Loading'
 import VideoElement from '../VideoElement/VideoElement'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 import { MicOff, VideocamOff, AccountBox } from '@mui/icons-material'
 import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import useStyles from './Publisher.module'
 import { getOrigin } from '../../utils/streamManagerUtils'
 import { ENABLE_DEBUG_UTILS } from '../../settings/variables'
-import { PublisherPost, PublisherRef } from '.'
+import { PublisherRef } from '.'
+import MediaContext from '../MediaContext/MediaContext'
 
 const getSenderFromConnection = (connection: RTCPeerConnection, type: string) => {
   return connection.getSenders().find((s: RTCRtpSender) => s.track?.kind === type)
@@ -23,13 +24,6 @@ const activateMedia = (sender: RTCRtpSender, active: boolean) => {
   }
 }
 
-const publisherReducer = (state: any, action: any) => {
-  switch (action.type) {
-    case 'ELEMENT_UPDATE':
-      return { ...state, id: action.id, context: action.context, streamName: action.name }
-  }
-}
-
 interface PublisherProps {
   useStreamManager: boolean
   stream?: MediaStream
@@ -41,13 +35,18 @@ interface PublisherProps {
   onFail(): any
 }
 
-const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref: React.Ref<PublisherRef>) {
+const useMediaContext = () => React.useContext(MediaContext.Context)
+
+const PublishScreen = React.forwardRef((props: PublisherProps, ref: React.Ref<PublisherRef>) => {
   const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt, onFail } = props
   const { classes } = useStyles()
+  const { screenshareMediaStream } = useMediaContext()
 
-  React.useImperativeHandle(ref, () => ({ shutdown, send, toggleCamera, toggleMicrophone }))
+  React.useImperativeHandle(ref, () => ({ shutdown, toggleCamera, toggleMicrophone }))
 
-  const [elementId, setElementId] = React.useState<string | undefined>()
+  const [elementId, setElementId] = React.useState<string>('')
+  const [context, setContext] = React.useState<string>('')
+  const [streamName, setStreamName] = React.useState<string>('')
   const [isPublished, setIsPublished] = React.useState<boolean>(false)
   const [isPublishing, setIsPublishing] = React.useState<boolean>(false)
   const [micOn, setMicOn] = React.useState<boolean>(true)
@@ -56,48 +55,53 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
   const [publisher, setPublisher] = React.useState<any>()
   const pubRef = React.useRef()
 
-  const [element, dispatch] = React.useReducer(publisherReducer, {
-    id: undefined,
-    context: undefined,
-    streamName: undefined,
-  })
-
   React.useEffect(() => {
     setLogLevel(ENABLE_DEBUG_UTILS ? 'debug' : 'info')
+
+    const { context, name } = getContextAndNameFromGuid(streamGuid)
+    setContext(context)
+
+    if (name) {
+      const elemId = `${name}-publisher`
+      setElementId(elemId)
+      setStreamName(name)
+    }
 
     return () => {
       //      stopRetry()
       if (pubRef.current) {
-        console.warn(`[Red5ProPublisher(${element.streamName})] - STOP`)
+        console.warn(`[Red5ProPublisher(${streamName})] - STOP`)
         stop()
       }
     }
   }, [])
 
-  React.useEffect(() => {
-    const { context, name } = getContextAndNameFromGuid(streamGuid)
-    const id = `${name}-publisher`
-    if (!isPublished && name) {
-      dispatch({ type: 'ELEMENT_UPDATE', id, context, name })
-      setElementId(id)
-    }
-  }, [streamGuid])
+  // THIS DIDN'T WORK
+  // React.useEffect(() => {
+  //   if (screenshareMediaStream) {
+  //     if (pubRef && pubRef.current) {
+  //       const connection = (pubRef.current as any).getPeerConnection()
+  //       connection.addTrack(screenshareMediaStream.getVideoTracks()[0])
+  //       const sender = connection.getSenders().filter((s: RTCRtpSender) => s.track?.kind === 'video')[1]
+
+  //       if (sender) activateMedia(sender, true)
+  //     }
+  //   }
+  // }, [screenshareMediaStream])
 
   React.useEffect(() => {
     pubRef.current = publisher
   }, [publisher])
 
   React.useEffect(() => {
-    const { context, name } = getContextAndNameFromGuid(streamGuid)
-    if (elementId && context && name) {
+    if (elementId.length > 0 && streamName?.length > 0 && context.length > 0) {
       if (!isPublished) {
-        start(elementId, context, name)
+        start()
       }
     }
-  }, [elementId])
+  }, [elementId, streamName, context])
 
   const onPublisherEvent = (event: any) => {
-    const { streamName } = element
     console.log(`[Red5ProPublisher(${streamName})]: PublisherEvent - ${event.type}.`)
     // if (event.type === 'WebSocket.Message.Unhandled') {
     //   console.log(event)
@@ -113,7 +117,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
     }
   }
 
-  const start = async (id: string | undefined, context: string, streamName: string) => {
+  const start = async () => {
     setIsPublishing(true)
     const pub = new RTCPublisher()
     try {
@@ -121,7 +125,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
         app: useStreamManager ? 'streammanager' : context,
         host: host,
         streamName: streamName,
-        mediaElementId: id,
+        mediaElementId: elementId,
         clearMediaOnUnpublish: true,
         connectionParams: {
           /* username, password, token? */
@@ -132,6 +136,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
         config.connectionParams = { ...config.connectionParams, host: payload.serverAddress, app: payload.scope }
       }
       pub.on('*', onPublisherEvent)
+
       await pub.initWithStream(config, stream)
       await pub.publish()
       setPublisher(pub)
@@ -162,7 +167,6 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
       }
       setPublisher(undefined)
     } catch (error: any) {
-      const { streamName } = element
       const jsonError = typeof error === 'string' ? error : JSON.stringify(error, null, 2)
       console.error(`[Red5ProPublisher(${streamName})] :: Error in unpublishing -  ${jsonError}`)
       console.error(error)
@@ -172,13 +176,6 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
 
   const shutdown = async () => {
     await stop()
-  }
-
-  const send = (post: PublisherPost) => {
-    if (pubRef.current) {
-      const { messageType, message } = post
-      ;(pubRef.current as any).send(messageType, typeof post === 'string' ? { message } : message)
-    }
   }
 
   const toggleCamera = (on: boolean) => {
@@ -219,14 +216,12 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
         </Box>
       )}
       {!cameraOn && <AccountBox fontSize="large" className={classes.accountIcon} />}
-      {elementId && (
-        <VideoElement
-          elementId={elementId}
-          muted={true}
-          controls={false}
-          styles={{ ...styles, display: cameraOn ? 'unset' : 'none' }}
-        />
-      )}
+      <VideoElement
+        elementId={elementId}
+        muted={true}
+        controls={false}
+        styles={{ transform: 'scaleX(-1)', ...styles, display: cameraOn ? 'unset' : 'none' }}
+      />
       <Stack direction="row" spacing={1} className={classes.iconBar}>
         {!micOn && <MicOff />}
         {!cameraOn && <VideocamOff />}
@@ -235,5 +230,5 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
   )
 })
 
-Publisher.displayName = 'Publisher'
-export default Publisher
+PublishScreen.displayName = 'PublishScreen'
+export default PublishScreen
