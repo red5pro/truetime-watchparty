@@ -9,6 +9,7 @@ import SetupPartyForm from './SetupPartyForm'
 import useStyles from './StartParty.module'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import Loading from '../../Common/Loading/Loading'
+import { isWatchParty } from '../../../settings/variables'
 
 const useEventContext = () => React.useContext(EventContext.Context)
 
@@ -34,8 +35,9 @@ const StartParty = (props: IStartPartyProps) => {
   return (
     <Box className={classes.root}>
       <Typography paddingTop={2} sx={{ textAlign: 'center', fontSize: '16px' }}>
-        Host a Watch Party
+        {`Host a ${isWatchParty ? 'Watch Party' : 'Webinar'}`}
       </Typography>
+
       {loading && (
         <Box className={classes.container} display="flex" alignItems="center">
           <Loading text="Loading Event Data..." />
@@ -69,11 +71,13 @@ const StartParty = (props: IStartPartyProps) => {
           <SetupPartyForm onActions={onActions} data={data} setData={setData} account={account} />
         </Box>
       )}
-      <img
-        className={classes.image}
-        alt="Start Party Main Image"
-        src={require('../../../assets/images/BoxMainImage.png')}
-      ></img>
+      {isWatchParty && (
+        <img
+          className={classes.image}
+          alt="Start Party Main Image"
+          src={require('../../../assets/images/BoxMainImage.png')}
+        ></img>
+      )}
     </Box>
   )
 }

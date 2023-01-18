@@ -10,6 +10,7 @@ import { getStartTimeFromTimestamp, IStepActionsSubComponent } from '../../../ut
 import EventContext from '../../EventContext/EventContext'
 import Loading from '../../Common/Loading/Loading'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
+import { isWatchParty } from '../../../settings/variables'
 
 const useEventContext = () => React.useContext(EventContext.Context)
 
@@ -45,7 +46,7 @@ const ViewEvents = (props: IViewEventsProps) => {
     <Box
       className={classes.root}
       sx={{
-        backgroundImage: !error ? `url(${require('../../../assets/images/BoxMainImage.png')})` : '',
+        backgroundImage: !error && isWatchParty ? `url(${require('../../../assets/images/BoxMainImage.png')})` : '',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: '40% 100%',
       }}
@@ -80,10 +81,10 @@ const ViewEvents = (props: IViewEventsProps) => {
             </Typography>
             <Box display="flex" marginY={4} className={classes.buttonContainer}>
               <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onCreateAParty}>
-                Create a Watch Party
+                {`Create a ${isWatchParty ? 'Watch Party' : 'Webinar'}`}
               </CustomButton>
               <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.TERTIARY} onClick={onJoinAParty}>
-                Join a Watch Party
+                {`Join a ${isWatchParty ? 'Watch Party' : 'Webinar'}`}
               </CustomButton>
             </Box>
             {!account && (
@@ -96,15 +97,19 @@ const ViewEvents = (props: IViewEventsProps) => {
                 </Link>
               </Box>
             )}
-            <Typography marginTop={4} sx={{ fontSize: '24px', fontWeight: '500' }}>
-              What is a Watch Party?
-            </Typography>
-            <Typography sx={{ fontSize: '18px', fontWeight: '600' }}>
-              Watch your favorite matches with friends!
-            </Typography>
-            <Typography sx={{ fontSize: '18px', fontWeight: '400' }}>
-              Invite your friends to come together online to enjoy your favorite sports!{' '}
-            </Typography>
+            {isWatchParty && (
+              <>
+                <Typography marginTop={4} sx={{ fontSize: '24px', fontWeight: '500' }}>
+                  What is a Watch Party?
+                </Typography>
+                <Typography sx={{ fontSize: '18px', fontWeight: '600' }}>
+                  Watch your favorite matches with friends!
+                </Typography>
+                <Typography sx={{ fontSize: '18px', fontWeight: '400' }}>
+                  Invite your friends to come together online to enjoy your favorite sports!{' '}
+                </Typography>
+              </>
+            )}
           </Box>
           {eventData.nextEpisodes?.length > 0 && (
             <Box className={classes.rightContainer}>

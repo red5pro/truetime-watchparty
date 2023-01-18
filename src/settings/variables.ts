@@ -1,3 +1,5 @@
+import { WebbAppMode } from '../utils/variableUtils'
+
 export const USE_LOCAL_SERVICES = false
 
 export const SERVER_HOST = process.env.REACT_APP_SERVER_HOST || 'localhost'
@@ -23,3 +25,7 @@ export const ENABLE_DEBUG_UTILS = true
 export const PUBLISH_API_KEY = process.env.REACT_APP_PUBLISH_API_KEY
 export const SUBSCRIBE_API_KEY = process.env.REACT_APP_SUBSCRIBE_API_KEY
 export const FACEBOOK_APP_ID = process.env.REACT_APP_FACEBOOK_APP_ID
+
+const WEBAPP_MODE = process.env.REACT_APP_WEBAPP_MODE || WebbAppMode.WATCHPARTY
+
+export const isWatchParty = WEBAPP_MODE === WebbAppMode.WATCHPARTY

@@ -14,8 +14,8 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import EventContext from '../EventContext/EventContext'
-import { AccountCredentials } from '../../models/AccountCredentials'
 import { useLoadScript } from '../../hooks/useLoadScript'
+import { isWatchParty } from '../../settings/variables'
 
 enum EStepIdentify {
   LANDING = 0,
@@ -124,9 +124,11 @@ export default function HostAPartySteps() {
     <Box className={classes.container}>
       <Stepper activeStep={activeStep}></Stepper>
       <Box height="100%">
-        <Box padding={2} className={classes.brandLogo}>
-          <WbcLogoSmall />
-        </Box>
+        {isWatchParty && (
+          <Box padding={2} className={classes.brandLogo}>
+            <WbcLogoSmall />
+          </Box>
+        )}
         {activeStep > 0 && activeStep < getSteps(actions).length && (
           <Button color="inherit" hidden={activeStep === 0} onClick={handleBack} className={classes.backButton}>
             <ArrowBackIosIcon />

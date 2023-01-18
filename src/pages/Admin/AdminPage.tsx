@@ -14,6 +14,7 @@ import { AllConferenceStats, StatsByConference } from '../../models/ConferenceSt
 import { getStatsByConference } from '../../services/stats'
 import { UserRoles } from '../../utils/commonUtils'
 import useStyles from './AdminPage.module'
+import { isWatchParty } from '../../settings/variables'
 
 const AdminPage = () => {
   const [loading, setLoading] = React.useState<boolean>(true)
@@ -59,14 +60,22 @@ const AdminPage = () => {
 
   return (
     <Box width="100%" minHeight="100%" display="flex" flexDirection="column" className={classes.container}>
-      <Box marginBottom={1}>
-        <Box padding={2} className={classes.brandLogo}>
-          <WbcLogoSmall />
+      {isWatchParty ? (
+        <Box marginBottom={1}>
+          <Box padding={2} className={classes.brandLogo}>
+            <WbcLogoSmall />
+          </Box>
+          <Typography padding={2} className={classes.topTitle}>
+            Watch Party Admin
+          </Typography>
         </Box>
-        <Typography padding={2} className={classes.topTitle}>
-          Watch Party Admin
-        </Typography>
-      </Box>
+      ) : (
+        <Box marginBottom={1}>
+          <Typography padding={2} className={classes.topTitle}>
+            Webinar Admin
+          </Typography>
+        </Box>
+      )}
       {loading && <Loading />}
 
       {!loading && !openCreatePage && cookies && allConferenceStats && (

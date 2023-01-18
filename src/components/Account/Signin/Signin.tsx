@@ -7,6 +7,7 @@ import SignInEmail from './SignInEmail'
 import { IStepActionsSubComponent, UserRoles } from '../../../utils/commonUtils'
 import WbcLogoSmall from '../../../assets/logos/WbcLogoSmall'
 import SignInFacebook from './SignInFacebook'
+import { isWatchParty } from '../../../settings/variables'
 
 interface ISignInProps {
   onActions?: IStepActionsSubComponent
@@ -34,9 +35,11 @@ const Signin = (props: ISignInProps) => {
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" className={classes.root}>
-      <Box padding={2} className={classes.brandLogo}>
-        <WbcLogoSmall />
-      </Box>
+      {isWatchParty && (
+        <Box padding={2} className={classes.brandLogo}>
+          <WbcLogoSmall />
+        </Box>
+      )}
       {!signInEmail && (
         <Box display="flex" flexDirection="column" className={classes.container}>
           <Typography className={classes.title}>Sign In</Typography>

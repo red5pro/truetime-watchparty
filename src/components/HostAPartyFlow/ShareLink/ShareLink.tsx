@@ -4,6 +4,7 @@ import { Box, Input, Link, Typography } from '@mui/material'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './ShareLink.module'
+import { isWatchParty } from '../../../settings/variables'
 
 interface IShareLinkProps {
   joinToken: string
@@ -40,6 +41,7 @@ const ShareLink = (props: IShareLinkProps) => {
           Now you can invite your friends
         </Typography>
         <Box display="flex" justifyContent="center" className={classes.buttonsContainer}>
+          {/* TODO: ON WEBINAR MODE: Should we share this link on Facebook or the Mixer? */}
           <CustomButton startIcon={<FacebookIcon />} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.FACEBOOK}>
             <Link href={`https://www.facebook.com/sharer/sharer.php?u=${linkToCopy}&display=page`} target="_blank">
               Share on Facebook
@@ -53,12 +55,7 @@ const ShareLink = (props: IShareLinkProps) => {
 
         <CustomButton fullWidth size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
           <LinkTo className={classes.linkToJoin} to={`/join/${joinToken}?s_id=2`}>
-            Continue to Watch Party
-          </LinkTo>
-        </CustomButton>
-        <CustomButton fullWidth size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.TERTIARY}>
-          <LinkTo className={classes.linkToJoinWebinar} to={`/webinar/${joinToken}?s_id=2`}>
-            Continue to Webinar
+            {`Continue to ${isWatchParty ? 'Watch Party' : 'Webinar'}`}
           </LinkTo>
         </CustomButton>
 

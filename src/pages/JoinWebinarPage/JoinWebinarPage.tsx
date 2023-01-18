@@ -137,18 +137,6 @@ const JoinWebinarPage = () => {
           <Loading text="Loading Watch Party" />
         </Box>
       )}
-      {/* {currentSection !== Section.WatchParty && (
-        <Box>
-          <Box padding={2} className={classes.brandLogo}>
-            <WbcLogoSmall />
-          </Box>
-          <Box>
-            <Typography padding={2} className={classes.joinTitleSmall}>
-              Join Watch Party
-            </Typography>
-          </Box>
-        </Box>
-      )} */}
       <Box display="flex" flexDirection="column" justifyContent="space-around" width="100%" height="100%">
         {!loading && currentSection === Section.Landing && (
           <Box className={classes.joinSection}>
@@ -175,7 +163,7 @@ const JoinWebinarPage = () => {
         )}
         {!loading && currentSection === Section.WatchParty && (
           <MainStageWithChatBox>
-            <MainStageWrapper isWebinarStage />
+            <MainStageWrapper />
           </MainStageWithChatBox>
         )}
       </Box>
