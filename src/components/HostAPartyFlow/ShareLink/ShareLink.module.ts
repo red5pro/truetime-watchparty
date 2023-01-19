@@ -41,10 +41,6 @@ const useStyles = makeStyles()((theme: any) => {
       color: '#303030',
       textDecoration: 'none',
     },
-
-    linkToJoinWebinar: {
-      textDecoration: 'none',
-    },
   }
 })
 

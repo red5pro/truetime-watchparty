@@ -196,7 +196,7 @@ const JoinPage = () => {
         )}
         {!loading && conferenceData && currentSection === Section.WatchParty && (
           <MainStageWithChatBox>
-            <MainStageWrapper isWebinarStage={false} />
+            <MainStageWrapper />
           </MainStageWithChatBox>
         )}
 

@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import MediaContext from '../components/MediaContext/MediaContext'
 import JoinContext from '../components/JoinContext/JoinContext'
 import WatchContext from '../components/WatchContext/WatchContext'
+import { isWatchParty } from '../settings/variables'
 
 const Signin = React.lazy(() => import('../pages/SignIn/SignIn'))
 const Home = React.lazy(() => import('../pages/Home/Home'))
@@ -31,30 +32,8 @@ const AppRoutes = () => {
             element={
               <JoinContext.Provider>
                 <MediaContext.Provider>
-                  <WatchContext.Provider>
-                    <JoinPage />
-                  </WatchContext.Provider>
+                  <WatchContext.Provider>{isWatchParty ? <JoinPage /> : <JoinWebinarPage />}</WatchContext.Provider>
                 </MediaContext.Provider>
-              </JoinContext.Provider>
-            }
-          />
-          <Route
-            path="/webinar/:token"
-            element={
-              <JoinContext.Provider>
-                <MediaContext.Provider>
-                  <WatchContext.Provider>
-                    <JoinWebinarPage />
-                  </WatchContext.Provider>
-                </MediaContext.Provider>
-              </JoinContext.Provider>
-            }
-          />
-          <Route
-            path="/thankyou/webinar/:token"
-            element={
-              <JoinContext.Provider>
-                <ThankYouPage />
               </JoinContext.Provider>
             }
           />

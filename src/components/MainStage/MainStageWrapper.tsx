@@ -8,7 +8,7 @@ import WatchContext from '../WatchContext/WatchContext'
 import useCookies from '../../hooks/useCookies'
 import { FatalError } from '../../models/FatalError'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
-import { API_SOCKET_HOST } from '../../settings/variables'
+import { API_SOCKET_HOST, isWatchParty } from '../../settings/variables'
 import { PublisherRef } from '../Publisher'
 import { UserRoles } from '../../utils/commonUtils'
 import styles from './MainStageLayout'
@@ -35,13 +35,7 @@ const useJoinContext = () => React.useContext(JoinContext.Context)
 const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
-interface IMainStageWrapperInnerProps {
-  isWebinarStage: boolean
-}
-
-const MainStageWrapper = (props: IMainStageWrapperInnerProps) => {
-  const { isWebinarStage } = props
-
+const MainStageWrapper = () => {
   const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
   const { mediaStream } = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
@@ -59,8 +53,8 @@ const MainStageWrapper = (props: IMainStageWrapperInnerProps) => {
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
   const [layout, dispatch] = React.useReducer(layoutReducer, {
-    layout: isWebinarStage ? Layout.FULLSCREEN : Layout.STAGE,
-    style: isWebinarStage ? styles.fullscreen : styles.stage,
+    layout: isWatchParty ? Layout.STAGE : Layout.FULLSCREEN,
+    style: isWatchParty ? styles.stage : styles.fullscreen,
   })
   const [relayout, setRelayout] = React.useState<boolean>(false)
   const [showLink, setShowLink] = React.useState<boolean>(false)
@@ -208,8 +202,7 @@ const MainStageWrapper = (props: IMainStageWrapperInnerProps) => {
     return { url: API_SOCKET_HOST, request }
   }
 
-  const onLeave = () =>
-    isWebinarStage ? navigate(`/thankyou/webinar/${joinToken}`) : navigate(`/thankyou/${joinToken}`)
+  const onLeave = () => navigate(`/thankyou/${joinToken}`)
 
   const onPublisherBroadcast = () => {
     const streamGuid = getStreamGuid()
@@ -421,18 +414,18 @@ const MainStageWrapper = (props: IMainStageWrapperInnerProps) => {
     onLeave,
   }
 
-  if (isWebinarStage) {
-    return <WebinarMainStage {...mainStageProps} />
+  if (isWatchParty) {
+    return (
+      <MainStage
+        {...mainStageProps}
+        mainStreamGuid={mainStreamGuid}
+        setPublishMediaStream={setPublishMediaStream}
+        maxParticipantGridColumnStyle={maxParticipantGridColumnStyle}
+      />
+    )
   }
 
-  return (
-    <MainStage
-      {...mainStageProps}
-      mainStreamGuid={mainStreamGuid}
-      setPublishMediaStream={setPublishMediaStream}
-      maxParticipantGridColumnStyle={maxParticipantGridColumnStyle}
-    />
-  )
+  return <WebinarMainStage {...mainStageProps} />
 }
 
 export default MainStageWrapper

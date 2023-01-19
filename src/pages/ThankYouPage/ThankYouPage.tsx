@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material'
 import React from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import JoinContext from '../../components/JoinContext/JoinContext'
@@ -8,6 +8,7 @@ import Loading from '../../components/Common/Loading/Loading'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
 import useStyles from './ThankYouPage.module'
+import { isWatchParty } from '../../settings/variables'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 
@@ -18,17 +19,8 @@ const ThankYouPage = () => {
   const { classes } = useStyles()
 
   const navigate = useNavigate()
-  const location = useLocation()
 
-  const onRejoin = () => {
-    if (location.pathname.includes('webinar')) {
-      navigate(`/webinar/${joinToken}`)
-    } else {
-      navigate(`/join/${joinToken}`)
-    }
-
-    return
-  }
+  const onRejoin = () => navigate(`/join/${joinToken}`)
 
   const onRetryRequest = () => {
     window.location.reload()
@@ -37,9 +29,11 @@ const ThankYouPage = () => {
 
   return (
     <Box className={classes.root}>
-      <Box padding={2} className={classes.brandLogo}>
-        <WbcLogoSmall />
-      </Box>
+      {isWatchParty && (
+        <Box padding={2} className={classes.brandLogo}>
+          <WbcLogoSmall />
+        </Box>
+      )}
       {loading && <Loading />}
       <Stack className={classes.container}>
         {!loading && seriesEpisode && (
@@ -57,21 +51,23 @@ const ThankYouPage = () => {
             </Typography>
             {/* TODO: How to recognize that the conference has ended? */}
             <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onRejoin}>
-              Rejoin Party
+              {`Rejoin ${isWatchParty ? 'Party' : ''}`}
             </CustomButton>
-            <Stack spacing={2} direction="column">
-              <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
-              <Stack spacing={2} direction="row">
-                {/* <OracleLogo /> */}
-                <Box sx={{ width: 'auto', height: '70px' }}>
-                  <img
-                    height="70px"
-                    alt="Logo Placeholder"
-                    src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
-                  ></img>
-                </Box>
+            {isWatchParty && (
+              <Stack spacing={2} direction="column">
+                <Typography sx={{ fontSize: '12px' }}>Brought to you by...</Typography>
+                <Stack spacing={2} direction="row">
+                  {/* <OracleLogo /> */}
+                  <Box sx={{ width: 'auto', height: '70px' }}>
+                    <img
+                      height="70px"
+                      alt="Logo Placeholder"
+                      src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
+                    ></img>
+                  </Box>
+                </Stack>
               </Stack>
-            </Stack>
+            )}
           </Stack>
         )}
       </Stack>
@@ -83,13 +79,15 @@ const ThankYouPage = () => {
           onConfirm={onRetryRequest}
         />
       )}
-      <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: '20%' }}>
-        <img
-          alt="Thank you Page Main Image"
-          src={require('../../assets/images/BoxingSession.png')}
-          style={{ maxWidth: '70%' }}
-        ></img>
-      </Box>
+      {isWatchParty && (
+        <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: '20%' }}>
+          <img
+            alt="Thank you Page Main Image"
+            src={require('../../assets/images/BoxingSession.png')}
+            style={{ maxWidth: '70%' }}
+          ></img>
+        </Box>
+      )}
     </Box>
   )
 }

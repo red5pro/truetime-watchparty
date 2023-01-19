@@ -8,6 +8,7 @@ import Loading from '../../components/Common/Loading/Loading'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
 import useStyles from './PartyEndedPage.module'
+import { isWatchParty } from '../../settings/variables'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 
@@ -29,9 +30,11 @@ const PartyEndedPage = () => {
 
   return (
     <Box className={classes.root}>
-      <Box padding={2} className={classes.brandLogo}>
-        <WbcLogoSmall />
-      </Box>
+      {isWatchParty && (
+        <Box padding={2} className={classes.brandLogo}>
+          <WbcLogoSmall />
+        </Box>
+      )}
       {loading && <Loading />}
       <Stack className={classes.container}>
         {!loading && seriesEpisode && (
