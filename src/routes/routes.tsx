@@ -5,6 +5,7 @@ import MediaContext from '../components/MediaContext/MediaContext'
 import JoinContext from '../components/JoinContext/JoinContext'
 import WatchContext from '../components/WatchContext/WatchContext'
 import { isWatchParty } from '../settings/variables'
+import { Paths } from '../utils/commonUtils'
 
 const Signin = React.lazy(() => import('../pages/SignIn/SignIn'))
 const Home = React.lazy(() => import('../pages/Home/Home'))
@@ -29,6 +30,16 @@ const AppRoutes = () => {
           <Route path="/verify" element={<VerifyEmailPage />} />
           <Route
             path="/join/:token"
+            element={
+              <JoinContext.Provider>
+                <MediaContext.Provider>
+                  <WatchContext.Provider>{isWatchParty ? <JoinPage /> : <JoinWebinarPage />}</WatchContext.Provider>
+                </MediaContext.Provider>
+              </JoinContext.Provider>
+            }
+          />
+          <Route
+            path={`${Paths.ANONYMOUS}/:token`}
             element={
               <JoinContext.Provider>
                 <MediaContext.Provider>

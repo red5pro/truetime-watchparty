@@ -36,7 +36,8 @@ const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
 const MainStageWrapper = () => {
-  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
+  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock, isAnonymousParticipant } =
+    useJoinContext()
   const { mediaStream } = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
 
@@ -175,16 +176,24 @@ const MainStageWrapper = () => {
     }
   }, [data.list, layout, viewportHeight, relayout])
 
+  const getAnonymousSocketUrl = (token: string) => {
+    const request: ConnectionRequest = {
+      fingerprint,
+      isAnonymous: true,
+      messageType: 'JoinConferenceRequest',
+    } as ConnectionRequest
+    return { url: API_SOCKET_HOST, request }
+  }
+
   const getSocketUrl = (token: string, name: string, guid: string) => {
     const request: ConnectionRequest = {
       displayName: name,
       joinToken: token,
       streamGuid: guid,
+      fingerprint,
       messageType: 'JoinConferenceRequest',
     } as ConnectionRequest
 
-    const fp = fingerprint
-    request.fingerprint = fp
     const cookies = getCookies()
     if (cookies?.account) {
       // Registered User
@@ -393,6 +402,7 @@ const MainStageWrapper = () => {
     fatalError,
     nonFatalError,
     showBanConfirmation,
+    isAnonymousParticipant,
 
     onLayoutSelect,
     calculateGrid,

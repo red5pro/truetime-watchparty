@@ -134,7 +134,7 @@ const JoinWebinarPage = () => {
     <Box className={classes.root} display="flex" flexDirection="column">
       {loading && (
         <Box className={classes.loadingContainer}>
-          <Loading text="Loading Watch Party" />
+          <Loading text="Loading Webinar" />
         </Box>
       )}
       <Box display="flex" flexDirection="column" justifyContent="space-around" width="100%" height="100%">

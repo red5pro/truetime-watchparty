@@ -7,6 +7,11 @@ interface IWatchProviderProps {
   children: any
 }
 
+const isNotRoles = (p: Participant, roles: string[]) => {
+  const { role } = p
+  return roles.map((r) => r.toLowerCase()).indexOf(role.toLowerCase()) > -1
+}
+
 const listReducer = (state: any, action: any) => {
   const pid = state.connection ? state.connection.participantId : undefined
   switch (action.type) {
@@ -14,9 +19,10 @@ const listReducer = (state: any, action: any) => {
       return {
         ...state,
         list: action.payload.filter(
-          (p: Participant) => p.participantId !== pid && p.role.toLowerCase() !== UserRoles.VIP.toLowerCase()
+          (p: Participant) => p.participantId !== pid && isNotRoles(p, [UserRoles.VIP, UserRoles.ANONYMOUS])
         ),
         vip: action.vip,
+        anonymousViewerAmount: action.anonymousViewerAmount,
       }
     case 'SET_CONNECTION_DATA':
       return { ...state, connection: action.payload }
@@ -47,6 +53,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
     conference: undefined,
     status: undefined,
     vip: undefined,
+    anonymousViewerAmount: 0,
     list: [],
   })
 
@@ -59,7 +66,10 @@ const WatchProvider = (props: IWatchProviderProps) => {
 
   const updateStreamsList = (participants: Participant[]) => {
     const vip = participants.find((s: Participant) => (s.role as string).toLowerCase() === UserRoles.VIP.toLowerCase())
-    dispatch({ type: 'UPDATE_LIST', payload: participants, vip })
+    const anonymousViewerAmount = participants.filter(
+      (p: Participant) => (p.role as string).toLowerCase() === UserRoles.ANONYMOUS
+    ).length
+    dispatch({ type: 'UPDATE_LIST', payload: participants, vip, anonymousViewerAmount })
   }
 
   const join = (url: string, joinRequest: ConnectionRequest) => {

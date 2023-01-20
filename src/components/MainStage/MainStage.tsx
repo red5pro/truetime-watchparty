@@ -64,6 +64,7 @@ const MainStage = (props: IMainStageProps) => {
     showBanConfirmation,
     mainStreamGuid,
     maxParticipantGridColumnStyle,
+    isAnonymousParticipant,
 
     setShowBanConfirmation,
     onContinueBan,
@@ -178,14 +179,16 @@ const MainStage = (props: IMainStageProps) => {
                   </IconButton>
                 </Tooltip>
               )}
-              <CustomButton
-                size={BUTTONSIZE.SMALL}
-                buttonType={BUTTONTYPE.LEAVE}
-                startIcon={<LogOutIcon />}
-                onClick={onLeave}
-              >
-                Leave
-              </CustomButton>
+              {userRole !== UserRoles.ANONYMOUS.toLowerCase() && (
+                <CustomButton
+                  size={BUTTONSIZE.SMALL}
+                  buttonType={BUTTONTYPE.LEAVE}
+                  startIcon={<LogOutIcon />}
+                  onClick={onLeave}
+                >
+                  Leave
+                </CustomButton>
+              )}
             </Stack>
           </Box>
         )}
@@ -239,65 +242,66 @@ const MainStage = (props: IMainStageProps) => {
           )}
         </Box>
         {/* Bottom Controls / Chat */}
-        <Stack className={classes.bottomBar} direction="row" alignItems="bottom" spacing={2}>
-          {publishMediaStream && ENABLE_MUTE_API && (
-            <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
-              <PublisherControls
-                cameraOn={true}
-                microphoneOn={true}
-                onCameraToggle={onPublisherCameraToggle}
-                onMicrophoneToggle={onPublisherMicrophoneToggle}
-              />
-            </Stack>
-          )}
-          {data.conference && (
-            <Stack direction="row" spacing={1} alignItems="flex-end" justifyContent="center">
-              <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+        {userRole !== UserRoles.ANONYMOUS.toLowerCase() && (
+          <Stack className={classes.bottomBar} direction="row" alignItems="bottom" spacing={2}>
+            {publishMediaStream && ENABLE_MUTE_API && (
+              <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
+                <PublisherControls
+                  cameraOn={true}
+                  microphoneOn={true}
+                  onCameraToggle={onPublisherCameraToggle}
+                  onMicrophoneToggle={onPublisherMicrophoneToggle}
+                />
+              </Stack>
+            )}
+            {data.conference && (
+              <Stack direction="row" spacing={1} alignItems="flex-end" justifyContent="center">
+                <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
 
-              <Box className={chatClasses.inputChatContainer}>
-                {layout.layout === Layout.FULLSCREEN && (
-                  <Box className={`${chatClasses.fullScreenChatContainer} ${chatClasses.chatContainer} `}>
+                <Box className={chatClasses.inputChatContainer}>
+                  {layout.layout === Layout.FULLSCREEN && (
+                    <Box className={`${chatClasses.fullScreenChatContainer} ${chatClasses.chatContainer} `}>
+                      <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
+                        <TypingIndicator />
+                      </MessageList>
+                    </Box>
+                  )}
+                  <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" />
+                </Box>
+              </Stack>
+            )}
+            <Stack direction="row" spacing={1} className={classes.partyControls}>
+              {mainStreamGuid && (
+                <VolumeControl
+                  isOpen={false}
+                  min={0}
+                  max={100}
+                  step={1}
+                  currentValue={50}
+                  onVolumeChange={onVolumeChange}
+                />
+              )}
+              {data.conference && layout.layout !== Layout.FULLSCREEN && (
+                <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
+                  <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
                     <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
                       <TypingIndicator />
                     </MessageList>
+                    {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
                   </Box>
-                )}
-                <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" />
-              </Box>
-            </Stack>
-          )}
-          <Stack direction="row" spacing={1} className={classes.partyControls}>
-            {mainStreamGuid && (
-              <VolumeControl
-                isOpen={false}
-                min={0}
-                max={100}
-                step={1}
-                currentValue={50}
-                onVolumeChange={onVolumeChange}
-              />
-            )}
-            {data.conference && layout.layout !== Layout.FULLSCREEN && (
-              <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
-                <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
-                  <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
-                    <TypingIndicator />
-                  </MessageList>
-                  {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
+                  <CustomButton
+                    size={BUTTONSIZE.SMALL}
+                    buttonType={BUTTONTYPE.TRANSPARENT}
+                    startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
+                    onClick={toggleChat}
+                  >
+                    {chatIsHidden ? 'Show' : 'Hide'} Chat
+                  </CustomButton>
                 </Box>
-                <CustomButton
-                  size={BUTTONSIZE.SMALL}
-                  buttonType={BUTTONTYPE.TRANSPARENT}
-                  startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
-                  onClick={toggleChat}
-                >
-                  {chatIsHidden ? 'Show' : 'Hide'} Chat
-                </CustomButton>
-              </Box>
-            )}
+              )}
+            </Stack>
           </Stack>
-        </Stack>
-
+        )}
         {/* Loading Message */}
         {(!data.conference || loading) && (
           <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>

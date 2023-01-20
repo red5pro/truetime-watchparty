@@ -1,12 +1,12 @@
 import React, { useReducer } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import useCookies from '../../hooks/useCookies'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { getCurrentEpisode } from '../../services/conference'
 import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
-import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
+import { generateFingerprint, Paths, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 
 function useUID() {
@@ -15,6 +15,7 @@ function useUID() {
   })
   return id
 }
+const anonReg = new RegExp(`^${Paths.ANONYMOUS}/`)
 
 const cannedSeries = { displayName: 'Accessing Information...' }
 const cannedEpisode = { displayName: '...', startTime: new Date().getTime() }
@@ -40,6 +41,9 @@ const JoinProvider = (props: JoinContextProps) => {
   const params = useParams()
   const navigate = useNavigate()
   const { getCookies, removeCookie } = useCookies(['account', 'userAccount'])
+
+  const path = useLocation().pathname
+  const isAnonymousParticipant = anonReg.exec(path)
 
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
@@ -153,7 +157,7 @@ const JoinProvider = (props: JoinContextProps) => {
   // TODO: Be more clever when VIP...
   const getStreamGuid = () => {
     const isVIP = location.pathname === '/join/guest' || location.pathname === '/vip'
-    if (!isVIP && !nickname) return null
+    if (isAnonymousParticipant || (!isVIP && !nickname)) return null
     // Only keep numbers and letters, otherwise stream may break.
     const append = !isVIP ? joinToken : 'vip'
     const stripped = !isVIP ? nickname?.replace(/[^a-zA-Z0-9]/g, '') : 'VIP'
@@ -226,6 +230,7 @@ const JoinProvider = (props: JoinContextProps) => {
     fingerprint,
     seriesEpisode,
     conferenceData,
+    isAnonymousParticipant,
     // conferenceLocked,
     setConferenceData,
     updateNickname: (value: string) => {
