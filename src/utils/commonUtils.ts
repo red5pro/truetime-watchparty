@@ -27,6 +27,7 @@ export enum UserRoles {
   ORGANIZER = 'ORGANIZER',
   VIP = 'VIP',
   ADMIN = 'ADMIN',
+  ANONYMOUS = 'ANONYMOUS',
 }
 
 export enum ThirdParties {
