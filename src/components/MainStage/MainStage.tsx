@@ -148,11 +148,20 @@ const MainStage = (props: IMainStageProps) => {
         {/* Role-based Controls */}
         {data.conference && (
           <Box className={classes.topBar} sx={layout.style.topBar}>
-            <Stack direction="row" alignItems="center" justifyContent="center" className={classes.header}>
+            <Grid
+              direction="row"
+              alignItems="center"
+              xs={8}
+              display="flex"
+              width="100%"
+              paddingY={2}
+              justifyContent="center"
+              className={classes.header}
+            >
               <WbcLogoSmall />
               <Divider orientation="vertical" flexItem className={classes.headerDivider} />
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
-            </Stack>
+            </Grid>
             <Stack direction="row" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <IconButton

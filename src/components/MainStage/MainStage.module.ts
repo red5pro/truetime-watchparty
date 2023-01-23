@@ -35,7 +35,6 @@ const useStyles = makeStyles()((theme: any) => {
       zIndex: 1,
     },
     topBar: {
-      padding: '20px',
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -49,9 +48,6 @@ const useStyles = makeStyles()((theme: any) => {
     },
     header: {
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingLeft: '20%',
     },
     headerTitle: {
       fontSize: '16px',
