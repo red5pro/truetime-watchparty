@@ -191,10 +191,18 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         {/* Role-based Controls */}
         {data.conference && (
           <Grid container className={classes.webinarTopBar} sx={layout.style.topBar}>
-            <Grid item xs={9} display="flex" alignItems="center" justifyContent="center" className={classes.header}>
+            <Grid
+              item
+              xs={10}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              className={classes.header}
+              paddingLeft="15%"
+            >
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
             </Grid>
-            <Grid item xs={3} display="flex" alignItems="center" className={classes.topControls}>
+            <Grid item xs={2} display="flex" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <IconButton
                   sx={{ backdropFilter: 'contrast(0.5)' }}
