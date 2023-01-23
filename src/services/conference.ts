@@ -8,38 +8,44 @@ import { NextConferenceToJoin } from '../models/ConferenceStatusEvent'
 export const getCurrentEpisode = async (retrieveNextEpisodes = true) => {
   let currentSerie: any
   let currentEpisode: any
-  let nextEpisodes = []
+  let nextEpisodes: any[] = []
 
-  try {
-    const response = await SERIES_API_CALLS.getSeriesList()
-    const { data } = response
-    if (response.status !== 200) throw response
-    if (!data) throw { response, error: ERROR_TYPE.NO_SERIES }
+  const promise1 = SERIES_API_CALLS.getSeriesList()
+  const promise2 = CONFERENCE_API_CALLS.getCurrentEpisode()
 
-    if (data.series) {
-      const { series } = data
+  return Promise.allSettled([promise1, promise2]).then(async (results) => {
+    let series
 
-      const episodeResponse = await CONFERENCE_API_CALLS.getCurrentEpisode()
-      if (episodeResponse.status !== 200) throw episodeResponse
+    if (results[0].status === 'fulfilled') {
+      const seriesResponse = results[0].value
+      if (!seriesResponse.data) throw { seriesResponse, error: ERROR_TYPE.NO_SERIES }
+
+      series = seriesResponse.data.series
+    } else {
+      throw results[0].reason
+    }
+
+    if (results[1].status === 'fulfilled') {
+      const episodeResponse = results[1].value
       if (!episodeResponse.data) throw { episodeResponse, error: ERROR_TYPE.NO_EPISODES }
 
       currentEpisode = episodeResponse.data
 
       currentSerie = series.find((s: Serie) => s.seriesId === currentEpisode.seriesId)
+    } else {
+      throw results[1].reason
+    }
 
-      if (retrieveNextEpisodes) {
-        const allEpisodesResponse = await SERIES_API_CALLS.getAllEpisodesBySerie(currentSerie.seriesId)
-        if (allEpisodesResponse.status !== 200) throw allEpisodesResponse
+    if (retrieveNextEpisodes) {
+      const allEpisodesResponse = await SERIES_API_CALLS.getAllEpisodesBySerie(currentSerie.seriesId)
+      if (allEpisodesResponse.status !== 200) throw allEpisodesResponse
 
-        nextEpisodes = allEpisodesResponse.data ?? []
-      }
+      nextEpisodes = allEpisodesResponse.data.episodes ?? []
+
       return [currentEpisode, currentSerie, nextEpisodes]
     }
-    throw { data: null, status: response.status, statusText: `Could not access any series data.` }
-  } catch (e: any) {
-    console.error(e)
-    throw e
-  }
+    return [currentEpisode, currentSerie, nextEpisodes]
+  })
 }
 
 export const getConferenceDetails = async (conferenceId: string, account: AccountCredentials) => {
@@ -58,16 +64,33 @@ export const getNextConference = async (account: AccountCredentials) => {
       const nextConf: NextConferenceToJoin = response.data
 
       const confDetails = await CONFERENCE_API_CALLS.getConferenceDetails(nextConf.conferenceId.toString(), account)
-      const confLoby = await CONFERENCE_API_CALLS.getConferenceLoby(confDetails.data.joinToken)
 
-      if (confDetails.status === 200 && confDetails.data && confLoby.status === 200 && confLoby.data) {
-        const nextConfResponse = {
-          ...nextConf,
-          ...confDetails.data,
-          ...confLoby.data,
+      if (confDetails.status === 200 && confDetails.data) {
+        const confLoby = await CONFERENCE_API_CALLS.getConferenceLoby(confDetails.data.joinToken)
+
+        if (confLoby.status === 200 && confLoby.data) {
+          const nextConfResponse = {
+            ...nextConf,
+            ...confDetails.data,
+            ...confLoby.data,
+          }
+
+          return { data: nextConfResponse, error: false }
+        } else {
+          return {
+            data: null,
+            error: true,
+            title: 'Warning!',
+            statusText: 'There was not found any loby configuration. Please check back later!',
+          }
         }
-
-        return { data: nextConfResponse, error: false }
+      } else {
+        return {
+          data: null,
+          error: true,
+          title: 'Warning!',
+          statusText: 'Could not access any configuration details. Please check back later!',
+        }
       }
     }
   }
