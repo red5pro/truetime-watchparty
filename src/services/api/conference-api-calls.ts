@@ -248,8 +248,8 @@ const muteParticipant = async (
 
     const response: AxiosResponse = await axios.put(
       `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute`,
-      config,
-      payload
+      payload,
+      config
     )
     return response
   } catch (e: any) {

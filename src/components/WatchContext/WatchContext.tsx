@@ -1,5 +1,10 @@
 import * as React from 'react'
-import { ConferenceStatusEvent, ConnectionRequest, ConnectionResult } from '../../models/ConferenceStatusEvent'
+import {
+  ConferenceStatusEvent,
+  ConnectionRequest,
+  ConnectionResult,
+  SharescreenRequest,
+} from '../../models/ConferenceStatusEvent'
 import { Participant } from '../../models/Participant'
 import { MessageTypes, UserRoles } from '../../utils/commonUtils'
 
@@ -34,11 +39,12 @@ const WatchContext = React.createContext<any>(null)
 const WatchProvider = (props: IWatchProviderProps) => {
   const { children } = props
 
-  const socketRef = React.useRef()
+  const socketRef = React.useRef<any>()
 
   const [error, setError] = React.useState<any>()
   const [loading, setLoading] = React.useState<boolean>(false)
-  const [hostSocket, setHostSocket] = React.useState<any>()
+  const [hostSocket, setHostSocket] = React.useState<WebSocket | undefined>()
+  const [participantScreenshareGuid, setParticipantScreenshareGuid] = React.useState<string | undefined>()
 
   const [data, dispatch] = React.useReducer(listReducer, {
     error: undefined,
@@ -56,6 +62,17 @@ const WatchProvider = (props: IWatchProviderProps) => {
       leave()
     }
   }, [hostSocket])
+
+  React.useEffect(() => {
+    if (data?.conference?.participants?.length) {
+      const participantSharingSreen: Participant = data.conference.participants.find(
+        (p: Participant) => p.screenshareGuid
+      )
+      if (participantSharingSreen) {
+        setParticipantScreenshareGuid(participantSharingSreen.screenshareGuid)
+      }
+    }
+  }, [data])
 
   const updateStreamsList = (participants: Participant[]) => {
     const vip = participants.find((s: Participant) => (s.role as string).toLowerCase() === UserRoles.VIP.toLowerCase())
@@ -123,6 +140,36 @@ const WatchProvider = (props: IWatchProviderProps) => {
     join(url, joinRequest)
   }
 
+  const shareScreen = (screenshareGuid: string) => {
+    const request: SharescreenRequest = {
+      messageType: MessageTypes.SHARESCREEN_UPDATE_EVENT,
+      screenshareGuid: screenshareGuid,
+    }
+
+    try {
+      hostSocket?.send(JSON.stringify(request))
+
+      return true
+    } catch (e) {
+      console.error(e)
+
+      return false
+    }
+  }
+
+  const shutdownShareScreen = () => {
+    const request: SharescreenRequest = {
+      messageType: MessageTypes.SHARESCREEN_UPDATE_EVENT,
+      screenshareGuid: null,
+    }
+
+    try {
+      hostSocket?.send(JSON.stringify(request))
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const exportedValues = {
     error,
     loading,
@@ -130,6 +177,9 @@ const WatchProvider = (props: IWatchProviderProps) => {
     join,
     leave,
     retry,
+    shareScreen,
+    shutdownShareScreen,
+    participantScreenshareGuid,
   }
 
   return <WatchContext.Provider value={exportedValues}>{children}</WatchContext.Provider>

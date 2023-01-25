@@ -29,9 +29,11 @@ import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelec
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
-import ScreenShare2 from '../ScreenShare/ScreenShare2'
+import ScreenSharePublisher from '../ScreenShare/ScreenSharePublisher'
 import { Layout } from './MainStageWrapper'
 import { IMainStageWrapperProps } from '.'
+import WatchContext from '../WatchContext/WatchContext'
+import ScreenShareSubscriber from '../ScreenShareSubscriber/ScreenShareSubscriber'
 
 const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const {
@@ -77,7 +79,18 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const { classes } = useStyles()
   const { classes: chatClasses } = useChatStyles()
 
+  const { participantScreenshareGuid } = React.useContext(WatchContext.Context)
+
   const [screenShare, setScreenShare] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    if (participantScreenshareGuid) {
+      onLayoutSelect(Layout.STAGE)
+    } else if (participantScreenshareGuid === null) {
+      onLayoutSelect(Layout.FULLSCREEN)
+    }
+  }, [participantScreenshareGuid])
+
   const onShareScreen = (value: boolean) => {
     if (value) {
       onLayoutSelect(Layout.STAGE)
@@ -88,7 +101,6 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   }
 
   const onScreenShareEnd = () => {
-    setScreenShare(false)
     onShareScreen(false)
   }
 
@@ -103,13 +115,24 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       )}
       {screenShare && layout.layout !== Layout.FULLSCREEN && (
         <Box id="main-video-container" sx={layout.style.mainVideoContainerWb}>
-          <ScreenShare2
+          <ScreenSharePublisher
             owner={getStreamGuid() || ''}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
             styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
             isSharingScreen={screenShare}
             onEnded={onScreenShareEnd}
+          />
+        </Box>
+      )}
+      {participantScreenshareGuid && !screenShare && (
+        <Box id="sharescreen-video-container" sx={layout.style.mainVideoContainerWb}>
+          <ScreenShareSubscriber
+            participantScreenshareGuid={participantScreenshareGuid}
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
+            videoStyles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
           />
         </Box>
       )}

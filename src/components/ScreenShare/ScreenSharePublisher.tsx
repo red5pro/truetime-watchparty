@@ -5,9 +5,11 @@ import { Box, Typography } from '@mui/material'
 import MediaContext from '../MediaContext/MediaContext'
 import JoinContext from '../JoinContext/JoinContext'
 import Publisher from '../Publisher/Publisher'
+import WatchContext from '../WatchContext/WatchContext'
 
 const useMediaContext = () => React.useContext(MediaContext.Context)
 const useJoinContext = () => React.useContext(JoinContext.Context)
+const useWatchContext = () => React.useContext(WatchContext.Context)
 
 interface ScreenShareRef {
   shutdown(): any
@@ -22,7 +24,7 @@ interface ScreenShareProps {
   onEnded(): any
 }
 
-const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<ScreenShareRef>) => {
+const ScreenSharePublisher = React.forwardRef((props: ScreenShareProps, ref: React.Ref<ScreenShareRef>) => {
   const { owner, useStreamManager, host, styles, isSharingScreen, onEnded } = props
   const { classes } = useStyles()
 
@@ -30,6 +32,7 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
 
   const { getSharescreenStreamGuid } = useJoinContext()
   const { startScreenShareMedia, stopScreenShareMedia } = useMediaContext()
+  const { shareScreen, shutdownShareScreen } = useWatchContext()
 
   const [mediaStream, setMediaStream] = React.useState<MediaStream | undefined>()
   const [initScreenShare, setInit] = React.useState<boolean>(false)
@@ -71,27 +74,14 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
     }
   }, [initScreenShare])
 
-  const shutdown = async () => {
-    if (screensharePubRef && screensharePubRef.current) {
-      await (screensharePubRef.current as PublisherRef).shutdown()
-    }
+  const shutdown = () => {
+    shutdownShareScreen()
   }
 
   const onStart = () => {
     // Send notification to all subscribers about the new screenshare and who "owns" it.
-    if (screensharePubRef.current) {
-      try {
-        ;(screensharePubRef.current as any).send({
-          messageType: 'Screenshare.Start',
-          message: {
-            owner,
-            screenshareGuid: getSharescreenStreamGuid(),
-          },
-        } as PublisherPost)
-      } catch (e) {
-        console.error(e)
-      }
-    }
+
+    const response = shareScreen(getSharescreenStreamGuid())
   }
 
   const onFail = () => {
@@ -104,7 +94,7 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
     onScreenShareEnded()
   }
 
-  const onScreenShareEnded = async () => {
+  const onScreenShareEnded = () => {
     try {
       shutdown()
       setMediaStream(undefined)
@@ -143,5 +133,5 @@ const ScreenShare2 = React.forwardRef((props: ScreenShareProps, ref: React.Ref<S
   )
 })
 
-ScreenShare2.displayName = 'ScreenShare2'
-export default ScreenShare2
+ScreenSharePublisher.displayName = 'ScreenSharePublisher'
+export default ScreenSharePublisher
