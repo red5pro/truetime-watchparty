@@ -46,14 +46,16 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 }
 
 const JoinWebinarPage = () => {
-  const { loading, error, joinToken, nickname, updateNickname } = useJoinContext()
+  const { loading, error, joinToken, nickname, updateNickname, isAnonymousParticipant } = useJoinContext()
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
   const navigate = useNavigate()
 
   const [searchParams, setSearchParams] = useSearchParams()
-  const [currentSection, setCurrentSection] = React.useState<Section>(Section.Nickname)
+  const [currentSection, setCurrentSection] = React.useState<Section>(
+    isAnonymousParticipant ? Section.WatchParty : Section.Nickname
+  )
 
   React.useEffect(() => {
     if (searchParams.get('s_id')) {

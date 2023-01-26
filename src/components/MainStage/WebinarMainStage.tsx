@@ -52,6 +52,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     fatalError,
     nonFatalError,
     showBanConfirmation,
+    isAnonymousParticipant,
 
     setShowBanConfirmation,
     onContinueBan,
@@ -59,6 +60,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     getStreamGuid,
     calculateParticipantHeight,
     calculateGrid,
+    onAnonymousEntry,
     onPublisherFail,
     onPublisherBroadcastInterrupt,
     onPublisherBroadcast,
@@ -92,6 +94,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     onShareScreen(false)
   }
 
+  if (isAnonymousParticipant) {
+    onAnonymousEntry()
+  }
+
   return (
     <Box id="root-container" className={classes.rootContainer}>
       {/* Loading Message */}
@@ -114,7 +120,11 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         </Box>
       )}
       {/* Other Participants Video Playback */}
-      <Box id="participants-video-container" sx={layout.style.subscriberListWb} m={2}>
+      <Box
+        id="participants-video-container"
+        sx={isAnonymousParticipant ? layout.style.subsctiberListWbAnon : layout.style.subscriberListWb}
+        m={2}
+      >
         <Grid
           container
           xs={layout.layout === Layout.FULLSCREEN ? 12 : 4}
@@ -125,30 +135,34 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           flexWrap="nowrap"
           style={layout.layout !== Layout.FULLSCREEN ? { ...layout.style.subscriberContainer } : { ...{ gap: '10px' } }}
         >
-          <Grid
-            id="grid-stage-publisher"
-            item
-            sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
-            xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-            maxHeight={layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)}
-          >
-            <Publisher
-              key="publisher"
-              ref={publisherRef}
-              useStreamManager={USE_STREAM_MANAGER}
-              host={STREAM_HOST}
-              streamGuid={getStreamGuid() || ''}
-              stream={mediaStream}
-              styles={
-                layout.layout !== Layout.FULLSCREEN
-                  ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
-                  : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
+          {!isAnonymousParticipant && (
+            <Grid
+              id="grid-stage-publisher"
+              item
+              sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
+              xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
+              maxHeight={
+                layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)
               }
-              onFail={onPublisherFail}
-              onStart={onPublisherBroadcast}
-              onInterrupt={onPublisherBroadcastInterrupt}
-            />
-          </Grid>
+            >
+              <Publisher
+                key="publisher"
+                ref={publisherRef}
+                useStreamManager={USE_STREAM_MANAGER}
+                host={STREAM_HOST}
+                streamGuid={getStreamGuid() || ''}
+                stream={mediaStream}
+                styles={
+                  layout.layout !== Layout.FULLSCREEN
+                    ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
+                    : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
+                }
+                onFail={onPublisherFail}
+                onStart={onPublisherBroadcast}
+                onInterrupt={onPublisherBroadcastInterrupt}
+              />
+            </Grid>
+          )}
           {data.list.map((s: Participant) => (
             <Grid
               id="grid-stage-subscriber"
@@ -243,48 +257,49 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         )}
       </Box>
       {/* Bottom Controls / Chat */}
-      <Stack
-        id="bottom-controls-chat-container"
-        className={classes.bottomBar}
-        direction="row"
-        alignItems="bottom"
-        spacing={2}
-      >
-        {publishMediaStream && ENABLE_MUTE_API && (
-          <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
-            <PublisherControls
-              cameraOn={true}
-              microphoneOn={true}
-              onCameraToggle={onPublisherCameraToggle}
-              onMicrophoneToggle={onPublisherMicrophoneToggle}
-            />
-          </Stack>
-        )}
-        {data.conference && (
-          <Stack direction="row" marginY={1} spacing={1} alignItems="flex-end" justifyContent="center">
-            {!screenShare ? (
-              <CustomButton
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.TRANSPARENT}
-                onClick={() => onShareScreen(true)}
-                className={classes.shareScreenButton}
-              >
-                <ScreenShareOutlined />
-              </CustomButton>
-            ) : (
-              <CustomButton
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.LEAVE}
-                onClick={() => onShareScreen(false)}
-                className={classes.shareScreenButton}
-              >
-                <StopScreenShareOutlined />
-              </CustomButton>
-            )}
-            <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+      {!isAnonymousParticipant && (
+        <Stack
+          id="bottom-controls-chat-container"
+          className={classes.bottomBar}
+          direction="row"
+          alignItems="bottom"
+          spacing={2}
+        >
+          {publishMediaStream && ENABLE_MUTE_API && (
+            <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
+              <PublisherControls
+                cameraOn={true}
+                microphoneOn={true}
+                onCameraToggle={onPublisherCameraToggle}
+                onMicrophoneToggle={onPublisherMicrophoneToggle}
+              />
+            </Stack>
+          )}
+          {data.conference && (
+            <Stack direction="row" marginY={1} spacing={1} alignItems="flex-end" justifyContent="center">
+              {!screenShare ? (
+                <CustomButton
+                  size={BUTTONSIZE.MEDIUM}
+                  buttonType={BUTTONTYPE.TRANSPARENT}
+                  onClick={() => onShareScreen(true)}
+                  className={classes.shareScreenButton}
+                >
+                  <ScreenShareOutlined />
+                </CustomButton>
+              ) : (
+                <CustomButton
+                  size={BUTTONSIZE.MEDIUM}
+                  buttonType={BUTTONTYPE.LEAVE}
+                  onClick={() => onShareScreen(false)}
+                  className={classes.shareScreenButton}
+                >
+                  <StopScreenShareOutlined />
+                </CustomButton>
+              )}
+              <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
 
-            <Box className={chatClasses.inputChatContainer}>
-              {/* {layout.layout === Layout.FULLSCREEN && (
+              <Box className={chatClasses.inputChatContainer}>
+                {/* {layout.layout === Layout.FULLSCREEN && (
                 <Box
                   sx={{ display: chatIsHidden ? 'none' : 'block' }}
                   className={`${chatClasses.fullScreenChatContainer} ${chatClasses.chatContainer} `}
@@ -294,39 +309,39 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                   </MessageList>
                 </Box>
               )} */}
-              <Box onClick={() => toggleChat()}>
-                <MessageInput
-                  typingIndicator
-                  emojiPicker={<PickerAdapter />}
-                  placeholder="Chat Message"
-                  onSend={chatIsHidden ? () => toggleChat() : () => noop()}
-                />
+                <Box onClick={() => toggleChat()}>
+                  <MessageInput
+                    typingIndicator
+                    emojiPicker={<PickerAdapter />}
+                    placeholder="Chat Message"
+                    onSend={chatIsHidden ? () => toggleChat() : () => noop()}
+                  />
+                </Box>
               </Box>
-            </Box>
-          </Stack>
-        )}
-        <Stack direction="row" spacing={1} className={classes.partyControls}>
-          {data.conference && (
-            <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
-              <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
-                <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
-                  <TypingIndicator />
-                </MessageList>
-                {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
-              </Box>
-              <CustomButton
-                size={BUTTONSIZE.SMALL}
-                buttonType={BUTTONTYPE.TRANSPARENT}
-                startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
-                onClick={toggleChat}
-              >
-                {chatIsHidden ? 'Show' : 'Hide'} Chat
-              </CustomButton>
-            </Box>
+            </Stack>
           )}
+          <Stack direction="row" spacing={1} className={classes.partyControls}>
+            {data.conference && (
+              <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
+                <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
+                  <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
+                    <TypingIndicator />
+                  </MessageList>
+                  {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
+                </Box>
+                <CustomButton
+                  size={BUTTONSIZE.SMALL}
+                  buttonType={BUTTONTYPE.TRANSPARENT}
+                  startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
+                  onClick={toggleChat}
+                >
+                  {chatIsHidden ? 'Show' : 'Hide'} Chat
+                </CustomButton>
+              </Box>
+            )}
+          </Stack>
         </Stack>
-      </Stack>
-
+      )}
       {/* Publisher Portal to be moved from one view layout state to another */}
       {/* <portals.InPortal node={portalNode}>
         <Box sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}>

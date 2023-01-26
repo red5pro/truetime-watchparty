@@ -119,7 +119,9 @@ const MainStageWrapper = () => {
       setFatalError({
         status: 404,
         title: 'Connection Disruption',
-        statusText: `Your session was interrupted expectedly. You are no longer in the Watch Party.`,
+        statusText: `Your session was interrupted expectedly. You are no longer in the ${
+          isWatchParty ? 'Watch Party' : 'Webinar'
+        }.`,
         closeLabel: 'OK',
         onClose: onLeave,
       } as FatalError)
@@ -137,6 +139,9 @@ const MainStageWrapper = () => {
   }, [data.connection])
 
   React.useEffect(() => {
+    if (isAnonymousParticipant) {
+      return
+    }
     if (!mediaStream) {
       navigate(`/join/${joinToken}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaStream.id) {
@@ -178,6 +183,9 @@ const MainStageWrapper = () => {
 
   const getAnonymousSocketUrl = (token: string) => {
     const request: ConnectionRequest = {
+      // displayName: 'anon',
+      joinToken: token,
+      // streamGuid: 'anon',
       fingerprint,
       isAnonymous: true,
       messageType: 'JoinConferenceRequest',
@@ -212,6 +220,11 @@ const MainStageWrapper = () => {
   }
 
   const onLeave = () => navigate(`/thankyou/${joinToken}`)
+
+  const onAnonymousEntry = () => {
+    const { url, request } = getAnonymousSocketUrl(joinToken)
+    join(url, request)
+  }
 
   const onPublisherBroadcast = () => {
     const streamGuid = getStreamGuid()
@@ -407,6 +420,7 @@ const MainStageWrapper = () => {
     onLayoutSelect,
     calculateGrid,
     calculateParticipantHeight,
+    onAnonymousEntry,
     onPublisherFail,
     onPublisherBroadcast,
     onPublisherBroadcastInterrupt,

@@ -29,6 +29,7 @@ export interface IMainStageWrapperProps {
   getStreamGuid: () => string | null
   calculateGrid: (totalParticipants: number) => number
   calculateParticipantHeight: (totalParticipants: number) => string
+  onAnonymousEntry: () => void
   onPublisherFail: () => void
   onPublisherBroadcastInterrupt: () => void
   onPublisherBroadcast: () => void

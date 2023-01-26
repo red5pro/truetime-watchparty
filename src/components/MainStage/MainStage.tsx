@@ -6,7 +6,7 @@ import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-material'
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
 
-import { ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import { ENABLE_MUTE_API, isWatchParty, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Common/Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
 
@@ -31,7 +31,6 @@ import useChatStyles from './ChatStyles.module'
 import { IMainStageWrapperProps } from '.'
 import { Layout } from './MainStageWrapper'
 import PublisherPortalFullscreen from './PublisherPortalFullscreen'
-import { width } from '@mui/system'
 
 interface SubscriberRef {
   setVolume(value: number): any
@@ -72,6 +71,7 @@ const MainStage = (props: IMainStageProps) => {
     getStreamGuid,
     calculateParticipantHeight,
     calculateGrid,
+    onAnonymousEntry,
     onPublisherFail,
     onPublisherBroadcastInterrupt,
     onPublisherBroadcast,
@@ -99,11 +99,18 @@ const MainStage = (props: IMainStageProps) => {
 
   const { classes: chatClasses } = useChatStyles()
 
-  if (!mediaStream || !getStreamGuid()) {
+  if (!isAnonymousParticipant && (!mediaStream || !getStreamGuid())) {
     navigate(`/join/${joinToken}`)
   }
 
+  if (isAnonymousParticipant) {
+    onAnonymousEntry()
+  }
+
   React.useEffect(() => {
+    if (isAnonymousParticipant) {
+      return
+    }
     if (!mediaStream) {
       navigate(`/join/${joinToken}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaStream.id) {
@@ -214,7 +221,7 @@ const MainStage = (props: IMainStageProps) => {
           </Box>
         )}
         {/* Other Participants Video Playback */}
-        <Box sx={layout.style.subscriberList}>
+        <Box sx={isAnonymousParticipant ? layout.style.subscriberListAnon : layout.style.subscriberList}>
           <div
             ref={subscriberListRef}
             style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}
@@ -233,7 +240,9 @@ const MainStage = (props: IMainStageProps) => {
                 />
               )
             })}
-            {layout.layout === Layout.FULLSCREEN && <PublisherPortalFullscreen portalNode={portalNode} />}
+            {!isAnonymousParticipant && layout.layout === Layout.FULLSCREEN && (
+              <PublisherPortalFullscreen portalNode={portalNode} />
+            )}
           </div>
           {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
             <CustomButton
@@ -246,12 +255,12 @@ const MainStage = (props: IMainStageProps) => {
             </CustomButton>
           )}
           {/* Publisher View - STAGE LAYOUT */}
-          {publishMediaStream && layout.layout !== Layout.FULLSCREEN && (
+          {!isAnonymousParticipant && publishMediaStream && layout.layout !== Layout.FULLSCREEN && (
             <PublisherPortalStage portalNode={portalNode} />
           )}
         </Box>
         {/* Bottom Controls / Chat */}
-        {userRole !== UserRoles.ANONYMOUS.toLowerCase() && (
+        {!isAnonymousParticipant && (
           <Stack className={classes.bottomBar} direction="row" alignItems="bottom" spacing={2}>
             {publishMediaStream && ENABLE_MUTE_API && (
               <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
@@ -315,27 +324,29 @@ const MainStage = (props: IMainStageProps) => {
         {(!data.conference || loading) && (
           <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
             <Loading />
-            <Typography>Loading Watch Party</Typography>
+            <Typography>Loading {isWatchParty ? 'Watch Party' : 'Webinar'}</Typography>
           </Stack>
         )}
       </Box>
       {/* Publisher Portal to be moved from one view layout state to another */}
-      <portals.InPortal node={portalNode}>
-        <Box sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}>
-          <Publisher
-            key="publisher"
-            ref={publisherRef}
-            useStreamManager={USE_STREAM_MANAGER}
-            host={STREAM_HOST}
-            streamGuid={getStreamGuid() || ''}
-            stream={mediaStream}
-            styles={layout.layout !== Layout.FULLSCREEN ? layout.style.publisher : layout.style.publisherVideo}
-            onFail={onPublisherFail}
-            onStart={onPublisherBroadcast}
-            onInterrupt={onPublisherBroadcastInterrupt}
-          />
-        </Box>
-      </portals.InPortal>
+      {!isAnonymousParticipant && (
+        <portals.InPortal node={portalNode}>
+          <Box sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}>
+            <Publisher
+              key="publisher"
+              ref={publisherRef}
+              useStreamManager={USE_STREAM_MANAGER}
+              host={STREAM_HOST}
+              streamGuid={getStreamGuid() || ''}
+              stream={mediaStream}
+              styles={layout.layout !== Layout.FULLSCREEN ? layout.style.publisher : layout.style.publisherVideo}
+              onFail={onPublisherFail}
+              onStart={onPublisherBroadcast}
+              onInterrupt={onPublisherBroadcastInterrupt}
+            />
+          </Box>
+        </portals.InPortal>
+      )}
       {/* Fatal Error */}
       {fatalError && (
         <ErrorModal
