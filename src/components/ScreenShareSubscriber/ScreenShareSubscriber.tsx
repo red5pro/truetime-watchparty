@@ -1,9 +1,10 @@
 import * as React from 'react'
 import { Box } from '@mui/material'
 import Subscriber from '../Subscriber/Subscriber'
+import { Participant } from '../../models/Participant'
 
 interface ScreenShareSubscriberProps {
-  participantScreenshareGuid: string
+  participantScreenshare: Participant
   host: string
   useStreamManager: boolean
   styles: any
@@ -12,7 +13,7 @@ interface ScreenShareSubscriberProps {
 }
 
 const ScreenShareSubscriber = (props: ScreenShareSubscriberProps) => {
-  const { participantScreenshareGuid, host, useStreamManager, styles, onSubscribeStart } = props
+  const { participantScreenshare, host, useStreamManager, styles, onSubscribeStart } = props
 
   const videoStyles = { objectFit: 'contain', height: '100%', width: '100%' }
 
@@ -23,7 +24,7 @@ const ScreenShareSubscriber = (props: ScreenShareSubscriberProps) => {
         useStreamManager={useStreamManager}
         mute={false}
         showControls={false}
-        streamGuid={participantScreenshareGuid}
+        streamGuid={participantScreenshare.screenshareGuid || ''}
         resubscribe={true}
         styles={styles}
         videoStyles={videoStyles}

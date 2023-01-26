@@ -44,7 +44,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
   const [error, setError] = React.useState<any>()
   const [loading, setLoading] = React.useState<boolean>(false)
   const [hostSocket, setHostSocket] = React.useState<WebSocket | undefined>()
-  const [participantScreenshareGuid, setParticipantScreenshareGuid] = React.useState<string | undefined>()
+  const [participantScreenshare, setParticipantScreenshare] = React.useState<Participant | undefined>()
 
   const [data, dispatch] = React.useReducer(listReducer, {
     error: undefined,
@@ -65,12 +65,12 @@ const WatchProvider = (props: IWatchProviderProps) => {
 
   React.useEffect(() => {
     if (data?.conference?.participants?.length) {
+      const pid = data.connection ? data.connection.participantId : undefined
       const participantSharingSreen: Participant = data.conference.participants.find(
-        (p: Participant) => p.screenshareGuid
+        (p: Participant) => p.participantId !== pid && p.screenshareGuid
       )
-      if (participantSharingSreen) {
-        setParticipantScreenshareGuid(participantSharingSreen.screenshareGuid)
-      }
+
+      setParticipantScreenshare(participantSharingSreen || undefined)
     }
   }, [data])
 
@@ -179,7 +179,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
     retry,
     shareScreen,
     shutdownShareScreen,
-    participantScreenshareGuid,
+    participantScreenshare,
   }
 
   return <WatchContext.Provider value={exportedValues}>{children}</WatchContext.Provider>
