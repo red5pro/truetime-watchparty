@@ -23,6 +23,11 @@ const listReducer = (state: any, action: any) => {
         ),
         vip: action.vip,
       }
+    case 'UPDATE_SCREENSHARES':
+      return {
+        ...state,
+        screenshareParticipant: action.payload,
+      }
     case 'SET_CONNECTION_DATA':
       return { ...state, connection: action.payload }
     case 'SET_CONFERENCE_DATA':
@@ -44,7 +49,6 @@ const WatchProvider = (props: IWatchProviderProps) => {
   const [error, setError] = React.useState<any>()
   const [loading, setLoading] = React.useState<boolean>(false)
   const [hostSocket, setHostSocket] = React.useState<WebSocket | undefined>()
-  const [participantScreenshare, setParticipantScreenshare] = React.useState<Participant | undefined>()
 
   const [data, dispatch] = React.useReducer(listReducer, {
     error: undefined,
@@ -53,7 +57,8 @@ const WatchProvider = (props: IWatchProviderProps) => {
     conference: undefined,
     status: undefined,
     vip: undefined,
-    list: [],
+    list: [], //Participant[]
+    screenshareParticipant: undefined, //Participant
   })
 
   React.useEffect(() => {
@@ -63,20 +68,17 @@ const WatchProvider = (props: IWatchProviderProps) => {
     }
   }, [hostSocket])
 
-  React.useEffect(() => {
-    if (data?.conference?.participants?.length) {
-      const pid = data.connection ? data.connection.participantId : undefined
-      const participantSharingSreen: Participant = data.conference.participants.find(
-        (p: Participant) => p.participantId !== pid && p.screenshareGuid
-      )
-
-      setParticipantScreenshare(participantSharingSreen || undefined)
-    }
-  }, [data])
-
   const updateStreamsList = (participants: Participant[]) => {
     const vip = participants.find((s: Participant) => (s.role as string).toLowerCase() === UserRoles.VIP.toLowerCase())
     dispatch({ type: 'UPDATE_LIST', payload: participants, vip })
+  }
+
+  const updateScreenshareList = (participants: Participant[]) => {
+    const pid = data.connection ? data.connection.participantId : undefined
+    const participantSharingSreen = participants.find((p: Participant) => p.participantId !== pid && p.screenshareGuid)
+    if (participantSharingSreen) {
+      dispatch({ type: 'UPDATE_SCREENSHARES', payload: participantSharingSreen })
+    }
   }
 
   const join = (url: string, joinRequest: ConnectionRequest) => {
@@ -102,6 +104,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
         const details = payload as ConferenceStatusEvent
         dispatch({ type: 'SET_CONFERENCE_DATA', payload: details.state })
         updateStreamsList(details.state.participants)
+        updateScreenshareList(details.state.participants)
       }
     }
     socket.onerror = (event) => {
@@ -179,7 +182,6 @@ const WatchProvider = (props: IWatchProviderProps) => {
     retry,
     shareScreen,
     shutdownShareScreen,
-    participantScreenshare,
   }
 
   return <WatchContext.Provider value={exportedValues}>{children}</WatchContext.Provider>

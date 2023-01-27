@@ -79,17 +79,15 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const { classes } = useStyles()
   const { classes: chatClasses } = useChatStyles()
 
-  const { participantScreenshare } = React.useContext(WatchContext.Context)
-
   const [screenShare, setScreenShare] = React.useState<boolean>(false)
 
   React.useEffect(() => {
-    if (participantScreenshare?.screenshareGuid) {
+    if (data.screenshareParticipant) {
       onLayoutSelect(Layout.STAGE)
-    } else if (!participantScreenshare) {
+    } else {
       onLayoutSelect(Layout.FULLSCREEN)
     }
-  }, [participantScreenshare])
+  }, [data.screenshareParticipant])
 
   const onShareScreen = (value: boolean) => {
     if (value) {
@@ -125,10 +123,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           />
         </Box>
       )}
-      {participantScreenshare?.screenshareGuid && !screenShare && (
+      {data.screenshareParticipant && !screenShare && (
         <Box id="sharescreen-video-container" sx={layout.style.mainVideoContainerWb}>
           <ScreenShareSubscriber
-            participantScreenshare={participantScreenshare}
+            participantScreenshare={data.screenshareParticipant}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
             styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
@@ -289,7 +287,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 buttonType={BUTTONTYPE.TRANSPARENT}
                 onClick={() => onShareScreen(true)}
                 className={classes.shareScreenButton}
-                disabled={participantScreenshare}
+                disabled={data.screenshareParticipant}
               >
                 <ScreenShareOutlined />
               </CustomButton>
