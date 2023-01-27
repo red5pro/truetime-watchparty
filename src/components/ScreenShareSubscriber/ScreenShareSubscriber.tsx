@@ -15,7 +15,6 @@ interface ScreenShareSubscriberProps {
 const ScreenShareSubscriber = (props: ScreenShareSubscriberProps) => {
   const { participantScreenshare, host, useStreamManager, styles, onSubscribeStart } = props
 
-  const videoStyles = { objectFit: 'contain', height: '100%', width: '100%' }
 
   return (
     <Box sx={{ ...styles, position: 'relative' }}>
@@ -27,7 +26,14 @@ const ScreenShareSubscriber = (props: ScreenShareSubscriberProps) => {
         streamGuid={participantScreenshare.screenshareGuid || ''}
         resubscribe={true}
         styles={styles}
-        videoStyles={videoStyles}
+        videoStyles={{
+          objectFit: 'contain',
+          height: 'fit-content',
+          maxHeight: '100%',
+          width: '100%',
+          borderRadius: '20px',
+          margin: 'auto',
+        }}
         onSubscribeStart={onSubscribeStart}
       />
     </Box>

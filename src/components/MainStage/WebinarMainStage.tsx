@@ -137,7 +137,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         </Box>
       )}
       {/* Other Participants Video Playback */}
-      <Box id="participants-video-container" sx={layout.style.subscriberListWb} m={2}>
+      <Box id="participants-video-container" sx={layout.style.subscriberListWb} m="auto">
         <Grid
           container
           xs={layout.layout === Layout.FULLSCREEN ? 12 : 4}
@@ -153,7 +153,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
             item
             sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
             xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-            maxHeight={layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)}
+            maxHeight={layout.layout !== Layout.FULLSCREEN ? '100%' : calculateParticipantHeight(data.list.length + 1)}
           >
             <Publisher
               key="publisher"
@@ -165,7 +165,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               styles={
                 layout.layout !== Layout.FULLSCREEN
                   ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
-                  : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
+                  : { ...layout.style.publisherVideo, ...layout.style.subscriber, transform: 'scaleX(1)' }
               }
               onFail={onPublisherFail}
               onStart={onPublisherBroadcast}
@@ -179,12 +179,12 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               key={s.participantId}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
               maxHeight={
-                layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)
+                layout.layout !== Layout.FULLSCREEN ? '100%' : calculateParticipantHeight(data.list.length + 1)
               }
             >
               <MainStageSubscriber
                 participant={s}
-                styles={layout.style.subscriber}
+                styles={{ ...layout.style.subscriber, transform: 'scaleX(1)' }}
                 videoStyles={layout.style.subscriberVideo}
                 host={STREAM_HOST}
                 useStreamManager={USE_STREAM_MANAGER}
@@ -237,8 +237,6 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                   <GroupAdd fontSize="small" />
                 </IconButton>
               )}
-
-              {/** LOCK NOT WORKING FOR NOW */}
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <Tooltip title={seriesEpisode.locked ? 'Locked' : 'Unlocked'}>
                   <IconButton
@@ -291,6 +289,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 buttonType={BUTTONTYPE.TRANSPARENT}
                 onClick={() => onShareScreen(true)}
                 className={classes.shareScreenButton}
+                disabled={participantScreenshare}
               >
                 <ScreenShareOutlined />
               </CustomButton>
@@ -298,7 +297,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               <CustomButton
                 size={BUTTONSIZE.MEDIUM}
                 buttonType={BUTTONTYPE.LEAVE}
-                onClick={() => onShareScreen(false)}
+                onClick={onScreenShareEnd}
                 className={classes.shareScreenButton}
               >
                 <StopScreenShareOutlined />

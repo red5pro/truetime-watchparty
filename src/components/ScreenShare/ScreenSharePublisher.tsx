@@ -53,16 +53,10 @@ const ScreenSharePublisher = React.forwardRef((props: ScreenShareProps, ref: Rea
         stream.getVideoTracks()[0].addEventListener('ended', () => {
           onScreenShareEnded()
         })
-        // stream.getVideoTracks()[0].onended = () => {
-        //   onScreenShareEnded()
-        // }
+
         setMediaStream(stream)
         s = stream
       } catch (e) {
-        // TODO: Show error. This could be from:
-        // a) Browser restriction.
-        // b) User explicitily declined to share media.
-
         onScreenShareEnded()
       }
     }
@@ -71,6 +65,7 @@ const ScreenSharePublisher = React.forwardRef((props: ScreenShareProps, ref: Rea
     }
     return () => {
       stopScreenShareMedia(s)
+      shutdownShareScreen()
     }
   }, [initScreenShare])
 
@@ -80,7 +75,6 @@ const ScreenSharePublisher = React.forwardRef((props: ScreenShareProps, ref: Rea
 
   const onStart = () => {
     // Send notification to all subscribers about the new screenshare and who "owns" it.
-
     const response = shareScreen(getSharescreenStreamGuid())
   }
 
