@@ -133,7 +133,7 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
     }
   }
 
-  const onSubscribeEvent = (event: any) => {
+  const onSubscribeEvent = async (event: any) => {
     const { type } = event
     if (type === 'Subscribe.Time.Update' || type === 'Subscribe.Volume.Change') return
     console.log(`[Red5ProSubscriber(${streamName})] :: ${type}`)
@@ -147,6 +147,8 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
       if (onSubscribeStart) {
         onSubscribeStart()
       }
+    } else if (type === 'Subscribe.Stop') {
+      await stop()
     }
   }
 

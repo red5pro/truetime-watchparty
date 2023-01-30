@@ -106,12 +106,12 @@ const MediaProvider = (props: IMediaProviderProps) => {
   }
 
   const startScreenShareMedia = async () => {
-    const displayMediaOptions: DisplayMediaStreamConstraints = {
+    const displayMediaOptions: MediaStreamConstraints = {
       audio: false,
       video: {
         aspectRatio: 1 / 1,
         height: {
-          ideal: 780,
+          ideal: 1200,
         },
       },
     }

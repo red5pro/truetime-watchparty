@@ -36,6 +36,11 @@ export interface ConnectionRequest {
   accessToken?: string
 }
 
+export interface SharescreenRequest {
+  messageType: string
+  screenshareGuid: string | null
+}
+
 export interface ConnectionResult {
   messageType: string
   particpantId?: number

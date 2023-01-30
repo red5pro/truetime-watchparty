@@ -1,5 +1,10 @@
 import * as React from 'react'
-import { ConferenceStatusEvent, ConnectionRequest, ConnectionResult } from '../../models/ConferenceStatusEvent'
+import {
+  ConferenceStatusEvent,
+  ConnectionRequest,
+  ConnectionResult,
+  SharescreenRequest,
+} from '../../models/ConferenceStatusEvent'
 import { Participant } from '../../models/Participant'
 import { MessageTypes, UserRoles } from '../../utils/commonUtils'
 
@@ -18,6 +23,11 @@ const listReducer = (state: any, action: any) => {
         ),
         vip: action.vip,
       }
+    case 'UPDATE_SCREENSHARES':
+      return {
+        ...state,
+        screenshareParticipant: action.payload,
+      }
     case 'SET_CONNECTION_DATA':
       return { ...state, connection: action.payload }
     case 'SET_CONFERENCE_DATA':
@@ -34,11 +44,11 @@ const WatchContext = React.createContext<any>(null)
 const WatchProvider = (props: IWatchProviderProps) => {
   const { children } = props
 
-  const socketRef = React.useRef()
+  const socketRef = React.useRef<any>()
 
   const [error, setError] = React.useState<any>()
   const [loading, setLoading] = React.useState<boolean>(false)
-  const [hostSocket, setHostSocket] = React.useState<any>()
+  const [hostSocket, setHostSocket] = React.useState<WebSocket | undefined>()
 
   const [data, dispatch] = React.useReducer(listReducer, {
     error: undefined,
@@ -47,7 +57,8 @@ const WatchProvider = (props: IWatchProviderProps) => {
     conference: undefined,
     status: undefined,
     vip: undefined,
-    list: [],
+    list: [], //Participant[]
+    screenshareParticipant: undefined, //Participant
   })
 
   React.useEffect(() => {
@@ -60,6 +71,14 @@ const WatchProvider = (props: IWatchProviderProps) => {
   const updateStreamsList = (participants: Participant[]) => {
     const vip = participants.find((s: Participant) => (s.role as string).toLowerCase() === UserRoles.VIP.toLowerCase())
     dispatch({ type: 'UPDATE_LIST', payload: participants, vip })
+  }
+
+  const updateScreenshareList = (participants: Participant[]) => {
+    const pid = data.connection ? data.connection.participantId : undefined
+    const participantSharingSreen = participants.find((p: Participant) => p.participantId !== pid && p.screenshareGuid)
+    if (participantSharingSreen) {
+      dispatch({ type: 'UPDATE_SCREENSHARES', payload: participantSharingSreen })
+    }
   }
 
   const join = (url: string, joinRequest: ConnectionRequest) => {
@@ -85,6 +104,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
         const details = payload as ConferenceStatusEvent
         dispatch({ type: 'SET_CONFERENCE_DATA', payload: details.state })
         updateStreamsList(details.state.participants)
+        updateScreenshareList(details.state.participants)
       }
     }
     socket.onerror = (event) => {
@@ -123,6 +143,36 @@ const WatchProvider = (props: IWatchProviderProps) => {
     join(url, joinRequest)
   }
 
+  const shareScreen = (screenshareGuid: string) => {
+    const request: SharescreenRequest = {
+      messageType: MessageTypes.SHARESCREEN_UPDATE_EVENT,
+      screenshareGuid: screenshareGuid,
+    }
+
+    try {
+      hostSocket?.send(JSON.stringify(request))
+
+      return true
+    } catch (e) {
+      console.error(e)
+
+      return false
+    }
+  }
+
+  const shutdownShareScreen = () => {
+    const request: SharescreenRequest = {
+      messageType: MessageTypes.SHARESCREEN_UPDATE_EVENT,
+      screenshareGuid: null,
+    }
+
+    try {
+      hostSocket?.send(JSON.stringify(request))
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const exportedValues = {
     error,
     loading,
@@ -130,6 +180,8 @@ const WatchProvider = (props: IWatchProviderProps) => {
     join,
     leave,
     retry,
+    shareScreen,
+    shutdownShareScreen,
   }
 
   return <WatchContext.Provider value={exportedValues}>{children}</WatchContext.Provider>
