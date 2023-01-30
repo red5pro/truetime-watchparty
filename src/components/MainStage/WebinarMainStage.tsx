@@ -7,6 +7,7 @@ import {
   GroupAdd,
   ChatBubble,
   ExpandMore,
+  PersonAddAlt1,
   ScreenShareOutlined,
   StopScreenShareOutlined,
 } from '@mui/icons-material'
@@ -16,22 +17,26 @@ import { ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings
 import Loading from '../Common/Loading/Loading'
 
 import useStyles from './MainStage.module'
-
 import Publisher from '../Publisher/Publisher'
 import { Participant } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
-import ShareLinkModal from '../Modal/ShareLinkModal'
 import ErrorModal from '../Modal/ErrorModal'
 import { noop, UserRoles } from '../../utils/commonUtils'
 import PublisherControls from '../PublisherControls/PublisherControls'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
-import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
 import ScreenShare2 from '../ScreenShare/ScreenShare2'
 import { Layout } from './MainStageWrapper'
 import { IMainStageWrapperProps } from '.'
+import JoinContext from '../JoinContext/JoinContext'
+
+const ShareLinkModal = React.lazy(() => import('../Modal/ShareLinkModal'))
+const AddCoHostsModal = React.lazy(() => import('../Modal/AddCoHostModal/AddCoHostsModal'))
+const SimpleAlertDialog = React.lazy(() => import('../Modal/SimpleAlertDialog'))
+
+const useJoinContext = () => React.useContext(JoinContext.Context)
 
 const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const {
@@ -77,7 +82,24 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const { classes } = useStyles()
   const { classes: chatClasses } = useChatStyles()
 
+  const [coHostList, setCoHostList] = React.useState<string[]>([])
   const [screenShare, setScreenShare] = React.useState<boolean>(false)
+  const [openAddCohostModal, setOpenAddCohostModal] = React.useState<boolean>(false)
+
+  const { getCoHostsList, cohostsList } = useJoinContext()
+
+  React.useEffect(() => {
+    if (data?.conference?.conferenceId) {
+      getCoHostsList(data.conference.conferenceId)
+    }
+  }, [data?.conference?.conferenceId])
+
+  React.useEffect(() => {
+    setCoHostList(cohostsList)
+  }, [cohostsList])
+
+  console.log(coHostList)
+
   const onShareScreen = (value: boolean) => {
     if (value) {
       onLayoutSelect(Layout.STAGE)
@@ -90,6 +112,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const onScreenShareEnd = () => {
     setScreenShare(false)
     onShareScreen(false)
+  }
+
+  const toggleCohostModal = () => {
+    setOpenAddCohostModal(!openAddCohostModal)
   }
 
   return (
@@ -188,6 +214,16 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       <Box id="organizer-controls-container" className={classes.organizerTopControls}>
         {/* Add / Share Modal */}
         <ShareLinkModal joinToken={joinToken || ''} open={showLink} onDismiss={() => setShowLink(false)} />
+
+        {/* Add CoHost Modal */}
+        {data?.conference?.conferenceId && openAddCohostModal && (
+          <AddCoHostsModal
+            conferenceId={data?.conference?.conferenceId}
+            open={openAddCohostModal}
+            onDismiss={toggleCohostModal}
+          />
+        )}
+
         {/* Role-based Controls */}
         {data.conference && (
           <Grid container className={classes.webinarTopBar} sx={layout.style.topBar}>
@@ -204,15 +240,30 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
             </Grid>
             <Grid item xs={2} display="flex" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
-                <IconButton
-                  sx={{ backdropFilter: 'contrast(0.5)' }}
-                  color="primary"
-                  aria-label="share link"
-                  component="label"
-                  onClick={toggleLink}
-                >
-                  <GroupAdd fontSize="small" />
-                </IconButton>
+                <>
+                  <Tooltip title="Add Cohost">
+                    <IconButton
+                      sx={{ backdropFilter: 'contrast(0.5)', marginRight: '10px' }}
+                      color="primary"
+                      aria-label="add cohost"
+                      component="label"
+                      onClick={toggleCohostModal}
+                    >
+                      <PersonAddAlt1 fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Share Link">
+                    <IconButton
+                      sx={{ backdropFilter: 'contrast(0.5)' }}
+                      color="primary"
+                      aria-label="share link"
+                      component="label"
+                      onClick={toggleLink}
+                    >
+                      <GroupAdd fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </>
               )}
 
               {/** LOCK NOT WORKING FOR NOW */}
