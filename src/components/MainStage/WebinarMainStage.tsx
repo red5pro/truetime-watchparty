@@ -31,7 +31,6 @@ import ScreenSharePublisher from '../ScreenShare/ScreenSharePublisher'
 import { Layout } from './MainStageWrapper'
 import { IMainStageWrapperProps } from '.'
 import JoinContext from '../JoinContext/JoinContext'
-import WatchContext from '../WatchContext/WatchContext'
 import ScreenShareSubscriber from '../ScreenShareSubscriber/ScreenShareSubscriber'
 
 const ShareLinkModal = React.lazy(() => import('../Modal/ShareLinkModal'))
@@ -84,21 +83,16 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const { classes } = useStyles()
   const { classes: chatClasses } = useChatStyles()
 
-  const [coHostList, setCoHostList] = React.useState<string[]>([])
   const [screenShare, setScreenShare] = React.useState<boolean>(false)
   const [openAddCohostModal, setOpenAddCohostModal] = React.useState<boolean>(false)
 
-  const { getCoHostsList, cohostsList } = useJoinContext()
+  const { getCoHostsList } = useJoinContext()
 
   React.useEffect(() => {
     if (data?.conference?.conferenceId) {
       getCoHostsList(data.conference.conferenceId)
     }
   }, [data?.conference?.conferenceId])
-
-  React.useEffect(() => {
-    setCoHostList(cohostsList)
-  }, [cohostsList])
 
   React.useEffect(() => {
     if (data.screenshareParticipant) {
@@ -247,16 +241,16 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           <Grid container className={classes.webinarTopBar} sx={layout.style.topBar}>
             <Grid
               item
-              xs={10}
+              xs={9}
               display="flex"
               alignItems="center"
               justifyContent="center"
               className={classes.header}
-              paddingLeft="15%"
+              paddingLeft="20%"
             >
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
             </Grid>
-            <Grid item xs={2} display="flex" alignItems="center" className={classes.topControls}>
+            <Grid item xs={3} display="flex" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <>
                   <Tooltip title="Add Cohost">
