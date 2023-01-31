@@ -194,7 +194,7 @@ const lockConference = async (conferenceId: string | number, account: AccountCre
   try {
     const config = getOptionsParams(account)
 
-    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/lock`, config)
+    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/lock`, {}, config)
     return response
   } catch (e: any) {
     console.log(e)
@@ -216,7 +216,7 @@ const unlockConference = async (conferenceId: string | number, account: AccountC
   try {
     const config = getOptionsParams(account)
 
-    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/unlock`, config)
+    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/unlock`, {}, config)
     return response
   } catch (e: any) {
     console.log(e)
@@ -248,8 +248,8 @@ const muteParticipant = async (
 
     const response: AxiosResponse = await axios.put(
       `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute`,
-      config,
-      payload
+      payload,
+      config
     )
     return response
   } catch (e: any) {
