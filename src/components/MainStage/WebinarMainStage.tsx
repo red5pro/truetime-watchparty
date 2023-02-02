@@ -322,32 +322,38 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         )}
         {data.conference && (
           <Stack direction="row" marginY={1} spacing={1} alignItems="center" justifyContent="center">
-            {!screenShare ? (
-              <Tooltip title={data?.screenshareParticipant?.length > 0 ? 'Take Over' : 'Share Screen'} placement="top">
-                <IconButton
-                  sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
-                  color="primary"
-                  aria-label="start a screen share"
-                  component="label"
-                  onClick={() => onShareScreen(true)}
-                >
-                  <ScreenShareOutlined />
-                </IconButton>
-              </Tooltip>
-            ) : (
-              <Tooltip title="Stop Share Screen">
-                <IconButton
-                  sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
-                  color="primary"
-                  aria-label="stop screen share"
-                  component="label"
-                  onClick={onScreenShareEnd}
-                >
-                  <StopScreenShareOutlined />
-                </IconButton>
-              </Tooltip>
+            {(userRole === UserRoles.ORGANIZER.toLowerCase() || userRole === UserRoles.COHOST.toLowerCase()) && (
+              <>
+                {!screenShare ? (
+                  <Tooltip
+                    title={data?.screenshareParticipant?.length > 0 ? 'Take Over' : 'Share Screen'}
+                    placement="top"
+                  >
+                    <IconButton
+                      sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
+                      color="primary"
+                      aria-label="start a screen share"
+                      component="label"
+                      onClick={() => onShareScreen(true)}
+                    >
+                      <ScreenShareOutlined />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Tooltip title="Stop Share Screen">
+                    <IconButton
+                      sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
+                      color="primary"
+                      aria-label="stop screen share"
+                      component="label"
+                      onClick={onScreenShareEnd}
+                    >
+                      <StopScreenShareOutlined />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </>
             )}
-
             {(data.screenshareParticipants?.length > 0 || screenShare) && (
               <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
             )}
