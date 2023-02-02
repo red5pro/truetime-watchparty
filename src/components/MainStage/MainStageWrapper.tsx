@@ -36,7 +36,7 @@ const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
 const MainStageWrapper = () => {
-  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
+  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock, cohostsList } = useJoinContext()
   const { mediaStream } = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
 
@@ -134,6 +134,16 @@ const MainStageWrapper = () => {
       }
     }
   }, [data.connection])
+
+  React.useEffect(() => {
+    if (
+      getCookies().account &&
+      cohostsList.length &&
+      cohostsList.includes((email: string) => email === getCookies().account.email)
+    ) {
+      setUserRole(UserRoles.COHOST.toLowerCase())
+    }
+  }, [cohostsList])
 
   React.useEffect(() => {
     if (!mediaStream) {

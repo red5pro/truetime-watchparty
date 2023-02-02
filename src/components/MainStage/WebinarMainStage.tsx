@@ -312,26 +312,31 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         )}
         {data.conference && (
           <Stack direction="row" marginY={1} spacing={1} alignItems="flex-end" justifyContent="center">
-            {!screenShare ? (
-              <CustomButton
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.TRANSPARENT}
-                onClick={() => onShareScreen(true)}
-                className={classes.shareScreenButton}
-                disabled={data.screenshareParticipant}
-              >
-                <ScreenShareOutlined />
-              </CustomButton>
-            ) : (
-              <CustomButton
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.LEAVE}
-                onClick={onScreenShareEnd}
-                className={classes.shareScreenButton}
-              >
-                <StopScreenShareOutlined />
-              </CustomButton>
+            {(userRole === UserRoles.ORGANIZER.toLowerCase() || userRole === UserRoles.COHOST.toLowerCase()) && (
+              <>
+                {!screenShare ? (
+                  <CustomButton
+                    size={BUTTONSIZE.MEDIUM}
+                    buttonType={BUTTONTYPE.TRANSPARENT}
+                    onClick={() => onShareScreen(true)}
+                    className={classes.shareScreenButton}
+                    disabled={data.screenshareParticipant}
+                  >
+                    <ScreenShareOutlined />
+                  </CustomButton>
+                ) : (
+                  <CustomButton
+                    size={BUTTONSIZE.MEDIUM}
+                    buttonType={BUTTONTYPE.LEAVE}
+                    onClick={onScreenShareEnd}
+                    className={classes.shareScreenButton}
+                  >
+                    <StopScreenShareOutlined />
+                  </CustomButton>
+                )}
+              </>
             )}
+
             <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
 
             <Box className={chatClasses.inputChatContainer}>
