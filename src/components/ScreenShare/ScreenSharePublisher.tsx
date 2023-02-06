@@ -1,6 +1,6 @@
 import React from 'react'
 import useStyles from './Screenshare.module'
-import { PublisherPost, PublisherRef } from '../Publisher'
+import { PublisherRef } from '../Publisher'
 import { Box, Typography } from '@mui/material'
 import MediaContext from '../MediaContext/MediaContext'
 import JoinContext from '../JoinContext/JoinContext'
@@ -70,6 +70,7 @@ const ScreenSharePublisher = React.forwardRef((props: ScreenShareProps, ref: Rea
   }, [initScreenShare])
 
   const shutdown = () => {
+    stopScreenShareMedia(mediaStream)
     shutdownShareScreen()
   }
 

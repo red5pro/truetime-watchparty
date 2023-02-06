@@ -63,8 +63,6 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
 
   const vipRef = React.useRef<PublisherRef>(null)
 
-  console.log({ nextVipConferenceDetails })
-
   React.useEffect(() => {
     // Fatal Socket Error.
     if (error) {

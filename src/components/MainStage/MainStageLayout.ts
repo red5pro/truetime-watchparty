@@ -176,7 +176,7 @@ const styles = {
     subscriber: {
       height: '100%',
       borderRadius: '20px',
-      backgroundColor: 'black',
+      // backgroundColor: 'black',
       aspectRatio: '1 / 1',
     },
     subscriberVideo: {
@@ -210,6 +210,14 @@ const styles = {
     ...base,
     topBar: {
       display: 'none!important',
+    },
+    mainVideoContainerWb: {
+      position: 'absolute',
+      width: '100vw',
+      height: '100vh',
+      left: 0,
+      top: 0,
+      zIndex: -100,
     },
     mainVideoContainer: {
       position: 'absolute',
@@ -247,6 +255,17 @@ const styles = {
       justifyContent: 'end',
       rowGap: '10px',
     },
+    subscriberListWb: {
+      opacity: 0.3,
+      position: 'absolute',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'start',
+      // height: 'calc(100vh - 94px)',
+      justifyContent: 'end',
+      rowGap: '10px',
+      zIndex: '-200',
+    },
     subscriberContainer: {
       display: 'flex',
       overflowY: 'auto',
@@ -264,7 +283,7 @@ const styles = {
       flexGrow: 1,
       height: '100%',
       borderRadius: '20px',
-      backgroundColor: 'black',
+      // backgroundColor: 'black',
       width: '100%',
     },
     subscriberVideo: {

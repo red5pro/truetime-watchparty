@@ -166,15 +166,6 @@ const JoinProvider = (props: JoinContextProps) => {
   }
 
   const getSharescreenStreamGuid = () => {
-    // Only keep numbers and letters, otherwise stream may break.
-    const append = joinToken
-    const stripped = `${nickname?.replace(/[^a-zA-Z0-9]/g, '')}_screenshare`
-    let guid = `live/${append}_${stripped}_${uid}`
-    if (!FORCE_LIVE_CONTEXT && joinToken) {
-      guid = `${append?.split('-').join('')}/${stripped}_${uid}`
-    }
-
-    // return guid
     return `${getStreamGuid()}_SCREENSHARE`
   }
 

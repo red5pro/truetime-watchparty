@@ -27,9 +27,9 @@ import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/Cus
 import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
-import ScreenSharePublisher from '../ScreenShare/ScreenSharePublisher'
 import { Layout } from './MainStageWrapper'
 import { IMainStageWrapperProps } from '.'
+import ScreenSharePublisher from '../ScreenShare/ScreenSharePublisher'
 import ScreenShareSubscriber from '../ScreenShareSubscriber/ScreenShareSubscriber'
 
 const ShareLinkModal = React.lazy(() => import('../Modal/ShareLinkModal'))
@@ -84,12 +84,18 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const [openAddCohostModal, setOpenAddCohostModal] = React.useState<boolean>(false)
 
   React.useEffect(() => {
-    if (data.screenshareParticipant) {
+    if (data.screenshareParticipants.length > 0 || screenShare) {
       onLayoutSelect(Layout.STAGE)
     } else {
       onLayoutSelect(Layout.FULLSCREEN)
     }
-  }, [data.screenshareParticipant])
+  }, [data.screenshareParticipants])
+
+  React.useEffect(() => {
+    if (data.closeCurrentScreenShare && data.screenshareParticipants.length > 0) {
+      onScreenShareEnd()
+    }
+  }, [data.closeCurrentScreenShare, data.screenshareParticipants])
 
   const onShareScreen = (value: boolean) => {
     if (value) {
@@ -129,15 +135,18 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           />
         </Box>
       )}
-      {data.screenshareParticipant && !screenShare && (
+      {data.screenshareParticipants?.length > 0 && !screenShare && (
         <Box id="sharescreen-video-container" sx={layout.style.mainVideoContainerWb}>
-          <ScreenShareSubscriber
-            participantScreenshare={data.screenshareParticipant}
-            useStreamManager={USE_STREAM_MANAGER}
-            host={STREAM_HOST}
-            styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
-            videoStyles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
-          />
+          {data.screenshareParticipants.map((sc: Participant) => (
+            <ScreenShareSubscriber
+              key={sc.screenshareGuid}
+              participantScreenshare={sc}
+              useStreamManager={USE_STREAM_MANAGER}
+              host={STREAM_HOST}
+              styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
+              videoStyles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
+            />
+          ))}
         </Box>
       )}
       {/* Other Participants Video Playback */}
@@ -199,7 +208,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
             </Grid>
           ))}
         </Grid>
-        {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
+        {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && data.list.length > 5 && (
           <CustomButton
             className={classes.moreButton}
             size={BUTTONSIZE.SMALL}
@@ -318,7 +327,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 buttonType={BUTTONTYPE.TRANSPARENT}
                 onClick={() => onShareScreen(true)}
                 className={classes.shareScreenButton}
-                disabled={data.screenshareParticipant}
+                // disabled={data.screenshareParticipant.length > 0}
               >
                 <ScreenShareOutlined />
               </CustomButton>
@@ -332,7 +341,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 <StopScreenShareOutlined />
               </CustomButton>
             )}
-            <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+
+            {(data.screenshareParticipants?.length > 0 || screenShare) && (
+              <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+            )}
 
             <Box className={chatClasses.inputChatContainer}>
               {/* {layout.layout === Layout.FULLSCREEN && (
