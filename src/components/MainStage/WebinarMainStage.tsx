@@ -123,7 +123,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           <Typography>Loading Watch Party</Typography>
         </Stack>
       )}
-      {screenShare && layout.layout !== Layout.FULLSCREEN && (
+      {screenShare && (
         <Box id="main-video-container" sx={layout.style.mainVideoContainerWb}>
           <ScreenSharePublisher
             owner={getStreamGuid() || ''}
@@ -150,13 +150,14 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         </Box>
       )}
       {/* Other Participants Video Playback */}
-      <Box id="participants-video-container" sx={layout.style.subscriberListWb} m="auto">
+      <Box id="participants-video-container" sx={layout.style.subscriberListWb} m={1}>
         <Grid
           container
           xs={layout.layout === Layout.FULLSCREEN ? 12 : 4}
           ref={subscriberListRef}
           maxWidth="100%"
-          maxHeight={layout.layout !== Layout.FULLSCREEN ? 'calc(100vh - 10rem)' : '100%'}
+          // maxHeight={layout.layout !== Layout.FULLSCREEN ? 'calc(100vh - 10rem)' : '100%'}
+          minHeight={layout.layout !== Layout.FULLSCREEN ? `calc(100vh - 5rem)` : '100%'}
           width="fit-content"
           flexWrap="nowrap"
           style={layout.layout !== Layout.FULLSCREEN ? { ...layout.style.subscriberContainer } : { ...{ gap: '10px' } }}
@@ -166,7 +167,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
             item
             sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
             xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-            maxHeight={layout.layout !== Layout.FULLSCREEN ? '100%' : calculateParticipantHeight(data.list.length + 1)}
+            maxHeight={layout.layout !== Layout.FULLSCREEN ? '124px' : calculateParticipantHeight(data.list.length + 1)}
           >
             <Publisher
               key="publisher"
@@ -192,7 +193,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               key={s.participantId}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
               maxHeight={
-                layout.layout !== Layout.FULLSCREEN ? '100%' : calculateParticipantHeight(data.list.length + 1)
+                layout.layout !== Layout.FULLSCREEN ? '124px' : calculateParticipantHeight(data.list.length + 1)
               }
             >
               <MainStageSubscriber
@@ -239,16 +240,16 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           <Grid container className={classes.webinarTopBar} sx={layout.style.topBar}>
             <Grid
               item
-              xs={9}
+              xs={8}
               display="flex"
               alignItems="center"
-              justifyContent="center"
+              justifyContent={layout.layout === Layout.FULLSCREEN ? 'center' : 'flex-start'}
               className={classes.header}
               paddingLeft="20%"
             >
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
             </Grid>
-            <Grid item xs={3} display="flex" alignItems="center" className={classes.topControls}>
+            <Grid item xs={4} display="flex" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <>
                   <Tooltip title="Add Cohost">
@@ -320,26 +321,31 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           </Stack>
         )}
         {data.conference && (
-          <Stack direction="row" marginY={1} spacing={1} alignItems="flex-end" justifyContent="center">
+          <Stack direction="row" marginY={1} spacing={1} alignItems="center" justifyContent="center">
             {!screenShare ? (
-              <CustomButton
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.TRANSPARENT}
-                onClick={() => onShareScreen(true)}
-                className={classes.shareScreenButton}
-                // disabled={data.screenshareParticipant.length > 0}
-              >
-                <ScreenShareOutlined />
-              </CustomButton>
+              <Tooltip title={data?.screenshareParticipant?.length > 0 ? 'Take Over' : 'Share Screen'} placement="top">
+                <IconButton
+                  sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
+                  color="primary"
+                  aria-label="start a screen share"
+                  component="label"
+                  onClick={() => onShareScreen(true)}
+                >
+                  <ScreenShareOutlined />
+                </IconButton>
+              </Tooltip>
             ) : (
-              <CustomButton
-                size={BUTTONSIZE.MEDIUM}
-                buttonType={BUTTONTYPE.LEAVE}
-                onClick={onScreenShareEnd}
-                className={classes.shareScreenButton}
-              >
-                <StopScreenShareOutlined />
-              </CustomButton>
+              <Tooltip title="Stop Share Screen">
+                <IconButton
+                  sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
+                  color="primary"
+                  aria-label="stop screen share"
+                  component="label"
+                  onClick={onScreenShareEnd}
+                >
+                  <StopScreenShareOutlined />
+                </IconButton>
+              </Tooltip>
             )}
 
             {(data.screenshareParticipants?.length > 0 || screenShare) && (
