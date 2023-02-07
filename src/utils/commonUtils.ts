@@ -42,6 +42,7 @@ export enum MessageTypes {
   ERROR = 'ConferenceError',
   JOIN_RESPONSE = 'JoinConferenceResponse',
   STATE_EVENT = 'ConferenceStateEvent',
+  SHARESCREEN_UPDATE_EVENT = 'UpdateScreenShareEvent',
 }
 
 export const parseQueryParamToObject = (query: string) => {

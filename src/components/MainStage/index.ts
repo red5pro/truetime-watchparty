@@ -23,7 +23,7 @@ export interface IMainStageWrapperProps {
   fatalError: FatalError | undefined
   nonFatalError: any
   showBanConfirmation: Participant | undefined
-  isAnonymousParticipant: boolean
+  isAnonymous: boolean
 
   onLayoutSelect: (layout: number) => void
   getStreamGuid: () => string | null

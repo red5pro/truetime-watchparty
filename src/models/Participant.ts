@@ -2,6 +2,7 @@ export interface ParticipantMuteState {
   audioMuted: boolean | undefined
   videoMuted: boolean | undefined
   chatMuted: boolean | undefined
+  screenMuted: boolean | undefined
 }
 
 export interface Participant {
@@ -11,4 +12,5 @@ export interface Participant {
   role: string
   streamGuid: string
   muteState?: ParticipantMuteState
+  screenshareGuid?: string
 }

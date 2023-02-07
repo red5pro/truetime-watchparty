@@ -175,6 +175,7 @@ const styles = {
       position: 'absolute',
       width: '100%',
       height: 'calc(100vh - 10rem)',
+      maxHeight: '40rem',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',

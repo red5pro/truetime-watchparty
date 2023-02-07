@@ -63,7 +63,7 @@ const MainStage = (props: IMainStageProps) => {
     showBanConfirmation,
     mainStreamGuid,
     maxParticipantGridColumnStyle,
-    isAnonymousParticipant,
+    isAnonymous,
 
     setShowBanConfirmation,
     onContinueBan,
@@ -99,16 +99,16 @@ const MainStage = (props: IMainStageProps) => {
 
   const { classes: chatClasses } = useChatStyles()
 
-  if (!isAnonymousParticipant && (!mediaStream || !getStreamGuid())) {
+  if (!isAnonymous && (!mediaStream || !getStreamGuid())) {
     navigate(`/join/${joinToken}`)
   }
 
-  if (isAnonymousParticipant) {
+  if (isAnonymous) {
     onAnonymousEntry()
   }
 
   React.useEffect(() => {
-    if (isAnonymousParticipant) {
+    if (isAnonymous) {
       return
     }
     if (!mediaStream) {
@@ -221,7 +221,7 @@ const MainStage = (props: IMainStageProps) => {
           </Box>
         )}
         {/* Other Participants Video Playback */}
-        <Box sx={isAnonymousParticipant ? layout.style.subscriberListAnon : layout.style.subscriberList}>
+        <Box sx={isAnonymous ? layout.style.subscriberListAnon : layout.style.subscriberList}>
           <div
             ref={subscriberListRef}
             style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}
@@ -240,7 +240,7 @@ const MainStage = (props: IMainStageProps) => {
                 />
               )
             })}
-            {!isAnonymousParticipant && layout.layout === Layout.FULLSCREEN && (
+            {!isAnonymous && layout.layout === Layout.FULLSCREEN && (
               <PublisherPortalFullscreen portalNode={portalNode} />
             )}
           </div>
@@ -255,12 +255,12 @@ const MainStage = (props: IMainStageProps) => {
             </CustomButton>
           )}
           {/* Publisher View - STAGE LAYOUT */}
-          {!isAnonymousParticipant && publishMediaStream && layout.layout !== Layout.FULLSCREEN && (
+          {!isAnonymous && publishMediaStream && layout.layout !== Layout.FULLSCREEN && (
             <PublisherPortalStage portalNode={portalNode} />
           )}
         </Box>
         {/* Bottom Controls / Chat */}
-        {!isAnonymousParticipant && (
+        {!isAnonymous && (
           <Stack className={classes.bottomBar} direction="row" alignItems="bottom" spacing={2}>
             {publishMediaStream && ENABLE_MUTE_API && (
               <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
@@ -329,7 +329,7 @@ const MainStage = (props: IMainStageProps) => {
         )}
       </Box>
       {/* Publisher Portal to be moved from one view layout state to another */}
-      {!isAnonymousParticipant && (
+      {!isAnonymous && (
         <portals.InPortal node={portalNode}>
           <Box sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}>
             <Publisher

@@ -53,9 +53,7 @@ const JoinWebinarPage = () => {
   const navigate = useNavigate()
 
   const [searchParams, setSearchParams] = useSearchParams()
-  const [currentSection, setCurrentSection] = React.useState<Section>(
-    isAnonymousParticipant ? Section.WatchParty : Section.Nickname
-  )
+  const [currentSection, setCurrentSection] = React.useState<Section>(Section.Nickname)
 
   React.useEffect(() => {
     if (searchParams.get('s_id')) {
@@ -68,6 +66,12 @@ const JoinWebinarPage = () => {
       }
     }
   }, [searchParams])
+
+  React.useEffect(() => {
+    if (isAnonymousParticipant && currentSection !== Section.WatchParty) {
+      setCurrentSection(Section.WatchParty)
+    }
+  }, [isAnonymousParticipant, currentSection])
 
   React.useEffect(() => {
     if (currentSection !== Section.AVSetup && currentSection !== Section.WatchParty) {

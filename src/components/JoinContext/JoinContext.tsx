@@ -43,7 +43,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const { getCookies, removeCookie } = useCookies(['account', 'userAccount'])
 
   const path = useLocation().pathname
-  const isAnonymousParticipant = anonReg.exec(path)
+  // const isAnonymousParticipant = anonReg.exec(path)
 
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
@@ -66,6 +66,8 @@ const JoinProvider = (props: JoinContextProps) => {
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
   // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
+  const [isAnonymousParticipant, setIsAnonymousParticipant] = React.useState<boolean>(false)
+
   React.useEffect(() => {
     const cookies = getCookies()
     const acc = cookies.userAccount
@@ -78,6 +80,12 @@ const JoinProvider = (props: JoinContextProps) => {
     }
     setReady(true)
   }, [])
+
+  React.useEffect(() => {
+    const exec = anonReg.exec(path)
+    const isAnon = exec !== null
+    setIsAnonymousParticipant(isAnon)
+  }, [path])
 
   React.useEffect(() => {
     if (params && params.token) {

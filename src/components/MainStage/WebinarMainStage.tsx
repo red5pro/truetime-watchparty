@@ -29,9 +29,11 @@ import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelec
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
-import ScreenShare2 from '../ScreenShare/ScreenShare2'
+import ScreenSharePublisher from '../ScreenShare/ScreenSharePublisher'
 import { Layout } from './MainStageWrapper'
 import { IMainStageWrapperProps } from '.'
+import WatchContext from '../WatchContext/WatchContext'
+import ScreenShareSubscriber from '../ScreenShareSubscriber/ScreenShareSubscriber'
 
 const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const {
@@ -52,7 +54,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     fatalError,
     nonFatalError,
     showBanConfirmation,
-    isAnonymousParticipant,
+    isAnonymous,
 
     setShowBanConfirmation,
     onContinueBan,
@@ -80,6 +82,15 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const { classes: chatClasses } = useChatStyles()
 
   const [screenShare, setScreenShare] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    if (data.screenshareParticipant) {
+      onLayoutSelect(Layout.STAGE)
+    } else {
+      onLayoutSelect(Layout.FULLSCREEN)
+    }
+  }, [data.screenshareParticipant])
+
   const onShareScreen = (value: boolean) => {
     if (value) {
       onLayoutSelect(Layout.STAGE)
@@ -90,11 +101,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   }
 
   const onScreenShareEnd = () => {
-    setScreenShare(false)
     onShareScreen(false)
   }
 
-  if (isAnonymousParticipant) {
+  if (isAnonymous) {
     onAnonymousEntry()
   }
 
@@ -109,7 +119,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       )}
       {screenShare && layout.layout !== Layout.FULLSCREEN && (
         <Box id="main-video-container" sx={layout.style.mainVideoContainerWb}>
-          <ScreenShare2
+          <ScreenSharePublisher
             owner={getStreamGuid() || ''}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
@@ -119,11 +129,22 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           />
         </Box>
       )}
+      {data.screenshareParticipant && !screenShare && (
+        <Box id="sharescreen-video-container" sx={layout.style.mainVideoContainerWb}>
+          <ScreenShareSubscriber
+            participantScreenshare={data.screenshareParticipant}
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
+            videoStyles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
+          />
+        </Box>
+      )}
       {/* Other Participants Video Playback */}
       <Box
         id="participants-video-container"
-        sx={isAnonymousParticipant ? layout.style.subsctiberListWbAnon : layout.style.subscriberListWb}
-        m={2}
+        sx={isAnonymous ? layout.style.subsctiberListWbAnon : layout.style.subscriberListWb}
+        m="auto"
       >
         <Grid
           container
@@ -135,14 +156,14 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           flexWrap="nowrap"
           style={layout.layout !== Layout.FULLSCREEN ? { ...layout.style.subscriberContainer } : { ...{ gap: '10px' } }}
         >
-          {!isAnonymousParticipant && (
+          {!isAnonymous && (
             <Grid
               id="grid-stage-publisher"
               item
               sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
               maxHeight={
-                layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)
+                layout.layout !== Layout.FULLSCREEN ? '100%' : calculateParticipantHeight(data.list.length + 1)
               }
             >
               <Publisher
@@ -155,7 +176,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 styles={
                   layout.layout !== Layout.FULLSCREEN
                     ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
-                    : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
+                    : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(1)' } }
                 }
                 onFail={onPublisherFail}
                 onStart={onPublisherBroadcast}
@@ -170,12 +191,12 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               key={s.participantId}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
               maxHeight={
-                layout.layout !== Layout.FULLSCREEN ? 'auto' : calculateParticipantHeight(data.list.length + 1)
+                layout.layout !== Layout.FULLSCREEN ? '100%' : calculateParticipantHeight(data.list.length + 1)
               }
             >
               <MainStageSubscriber
                 participant={s}
-                styles={layout.style.subscriber}
+                styles={{ ...layout.style.subscriber, transform: 'scaleX(1)' }}
                 videoStyles={layout.style.subscriberVideo}
                 host={STREAM_HOST}
                 useStreamManager={USE_STREAM_MANAGER}
@@ -228,8 +249,6 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                   <GroupAdd fontSize="small" />
                 </IconButton>
               )}
-
-              {/** LOCK NOT WORKING FOR NOW */}
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <Tooltip title={seriesEpisode.locked ? 'Locked' : 'Unlocked'}>
                   <IconButton
@@ -257,7 +276,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         )}
       </Box>
       {/* Bottom Controls / Chat */}
-      {!isAnonymousParticipant && (
+      {!isAnonymous && (
         <Stack
           id="bottom-controls-chat-container"
           className={classes.bottomBar}
@@ -283,6 +302,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                   buttonType={BUTTONTYPE.TRANSPARENT}
                   onClick={() => onShareScreen(true)}
                   className={classes.shareScreenButton}
+                  disabled={data.screenshareParticipant}
                 >
                   <ScreenShareOutlined />
                 </CustomButton>
@@ -290,7 +310,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 <CustomButton
                   size={BUTTONSIZE.MEDIUM}
                   buttonType={BUTTONTYPE.LEAVE}
-                  onClick={() => onShareScreen(false)}
+                  onClick={onScreenShareEnd}
                   className={classes.shareScreenButton}
                 >
                   <StopScreenShareOutlined />
@@ -363,10 +383,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       {fatalError && (
         <ErrorModal
           open={!!fatalError}
-          title={fatalError.title || 'Error'}
-          message={fatalError.statusText}
-          closeLabel={fatalError.closeLabel || 'OK'}
-          onClose={fatalError.onClose}
+          title={fatalError!.title || 'Error'}
+          message={fatalError!.statusText}
+          closeLabel={fatalError!.closeLabel || 'OK'}
+          onClose={fatalError!.onClose}
         ></ErrorModal>
       )}
       {/* Non-Fatal Error */}
@@ -381,11 +401,11 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       {showBanConfirmation && (
         <SimpleAlertDialog
           title="Ban Confirmation"
-          message={`Are you sure you want to ban ${showBanConfirmation.displayName}?`}
+          message={`Are you sure you want to ban ${showBanConfirmation!.displayName}?`}
           confirmLabel="YES"
           denyLabel="NEVERMIND"
           onConfirm={() => {
-            onContinueBan(showBanConfirmation)
+            onContinueBan(showBanConfirmation!)
           }}
           onDeny={() => setShowBanConfirmation(undefined)}
         />

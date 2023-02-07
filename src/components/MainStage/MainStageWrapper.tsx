@@ -44,6 +44,9 @@ const MainStageWrapper = () => {
   const navigate = useNavigate()
   const { getCookies } = useCookies(['account'])
 
+  let anonJoinTimeout: any
+  const anonJoinRef = React.useRef(null)
+
   const publisherRef = React.useRef<PublisherRef>(null)
   const subscriberListRef = React.useRef<any>(null)
 
@@ -67,6 +70,11 @@ const MainStageWrapper = () => {
     gridTemplateColumns:
       'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
   })
+  const [isAnonymous, setIsAnonymous] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    setIsAnonymous(isAnonymousParticipant)
+  }, [isAnonymousParticipant])
 
   React.useEffect(() => {
     // Handler to call on window resize
@@ -221,9 +229,19 @@ const MainStageWrapper = () => {
 
   const onLeave = () => navigate(`/thankyou/${joinToken}`)
 
+  const stopAnonJoinTimeout = () => {
+    if (anonJoinRef.current) {
+      clearTimeout(anonJoinRef.current)
+    }
+    clearTimeout(anonJoinTimeout)
+  }
   const onAnonymousEntry = () => {
-    const { url, request } = getAnonymousSocketUrl(joinToken)
-    join(url, request)
+    stopAnonJoinTimeout()
+    anonJoinTimeout = setTimeout(() => {
+      const { url, request } = getAnonymousSocketUrl(joinToken)
+      join(url, request)
+    }, 2000)
+    anonJoinRef.current = anonJoinTimeout
   }
 
   const onPublisherBroadcast = () => {
@@ -415,7 +433,7 @@ const MainStageWrapper = () => {
     fatalError,
     nonFatalError,
     showBanConfirmation,
-    isAnonymousParticipant,
+    isAnonymous,
 
     onLayoutSelect,
     calculateGrid,
