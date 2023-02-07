@@ -10,7 +10,7 @@ import { FatalError } from '../../models/FatalError'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 import { API_SOCKET_HOST, isWatchParty } from '../../settings/variables'
 import { PublisherRef } from '../Publisher'
-import { UserRoles } from '../../utils/commonUtils'
+import { Paths, UserRoles } from '../../utils/commonUtils'
 import styles from './MainStageLayout'
 import { Participant } from '../../models/Participant'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
@@ -56,6 +56,7 @@ const MainStageWrapper = () => {
   const [maxParticipants, setMaxParticipants] = React.useState<number>(8)
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
+  const [subscriberMenuActions, setSubscriberMenuActions] = React.useState<any>()
   const [layout, dispatch] = React.useReducer(layoutReducer, {
     layout: isWatchParty ? Layout.STAGE : Layout.FULLSCREEN,
     style: isWatchParty ? styles.stage : styles.fullscreen,
@@ -139,9 +140,10 @@ const MainStageWrapper = () => {
   React.useEffect(() => {
     if (data.connection) {
       const { connection } = data
-
       if (connection && connection.role) {
-        setUserRole(connection.role.toLowerCase())
+        const { role } = connection
+        setUserRole(role.toLowerCase())
+        setSubscriberMenuActions(getMenuActionsFromRole(role.toLowerCase()))
       }
     }
   }, [data.connection])
@@ -227,7 +229,18 @@ const MainStageWrapper = () => {
     return { url: API_SOCKET_HOST, request }
   }
 
-  const onLeave = () => navigate(`/thankyou/${joinToken}`)
+  const getMenuActionsFromRole = (role: string) => {
+    const allowed = [UserRoles.ADMIN, UserRoles.ORGANIZER].map((r) => r.toLowerCase())
+    return allowed.indexOf(role) > -1 ? organizerSubscriberMenuActions : undefined
+  }
+
+  const onLeave = () => {
+    if (isAnonymous) {
+      navigate(`${Paths.ANONYMOUS_THANKYOU}/${joinToken}`)
+      return
+    }
+    navigate(`/thankyou/${joinToken}`)
+  }
 
   const stopAnonJoinTimeout = () => {
     if (anonJoinRef.current) {
@@ -337,7 +350,7 @@ const MainStageWrapper = () => {
     dispatch({ type: 'LAYOUT', layout: layout, style: newStyle })
   }
 
-  const subscriberMenuActions = {
+  const organizerSubscriberMenuActions = {
     onMuteAudio: async (participant: Participant, requestMute: boolean) => {
       const { muteState } = participant
       const requestState = { ...muteState!, audioMuted: requestMute }

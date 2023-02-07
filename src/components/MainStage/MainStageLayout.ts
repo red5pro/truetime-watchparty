@@ -79,8 +79,9 @@ const styles = {
       flexDirection: 'column',
       alignItems: 'start',
       height: 'calc(100vh - 24px)',
-      justifyContent: 'end',
+      justifyContent: 'start',
       rowGap: '10px',
+      width: '100%',
     },
     subscriberListWbAnon: {
       position: 'absolute',
@@ -190,6 +191,7 @@ const styles = {
       flexDirection: 'column',
       alignContent: 'center',
       justifyContent: 'center',
+      top: '5rem',
     },
     subscriberListWbAnon: {
       position: 'absolute',

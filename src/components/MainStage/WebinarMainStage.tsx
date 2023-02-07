@@ -114,7 +114,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       {(!data.conference || loading) && (
         <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
           <Loading />
-          <Typography>Loading Watch Party</Typography>
+          <Typography>Loading Webinar</Typography>
         </Stack>
       )}
       {screenShare && layout.layout !== Layout.FULLSCREEN && (

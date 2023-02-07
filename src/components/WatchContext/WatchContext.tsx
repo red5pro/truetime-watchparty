@@ -14,7 +14,8 @@ interface IWatchProviderProps {
 
 const isNotRoles = (p: Participant, roles: string[]) => {
   const { role } = p
-  return roles.map((r) => r.toLowerCase()).indexOf(role.toLowerCase()) > -1
+  const based = roles.map((r) => r.toLowerCase())
+  return based.indexOf(role.toLowerCase()) === -1
 }
 
 const listReducer = (state: any, action: any) => {
@@ -23,9 +24,7 @@ const listReducer = (state: any, action: any) => {
     case 'UPDATE_LIST':
       return {
         ...state,
-        list: action.payload.filter(
-          (p: Participant) => p.participantId !== pid && isNotRoles(p, [UserRoles.VIP, UserRoles.ANONYMOUS])
-        ),
+        list: action.payload.filter((p: Participant) => p.participantId !== pid),
         vip: action.vip,
         anonymousViewerAmount: action.anonymousViewerAmount,
       }
@@ -80,7 +79,8 @@ const WatchProvider = (props: IWatchProviderProps) => {
     const anonymousViewers = participants.filter((p: Participant) => {
       return (p.role as string).toLowerCase() === UserRoles.ANONYMOUS.toLowerCase()
     })
-    dispatch({ type: 'UPDATE_LIST', payload: participants, vip, anonymousViewerAmount: anonymousViewers.length })
+    const list = participants.filter((p: Participant) => isNotRoles(p, [UserRoles.VIP, UserRoles.ANONYMOUS]))
+    dispatch({ type: 'UPDATE_LIST', payload: list, vip, anonymousViewerAmount: anonymousViewers.length })
   }
 
   const updateScreenshareList = (participants: Participant[]) => {

@@ -24,6 +24,7 @@ export const getStartTimeFromTimestamp = (ts: number) => {
 
 export enum Paths {
   ANONYMOUS = '/join/anon',
+  ANONYMOUS_THANKYOU = '/thankyou/anon',
 }
 
 export enum UserRoles {

@@ -59,6 +59,14 @@ const AppRoutes = () => {
             }
           />
           <Route
+            path={`${Paths.ANONYMOUS_THANKYOU}/:token`}
+            element={
+              <JoinContext.Provider>
+                <ThankYouPage />
+              </JoinContext.Provider>
+            }
+          />
+          <Route
             path="/partyended/:token"
             element={
               <JoinContext.Provider>
