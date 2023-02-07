@@ -143,7 +143,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       {/* Other Participants Video Playback */}
       <Box
         id="participants-video-container"
-        sx={isAnonymous ? layout.style.subsctiberListWbAnon : layout.style.subscriberListWb}
+        sx={isAnonymous ? layout.style.subscriberListWbAnon : layout.style.subscriberListWb}
         m="auto"
       >
         <Grid
