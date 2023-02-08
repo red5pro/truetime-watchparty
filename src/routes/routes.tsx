@@ -78,18 +78,6 @@ const AppRoutes = () => {
           <Route path="*" element={<Landing />} />
           {/* TODO: Remove for production. Here for simple VIP entrance in demos. */}
           <Route path="/vip" element={<SimpleVipPage />} />
-          <Route
-            path="/anon/:token"
-            element={
-              <JoinContext.Provider>
-                <MediaContext.Provider>
-                  <WatchContext.Provider>
-                    <JoinWebinarPage />
-                  </WatchContext.Provider>
-                </MediaContext.Provider>
-              </JoinContext.Provider>
-            }
-          />
         </Routes>
       </React.Suspense>
     </BrowserRouter>
