@@ -63,7 +63,7 @@ const MainStage = (props: IMainStageProps) => {
     showBanConfirmation,
     mainStreamGuid,
     maxParticipantGridColumnStyle,
-    isAnonymous,
+    isAnonymous, // no anonymous viewing in Watch Party mode. Ignored and will redirect on `/join/anon/${token}`.
 
     setShowBanConfirmation,
     onContinueBan,
@@ -99,18 +99,11 @@ const MainStage = (props: IMainStageProps) => {
 
   const { classes: chatClasses } = useChatStyles()
 
-  if (!isAnonymous && (!mediaStream || !getStreamGuid())) {
+  if (!mediaStream || !getStreamGuid()) {
     navigate(`/join/${joinToken}`)
   }
 
-  if (isAnonymous) {
-    onAnonymousEntry()
-  }
-
   React.useEffect(() => {
-    if (isAnonymous) {
-      return
-    }
     if (!mediaStream) {
       navigate(`/join/${joinToken}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaStream.id) {
@@ -221,7 +214,7 @@ const MainStage = (props: IMainStageProps) => {
           </Box>
         )}
         {/* Other Participants Video Playback */}
-        <Box sx={isAnonymous ? layout.style.subscriberListAnon : layout.style.subscriberList}>
+        <Box sx={layout.style.subscriberList}>
           <div
             ref={subscriberListRef}
             style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}
@@ -240,9 +233,7 @@ const MainStage = (props: IMainStageProps) => {
                 />
               )
             })}
-            {!isAnonymous && layout.layout === Layout.FULLSCREEN && (
-              <PublisherPortalFullscreen portalNode={portalNode} />
-            )}
+            {layout.layout === Layout.FULLSCREEN && <PublisherPortalFullscreen portalNode={portalNode} />}
           </div>
           {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
             <CustomButton
@@ -255,71 +246,69 @@ const MainStage = (props: IMainStageProps) => {
             </CustomButton>
           )}
           {/* Publisher View - STAGE LAYOUT */}
-          {!isAnonymous && publishMediaStream && layout.layout !== Layout.FULLSCREEN && (
+          {publishMediaStream && layout.layout !== Layout.FULLSCREEN && (
             <PublisherPortalStage portalNode={portalNode} />
           )}
         </Box>
         {/* Bottom Controls / Chat */}
-        {!isAnonymous && (
-          <Stack className={classes.bottomBar} direction="row" alignItems="bottom" spacing={2}>
-            {publishMediaStream && ENABLE_MUTE_API && (
-              <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
-                <PublisherControls
-                  cameraOn={true}
-                  microphoneOn={true}
-                  onCameraToggle={onPublisherCameraToggle}
-                  onMicrophoneToggle={onPublisherMicrophoneToggle}
-                />
-              </Stack>
-            )}
-            {data.conference && (
-              <Stack direction="row" spacing={1} alignItems="flex-end" justifyContent="center">
-                <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+        <Stack className={classes.bottomBar} direction="row" alignItems="bottom" spacing={2}>
+          {publishMediaStream && ENABLE_MUTE_API && (
+            <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
+              <PublisherControls
+                cameraOn={true}
+                microphoneOn={true}
+                onCameraToggle={onPublisherCameraToggle}
+                onMicrophoneToggle={onPublisherMicrophoneToggle}
+              />
+            </Stack>
+          )}
+          {data.conference && (
+            <Stack direction="row" spacing={1} alignItems="flex-end" justifyContent="center">
+              <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
 
-                <Box className={chatClasses.inputChatContainer}>
-                  {layout.layout === Layout.FULLSCREEN && (
-                    <Box className={`${chatClasses.fullScreenChatContainer} ${chatClasses.chatContainer} `}>
-                      <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
-                        <TypingIndicator />
-                      </MessageList>
-                    </Box>
-                  )}
-                  <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" />
-                </Box>
-              </Stack>
-            )}
-            <Stack direction="row" spacing={1} className={classes.partyControls}>
-              {mainStreamGuid && (
-                <VolumeControl
-                  isOpen={false}
-                  min={0}
-                  max={100}
-                  step={1}
-                  currentValue={50}
-                  onVolumeChange={onVolumeChange}
-                />
-              )}
-              {data.conference && layout.layout !== Layout.FULLSCREEN && (
-                <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
-                  <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
+              <Box className={chatClasses.inputChatContainer}>
+                {layout.layout === Layout.FULLSCREEN && (
+                  <Box className={`${chatClasses.fullScreenChatContainer} ${chatClasses.chatContainer} `}>
                     <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
                       <TypingIndicator />
                     </MessageList>
-                    {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
                   </Box>
-                  <CustomButton
-                    size={BUTTONSIZE.SMALL}
-                    buttonType={BUTTONTYPE.TRANSPARENT}
-                    startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
-                    onClick={toggleChat}
-                  >
-                    {chatIsHidden ? 'Show' : 'Hide'} Chat
-                  </CustomButton>
-                </Box>
-              )}
+                )}
+                <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" />
+              </Box>
             </Stack>
+          )}
+          <Stack direction="row" spacing={1} className={classes.partyControls}>
+            {mainStreamGuid && (
+              <VolumeControl
+                isOpen={false}
+                min={0}
+                max={100}
+                step={1}
+                currentValue={50}
+                onVolumeChange={onVolumeChange}
+              />
+            )}
+            {data.conference && layout.layout !== Layout.FULLSCREEN && (
+              <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
+                <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
+                  <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
+                    <TypingIndicator />
+                  </MessageList>
+                  {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
+                </Box>
+                <CustomButton
+                  size={BUTTONSIZE.SMALL}
+                  buttonType={BUTTONTYPE.TRANSPARENT}
+                  startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
+                  onClick={toggleChat}
+                >
+                  {chatIsHidden ? 'Show' : 'Hide'} Chat
+                </CustomButton>
+              </Box>
+            )}
           </Stack>
-        )}
+        </Stack>
         {/* Loading Message */}
         {(!data.conference || loading) && (
           <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
@@ -329,24 +318,22 @@ const MainStage = (props: IMainStageProps) => {
         )}
       </Box>
       {/* Publisher Portal to be moved from one view layout state to another */}
-      {!isAnonymous && (
-        <portals.InPortal node={portalNode}>
-          <Box sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}>
-            <Publisher
-              key="publisher"
-              ref={publisherRef}
-              useStreamManager={USE_STREAM_MANAGER}
-              host={STREAM_HOST}
-              streamGuid={getStreamGuid() || ''}
-              stream={mediaStream}
-              styles={layout.layout !== Layout.FULLSCREEN ? layout.style.publisher : layout.style.publisherVideo}
-              onFail={onPublisherFail}
-              onStart={onPublisherBroadcast}
-              onInterrupt={onPublisherBroadcastInterrupt}
-            />
-          </Box>
-        </portals.InPortal>
-      )}
+      <portals.InPortal node={portalNode}>
+        <Box sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}>
+          <Publisher
+            key="publisher"
+            ref={publisherRef}
+            useStreamManager={USE_STREAM_MANAGER}
+            host={STREAM_HOST}
+            streamGuid={getStreamGuid() || ''}
+            stream={mediaStream}
+            styles={layout.layout !== Layout.FULLSCREEN ? layout.style.publisher : layout.style.publisherVideo}
+            onFail={onPublisherFail}
+            onStart={onPublisherBroadcast}
+            onInterrupt={onPublisherBroadcastInterrupt}
+          />
+        </Box>
+      </portals.InPortal>
       {/* Fatal Error */}
       {fatalError && (
         <ErrorModal
