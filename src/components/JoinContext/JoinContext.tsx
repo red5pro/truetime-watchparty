@@ -60,6 +60,7 @@ const JoinProvider = (props: JoinContextProps) => {
   })
 
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
+  const [cohostsList, setCohostsList] = React.useState<string[] | undefined>(undefined)
   // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
   React.useEffect(() => {
@@ -218,6 +219,38 @@ const JoinProvider = (props: JoinContextProps) => {
     return null
   }
 
+  const getCoHostsList = async (conferenceId: string) => {
+    if (conferenceData) {
+      try {
+        const result = await CONFERENCE_API_CALLS.getCohostList(conferenceId, getCookies().account)
+        if (result.status !== 200) {
+          throw { data: null, status: result.status, statusText: `Could not get the cohost list from this conference.` }
+        }
+        setCohostsList(result.data || [])
+
+        return result
+      } catch (e) {
+        console.error(e)
+        throw e
+      }
+    }
+    return null
+  }
+
+  const updateCoHostList = async (conferenceId: string, cohostEmailList: string[]) => {
+    try {
+      const result = await CONFERENCE_API_CALLS.updateCohostList(conferenceId, getCookies().account, cohostEmailList)
+      if (result.status === 200) {
+        setCohostsList(cohostEmailList || [])
+      }
+
+      return result
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  }
+
   const exportedValues = {
     loading,
     error,
@@ -227,6 +260,8 @@ const JoinProvider = (props: JoinContextProps) => {
     seriesEpisode,
     conferenceData,
     // conferenceLocked,
+    cohostsList,
+
     setConferenceData,
     updateNickname: (value: string) => {
       setNickname(value)
@@ -238,6 +273,8 @@ const JoinProvider = (props: JoinContextProps) => {
     setJoinToken,
     lock,
     unlock,
+    getCoHostsList,
+    updateCoHostList,
   }
 
   return <JoinContext.Provider value={exportedValues}>{children}</JoinContext.Provider>

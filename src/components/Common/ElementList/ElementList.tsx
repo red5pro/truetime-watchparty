@@ -25,7 +25,7 @@ const ElementList = (props: IElementListProps) => {
               {/* <ListItemButton className={classes.itemButton} component="a" href="#simple-list"> */}
               <Box marginRight={2}>
                 <ListItemText sx={{ whiteSpace: 'nowrap' }} primary={date.toLocaleDateString('en-US', dateOptions)} />
-                <ListItemText primary={`${date.getHours()}:${date.getMinutes()}`} />
+                <ListItemText primary={`${`0${date.getHours()}`.slice(-2)}:${`0${date.getMinutes()}`.slice(-2)}`} />
               </Box>
               <ListItemText primary={value.displayName} className={classes.itemDisplayName} />
               {/* </ListItemButton> */}
