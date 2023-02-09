@@ -168,8 +168,7 @@ const StreamListProvider = (props: StreamListContextProps) => {
     // Strip all that are also considered "live".
     // The API returns playlists/mediafiles for both VOD and live streams.
     streams = streams.filter((vod: VODStream) => {
-      const isLive = liveStreams.findIndex((s: Stream) => vod.name === s.name)
-      return !isLive
+      return liveStreams.findIndex((s: Stream) => vod.name === s.name) === -1
     })
     dispatch({ type: 'UPDATE_VOD', streams })
   }
