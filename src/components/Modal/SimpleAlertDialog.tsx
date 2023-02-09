@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import useStyles from './SimpleAlertDialog.module'
 
-interface SimpleAlertDialogProps {
+export interface SimpleAlertDialogProps {
   title: string
   message: string
   confirmLabel?: string

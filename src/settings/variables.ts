@@ -1,3 +1,4 @@
+import { AccountCredentials } from '../models/AccountCredentials'
 import { WebbAppMode } from '../utils/variableUtils'
 
 export const USE_LOCAL_SERVICES = false
@@ -29,3 +30,7 @@ export const FACEBOOK_APP_ID = process.env.REACT_APP_FACEBOOK_APP_ID
 const WEBAPP_MODE = process.env.REACT_APP_WEBAPP_MODE || WebbAppMode.WATCHPARTY
 
 export const isWatchParty = WEBAPP_MODE === WebbAppMode.WATCHPARTY
+export const adminAccount: AccountCredentials = {
+  email: process.env.REACT_APP_ADMIN_USER,
+  password: process.env.REACT_APP_ADMIN_PASS,
+}

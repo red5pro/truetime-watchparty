@@ -7,6 +7,7 @@ import {
   GroupAdd,
   ChatBubble,
   ExpandMore,
+  PersonAddAlt1,
   ScreenShareOutlined,
   StopScreenShareOutlined,
 } from '@mui/icons-material'
@@ -16,24 +17,24 @@ import { ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings
 import Loading from '../Common/Loading/Loading'
 
 import useStyles from './MainStage.module'
-
 import Publisher from '../Publisher/Publisher'
 import { Participant } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
-import ShareLinkModal from '../Modal/ShareLinkModal'
 import ErrorModal from '../Modal/ErrorModal'
 import { noop, UserRoles } from '../../utils/commonUtils'
 import PublisherControls from '../PublisherControls/PublisherControls'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
-import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
 import ScreenSharePublisher from '../ScreenShare/ScreenSharePublisher'
 import { Layout } from './MainStageWrapper'
 import { IMainStageWrapperProps } from '.'
-import WatchContext from '../WatchContext/WatchContext'
 import ScreenShareSubscriber from '../ScreenShareSubscriber/ScreenShareSubscriber'
+
+const ShareLinkModal = React.lazy(() => import('../Modal/ShareLinkModal'))
+const AddCoHostsModal = React.lazy(() => import('../Modal/AddCoHostModal/AddCoHostsModal'))
+const SimpleAlertDialog = React.lazy(() => import('../Modal/SimpleAlertDialog'))
 
 const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const {
@@ -82,6 +83,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const { classes: chatClasses } = useChatStyles()
 
   const [screenShare, setScreenShare] = React.useState<boolean>(false)
+  const [openAddCohostModal, setOpenAddCohostModal] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     if (data.screenshareParticipant) {
@@ -106,6 +108,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
 
   if (isAnonymous) {
     onAnonymousEntry()
+  }
+
+  const toggleCohostModal = () => {
+    setOpenAddCohostModal(!openAddCohostModal)
   }
 
   return (
@@ -223,31 +229,56 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       <Box id="organizer-controls-container" className={classes.organizerTopControls}>
         {/* Add / Share Modal */}
         <ShareLinkModal joinToken={joinToken || ''} open={showLink} onDismiss={() => setShowLink(false)} />
+
+        {/* Add CoHost Modal */}
+        {data?.conference?.conferenceId && openAddCohostModal && (
+          <AddCoHostsModal
+            conferenceId={data?.conference?.conferenceId}
+            open={openAddCohostModal}
+            onDismiss={toggleCohostModal}
+          />
+        )}
+
         {/* Role-based Controls */}
         {data.conference && (
           <Grid container className={classes.webinarTopBar} sx={layout.style.topBar}>
             <Grid
               item
-              xs={10}
+              xs={9}
               display="flex"
               alignItems="center"
               justifyContent="center"
               className={classes.header}
-              paddingLeft="15%"
+              paddingLeft="20%"
             >
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
             </Grid>
-            <Grid item xs={2} display="flex" alignItems="center" className={classes.topControls}>
+            <Grid item xs={3} display="flex" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
-                <IconButton
-                  sx={{ backdropFilter: 'contrast(0.5)' }}
-                  color="primary"
-                  aria-label="share link"
-                  component="label"
-                  onClick={toggleLink}
-                >
-                  <GroupAdd fontSize="small" />
-                </IconButton>
+                <>
+                  <Tooltip title="Add Cohost">
+                    <IconButton
+                      sx={{ backdropFilter: 'contrast(0.5)', marginRight: '10px' }}
+                      color="primary"
+                      aria-label="add cohost"
+                      component="label"
+                      onClick={toggleCohostModal}
+                    >
+                      <PersonAddAlt1 fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Share Link">
+                    <IconButton
+                      sx={{ backdropFilter: 'contrast(0.5)' }}
+                      color="primary"
+                      aria-label="share link"
+                      component="label"
+                      onClick={toggleLink}
+                    >
+                      <GroupAdd fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </>
               )}
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <Tooltip title={seriesEpisode.locked ? 'Locked' : 'Unlocked'}>

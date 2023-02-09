@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios'
 import { AccountCredentials } from './../../models/AccountCredentials'
 import { ParticipantMuteState } from './../../models/Participant'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
-import { MAIN_ENDPOINT } from '../../settings/variables'
+import { adminAccount, MAIN_ENDPOINT } from '../../settings/variables'
 import { MOCK_API_CALLS } from './mock'
 import { getOptionsParams } from '../../utils/apiUtils'
 
@@ -271,6 +271,64 @@ const muteParticipant = async (
   }
 }
 
+const updateCohostList = async (
+  conferenceId: string | number,
+  account: AccountCredentials,
+  cohostEmailList: string[]
+) => {
+  try {
+    const payload: any = { cohosts: cohostEmailList }
+
+    // Temporary solution until API gets fixed -
+    // TODO: replace 'adminAccount' with 'account'
+    const config = getOptionsParams(adminAccount)
+
+    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/cohosts`, payload, config)
+    return response
+  } catch (e: any) {
+    console.log(e)
+    const code = e.code === 'ERR_BAD_REQUEST' ? 400 : e.code
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      if (error) {
+        message = error
+      }
+    }
+    return {
+      data: null,
+      status: code || 400,
+      statusText: message,
+    } as AxiosResponse
+  }
+}
+
+const getCohostList = async (conferenceId: string | number, account: AccountCredentials) => {
+  try {
+    // Temporary solution until API gets fixed -
+    // TODO: replace 'adminAccount' with 'account'
+    const config = getOptionsParams(adminAccount)
+
+    const response: AxiosResponse = await axios.get(`${ENDPOINT.CONFERENCE}/${conferenceId}/cohosts`, config)
+
+    return response
+  } catch (e: any) {
+    console.log(e)
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      message = error
+    }
+    return {
+      data: null,
+      status: e.code,
+      statusText: message,
+    } as AxiosResponse
+  }
+}
+
 const banParticipant = async (
   conferenceId: string | number,
   account: AccountCredentials,
@@ -317,4 +375,6 @@ export const CONFERENCE_API_CALLS = {
   getConferenceLoby,
   getNextVipConference,
   getVipConferenceList,
+  updateCohostList,
+  getCohostList,
 }
