@@ -5,6 +5,8 @@ import MediaContext from '../components/MediaContext/MediaContext'
 import JoinContext from '../components/JoinContext/JoinContext'
 import WatchContext from '../components/WatchContext/WatchContext'
 import { isWatchParty } from '../settings/variables'
+import WatchPage from '../pages/WatchPage/WatchPage'
+import ConferenceContext from '../components/StreamListContext/StreamListContext'
 
 const Signin = React.lazy(() => import('../pages/SignIn/SignIn'))
 const Home = React.lazy(() => import('../pages/Home/Home'))
@@ -59,6 +61,14 @@ const AppRoutes = () => {
           <Route path="*" element={<Landing />} />
           {/* TODO: Remove for production. Here for simple VIP entrance in demos. */}
           <Route path="/vip" element={<SimpleVipPage />} />
+          <Route
+            path="/watch"
+            element={
+              <ConferenceContext.Provider>
+                <WatchPage />
+              </ConferenceContext.Provider>
+            }
+          />
         </Routes>
       </React.Suspense>
     </BrowserRouter>
