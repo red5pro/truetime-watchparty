@@ -29,9 +29,11 @@ const WatchPage = () => {
             return (
               <Fragment key={value.name}>
                 <ListItem sx={{ margin: 3 }} disablePadding key={`${value.name}_${i}`}>
-                  <ListItemButton component="a" href="#simple-list">
+                  <ListItemButton
+                    component="a"
+                    href={`/watch/live?guid=${encodeURIComponent(`${value.scope}/${value.name}`)}`}
+                  >
                     <ListItemText primary={value.title} />
-                    <ListItemText />
                   </ListItemButton>
                 </ListItem>
                 <Divider orientation="horizontal" flexItem sx={{ width: '100%', bgcolor: '#d3d3d3', height: '1px' }} />
@@ -47,9 +49,9 @@ const WatchPage = () => {
             return (
               <Fragment key={value.filename}>
                 <ListItem sx={{ margin: 3 }} disablePadding key={`${value.filename}_${i}`}>
-                  <ListItemButton component="a" href="#simple-list">
+                  <ListItemButton component="a" href={`/watch/vod?url=${encodeURIComponent(value.url)}`}>
                     <ListItemText primary={value.title} />
-                    <ListItemText />
+                    <ListItemText primary={value.lastModified} />
                   </ListItemButton>
                 </ListItem>
                 <Divider orientation="horizontal" flexItem sx={{ width: '100%', bgcolor: '#d3d3d3', height: '1px' }} />

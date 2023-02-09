@@ -7,6 +7,8 @@ import WatchContext from '../components/WatchContext/WatchContext'
 import { isWatchParty } from '../settings/variables'
 import WatchPage from '../pages/WatchPage/WatchPage'
 import ConferenceContext from '../components/StreamListContext/StreamListContext'
+import WatchVODPage from '../pages/WatchVODPage/WatchVODPage'
+import WatchLivePage from '../pages/WatchLivePage/WatchLivePage'
 
 const Signin = React.lazy(() => import('../pages/SignIn/SignIn'))
 const Home = React.lazy(() => import('../pages/Home/Home'))
@@ -69,6 +71,8 @@ const AppRoutes = () => {
               </ConferenceContext.Provider>
             }
           />
+          <Route path="/watch/live" element={<WatchLivePage />} />
+          <Route path="/watch/vod" element={<WatchVODPage />} />
         </Routes>
       </React.Suspense>
     </BrowserRouter>
