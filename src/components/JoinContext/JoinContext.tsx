@@ -224,7 +224,7 @@ const JoinProvider = (props: JoinContextProps) => {
       try {
         const result = await CONFERENCE_API_CALLS.getCohostList(conferenceId, getCookies().account)
         if (result.status !== 200) {
-          throw { data: null, status: result.status, statusText: `Could not get the cohost list from this conference.` }
+          throw { data: null, status: result.status, statusText: `Could not get the cohost list of this conference.` }
         }
         setCohostsList(result.data || [])
 
