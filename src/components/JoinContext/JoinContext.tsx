@@ -60,7 +60,7 @@ const JoinProvider = (props: JoinContextProps) => {
   })
 
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
-  const [cohostsList, setCohostsList] = React.useState<string[]>([])
+  const [cohostsList, setCohostsList] = React.useState<string[] | undefined>(undefined)
   // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
   React.useEffect(() => {
@@ -226,7 +226,7 @@ const JoinProvider = (props: JoinContextProps) => {
         if (result.status !== 200) {
           throw { data: null, status: result.status, statusText: `Could not get the cohost list from this conference.` }
         }
-        setCohostsList(result.data?.cohosts || [])
+        setCohostsList(result.data || [])
 
         return result
       } catch (e) {
@@ -237,12 +237,11 @@ const JoinProvider = (props: JoinContextProps) => {
     return null
   }
 
-  const addCoHostList = async (conferenceId: string, cohostEmail: string) => {
-    const cohostsListUpdated = [...cohostsList, cohostEmail]
+  const updateCoHostList = async (conferenceId: string, cohostEmailList: string[]) => {
     try {
-      const result = await CONFERENCE_API_CALLS.addCohostList(conferenceId, getCookies().account, cohostsListUpdated)
+      const result = await CONFERENCE_API_CALLS.updateCohostList(conferenceId, getCookies().account, cohostEmailList)
       if (result.status === 200) {
-        setCohostsList(cohostsListUpdated)
+        setCohostsList(cohostEmailList || [])
       }
 
       return result
@@ -275,7 +274,7 @@ const JoinProvider = (props: JoinContextProps) => {
     lock,
     unlock,
     getCoHostsList,
-    addCoHostList,
+    updateCoHostList,
   }
 
   return <JoinContext.Provider value={exportedValues}>{children}</JoinContext.Provider>

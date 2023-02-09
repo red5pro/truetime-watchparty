@@ -30,14 +30,11 @@ import useChatStyles from './ChatStyles.module'
 import ScreenSharePublisher from '../ScreenShare/ScreenSharePublisher'
 import { Layout } from './MainStageWrapper'
 import { IMainStageWrapperProps } from '.'
-import JoinContext from '../JoinContext/JoinContext'
 import ScreenShareSubscriber from '../ScreenShareSubscriber/ScreenShareSubscriber'
 
 const ShareLinkModal = React.lazy(() => import('../Modal/ShareLinkModal'))
 const AddCoHostsModal = React.lazy(() => import('../Modal/AddCoHostModal/AddCoHostsModal'))
 const SimpleAlertDialog = React.lazy(() => import('../Modal/SimpleAlertDialog'))
-
-const useJoinContext = () => React.useContext(JoinContext.Context)
 
 const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const {
@@ -85,14 +82,6 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
 
   const [screenShare, setScreenShare] = React.useState<boolean>(false)
   const [openAddCohostModal, setOpenAddCohostModal] = React.useState<boolean>(false)
-
-  const { getCoHostsList } = useJoinContext()
-
-  React.useEffect(() => {
-    if (data?.conference?.conferenceId) {
-      getCoHostsList(data.conference.conferenceId)
-    }
-  }, [data?.conference?.conferenceId])
 
   React.useEffect(() => {
     if (data.screenshareParticipant) {
