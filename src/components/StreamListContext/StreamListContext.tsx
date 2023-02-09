@@ -8,6 +8,7 @@ import { Stream, StreamFormatType, VODStream } from '../../models/Stream'
 // NOTE: Ruling that Mixer Streams have the nomenclature of <space-delimited-camel-cap>_WEBINAR
 //        Noting this nomenclature, the following util methods can derive the filename and title.
 
+const urlReg = /^https/
 const camelCaseReg = /([a-z0-9])([A-Z])/g
 const streamNameReg = new RegExp(`(.*)_${!isWatchParty ? WebbAppMode.WEBINAR : WebbAppMode.WATCHPARTY}`, 'i')
 
@@ -133,10 +134,7 @@ const StreamListProvider = (props: StreamListContextProps) => {
       const response = await getVODMediafiles(STREAM_HOST, 'live', false)
       const webinars = response.filter((s: VODStream) => streamNameReg.exec(s.name))
       const mp4s = webinars.map((s: VODStream) => {
-        const filename = getFilenameFromName(s.name)
         s.type = StreamFormatType.MP4
-        s.filename = filename
-        s.title = getTitleFromFilename(filename)
         return s
       })
       streams = streams.concat(mp4s)
@@ -148,19 +146,22 @@ const StreamListProvider = (props: StreamListContextProps) => {
       const response = await getVODPlaylists(STREAM_HOST, 'live', false)
       const webinars = response.filter((s: VODStream) => streamNameReg.exec(s.name))
       const hls = webinars.map((s: VODStream) => {
-        const filename = getFilenameFromName(s.name)
-        s.type = StreamFormatType.HLS
-        s.filename = filename
-        s.title = getTitleFromFilename(filename)
         // Prefer MP4 over HLS if doubled
         const exists = streams.findIndex((vod: VODStream) => vod.filename === s.filename)
         if (exists > -1) {
           return undefined
         }
+        s.type = StreamFormatType.HLS
         return s
       })
-      // Strip undefined.
       streams = streams.concat(hls.filter((s: VODStream) => s))
+      // Decorate.
+      streams = streams.map((s: VODStream) => {
+        const filename = getFilenameFromName(s.name)
+        s.filename = filename
+        s.title = getTitleFromFilename(filename)
+        return s
+      })
     } catch (e) {
       console.error(e)
     }

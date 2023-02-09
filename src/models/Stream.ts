@@ -11,6 +11,7 @@ export interface VODStream {
   type?: StreamFormatType
   filename?: string
   title?: string
+  fullUrl?: string
   name: string
   lastModified: number
   length: number

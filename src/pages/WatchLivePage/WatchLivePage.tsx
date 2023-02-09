@@ -1,13 +1,12 @@
 import { Box, Stack, Typography } from '@mui/material'
 import React from 'react'
-import { useNavigate, useParams } from 'react-router'
+import { useNavigate } from 'react-router'
 import Loading from '../../components/Common/Loading/Loading'
 import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Subscriber from '../../components/Subscriber/Subscriber'
 import useQueryParams from '../../hooks/useQueryParams'
 
 const WatchLivePage = () => {
-  const params = useParams()
   const query = useQueryParams()
   const navigate = useNavigate()
 

@@ -1,4 +1,7 @@
 import { Stream, VODStream } from './../models/Stream'
+
+const urlReg = /^https/
+
 /**
  * Request to get Origin data to broadcast on stream manager proxy.
  */
@@ -54,6 +57,24 @@ export const getVODMediafiles = async (host: string, context: string, useCloud =
   }
   // Only return MP4s
   const { mediafiles } = json
+  // TODO: Hrm... how do we get an origin that may have VOD file if not in cloud storage?
+
+  // const allUrls = Promise.allSettled(
+  //   mediafiles.map(async (vod: VODStream) => {
+  //     // If cloudstorage, this will already be provided in url attribute
+  //     // If not, flesh it out as residing on an origin
+  //     // vod.fullUrl = vod.url
+  //     // if (urlReg.exec(s.url) === null) {
+  //     //   try {
+  //     //     const fullUrl = await getFullUrlFromFilename('live', s.url)
+  //     //   } catch (e) {
+  //     //     console.error(e)
+  //     //     // nevermind
+  //     //   }
+  //     // }
+  //     return vod.url
+  //   })
+  // )
   return mediafiles.filter((s: VODStream) => mp4Reg.exec(s.name))
 }
 
