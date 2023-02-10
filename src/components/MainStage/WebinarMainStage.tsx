@@ -157,7 +157,8 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           ref={subscriberListRef}
           // maxHeight={layout.layout !== Layout.FULLSCREEN ? 'calc(100vh - 10rem)' : '100%'}
           minHeight={layout.layout !== Layout.FULLSCREEN ? `calc(100vh - 5rem)` : '100%'}
-          width="fit-content"
+          width={layout.layout !== Layout.FULLSCREEN ? '100%' : 'fit-content'}
+          minWidth={layout.layout !== Layout.FULLSCREEN ? '100%' : 'auto'}
           flexWrap="nowrap"
           style={layout.layout !== Layout.FULLSCREEN ? { ...layout.style.subscriberContainer } : { ...{ gap: '10px' } }}
         >
