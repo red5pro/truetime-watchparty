@@ -54,9 +54,6 @@ const MainStageWrapper = () => {
   const navigate = useNavigate()
   const { getCookies } = useCookies(['account'])
 
-  let anonJoinTimeout: any
-  const anonJoinRef = React.useRef(null)
-
   const publisherRef = React.useRef<PublisherRef>(null)
   const subscriberListRef = React.useRef<any>(null)
 
@@ -268,19 +265,9 @@ const MainStageWrapper = () => {
     navigate(`/thankyou/${joinToken}`)
   }
 
-  const stopAnonJoinTimeout = () => {
-    if (anonJoinRef.current) {
-      clearTimeout(anonJoinRef.current)
-    }
-    clearTimeout(anonJoinTimeout)
-  }
   const onAnonymousEntry = () => {
-    stopAnonJoinTimeout()
-    anonJoinTimeout = setTimeout(() => {
-      const { url, request } = getAnonymousSocketUrl(joinToken)
-      join(url, request)
-    }, 2000)
-    anonJoinRef.current = anonJoinTimeout
+    const { url, request } = getAnonymousSocketUrl(joinToken)
+    join(url, request)
   }
 
   const onPublisherBroadcast = () => {
