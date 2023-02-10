@@ -6,7 +6,7 @@ import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-material'
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
 
-import { ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import { ENABLE_MUTE_API, isWatchParty, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Loading from '../Common/Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
 
@@ -31,7 +31,6 @@ import useChatStyles from './ChatStyles.module'
 import { IMainStageWrapperProps } from '.'
 import { Layout } from './MainStageWrapper'
 import PublisherPortalFullscreen from './PublisherPortalFullscreen'
-import { width } from '@mui/system'
 
 interface SubscriberRef {
   setVolume(value: number): any
@@ -64,6 +63,7 @@ const MainStage = (props: IMainStageProps) => {
     showBanConfirmation,
     mainStreamGuid,
     maxParticipantGridColumnStyle,
+    isAnonymous, // no anonymous viewing in Watch Party mode. Ignored and will redirect on `/join/anon/${token}`.
 
     setShowBanConfirmation,
     onContinueBan,
@@ -71,6 +71,7 @@ const MainStage = (props: IMainStageProps) => {
     getStreamGuid,
     calculateParticipantHeight,
     calculateGrid,
+    onAnonymousEntry,
     onPublisherFail,
     onPublisherBroadcastInterrupt,
     onPublisherBroadcast,
@@ -187,14 +188,16 @@ const MainStage = (props: IMainStageProps) => {
                   </IconButton>
                 </Tooltip>
               )}
-              <CustomButton
-                size={BUTTONSIZE.SMALL}
-                buttonType={BUTTONTYPE.LEAVE}
-                startIcon={<LogOutIcon />}
-                onClick={onLeave}
-              >
-                Leave
-              </CustomButton>
+              {userRole !== UserRoles.ANONYMOUS.toLowerCase() && (
+                <CustomButton
+                  size={BUTTONSIZE.SMALL}
+                  buttonType={BUTTONTYPE.LEAVE}
+                  startIcon={<LogOutIcon />}
+                  onClick={onLeave}
+                >
+                  Leave
+                </CustomButton>
+              )}
             </Stack>
           </Box>
         )}
@@ -306,12 +309,11 @@ const MainStage = (props: IMainStageProps) => {
             )}
           </Stack>
         </Stack>
-
         {/* Loading Message */}
         {(!data.conference || loading) && (
           <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
             <Loading />
-            <Typography>Loading Watch Party</Typography>
+            <Typography>Loading {isWatchParty ? 'Watch Party' : 'Webinar'}</Typography>
           </Stack>
         )}
       </Box>

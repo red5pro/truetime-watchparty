@@ -22,11 +22,17 @@ export const getStartTimeFromTimestamp = (ts: number) => {
   return moment(ts).format('MMMM Do, h:mm a')
 }
 
+export enum Paths {
+  ANONYMOUS = '/join/anon',
+  ANONYMOUS_THANKYOU = '/thankyou/anon',
+}
+
 export enum UserRoles {
   PARTICIPANT = 'PARTICIPANT',
   ORGANIZER = 'ORGANIZER',
   VIP = 'VIP',
   ADMIN = 'ADMIN',
+  ANONYMOUS = 'ANONYMOUS',
   COHOST = 'COHOST',
 }
 

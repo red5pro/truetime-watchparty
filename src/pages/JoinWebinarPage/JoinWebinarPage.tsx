@@ -46,7 +46,7 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 }
 
 const JoinWebinarPage = () => {
-  const { loading, error, joinToken, nickname, updateNickname } = useJoinContext()
+  const { loading, error, joinToken, nickname, updateNickname, isAnonymousParticipant } = useJoinContext()
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
@@ -66,6 +66,12 @@ const JoinWebinarPage = () => {
       }
     }
   }, [searchParams])
+
+  React.useEffect(() => {
+    if (isAnonymousParticipant && currentSection !== Section.WatchParty) {
+      setCurrentSection(Section.WatchParty)
+    }
+  }, [isAnonymousParticipant, currentSection])
 
   React.useEffect(() => {
     if (currentSection !== Section.AVSetup && currentSection !== Section.WatchParty) {
@@ -134,7 +140,7 @@ const JoinWebinarPage = () => {
     <Box className={classes.root} display="flex" flexDirection="column">
       {loading && (
         <Box className={classes.loadingContainer}>
-          <Loading text="Loading Watch Party" />
+          <Loading text="Loading Webinar" />
         </Box>
       )}
       <Box display="flex" flexDirection="column" justifyContent="space-around" width="100%" height="100%">

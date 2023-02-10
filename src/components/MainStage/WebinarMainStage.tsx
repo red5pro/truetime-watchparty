@@ -55,6 +55,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     fatalError,
     nonFatalError,
     showBanConfirmation,
+    isAnonymous,
 
     setShowBanConfirmation,
     onContinueBan,
@@ -62,6 +63,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     getStreamGuid,
     calculateParticipantHeight,
     calculateGrid,
+    onAnonymousEntry,
     onPublisherFail,
     onPublisherBroadcastInterrupt,
     onPublisherBroadcast,
@@ -110,6 +112,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     onShareScreen(false)
   }
 
+  if (isAnonymous) {
+    onAnonymousEntry()
+  }
+
   const toggleCohostModal = () => {
     setOpenAddCohostModal(!openAddCohostModal)
   }
@@ -120,7 +126,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       {(!data.conference || loading) && (
         <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
           <Loading />
-          <Typography>Loading Watch Party</Typography>
+          <Typography>Loading Webinar</Typography>
         </Stack>
       )}
       {screenShare && (
@@ -150,7 +156,11 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         </Box>
       )}
       {/* Other Participants Video Playback */}
-      <Box id="participants-video-container" sx={layout.style.subscriberListWb} m={1}>
+      <Box
+        id="participants-video-container"
+        sx={isAnonymous ? layout.style.subscriberListWbAnon : layout.style.subscriberListWb}
+        m={1}
+      >
         <Grid
           container
           xs={layout.layout === Layout.FULLSCREEN ? 12 : 4}
@@ -162,30 +172,34 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           flexWrap="nowrap"
           style={layout.layout !== Layout.FULLSCREEN ? { ...layout.style.subscriberContainer } : { ...{ gap: '10px' } }}
         >
-          <Grid
-            id="grid-stage-publisher"
-            item
-            sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
-            xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-            maxHeight={layout.layout !== Layout.FULLSCREEN ? '124px' : calculateParticipantHeight(data.list.length + 1)}
-          >
-            <Publisher
-              key="publisher"
-              ref={publisherRef}
-              useStreamManager={USE_STREAM_MANAGER}
-              host={STREAM_HOST}
-              streamGuid={getStreamGuid() || ''}
-              stream={mediaStream}
-              styles={
-                layout.layout !== Layout.FULLSCREEN
-                  ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
-                  : { ...layout.style.publisherVideo, ...layout.style.subscriber, transform: 'scaleX(1)' }
+          {!isAnonymous && (
+            <Grid
+              id="grid-stage-publisher"
+              item
+              sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
+              xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
+              maxHeight={
+                layout.layout !== Layout.FULLSCREEN ? '124px' : calculateParticipantHeight(data.list.length + 1)
               }
-              onFail={onPublisherFail}
-              onStart={onPublisherBroadcast}
-              onInterrupt={onPublisherBroadcastInterrupt}
-            />
-          </Grid>
+            >
+              <Publisher
+                key="publisher"
+                ref={publisherRef}
+                useStreamManager={USE_STREAM_MANAGER}
+                host={STREAM_HOST}
+                streamGuid={getStreamGuid() || ''}
+                stream={mediaStream}
+                styles={
+                  layout.layout !== Layout.FULLSCREEN
+                    ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
+                    : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(1)' } }
+                }
+                onFail={onPublisherFail}
+                onStart={onPublisherBroadcast}
+                onInterrupt={onPublisherBroadcastInterrupt}
+              />
+            </Grid>
+          )}
           {data.list.map((s: Participant) => (
             <Grid
               id="grid-stage-subscriber"
@@ -303,63 +317,64 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         )}
       </Box>
       {/* Bottom Controls / Chat */}
-      <Stack
-        id="bottom-controls-chat-container"
-        className={classes.bottomBar}
-        direction="row"
-        alignItems="bottom"
-        spacing={2}
-      >
-        {publishMediaStream && ENABLE_MUTE_API && (
-          <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
-            <PublisherControls
-              cameraOn={true}
-              microphoneOn={true}
-              onCameraToggle={onPublisherCameraToggle}
-              onMicrophoneToggle={onPublisherMicrophoneToggle}
-            />
-          </Stack>
-        )}
-        {data.conference && (
-          <Stack direction="row" marginY={1} spacing={1} alignItems="center" justifyContent="center">
-            {(userRole === UserRoles.ORGANIZER.toLowerCase() || userRole === UserRoles.COHOST.toLowerCase()) && (
-              <>
-                {!screenShare ? (
-                  <Tooltip
-                    title={data?.screenshareParticipant?.length > 0 ? 'Take Over' : 'Share Screen'}
-                    placement="top"
-                  >
-                    <IconButton
-                      sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
-                      color="primary"
-                      aria-label="start a screen share"
-                      component="label"
-                      onClick={() => onShareScreen(true)}
+      {!isAnonymous && (
+        <Stack
+          id="bottom-controls-chat-container"
+          className={classes.bottomBar}
+          direction="row"
+          alignItems="bottom"
+          spacing={2}
+        >
+          {publishMediaStream && ENABLE_MUTE_API && (
+            <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
+              <PublisherControls
+                cameraOn={true}
+                microphoneOn={true}
+                onCameraToggle={onPublisherCameraToggle}
+                onMicrophoneToggle={onPublisherMicrophoneToggle}
+              />
+            </Stack>
+          )}
+          {data.conference && (
+            <Stack direction="row" marginY={1} spacing={1} alignItems="center" justifyContent="center">
+              {(userRole === UserRoles.ORGANIZER.toLowerCase() || userRole === UserRoles.COHOST.toLowerCase()) && (
+                <>
+                  {!screenShare ? (
+                    <Tooltip
+                      title={data?.screenshareParticipant?.length > 0 ? 'Take Over' : 'Share Screen'}
+                      placement="top"
                     >
-                      <ScreenShareOutlined />
-                    </IconButton>
-                  </Tooltip>
-                ) : (
-                  <Tooltip title="Stop Share Screen">
-                    <IconButton
-                      sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
-                      color="primary"
-                      aria-label="stop screen share"
-                      component="label"
-                      onClick={onScreenShareEnd}
-                    >
-                      <StopScreenShareOutlined />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </>
-            )}
-            {(data.screenshareParticipants?.length > 0 || screenShare) && (
-              <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
-            )}
+                      <IconButton
+                        sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
+                        color="primary"
+                        aria-label="start a screen share"
+                        component="label"
+                        onClick={() => onShareScreen(true)}
+                      >
+                        <ScreenShareOutlined />
+                      </IconButton>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Stop Share Screen">
+                      <IconButton
+                        sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
+                        color="primary"
+                        aria-label="stop screen share"
+                        component="label"
+                        onClick={onScreenShareEnd}
+                      >
+                        <StopScreenShareOutlined />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </>
+              )}
+              {(data.screenshareParticipants?.length > 0 || screenShare) && (
+                <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
+              )}
 
-            <Box className={chatClasses.inputChatContainer}>
-              {/* {layout.layout === Layout.FULLSCREEN && (
+              <Box className={chatClasses.inputChatContainer}>
+                {/* {layout.layout === Layout.FULLSCREEN && (
                 <Box
                   sx={{ display: chatIsHidden ? 'none' : 'block' }}
                   className={`${chatClasses.fullScreenChatContainer} ${chatClasses.chatContainer} `}
@@ -369,39 +384,39 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                   </MessageList>
                 </Box>
               )} */}
-              <Box onClick={() => toggleChat()}>
-                <MessageInput
-                  typingIndicator
-                  emojiPicker={<PickerAdapter />}
-                  placeholder="Chat Message"
-                  onSend={chatIsHidden ? () => toggleChat() : () => noop()}
-                />
+                <Box onClick={() => toggleChat()}>
+                  <MessageInput
+                    typingIndicator
+                    emojiPicker={<PickerAdapter />}
+                    placeholder="Chat Message"
+                    onSend={chatIsHidden ? () => toggleChat() : () => noop()}
+                  />
+                </Box>
               </Box>
-            </Box>
-          </Stack>
-        )}
-        <Stack direction="row" spacing={1} className={classes.partyControls}>
-          {data.conference && (
-            <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
-              <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
-                <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
-                  <TypingIndicator />
-                </MessageList>
-                {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
-              </Box>
-              <CustomButton
-                size={BUTTONSIZE.SMALL}
-                buttonType={BUTTONTYPE.TRANSPARENT}
-                startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
-                onClick={toggleChat}
-              >
-                {chatIsHidden ? 'Show' : 'Hide'} Chat
-              </CustomButton>
-            </Box>
+            </Stack>
           )}
+          <Stack direction="row" spacing={1} className={classes.partyControls}>
+            {data.conference && (
+              <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
+                <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
+                  <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
+                    <TypingIndicator />
+                  </MessageList>
+                  {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
+                </Box>
+                <CustomButton
+                  size={BUTTONSIZE.SMALL}
+                  buttonType={BUTTONTYPE.TRANSPARENT}
+                  startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
+                  onClick={toggleChat}
+                >
+                  {chatIsHidden ? 'Show' : 'Hide'} Chat
+                </CustomButton>
+              </Box>
+            )}
+          </Stack>
         </Stack>
-      </Stack>
-
+      )}
       {/* Publisher Portal to be moved from one view layout state to another */}
       {/* <portals.InPortal node={portalNode}>
         <Box sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}>
@@ -423,10 +438,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       {fatalError && (
         <ErrorModal
           open={!!fatalError}
-          title={fatalError.title || 'Error'}
-          message={fatalError.statusText}
-          closeLabel={fatalError.closeLabel || 'OK'}
-          onClose={fatalError.onClose}
+          title={fatalError!.title || 'Error'}
+          message={fatalError!.statusText}
+          closeLabel={fatalError!.closeLabel || 'OK'}
+          onClose={fatalError!.onClose}
         ></ErrorModal>
       )}
       {/* Non-Fatal Error */}
@@ -441,11 +456,11 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       {showBanConfirmation && (
         <SimpleAlertDialog
           title="Ban Confirmation"
-          message={`Are you sure you want to ban ${showBanConfirmation.displayName}?`}
+          message={`Are you sure you want to ban ${showBanConfirmation!.displayName}?`}
           confirmLabel="YES"
           denyLabel="NEVERMIND"
           onConfirm={() => {
-            onContinueBan(showBanConfirmation)
+            onContinueBan(showBanConfirmation!)
           }}
           onDeny={() => setShowBanConfirmation(undefined)}
         />

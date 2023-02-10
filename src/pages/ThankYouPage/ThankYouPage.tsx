@@ -1,12 +1,12 @@
 import { Box, Stack, Typography } from '@mui/material'
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import JoinContext from '../../components/JoinContext/JoinContext'
 import Loading from '../../components/Common/Loading/Loading'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
-import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
+import { getStartTimeFromTimestamp, Paths } from '../../utils/commonUtils'
 import useStyles from './ThankYouPage.module'
 import { isWatchParty } from '../../settings/variables'
 
@@ -19,8 +19,15 @@ const ThankYouPage = () => {
   const { classes } = useStyles()
 
   const navigate = useNavigate()
+  const path = useLocation().pathname
 
-  const onRejoin = () => navigate(`/join/${joinToken}`)
+  const onRejoin = () => {
+    if (path.match(Paths.ANONYMOUS_THANKYOU)) {
+      navigate(`${Paths.ANONYMOUS}/${joinToken}`)
+      return
+    }
+    navigate(`/join/${joinToken}`)
+  }
 
   const onRetryRequest = () => {
     window.location.reload()
