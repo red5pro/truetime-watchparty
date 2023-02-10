@@ -1,6 +1,29 @@
+import { SM_ACCESS_TOKEN } from '../settings/variables'
 import { Stream, VODStream } from './../models/Stream'
 
 const urlReg = /^https/
+
+const getOriginFromGroup = async (host: string, groupName: string, accessToken: string) => {
+  const url = `https://${host}/streammanager/api/4.0/admin/nodegroup/${groupName}/node/origin?accessToken=${accessToken}`
+  const response = await fetch(url)
+  const origins = await response.json()
+  return origins.map((o: any) => o.address)
+}
+
+const getVODOrigins = async (host: string, context: string, name: string, accessToken: string) => {
+  const nodeGroupsUrl = `https://${host}/streammanager/api/4.0/admin/nodegroup?accessToken=${accessToken}`
+  const response = await fetch(nodeGroupsUrl)
+  const nodeGroups = await response.json()
+  const originAsyncs = await Promise.allSettled(
+    nodeGroups.map(async (g: any) => await getOriginFromGroup(host, g.name, accessToken))
+  )
+  const origins = originAsyncs
+    .filter((o: any) => o.status === 'fulfilled')
+    .map((o: any) => o.value)
+    .flat(1)
+
+  return origins
+}
 
 /**
  * Request to get Origin data to broadcast on stream manager proxy.
@@ -57,27 +80,23 @@ export const getVODMediafiles = async (host: string, context: string, useCloud =
   }
   // Only return MP4s
   const { mediafiles } = json
-  // TODO: Hrm... how do we get an origin that may have VOD file if not in cloud storage?
-
-  // const allUrls = Promise.allSettled(
-  //   mediafiles.map(async (vod: VODStream) => {
-  //     // If cloudstorage, this will already be provided in url attribute
-  //     // If not, flesh it out as residing on an origin
-  //     // vod.fullUrl = vod.url
-  //     // if (urlReg.exec(s.url) === null) {
-  //     //   try {
-  //     //     const fullUrl = await getFullUrlFromFilename('live', s.url)
-  //     //   } catch (e) {
-  //     //     console.error(e)
-  //     //     // nevermind
-  //     //   }
-  //     // }
-  //     return vod.url
-  //   })
-  // )
-
-  // url => /:context/streams/:url
-  return mediafiles.filter((s: VODStream) => mp4Reg.exec(s.name))
+  let vods = mediafiles.filter((s: VODStream) => mp4Reg.exec(s.name))
+  if (!useCloud) {
+    try {
+      const origins = await getVODOrigins(host, context, 'stream', SM_ACCESS_TOKEN)
+      if (origins.length > 0) {
+        // fullUrl => /:context/streams/:url
+        vods = vods.map((vod: VODStream) => {
+          vod.fullUrl = `http://${origins[0]}:5080/${context}/streams/${vod.url}`
+          return vod
+        })
+      }
+    } catch (e: any) {
+      // meh...
+      console.error(e)
+    }
+  }
+  return vods
 }
 
 /**
@@ -91,7 +110,21 @@ export const getVODPlaylists = async (host: string, context: string, useCloud = 
     throw new Error(json.errorMessage)
   }
   const { playlists } = json
-
-  // url => /:context/:url
-  return playlists
+  let vods = playlists
+  if (!useCloud) {
+    try {
+      const origins = await getVODOrigins(host, context, 'stream', SM_ACCESS_TOKEN)
+      if (origins.length > 0) {
+        // fullUrl => /:context/:url
+        vods = vods.map((vod: VODStream) => {
+          vod.fullUrl = `http://${origins[0]}:5080/${context}/${vod.url}`
+          return vod
+        })
+      }
+    } catch (e: any) {
+      // meh...
+      console.error(e)
+    }
+  }
+  return vods
 }

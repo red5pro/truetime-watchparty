@@ -49,7 +49,10 @@ const WatchPage = () => {
             return (
               <Fragment key={value.filename}>
                 <ListItem sx={{ margin: 3 }} disablePadding key={`${value.filename}_${i}`}>
-                  <ListItemButton component="a" href={`/watch/vod?url=${encodeURIComponent(value.url)}`}>
+                  <ListItemButton
+                    component="a"
+                    href={`/watch/vod?url=${encodeURIComponent(value.fullUrl || value.url)}`}
+                  >
                     <ListItemText primary={value.title} />
                     <ListItemText primary={value.lastModified} />
                   </ListItemButton>
