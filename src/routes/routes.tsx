@@ -8,12 +8,12 @@ import WatchContext from '../components/WatchContext/WatchContext'
 import JoinWebinarPage from '../pages/JoinWebinarPage/JoinWebinarPage'
 import JoinPage from '../pages/JoinPage/JoinPage'
 import ThankYouPage from '../pages/ThankYouPage/ThankYouPage'
+import Landing from '../pages/Landing/Landing'
 
 import { isWatchParty } from '../settings/variables'
 
 const Signin = React.lazy(() => import('../pages/SignIn/SignIn'))
 const Home = React.lazy(() => import('../pages/Home/Home'))
-const Landing = React.lazy(() => import('../pages/Landing/Landing'))
 const VipJoinPage = React.lazy(() => import('../pages/VipJoinPage/VipJoinPage'))
 const PartyEndedPage = React.lazy(() => import('../pages/PartyEndedPage/PartyEndedPage'))
 const SimpleVipPage = React.lazy(() => import('../pages/SimpleVipPage/SimpleVipPage'))

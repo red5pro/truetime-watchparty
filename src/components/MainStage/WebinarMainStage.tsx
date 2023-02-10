@@ -155,7 +155,6 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           container
           xs={layout.layout === Layout.FULLSCREEN ? 12 : 4}
           ref={subscriberListRef}
-          maxWidth="100%"
           // maxHeight={layout.layout !== Layout.FULLSCREEN ? 'calc(100vh - 10rem)' : '100%'}
           minHeight={layout.layout !== Layout.FULLSCREEN ? `calc(100vh - 5rem)` : '100%'}
           width="fit-content"
@@ -243,7 +242,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               xs={8}
               display="flex"
               alignItems="center"
-              justifyContent={layout.layout === Layout.FULLSCREEN ? 'center' : 'flex-start'}
+              justifyContent="center"
               className={classes.header}
               paddingLeft="20%"
             >
