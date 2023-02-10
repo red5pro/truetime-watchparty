@@ -75,6 +75,8 @@ export const getVODMediafiles = async (host: string, context: string, useCloud =
   //     return vod.url
   //   })
   // )
+
+  // url => /:context/streams/:url
   return mediafiles.filter((s: VODStream) => mp4Reg.exec(s.name))
 }
 
@@ -89,5 +91,7 @@ export const getVODPlaylists = async (host: string, context: string, useCloud = 
     throw new Error(json.errorMessage)
   }
   const { playlists } = json
+
+  // url => /:context/:url
   return playlists
 }

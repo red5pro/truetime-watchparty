@@ -9,7 +9,9 @@ export const MAIN_ENDPOINT = `https://${API_SERVER_HOST}/conference-api/1.0`
 export const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY || 'ADDME'
 export const RECAPTCHA_SECRET_KEY = process.env.REACT_APP_RECAPTCHA_SECRET_KEY || 'ADDME'
 
-export const USE_STREAM_MANAGER = process.env.REACT_APP_SM === '0' || true
+export const SM_ACCESS_TOKEN = process.env.REACT_APP_SM_TOKEN
+export const USE_STREAM_MANAGER = process.env.REACT_APP_SM === '1' || false
+export const USE_CLOUD_STORAGE = process.env.REACT_APP_SM_CLOUDSTORAGE === '1' || false
 export const API_SOCKET_HOST = USE_LOCAL_SERVICES
   ? 'ws://localhost:8001'
   : `wss://${API_SERVER_HOST}/conference-api/1.0/ws/conference`

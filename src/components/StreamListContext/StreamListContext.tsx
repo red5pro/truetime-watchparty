@@ -1,5 +1,5 @@
 import React from 'react'
-import { STREAM_HOST } from '../../settings/variables'
+import { STREAM_HOST, USE_CLOUD_STORAGE } from '../../settings/variables'
 import { getLiveListing, getVODMediafiles, getVODPlaylists } from '../../utils/streamManagerUtils'
 import { isWatchParty } from '../../settings/variables'
 import { WebbAppMode } from '../../utils/variableUtils'
@@ -8,7 +8,6 @@ import { Stream, StreamFormatType, VODStream } from '../../models/Stream'
 // NOTE: Ruling that Mixer Streams have the nomenclature of <space-delimited-camel-cap>_WEBINAR
 //        Noting this nomenclature, the following util methods can derive the filename and title.
 
-const urlReg = /^https/
 const camelCaseReg = /([a-z0-9])([A-Z])/g
 const streamNameReg = new RegExp(`(.*)_${!isWatchParty ? WebbAppMode.WEBINAR : WebbAppMode.WATCHPARTY}`, 'i')
 
@@ -131,7 +130,7 @@ const StreamListProvider = (props: StreamListContextProps) => {
     let streams: VODStream[] = []
     try {
       // TODO: Change to true once we know mixer is sending to cloud...
-      const response = await getVODMediafiles(STREAM_HOST, 'live', false)
+      const response = await getVODMediafiles(STREAM_HOST, 'live', USE_CLOUD_STORAGE)
       const webinars = response.filter((s: VODStream) => streamNameReg.exec(s.name))
       const mp4s = webinars.map((s: VODStream) => {
         s.type = StreamFormatType.MP4
@@ -143,7 +142,7 @@ const StreamListProvider = (props: StreamListContextProps) => {
     }
     try {
       // TODO: Change to true once we know mixer is sending to cloud...
-      const response = await getVODPlaylists(STREAM_HOST, 'live', false)
+      const response = await getVODPlaylists(STREAM_HOST, 'live', USE_CLOUD_STORAGE)
       const webinars = response.filter((s: VODStream) => streamNameReg.exec(s.name))
       const hls = webinars.map((s: VODStream) => {
         // Prefer MP4 over HLS if doubled
