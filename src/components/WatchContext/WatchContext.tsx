@@ -12,8 +12,25 @@ interface IWatchProviderProps {
   children: any
 }
 
+const getScreenshareParticipants = (state: any, action: any, pid: number) => {
+  const screenshareParticipants =
+    action.payload.filter((p: Participant) => p.screenshareGuid && p.participantId !== pid) || []
+
+  const ownScreenshare = action.payload.find((p: Participant) => p.participantId === pid && p.screenshareGuid)
+
+  let closeCurrentScreenShare = false
+
+  // when a participant "takes over" the screen then I need to close the current screenshare
+  if (ownScreenshare && screenshareParticipants.length && !state.screenshareParticipants.length) {
+    closeCurrentScreenShare = true
+  }
+
+  return { screenshareParticipants, closeCurrentScreenShare }
+}
+
 const listReducer = (state: any, action: any) => {
   const pid = state.connection ? state.connection.participantId : undefined
+
   switch (action.type) {
     case 'UPDATE_LIST':
       return {
@@ -26,7 +43,7 @@ const listReducer = (state: any, action: any) => {
     case 'UPDATE_SCREENSHARES':
       return {
         ...state,
-        screenshareParticipant: action.payload,
+        ...getScreenshareParticipants(state, action, pid),
       }
     case 'SET_CONNECTION_DATA':
       return { ...state, connection: action.payload }
@@ -58,7 +75,8 @@ const WatchProvider = (props: IWatchProviderProps) => {
     status: undefined,
     vip: undefined,
     list: [], //Participant[]
-    screenshareParticipant: undefined, //Participant
+    screenshareParticipants: [], //Participant[], the screen will show only the first one
+    closeCurrentScreenShare: false,
   })
 
   React.useEffect(() => {
@@ -74,11 +92,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
   }
 
   const updateScreenshareList = (participants: Participant[]) => {
-    const pid = data.connection ? data.connection.participantId : undefined
-    const participantSharingSreen = participants.find((p: Participant) => p.participantId !== pid && p.screenshareGuid)
-    if (participantSharingSreen) {
-      dispatch({ type: 'UPDATE_SCREENSHARES', payload: participantSharingSreen })
-    }
+    dispatch({ type: 'UPDATE_SCREENSHARES', payload: participants })
   }
 
   const join = (url: string, joinRequest: ConnectionRequest) => {
@@ -103,6 +117,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
       } else if (messageType === MessageTypes.STATE_EVENT) {
         const details = payload as ConferenceStatusEvent
         dispatch({ type: 'SET_CONFERENCE_DATA', payload: details.state })
+
         updateStreamsList(details.state.participants)
         updateScreenshareList(details.state.participants)
       }
