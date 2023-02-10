@@ -4,6 +4,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import MediaContext from '../components/MediaContext/MediaContext'
 import JoinContext from '../components/JoinContext/JoinContext'
 import WatchContext from '../components/WatchContext/WatchContext'
+
+import JoinWebinarPage from '../pages/JoinWebinarPage/JoinWebinarPage'
+import JoinPage from '../pages/JoinPage/JoinPage'
+import ThankYouPage from '../pages/ThankYouPage/ThankYouPage'
+import Landing from '../pages/Landing/Landing'
+
 import { isWatchParty } from '../settings/variables'
 import WatchPage from '../pages/WatchPage/WatchPage'
 import ConferenceContext from '../components/StreamListContext/StreamListContext'
@@ -12,16 +18,12 @@ import WatchLivePage from '../pages/WatchLivePage/WatchLivePage'
 
 const Signin = React.lazy(() => import('../pages/SignIn/SignIn'))
 const Home = React.lazy(() => import('../pages/Home/Home'))
-const Landing = React.lazy(() => import('../pages/Landing/Landing'))
-const JoinPage = React.lazy(() => import('../pages/JoinPage/JoinPage'))
 const VipJoinPage = React.lazy(() => import('../pages/VipJoinPage/VipJoinPage'))
-const ThankYouPage = React.lazy(() => import('../pages/ThankYouPage/ThankYouPage'))
 const PartyEndedPage = React.lazy(() => import('../pages/PartyEndedPage/PartyEndedPage'))
 const SimpleVipPage = React.lazy(() => import('../pages/SimpleVipPage/SimpleVipPage'))
 const VerifyEmailPage = React.lazy(() => import('../pages/VerifyEmailPage/VerifyEmailPage'))
 const Loading = React.lazy(() => import('../components/Common/Loading/Loading'))
 const AdminPage = React.lazy(() => import('../pages/Admin/AdminPage'))
-const JoinWebinarPage = React.lazy(() => import('../pages/JoinWebinarPage/JoinWebinarPage'))
 
 const AppRoutes = () => {
   return (

@@ -144,7 +144,7 @@ const useChatStyles = makeStyles()((theme: any) => ({
   },
 
   inputChatContainer: {
-    width: '20rem',
+    width: 'fit-content',
 
     '& .pn-msg-input__textarea, .pn-msg-input__textarea:focus-within': {
       background: 'rgba(48, 48, 48, 0.6) 30%',
