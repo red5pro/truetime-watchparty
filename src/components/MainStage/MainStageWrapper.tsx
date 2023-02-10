@@ -36,8 +36,18 @@ const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
 const MainStageWrapper = () => {
-  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock, isAnonymousParticipant } =
-    useJoinContext()
+  const {
+    joinToken,
+    seriesEpisode,
+    fingerprint,
+    nickname,
+    getStreamGuid,
+    lock,
+    unlock,
+    isAnonymousParticipant,
+    cohostsList,
+    getCoHostsList,
+  } = useJoinContext()
   const { mediaStream } = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
 
@@ -139,14 +149,30 @@ const MainStageWrapper = () => {
 
   React.useEffect(() => {
     if (data.connection) {
-      const { connection } = data
+      const { connection, conference } = data
+
       if (connection && connection.role) {
         const { role } = connection
         setUserRole(role.toLowerCase())
         setSubscriberMenuActions(getMenuActionsFromRole(role.toLowerCase()))
       }
+
+      if (!isWatchParty && connection && connection.role !== UserRoles.ORGANIZER.toLocaleLowerCase() && conference) {
+        getCoHostsList(conference.conferenceId)
+      }
     }
-  }, [data.connection])
+  }, [data.connection, data.conference])
+
+  React.useEffect(() => {
+    if (
+      getCookies().account &&
+      cohostsList?.length &&
+      cohostsList?.includes((email: string) => email === getCookies().account.email)
+    ) {
+      debugger
+      setUserRole(UserRoles.COHOST.toLowerCase())
+    }
+  }, [cohostsList])
 
   React.useEffect(() => {
     if (isAnonymousParticipant) {

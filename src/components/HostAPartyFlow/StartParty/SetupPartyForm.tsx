@@ -27,6 +27,7 @@ import { AccountCredentials } from '../../../models/AccountCredentials'
 import { generateJoinToken, IStepActionsSubComponent } from '../../../utils/commonUtils'
 import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
+import { isWatchParty } from '../../../settings/variables'
 
 interface ISetupPartyFormProps {
   onActions: IStepActionsSubComponent
@@ -202,23 +203,25 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
                 <Typography className={classes.errorValidation}>{errors.country}</Typography>
               )}
 
-              <Box display="flex" height="auto" alignItems="center" marginY={1}>
-                <Checkbox
-                  id="vipOkay"
-                  name="vipOkay"
-                  className={classes.checkbox}
-                  value={values.vipOkay}
-                  checked={values.vipOkay ?? false}
-                  onChange={(ev: any) => setFieldValue('vipOkay', ev?.target?.checked)}
-                />
-                <Typography marginX={2}>Make my party visible for special guests to join</Typography>
-                <Tooltip
-                  title="Checking this box allows a special guest to join your watch party at any time during the event. These guests are directly invited to your watch party but they can add to the experience if they join"
-                  arrow
-                >
-                  <InfoIcon fontSize="small" />
-                </Tooltip>
-              </Box>
+              {isWatchParty && (
+                <Box display="flex" height="auto" alignItems="center" marginY={1}>
+                  <Checkbox
+                    id="vipOkay"
+                    name="vipOkay"
+                    className={classes.checkbox}
+                    value={values.vipOkay}
+                    checked={values.vipOkay ?? false}
+                    onChange={(ev: any) => setFieldValue('vipOkay', ev?.target?.checked)}
+                  />
+                  <Typography marginX={2}>Make my party visible for special guests to join</Typography>
+                  <Tooltip
+                    title="Checking this box allows a special guest to join your watch party at any time during the event. These guests are directly invited to your watch party but they can add to the experience if they join"
+                    arrow
+                  >
+                    <InfoIcon fontSize="small" />
+                  </Tooltip>
+                </Box>
+              )}
               {/* <Box display="flex" height="auto" alignItems="center" marginBottom={2}>
                 <Checkbox
                   id="notifyMe"

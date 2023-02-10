@@ -33,6 +33,7 @@ export enum UserRoles {
   VIP = 'VIP',
   ADMIN = 'ADMIN',
   ANONYMOUS = 'ANONYMOUS',
+  COHOST = 'COHOST',
 }
 
 export enum ThirdParties {
