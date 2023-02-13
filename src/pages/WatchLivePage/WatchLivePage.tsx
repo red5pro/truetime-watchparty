@@ -5,10 +5,13 @@ import Loading from '../../components/Common/Loading/Loading'
 import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
 import Subscriber from '../../components/Subscriber/Subscriber'
 import useQueryParams from '../../hooks/useQueryParams'
+import useStyles from '../WatchPage/WatchPage.module'
 
 const WatchLivePage = () => {
   const query = useQueryParams()
   const navigate = useNavigate()
+
+  const { classes } = useStyles()
 
   const [streamGuid, setStreamGuid] = React.useState<string>()
 
@@ -31,9 +34,9 @@ const WatchLivePage = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ width: '100vw', height: '100vh', backgroundColor: '#000' }}>
       {!streamGuid && (
-        <Stack direction="column" alignContent="center" spacing={2}>
+        <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
           <Loading />
           <Typography>Loading Live Stream...</Typography>
         </Stack>

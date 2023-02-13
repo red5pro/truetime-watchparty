@@ -8,12 +8,26 @@ const useStreamListContext = () => React.useContext(StreamListContext.Context)
 const WatchPage = () => {
   const { data, reload } = useStreamListContext()
 
+  const [interval, setInt] = React.useState<NodeJS.Timer>()
   const [loadingLive, setLoadingLive] = React.useState<boolean>(false)
   const [loadingVOD, setLoadingVOD] = React.useState<boolean>(false)
 
   React.useEffect(() => {
+    if (!interval) {
+      // Every 5 minutes
+      setInt(setInterval(async () => await reload(), 5 * 60 * 1000))
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval)
+      }
+    }
+  }, [])
+
+  React.useEffect(() => {
     setLoadingLive(data.loadingLive)
-  }, data.loadingLive)
+  }, [data.loadingLive])
 
   React.useEffect(() => {
     setLoadingVOD(data.loadingVOD)

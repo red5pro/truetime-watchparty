@@ -2,15 +2,18 @@ import React from 'react'
 import { Box, Stack, Typography } from '@mui/material'
 import { useNavigate } from 'react-router'
 import useQueryParams from '../../hooks/useQueryParams'
-
+import useStyles from '../WatchPage/WatchPage.module'
 import Hls from 'hls.js'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
+import Loading from '../../components/Common/Loading/Loading'
 
 const mp4Reg = /.*\.mp4/gi
 
 const WatchVODPage = () => {
   const query = useQueryParams()
   const navigate = useNavigate()
+
+  const { classes } = useStyles()
 
   const videoRef = React.useRef<HTMLVideoElement>(null)
 
@@ -104,6 +107,12 @@ const WatchVODPage = () => {
 
   return (
     <Box sx={{ width: '100vw', height: '100vh', backgroundColor: '#000' }}>
+      {!streamUrl && (
+        <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
+          <Loading />
+          <Typography>Loading VOD Stream...</Typography>
+        </Stack>
+      )}
       <video
         ref={videoRef}
         controls
