@@ -91,6 +91,7 @@ const WatchPage = () => {
             {loadingVOD && <CircularProgress color="inherit" size={20} />}
           </Stack>
           <List disablePadding className={classes.listContainer}>
+            {data.vodStreams.length === 0 && <Typography>No VOD Events Found.</Typography>}
             {data.vodStreams.map((value: VODStream, i: number) => {
               const date = new Date(value.lastModified)
               const dateStr = date.toLocaleDateString('en-US', dateOptions)

@@ -161,6 +161,7 @@ const StreamListProvider = (props: StreamListContextProps) => {
         s.title = getTitleFromFilename(filename)
         return s
       })
+      streams.sort((a: VODStream, b: VODStream) => a.lastModified - b.lastModified)
     } catch (e) {
       console.error(e)
     }
