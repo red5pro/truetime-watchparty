@@ -10,7 +10,7 @@ import { FatalError } from '../../models/FatalError'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
 import { API_SOCKET_HOST, isWatchParty } from '../../settings/variables'
 import { PublisherRef } from '../Publisher'
-import { UserRoles } from '../../utils/commonUtils'
+import { Paths, UserRoles } from '../../utils/commonUtils'
 import styles from './MainStageLayout'
 import { Participant } from '../../models/Participant'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
@@ -36,8 +36,18 @@ const useWatchContext = () => React.useContext(WatchContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
 const MainStageWrapper = () => {
-  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock, cohostsList, getCoHostsList } =
-    useJoinContext()
+  const {
+    joinToken,
+    seriesEpisode,
+    fingerprint,
+    nickname,
+    getStreamGuid,
+    lock,
+    unlock,
+    isAnonymousParticipant,
+    cohostsList,
+    getCoHostsList,
+  } = useJoinContext()
   const { mediaStream } = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
 
@@ -53,6 +63,7 @@ const MainStageWrapper = () => {
   const [maxParticipants, setMaxParticipants] = React.useState<number>(8)
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
+  const [subscriberMenuActions, setSubscriberMenuActions] = React.useState<any>()
   const [layout, dispatch] = React.useReducer(layoutReducer, {
     layout: isWatchParty ? Layout.STAGE : Layout.FULLSCREEN,
     style: isWatchParty ? styles.stage : styles.fullscreen,
@@ -67,6 +78,11 @@ const MainStageWrapper = () => {
     gridTemplateColumns:
       'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
   })
+  const [isAnonymous, setIsAnonymous] = React.useState<boolean>(false)
+
+  React.useEffect(() => {
+    setIsAnonymous(isAnonymousParticipant)
+  }, [isAnonymousParticipant])
 
   React.useEffect(() => {
     // Handler to call on window resize
@@ -119,7 +135,9 @@ const MainStageWrapper = () => {
       setFatalError({
         status: 404,
         title: 'Connection Disruption',
-        statusText: `Your session was interrupted expectedly. You are no longer in the Watch Party.`,
+        statusText: `Your session was interrupted expectedly. You are no longer in the ${
+          isWatchParty ? 'Watch Party' : 'Webinar'
+        }.`,
         closeLabel: 'OK',
         onClose: onLeave,
       } as FatalError)
@@ -131,7 +149,9 @@ const MainStageWrapper = () => {
       const { connection, conference } = data
 
       if (connection && connection.role) {
-        setUserRole(connection.role.toLowerCase())
+        const { role } = connection
+        setUserRole(role.toLowerCase())
+        setSubscriberMenuActions(getMenuActionsFromRole(role.toLowerCase()))
       }
 
       if (!isWatchParty && connection && connection.role !== UserRoles.ORGANIZER.toLocaleLowerCase() && conference) {
@@ -152,6 +172,9 @@ const MainStageWrapper = () => {
   }, [cohostsList])
 
   React.useEffect(() => {
+    if (isAnonymousParticipant) {
+      return
+    }
     if (!mediaStream) {
       navigate(`/join/${joinToken}`)
     } else if (!publishMediaStream || publishMediaStream.id !== mediaStream.id) {
@@ -191,16 +214,27 @@ const MainStageWrapper = () => {
     }
   }, [data.list, layout, viewportHeight, relayout])
 
+  const getAnonymousSocketUrl = (token: string) => {
+    const request: ConnectionRequest = {
+      // displayName: 'anon',
+      joinToken: token,
+      // streamGuid: 'anon',
+      fingerprint,
+      isAnonymous: true,
+      messageType: 'JoinConferenceRequest',
+    } as ConnectionRequest
+    return { url: API_SOCKET_HOST, request }
+  }
+
   const getSocketUrl = (token: string, name: string, guid: string) => {
     const request: ConnectionRequest = {
       displayName: name,
       joinToken: token,
       streamGuid: guid,
+      fingerprint,
       messageType: 'JoinConferenceRequest',
     } as ConnectionRequest
 
-    const fp = fingerprint
-    request.fingerprint = fp
     const cookies = getCookies()
     if (cookies?.account) {
       // Registered User
@@ -218,7 +252,23 @@ const MainStageWrapper = () => {
     return { url: API_SOCKET_HOST, request }
   }
 
-  const onLeave = () => navigate(`/thankyou/${joinToken}`)
+  const getMenuActionsFromRole = (role: string) => {
+    const allowed = [UserRoles.ADMIN, UserRoles.ORGANIZER].map((r) => r.toLowerCase())
+    return allowed.indexOf(role) > -1 ? organizerSubscriberMenuActions : undefined
+  }
+
+  const onLeave = () => {
+    if (isAnonymous) {
+      navigate(`${Paths.ANONYMOUS_THANKYOU}/${joinToken}`)
+      return
+    }
+    navigate(`/thankyou/${joinToken}`)
+  }
+
+  const onAnonymousEntry = () => {
+    const { url, request } = getAnonymousSocketUrl(joinToken)
+    join(url, request)
+  }
 
   const onPublisherBroadcast = () => {
     const streamGuid = getStreamGuid()
@@ -313,7 +363,7 @@ const MainStageWrapper = () => {
     dispatch({ type: 'LAYOUT', layout: layout, style: newStyle })
   }
 
-  const subscriberMenuActions = {
+  const organizerSubscriberMenuActions = {
     onMuteAudio: async (participant: Participant, requestMute: boolean) => {
       const { muteState } = participant
       const requestState = { ...muteState!, audioMuted: requestMute }
@@ -409,10 +459,12 @@ const MainStageWrapper = () => {
     fatalError,
     nonFatalError,
     showBanConfirmation,
+    isAnonymous,
 
     onLayoutSelect,
     calculateGrid,
     calculateParticipantHeight,
+    onAnonymousEntry,
     onPublisherFail,
     onPublisherBroadcast,
     onPublisherBroadcastInterrupt,

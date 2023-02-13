@@ -12,9 +12,10 @@ import Landing from '../pages/Landing/Landing'
 
 import { isWatchParty } from '../settings/variables'
 import WatchPage from '../pages/WatchPage/WatchPage'
-import ConferenceContext from '../components/StreamListContext/StreamListContext'
+import StreamListContext from '../components/StreamListContext/StreamListContext'
 import WatchVODPage from '../pages/WatchVODPage/WatchVODPage'
 import WatchLivePage from '../pages/WatchLivePage/WatchLivePage'
+import { Paths } from '../utils/commonUtils'
 
 const Signin = React.lazy(() => import('../pages/SignIn/SignIn'))
 const Home = React.lazy(() => import('../pages/Home/Home'))
@@ -43,10 +44,28 @@ const AppRoutes = () => {
               </JoinContext.Provider>
             }
           />
+          <Route
+            path={`${Paths.ANONYMOUS}/:token`}
+            element={
+              <JoinContext.Provider>
+                <MediaContext.Provider>
+                  <WatchContext.Provider>{isWatchParty ? <JoinPage /> : <JoinWebinarPage />}</WatchContext.Provider>
+                </MediaContext.Provider>
+              </JoinContext.Provider>
+            }
+          />
           {/* WAT-70, WAT-73 */}
           <Route path="/join/guest" element={<VipJoinPage />} />
           <Route
             path="/thankyou/:token"
+            element={
+              <JoinContext.Provider>
+                <ThankYouPage />
+              </JoinContext.Provider>
+            }
+          />
+          <Route
+            path={`${Paths.ANONYMOUS_THANKYOU}/:token`}
             element={
               <JoinContext.Provider>
                 <ThankYouPage />
@@ -68,9 +87,9 @@ const AppRoutes = () => {
           <Route
             path="/watch"
             element={
-              <ConferenceContext.Provider>
+              <StreamListContext.Provider>
                 <WatchPage />
-              </ConferenceContext.Provider>
+              </StreamListContext.Provider>
             }
           />
           <Route path="/watch/live" element={<WatchLivePage />} />
