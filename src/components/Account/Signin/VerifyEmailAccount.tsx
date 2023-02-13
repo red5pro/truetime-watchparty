@@ -11,6 +11,7 @@ import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import { useNavigate } from 'react-router-dom'
 import PasswordField from '../../Form/PasswordField'
+import { isWatchParty } from '../../../settings/variables'
 
 interface IVerifyEmailAccountProps {
   email: string
@@ -53,7 +54,7 @@ const VerifyEmailAccount = (props: IVerifyEmailAccountProps) => {
 
         setErrorAfterSubmit({
           title: 'The account was successfully verified!',
-          statusText: 'You can continue to Watch a Party.',
+          statusText: `You can continue to ${isWatchParty ? 'Watch a Party' : 'a Webinar'}.`,
           onConfirm: () => navigate(redirect),
         })
       }

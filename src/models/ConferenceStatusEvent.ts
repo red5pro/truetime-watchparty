@@ -25,11 +25,12 @@ export interface ConferenceStatusEvent {
 }
 
 export interface ConnectionRequest {
-  displayName: string
-  streamGuid: string
   joinToken: string
   messageType: string
-  fingerprint?: string
+  fingerprint: string
+  isAnonymous: boolean
+  displayName?: string
+  streamGuid?: string
   username?: string
   password?: string
   auth?: string

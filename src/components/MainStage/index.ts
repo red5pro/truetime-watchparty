@@ -23,11 +23,13 @@ export interface IMainStageWrapperProps {
   fatalError: FatalError | undefined
   nonFatalError: any
   showBanConfirmation: Participant | undefined
+  isAnonymous: boolean
 
   onLayoutSelect: (layout: number) => void
   getStreamGuid: () => string | null
   calculateGrid: (totalParticipants: number) => number
   calculateParticipantHeight: (totalParticipants: number) => string
+  onAnonymousEntry: () => void
   onPublisherFail: () => void
   onPublisherBroadcastInterrupt: () => void
   onPublisherBroadcast: () => void
