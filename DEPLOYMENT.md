@@ -1,4 +1,4 @@
-# Watch Party - React Signle-Page-Application (SPA)
+# Watch Party - React Single-Page-Application (SPA)
 
 ---
 
