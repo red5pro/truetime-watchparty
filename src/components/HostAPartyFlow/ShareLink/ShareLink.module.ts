@@ -21,7 +21,7 @@ const useStyles = makeStyles()((theme: any) => {
       textAlign: 'center',
     },
     buttonsContainer: {
-      '& div:first-child': {
+      '& div:first-of-type': {
         marginRight: '8px',
         [theme.breakpoints.down('sm')]: {
           marginRight: 0,

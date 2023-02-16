@@ -163,14 +163,20 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       >
         <Grid
           container
-          xs={layout.layout === Layout.FULLSCREEN ? 12 : 4}
           ref={subscriberListRef}
-          // maxHeight={layout.layout !== Layout.FULLSCREEN ? 'calc(100vh - 10rem)' : '100%'}
-          minHeight={layout.layout !== Layout.FULLSCREEN ? `calc(100vh - 5rem)` : '100%'}
+          minHeight={layout.layout !== Layout.FULLSCREEN ? `calc(100vh - 5rem)` : 'auto'}
           width={layout.layout !== Layout.FULLSCREEN ? '100%' : 'fit-content'}
           minWidth={layout.layout !== Layout.FULLSCREEN ? '100%' : 'auto'}
-          flexWrap="nowrap"
-          style={layout.layout !== Layout.FULLSCREEN ? { ...layout.style.subscriberContainer } : { ...{ gap: '10px' } }}
+          flexWrap={
+            layout.layout !== Layout.FULLSCREEN || (layout.layout === Layout.FULLSCREEN && data.list.length < 3)
+              ? 'nowrap'
+              : 'wrap'
+          }
+          style={
+            layout.layout !== Layout.FULLSCREEN
+              ? layout.style.subscriberContainer
+              : layout.style.subscriberContainerFull
+          }
         >
           {!isAnonymous && (
             <Grid
@@ -178,9 +184,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               item
               sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-              maxHeight={
-                layout.layout !== Layout.FULLSCREEN ? '124px' : calculateParticipantHeight(data.list.length + 1)
-              }
+              maxHeight={layout.layout !== Layout.FULLSCREEN ? '124px' : data.list.length < 3 ? '100%' : '50%'}
             >
               <Publisher
                 key="publisher"
@@ -206,9 +210,8 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               item
               key={s.participantId}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-              maxHeight={
-                layout.layout !== Layout.FULLSCREEN ? '124px' : calculateParticipantHeight(data.list.length + 1)
-              }
+              sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
+              maxHeight={layout.layout !== Layout.FULLSCREEN ? '124px' : data.list.length < 3 ? '100%' : '50%'}
             >
               <MainStageSubscriber
                 participant={s}
@@ -223,7 +226,8 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
             </Grid>
           ))}
         </Grid>
-        {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && data.list.length > 5 && (
+
+        {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
           <CustomButton
             className={classes.moreButton}
             size={BUTTONSIZE.SMALL}
@@ -264,7 +268,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
             </Grid>
             <Grid item xs={4} display="flex" alignItems="center" className={classes.topControls}>
-              {userRole === UserRoles.ORGANIZER.toLowerCase() && (
+              {(userRole === UserRoles.ORGANIZER.toLowerCase() || userRole === UserRoles.COHOST.toLowerCase()) && (
                 <>
                   <Tooltip title="Add Cohost">
                     <IconButton
@@ -290,7 +294,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                   </Tooltip>
                 </>
               )}
-              {userRole === UserRoles.ORGANIZER.toLowerCase() && (
+              {(userRole === UserRoles.ORGANIZER.toLowerCase() || userRole === UserRoles.COHOST.toLowerCase()) && (
                 <Tooltip title={seriesEpisode.locked ? 'Locked' : 'Unlocked'}>
                   <IconButton
                     sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
@@ -341,7 +345,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 <>
                   {!screenShare ? (
                     <Tooltip
-                      title={data?.screenshareParticipant?.length > 0 ? 'Take Over' : 'Share Screen'}
+                      title={data?.screenshareParticipants?.length > 0 ? 'Take Over' : 'Share Screen'}
                       placement="top"
                     >
                       <IconButton

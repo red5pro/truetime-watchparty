@@ -49,7 +49,7 @@ const useStyles = makeStyles()((theme: any) => ({
   },
 
   buttonsContainer: {
-    '& div:first-child': {
+    '& div:first-of-type': {
       marginRight: '8px !important',
       [theme.breakpoints.down('sm')]: {
         marginRight: 0,

@@ -8,6 +8,9 @@ import AddCohostForm from '../../MainStage/Forms/AddCohostForm'
 import JoinContext from '../../JoinContext/JoinContext'
 import Loading from '../../Common/Loading/Loading'
 import { SimpleAlertDialogProps } from '../SimpleAlertDialog'
+import { USER_API_CALLS } from '../../../services/api/user-api-calls'
+import { UserRoles } from '../../../utils/commonUtils'
+import useCookies from '../../../hooks/useCookies'
 const SimpleAlertDialog = React.lazy(() => import('../SimpleAlertDialog'))
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
@@ -22,16 +25,32 @@ const AddCoHostsModal = (props: AddCoHostsModalProps) => {
   const { open, conferenceId, onDismiss } = props
 
   const [error, setError] = React.useState<any>(null)
+  const [createNewAccount, setCreateNewAccount] = React.useState<string | null>(null)
+  const [addNewAccountToList, setAddNewAccountToList] = React.useState<string | null>(null)
+
   const [success, setSuccess] = React.useState<SimpleAlertDialogProps | null>(null)
 
   const { classes } = useStyles()
   const { updateCoHostList, cohostsList, getCoHostsList } = useJoinContext()
+  const { getCookies } = useCookies(['account'])
 
   React.useEffect(() => {
     if (conferenceId) {
       getCoHostsList(conferenceId)
     }
   }, [])
+
+  React.useEffect(() => {
+    if (createNewAccount) {
+      createCohostAccount(createNewAccount)
+    }
+  }, [createNewAccount])
+
+  React.useEffect(() => {
+    if (addNewAccountToList) {
+      handleSubmit({ email: addNewAccountToList })
+    }
+  }, [addNewAccountToList])
 
   const onDeleteCoHost = async (email: string) => {
     for (let i = 0; i < cohostsList.length; i++) {
@@ -67,15 +86,42 @@ const AddCoHostsModal = (props: AddCoHostsModalProps) => {
         onConfirm: () => setSuccess(null),
       }
       setSuccess(msg)
+    } else if (response.status === 400 && response.statusText.includes('Get Co-Hosts user(s) not found')) {
+      const msg: SimpleAlertDialogProps = {
+        title: `User Not Found`,
+        message: `The email: ${values.email} was not found in our system. Do you want to sent an invite to this email to create the account?`,
+        onConfirm: () => {
+          setSuccess(null), setCreateNewAccount(values.email)
+        },
+        denyLabel: 'Cancel',
+        onDeny: () => setSuccess(null),
+      }
+      setSuccess(msg)
     } else {
       setError({
         status: 'Warning',
-        statusText: response.statusText ?? 'There was an error while adding the cohost, please try again.',
+        statusText: 'There was an error while adding the cohost, please try again.',
       })
     }
   }
 
-  console.log({ cohostsList })
+  const createCohostAccount = async (email: string) => {
+    const response = await USER_API_CALLS.createUser(email, UserRoles.ORGANIZER)
+
+    if (response.status >= 200 && response.status < 300) {
+      const msg: SimpleAlertDialogProps = {
+        title: `The account for the Cohost with email ${email} has been created`,
+        message:
+          'The cohost will receive a link that has just been sent to the email account to verify the email, finish the account creation and join the conference.',
+        onConfirm: () => {
+          setSuccess(null)
+          setCreateNewAccount(null)
+          setAddNewAccountToList(email)
+        },
+      }
+      setSuccess(msg)
+    }
+  }
 
   return (
     <Modal
@@ -145,6 +191,8 @@ const AddCoHostsModal = (props: AddCoHostsModalProps) => {
             message={success.message}
             confirmLabel="Ok"
             onConfirm={success.onConfirm}
+            denyLabel={success.denyLabel}
+            onDeny={success.onDeny}
           />
         )}
         {error && (

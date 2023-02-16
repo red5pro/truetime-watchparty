@@ -281,7 +281,7 @@ const updateCohostList = async (
 
     // Temporary solution until API gets fixed -
     // TODO: replace 'adminAccount' with 'account'
-    const config = getOptionsParams(adminAccount)
+    const config = getOptionsParams(account)
 
     const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/cohosts`, payload, config)
     return response
