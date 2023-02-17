@@ -86,7 +86,7 @@ const AddCoHostsModal = (props: AddCoHostsModalProps) => {
         onConfirm: () => setSuccess(null),
       }
       setSuccess(msg)
-    } else if (response.status === 400 && response.statusText.includes('Get Co-Hosts user(s) not found')) {
+    } else if (response.status === 400 && response.statusText.includes('not found')) {
       const msg: SimpleAlertDialogProps = {
         title: `User Not Found`,
         message: `The email: ${values.email} was not found in our system. Do you want to sent an invite to this email to create the account?`,
