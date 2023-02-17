@@ -53,11 +53,11 @@ const ShareLink = (props: IShareLinkProps) => {
           </CustomButton>
         </Box>
 
-        <CustomButton fullWidth size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
-          <LinkTo className={classes.linkToJoin} to={`/join/${joinToken}?s_id=2`}>
+        <LinkTo className={classes.linkToJoin} to={`/join/${joinToken}?s_id=2`}>
+          <CustomButton fullWidth size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
             {`Continue to ${isWatchParty ? 'Watch Party' : 'Webinar'}`}
-          </LinkTo>
-        </CustomButton>
+          </CustomButton>
+        </LinkTo>
 
         <Box display={textCopied ? 'block' : 'none'} marginY={2}>
           <Typography className={classes.title}>Link copied!</Typography>

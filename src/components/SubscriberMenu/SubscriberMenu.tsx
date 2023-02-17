@@ -67,13 +67,12 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
   }
 
   const onToggleMenu = (event?: any) => {
-    // console.log('Click', event)
     if (event && menuRef && menuRef.current) {
       ;(menuRef.current as any).style.left = `${event.screenX + 24}px`
       // ;(menuRef.current as any).style.top = `${event.screenY - 6}px`
       setMenuOffset(event.screenX + 24)
+      setShowMenu(!showMenu)
     }
-    setShowMenu(!showMenu)
   }
 
   const toggleMuteAudio = () => {

@@ -69,7 +69,8 @@ const styles = {
       height: 'calc(100vh - 5rem)',
       justifyContent: 'start',
       rowGap: '10px',
-      width: 'fit-content',
+      width: '15%',
+      minWidth: '10rem',
     },
     subscriberListAnon: {
       // position: 'absolute',
@@ -183,13 +184,15 @@ const styles = {
     subscriberListWb: {
       position: 'absolute',
       width: '100%',
-      height: 'calc(100vh - 10rem)',
-      maxHeight: '40rem',
+      height: '100%',
+      maxHeight: 'calc(100vh - 9rem)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      top: '5rem',
+      top: '4rem',
+      maxWidth: '90%',
+      padding: '15px',
     },
     subscriberListAnon: {
       position: 'absolute',
@@ -224,12 +227,15 @@ const styles = {
     },
     subscriberContainerFull: {
       gap: '10px',
+      justifyContent: 'center',
+      overflow: 'hidden',
     },
     subscriber: {
       height: '100%',
       borderRadius: '20px',
       // backgroundColor: 'black',
       aspectRatio: '1 / 1',
+      padding: '0 !important',
     },
     subscriberVideo: {
       borderRadius: '20px',

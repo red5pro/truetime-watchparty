@@ -8,6 +8,7 @@ const useStyles = makeStyles()((theme: any) => {
       maxHeight: '100vh',
       maxWidth: '100vw',
       display: 'flex',
+      justifyContent: 'center',
     },
     loadingContainer: {
       position: 'absolute',
@@ -45,6 +46,7 @@ const useStyles = makeStyles()((theme: any) => {
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'space-between',
+      width: '86vw',
     },
     header: {
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',

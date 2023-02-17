@@ -146,7 +146,7 @@ const MainStageWrapper = () => {
 
   React.useEffect(() => {
     if (data.connection) {
-      const { connection, conference } = data
+      const { connection } = data
 
       if (connection && connection.role) {
         const { role } = connection
@@ -154,9 +154,6 @@ const MainStageWrapper = () => {
         setSubscriberMenuActions(getMenuActionsFromRole(role.toLowerCase()))
       }
 
-      if (!isWatchParty && connection && connection.role !== UserRoles.ORGANIZER.toLocaleLowerCase() && conference) {
-        getCoHostsList(conference.conferenceId)
-      }
     }
   }, [data.connection, data.conference])
 

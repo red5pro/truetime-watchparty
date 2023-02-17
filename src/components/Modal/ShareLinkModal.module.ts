@@ -31,7 +31,7 @@ const useStyles = makeStyles()((theme: any) => {
       userSelect: 'none',
     },
     buttonsContainer: {
-      '& div:first-child': {
+      '& div:first-of-type': {
         marginRight: '8px',
         [theme.breakpoints.down('sm')]: {
           marginRight: 0,
