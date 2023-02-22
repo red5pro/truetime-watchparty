@@ -47,7 +47,7 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
       />
       {participant && menuActions && (
         <Box sx={{ position: 'absolute', top: 4, right: `${isLayoutFullscreen ? '4px' : '4px'}` }}>
-          <SubscriberMenu participant={participant} actions={menuActions} />
+          <SubscriberMenu participant={participant} actions={menuActions} isFullscreen={isLayoutFullscreen} />
         </Box>
       )}
       {participant && !menuActions && ENABLE_DEBUG_UTILS && (

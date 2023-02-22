@@ -164,7 +164,8 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         <Grid
           container
           ref={subscriberListRef}
-          minHeight={layout.layout !== Layout.FULLSCREEN ? `calc(100vh - 5rem)` : 'auto'}
+          minHeight={layout.layout !== Layout.FULLSCREEN ? '100%' : 'auto'}
+          maxHeight={layout.layout !== Layout.FULLSCREEN ? `calc(100vh - 7rem)` : 'auto'}
           width={layout.layout !== Layout.FULLSCREEN ? '100%' : 'fit-content'}
           minWidth={layout.layout !== Layout.FULLSCREEN ? '100%' : 'auto'}
           flexWrap={
@@ -215,7 +216,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
             >
               <MainStageSubscriber
                 participant={s}
-                styles={{ ...layout.style.subscriber, transform: 'scaleX(1)' }}
+                styles={{ ...layout.style.subscriber }}
                 videoStyles={layout.style.subscriberVideo}
                 host={STREAM_HOST}
                 useStreamManager={USE_STREAM_MANAGER}

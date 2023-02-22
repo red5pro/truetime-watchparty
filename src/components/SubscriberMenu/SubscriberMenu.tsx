@@ -26,10 +26,11 @@ interface SubscriberMenuActions {
 interface SubscriberMenuProps {
   participant: Participant
   actions: SubscriberMenuActions
+  isFullscreen?: boolean
 }
 
 const SubscriberMenu = (props: SubscriberMenuProps) => {
-  const { actions, participant } = props
+  const { actions, participant, isFullscreen } = props
 
   const { classes } = useStyles()
 
@@ -68,9 +69,10 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
 
   const onToggleMenu = (event?: any) => {
     if (event && menuRef && menuRef.current) {
-      ;(menuRef.current as any).style.left = `${event.screenX + 24}px`
+      const menuOffsetX = isFullscreen ? event.screenX - 190 : event.screenX + 24
+      ;(menuRef.current as any).style.left = `${menuOffsetX}px`
       // ;(menuRef.current as any).style.top = `${event.screenY - 6}px`
-      setMenuOffset(event.screenX + 24)
+      setMenuOffset(menuOffsetX)
       setShowMenu(!showMenu)
     }
   }
