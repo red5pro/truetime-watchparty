@@ -56,7 +56,7 @@ const JoinWebinarPage = () => {
   const { getCookies } = useCookies(['userAccount'])
 
   const [searchParams, setSearchParams] = useSearchParams()
-  const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
+  const [currentSection, setCurrentSection] = React.useState<Section>(Section.Nickname)
 
   React.useEffect(() => {
     if (searchParams.get('s_id')) {
