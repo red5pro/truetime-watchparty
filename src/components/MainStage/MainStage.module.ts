@@ -72,7 +72,7 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'absolute',
       left: 0,
       bottom: 0,
-      padding: '15px',
+      padding: '0 15px 15px',
       display: 'flex',
       flexDirection: 'row',
       maxHeight: '6rem',
@@ -85,7 +85,7 @@ const useStyles = makeStyles()((theme: any) => {
       alignSelf: 'flex-end',
     },
     moreButton: {
-      margin: 'auto',
+      margin: 'auto 15px',
     },
     chatInput: {
       width: '45%',
