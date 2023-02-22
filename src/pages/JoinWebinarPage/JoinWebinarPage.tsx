@@ -15,6 +15,8 @@ import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup
 
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
+import useCookies from '../../hooks/useCookies'
+import { UserRoles } from '../../utils/commonUtils'
 
 const MainStageWrapper = React.lazy(() => import('../../components/MainStage/MainStageWrapper'))
 
@@ -51,9 +53,10 @@ const JoinWebinarPage = () => {
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
   const navigate = useNavigate()
+  const { getCookies } = useCookies(['userAccount'])
 
   const [searchParams, setSearchParams] = useSearchParams()
-  const [currentSection, setCurrentSection] = React.useState<Section>(Section.Nickname)
+  const [currentSection, setCurrentSection] = React.useState<Section>(Section.Landing)
 
   React.useEffect(() => {
     if (searchParams.get('s_id')) {
@@ -66,6 +69,15 @@ const JoinWebinarPage = () => {
       }
     }
   }, [searchParams])
+
+  React.useEffect(() => {
+    if (joinToken && searchParams.get('cohost')) {
+      const { userAccount } = getCookies()
+      if (!userAccount || userAccount.role !== UserRoles.ORGANIZER) {
+        navigate(`/login?r_id=join/${joinToken}`)
+      }
+    }
+  }, [searchParams, joinToken])
 
   React.useEffect(() => {
     if (isAnonymousParticipant && currentSection !== Section.WatchParty) {

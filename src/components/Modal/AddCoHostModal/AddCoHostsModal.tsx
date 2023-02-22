@@ -10,7 +10,6 @@ import Loading from '../../Common/Loading/Loading'
 import { SimpleAlertDialogProps } from '../SimpleAlertDialog'
 import { USER_API_CALLS } from '../../../services/api/user-api-calls'
 import { UserRoles } from '../../../utils/commonUtils'
-import useCookies from '../../../hooks/useCookies'
 const SimpleAlertDialog = React.lazy(() => import('../SimpleAlertDialog'))
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
@@ -32,7 +31,6 @@ const AddCoHostsModal = (props: AddCoHostsModalProps) => {
 
   const { classes } = useStyles()
   const { updateCoHostList, cohostsList, getCoHostsList } = useJoinContext()
-  const { getCookies } = useCookies(['account'])
 
   React.useEffect(() => {
     if (conferenceId) {

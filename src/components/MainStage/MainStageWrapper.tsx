@@ -46,7 +46,6 @@ const MainStageWrapper = () => {
     unlock,
     isAnonymousParticipant,
     cohostsList,
-    getCoHostsList,
   } = useJoinContext()
   const { mediaStream } = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
@@ -153,9 +152,8 @@ const MainStageWrapper = () => {
         setUserRole(role.toLowerCase())
         setSubscriberMenuActions(getMenuActionsFromRole(role.toLowerCase()))
       }
-
     }
-  }, [data.connection, data.conference])
+  }, [data.connection])
 
   React.useEffect(() => {
     if (
@@ -250,6 +248,14 @@ const MainStageWrapper = () => {
   }
 
   const getMenuActionsFromRole = (role: string) => {
+    if (role === UserRoles.COHOST.toLocaleLowerCase()) {
+      const cohostMenuActions = {
+        onMuteAudio: organizerSubscriberMenuActions.onMuteAudio,
+        onMuteVideo: organizerSubscriberMenuActions.onMuteVideo,
+      }
+      return cohostMenuActions
+    }
+
     const allowed = [UserRoles.ADMIN, UserRoles.ORGANIZER].map((r) => r.toLowerCase())
     return allowed.indexOf(role) > -1 ? organizerSubscriberMenuActions : undefined
   }

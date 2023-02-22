@@ -97,7 +97,10 @@ const WatchProvider = (props: IWatchProviderProps) => {
     const anonymousViewers = participants.filter((p: Participant) => {
       return (p.role as string).toLowerCase() === UserRoles.ANONYMOUS.toLowerCase()
     })
-    const list = participants.filter((p: Participant) => isNotRoles(p, [UserRoles.VIP, UserRoles.ANONYMOUS]))
+    const list = participants
+      .filter((p: Participant) => isNotRoles(p, [UserRoles.VIP, UserRoles.ANONYMOUS]))
+      .sort((a: Participant) => (a.role.toLocaleLowerCase() === UserRoles.ORGANIZER.toLocaleLowerCase() ? -1 : 1))
+
     dispatch({ type: 'UPDATE_LIST', payload: list, vip, anonymousViewerAmount: anonymousViewers.length })
   }
 

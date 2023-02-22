@@ -269,7 +269,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
             </Grid>
             <Grid item xs={4} display="flex" alignItems="center" className={classes.topControls}>
-              {(userRole === UserRoles.ORGANIZER.toLowerCase() || userRole === UserRoles.COHOST.toLowerCase()) && (
+              {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <>
                   <Tooltip title="Add Cohost">
                     <IconButton
@@ -295,7 +295,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                   </Tooltip>
                 </>
               )}
-              {(userRole === UserRoles.ORGANIZER.toLowerCase() || userRole === UserRoles.COHOST.toLowerCase()) && (
+              {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <Tooltip title={seriesEpisode.locked ? 'Locked' : 'Unlocked'}>
                   <IconButton
                     sx={{ marginLeft: '10px', backdropFilter: 'contrast(0.5)' }}
