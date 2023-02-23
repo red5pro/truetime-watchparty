@@ -91,7 +91,7 @@ const styles = {
     },
     subscriberContainer: {
       display: 'flex',
-      // overflowY: 'auto',
+      overflowY: 'scroll',
       // flexGrow: 9,
       flexDirection: 'column',
       aspectRatio: '0.25',

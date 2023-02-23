@@ -161,7 +161,6 @@ const MainStageWrapper = () => {
       cohostsList?.length &&
       cohostsList?.includes((email: string) => email === getCookies().account.email)
     ) {
-      debugger
       setUserRole(UserRoles.COHOST.toLowerCase())
     }
   }, [cohostsList])
@@ -352,7 +351,7 @@ const MainStageWrapper = () => {
 
   const onMoreScroll = () => {
     if (subscriberListRef && subscriberListRef.current) {
-      subscriberListRef.current.lastChild.scrollIntoView()
+      subscriberListRef.current.lastChild.scrollIntoView(false)
     }
   }
 
@@ -438,9 +437,10 @@ const MainStageWrapper = () => {
   const calculateGrid = (totalParticipants: number) => {
     if (totalParticipants < 5) {
       return 12 / totalParticipants
-    } else {
-      return 3
+    } else if (totalParticipants >= 7) {
+      return 2.5
     }
+    return 3
   }
 
   const mainStageProps: IMainStageWrapperProps = {

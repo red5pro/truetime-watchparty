@@ -28,7 +28,7 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
   const closeRef = React.useRef(null)
 
   const ref = React.useRef(null)
-  const menuRef = React.useRef(null)
+  const menuRef = React.useRef<any>(null)
 
   const [menuOffset, setMenuOffset] = React.useState<number>(24)
   const [showMenu, setShowMenu] = React.useState<boolean>(false)
@@ -60,8 +60,10 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
   const onToggleMenu = (event?: any) => {
     if (event && menuRef && menuRef.current) {
       const menuOffsetX = isFullscreen ? event.screenX - 190 : event.screenX + 24
-      ;(menuRef.current as any).style.left = `${menuOffsetX}px`
-      // ;(menuRef.current as any).style.top = `${event.screenY - 6}px`
+
+      menuRef.current.style.left = `${menuOffsetX}px`
+      menuRef.current.style.top = `${event.screenY - 150}px`
+
       setMenuOffset(menuOffsetX)
       setShowMenu(!showMenu)
     }
