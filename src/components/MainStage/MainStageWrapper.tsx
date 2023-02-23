@@ -161,7 +161,6 @@ const MainStageWrapper = () => {
       cohostsList?.length &&
       cohostsList?.includes((email: string) => email === getCookies().account.email)
     ) {
-      debugger
       setUserRole(UserRoles.COHOST.toLowerCase())
     }
   }, [cohostsList])
@@ -352,7 +351,7 @@ const MainStageWrapper = () => {
 
   const onMoreScroll = () => {
     if (subscriberListRef && subscriberListRef.current) {
-      subscriberListRef.current.lastChild.scrollIntoView()
+      subscriberListRef.current.lastChild.scrollIntoView(false)
     }
   }
 
