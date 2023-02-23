@@ -438,9 +438,10 @@ const MainStageWrapper = () => {
   const calculateGrid = (totalParticipants: number) => {
     if (totalParticipants < 5) {
       return 12 / totalParticipants
-    } else {
-      return 3
+    } else if (totalParticipants >= 7) {
+      return 2.5
     }
+    return 3
   }
 
   const mainStageProps: IMainStageWrapperProps = {

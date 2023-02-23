@@ -121,7 +121,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   }
 
   return (
-    <Box id="root-container" className={classes.rootContainer}>
+    <Box id="root-container" className={classes.rootContainer} position="fixed" overflow="hidden">
       {/* Loading Message */}
       {(!data.conference || loading) && (
         <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
@@ -164,8 +164,8 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         <Grid
           container
           ref={subscriberListRef}
-          minHeight={layout.layout !== Layout.FULLSCREEN ? '100%' : 'auto'}
-          maxHeight={layout.layout !== Layout.FULLSCREEN ? `calc(100vh - 7rem)` : 'auto'}
+          minHeight={layout.layout !== Layout.FULLSCREEN ? 'unset' : 'auto'}
+          maxHeight={layout.layout !== Layout.FULLSCREEN ? 'calc(100vh - 7rem)' : 'auto'}
           width={layout.layout !== Layout.FULLSCREEN ? '100%' : 'fit-content'}
           minWidth={layout.layout !== Layout.FULLSCREEN ? '100%' : 'auto'}
           flexWrap={
