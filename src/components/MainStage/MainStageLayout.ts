@@ -211,7 +211,8 @@ const styles = {
       padding: '0 48px',
       display: 'grid',
       gridGap: '20px',
-      gridTemplateRows: 'calc((100% / 2)) calc((100% / 2))',
+      width: '100%',
+      // gridTemplateRows: 'calc((100% / 2)) calc((100% / 2))',
       gridTemplateColumns:
         'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
       height: '100%',

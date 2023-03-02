@@ -217,7 +217,7 @@ const MainStage = (props: IMainStageProps) => {
         <Box sx={layout.style.subscriberList}>
           <div
             ref={subscriberListRef}
-            style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}
+            style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle, width: '100%' }}
           >
             {data.list.map((s: Participant) => {
               return (

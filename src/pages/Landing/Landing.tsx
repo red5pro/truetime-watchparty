@@ -75,11 +75,7 @@ const Home = () => {
       </Box>
       <Box className={classes.rightContainer}>
         <Box className={classes.imageContainer}>
-          <img
-            className={classes.image}
-            alt="Landing Page Image"
-            src={require('../../assets/images/LandingPageImage.png')}
-          ></img>
+          <img className={classes.image} alt="Landing Page Image" src="../../assets/images/LandingPageImage.png"></img>
         </Box>
       </Box>
     </Box>

@@ -46,7 +46,7 @@ const ViewEvents = (props: IViewEventsProps) => {
     <Box
       className={classes.root}
       sx={{
-        backgroundImage: !error && isWatchParty ? `url(${require('../../../assets/images/BoxMainImage.png')})` : '',
+        backgroundImage: !error && isWatchParty ? "url('../../../assets/images/BoxMainImage.png')" : '',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: '40% 100%',
       }}

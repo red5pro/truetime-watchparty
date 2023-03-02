@@ -40,7 +40,7 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
         showControls={false}
         streamGuid={participant.streamGuid}
         resubscribe={true}
-        styles={styles}
+        styles={{ ...styles }}
         videoStyles={videoStyles}
         isAudioOff={participant?.muteState?.audioMuted}
         isVideoOff={participant?.muteState?.videoMuted}
