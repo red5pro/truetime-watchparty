@@ -69,7 +69,7 @@ const ThankYouPage = () => {
                     <img
                       height="70px"
                       alt="Logo Placeholder"
-                      src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
+                      src="../../assets/logos/sponsor-placeholder-2-logo.png"
                     ></img>
                   </Box>
                 </Stack>
@@ -90,7 +90,7 @@ const ThankYouPage = () => {
         <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: '20%' }}>
           <img
             alt="Thank you Page Main Image"
-            src={require('../../assets/images/BoxingSession.png')}
+            src="../../assets/images/BoxingSession.png"
             style={{ maxWidth: '70%' }}
           ></img>
         </Box>

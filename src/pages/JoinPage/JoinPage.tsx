@@ -203,7 +203,7 @@ const JoinPage = () => {
         <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
           <img
             alt="Join a Party Main Image"
-            src={require('../../assets/images/BoxMainImage.png')}
+            src="../../assets/images/BoxMainImage.png"
             style={{
               width: '100%',
               opacity: currentSection === Section.Nickname ? 0.5 : 1,
@@ -223,11 +223,7 @@ const JoinPage = () => {
             <Stack spacing={2} direction="row">
               {/* <OracleLogo /> */}
               <Box sx={{ width: 'auto', height: '70px' }}>
-                <img
-                  height="70px"
-                  alt="Logo Placeholder"
-                  src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
-                ></img>
+                <img height="70px" alt="Logo Placeholder" src="../../assets/logos/sponsor-placeholder-2-logo.png"></img>
               </Box>
             </Stack>
           </Stack>

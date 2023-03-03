@@ -60,7 +60,7 @@ const StartParty = (props: IStartPartyProps) => {
           </Typography>
 
           <Box display="flex">
-            <Typography marginRight={2}>Set up your party</Typography>
+            <Typography marginRight={2}>{isWatchParty ? 'Set up your party' : 'Set up this webinar'}</Typography>
 
             {!account && (
               <Link to="login" className={classes.link}>
@@ -72,11 +72,7 @@ const StartParty = (props: IStartPartyProps) => {
         </Box>
       )}
       {isWatchParty && (
-        <img
-          className={classes.image}
-          alt="Start Party Main Image"
-          src={require('../../../assets/images/BoxMainImage.png')}
-        ></img>
+        <img className={classes.image} alt="Start Party Main Image" src="../../../assets/images/BoxMainImage.png"></img>
       )}
     </Box>
   )
