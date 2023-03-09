@@ -200,15 +200,19 @@ const CreateEvent = (props: ICreateEventProps) => {
                       <Typography className={classes.errorValidation}>{errors.serie}</Typography>
                     )}
 
-                    <FormLabel className={classes.label}>Event Stream Guid</FormLabel>
-                    <Field
-                      component={TextField}
-                      name="streamGuid"
-                      type="text"
-                      hiddenLabel
-                      className={classes.input}
-                      fullWidth
-                    />
+                    {isWatchParty && (
+                      <>
+                        <FormLabel className={classes.label}>Event Stream Guid</FormLabel>
+                        <Field
+                          component={TextField}
+                          name="streamGuid"
+                          type="text"
+                          hiddenLabel
+                          className={classes.input}
+                          fullWidth
+                        />
+                      </>
+                    )}
                   </Box>
                   <Box display="flex" justifyContent="space-around">
                     <CustomButton
