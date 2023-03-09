@@ -13,6 +13,7 @@ import useStyles from './CreateSection.module'
 import { SERIES_API_CALLS } from '../../../services/api/serie-api-calls'
 import { Serie } from '../../../models/Serie'
 import moment from 'moment'
+import { isWatchParty } from '../../../settings/variables'
 
 const getInitialValues = () => {
   const todayDate = moment()
@@ -23,6 +24,7 @@ const getInitialValues = () => {
     startDatetime: todayDate,
     endDatetime: todayDate,
     serie: '',
+    streamGuid: '',
   }
 
   return initialValues
@@ -45,6 +47,7 @@ const getValidationSchema = () => {
           startDatetime && schema.min(startDatetime, 'End Date/Time must be later that Start Date/Time')
       ),
     serie: Yup.number().required('Serie field is required'),
+    streamGuid: isWatchParty ? Yup.string().max(20).required('Event Stream Guid field is required') : Yup.string(),
   })
   return validationSchema
 }
@@ -72,6 +75,7 @@ const CreateEvent = (props: ICreateEventProps) => {
     // Saving event datetime in UTC
     const data = {
       displayName: values.displayName,
+      streamGuid: values.streamGuid ?? '',
       startTime: values.startDatetime.utc().valueOf(),
       endTime: values.endDatetime.utc().valueOf(),
     }
@@ -195,6 +199,16 @@ const CreateEvent = (props: ICreateEventProps) => {
                     {errors.serie && touched.serie && (
                       <Typography className={classes.errorValidation}>{errors.serie}</Typography>
                     )}
+
+                    <FormLabel className={classes.label}>Event Stream Guid</FormLabel>
+                    <Field
+                      component={TextField}
+                      name="streamGuid"
+                      type="text"
+                      hiddenLabel
+                      className={classes.input}
+                      fullWidth
+                    />
                   </Box>
                   <Box display="flex" justifyContent="space-around">
                     <CustomButton
