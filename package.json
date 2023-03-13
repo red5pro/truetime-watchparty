@@ -1,6 +1,6 @@
 {
   "name": "watchparty-frontend",
-  "version": "0.2.19",
+  "version": "0.2.20",
   "private": true,
   "dependencies": {
     "@date-io/moment": "^2.15.0",
