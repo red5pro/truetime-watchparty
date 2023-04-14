@@ -11,13 +11,13 @@ export const API_SOCKET_HOST = USE_LOCAL_SERVICES
   ? 'ws://localhost:8001'
   : `wss://${API_SERVER_HOST}/conference-api/1.0/ws/conference`
 export const STREAM_HOST = USE_LOCAL_SERVICES ? 'localhost' : SERVER_HOST
-export const VOD_SOCKET_HOST = process.env.REACT_VOD_SOCKET_HOST
-  ? `wss://${process.env.REACT_VOD_SOCKET_HOST}`
+export const VOD_SOCKET_HOST = process.env.REACT_APP_VOD_SOCKET_HOST
+  ? `wss://${process.env.REACT_APP_VOD_SOCKET_HOST}`
   : `wss://toddred5dev543.red5.net`
 // 'wss://922b-2601-19b-c700-93f0-d5d9-677c-6ae5-abc.ngrok.io'
 
-export const VOD_HOST = SERVER_HOST
-export const VOD_CONTEXT = 'live'
+export const VOD_HOST = process.env.REACT_APP_VOD_HOST || SERVER_HOST
+export const VOD_CONTEXT = process.env.REACT_APP_VOD_CONTEXT || 'live'
 
 export const DEFAULT_CONSTRAINTS = {
   audio: true,
