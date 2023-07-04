@@ -23,6 +23,7 @@ const getInitialValues = () => {
     startDatetime: todayDate,
     endDatetime: todayDate,
     serie: '',
+    streamGuid: 'live/demo-stream',
   }
 
   return initialValues
@@ -74,6 +75,7 @@ const CreateEvent = (props: ICreateEventProps) => {
       displayName: values.displayName,
       startTime: values.startDatetime.utc().valueOf(),
       endTime: values.endDatetime.utc().valueOf(),
+      streamGuid: values.streamGuid,
     }
 
     const response = await SERIES_API_CALLS.createEpisode(values.serie, data, cred)
@@ -120,6 +122,15 @@ const CreateEvent = (props: ICreateEventProps) => {
                     <Field
                       component={TextField}
                       name="displayName"
+                      type="text"
+                      hiddenLabel
+                      className={classes.input}
+                      fullWidth
+                    />
+                    <FormLabel className={classes.label}>Stream GUID</FormLabel>
+                    <Field
+                      component={TextField}
+                      name="guidPath"
                       type="text"
                       hiddenLabel
                       className={classes.input}
