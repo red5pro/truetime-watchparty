@@ -270,7 +270,7 @@ const muteParticipant = async (
       url = `${url}?${kv.join('&')}`
     }
 
-    const response: AxiosResponse = await axios.put(url, options, payload)
+    const response: AxiosResponse = await axios.put(url, payload, options)
     return response
   } catch (e: any) {
     console.log(e)
