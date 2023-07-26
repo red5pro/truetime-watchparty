@@ -5,7 +5,7 @@ import { ParticipantMuteState } from './../../models/Participant'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { adminAccount, MAIN_ENDPOINT } from '../../settings/variables'
 import { MOCK_API_CALLS } from './mock'
-import { getOptionsParams } from '../../utils/apiUtils'
+import { getOptionsParams, getQueryParamsAndOptions } from '../../utils/apiUtils'
 import { ThirdParties } from '../../utils/commonUtils'
 
 const ENDPOINT = {
@@ -193,21 +193,14 @@ const getVipConferenceList = async (account: AccountCredentials) => {
 
 const lockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
-    let options = {}
+    const { options, params } = getQueryParamsAndOptions(account)
+    const kv = []
+    for (const key in params) {
+      kv.push(`${key}=${(params as any)[key]}`)
+    }
     let url = `${ENDPOINT.CONFERENCE}/${conferenceId}/lock`
-    if (account && account?.email && account?.password) {
-      const { email, password } = account
-      url = `${url}?user=${email}&password=${password}`
-    } else if (account && account?.auth && account?.token) {
-      options = {
-        params: {
-          auth: account.auth ?? ThirdParties.FACEBOOK,
-        },
-        headers: {
-          Authorization: `Bearer ${account.token}`,
-          'Content-Type': 'application/json',
-        },
-      }
+    if (kv.length > 0) {
+      url = `${url}?${kv.join('&')}`
     }
 
     const response: AxiosResponse = await axios.put(url, options)
@@ -230,21 +223,14 @@ const lockConference = async (conferenceId: string | number, account: AccountCre
 
 const unlockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
-    let options = {}
+    const { options, params } = getQueryParamsAndOptions(account)
+    const kv = []
+    for (const key in params) {
+      kv.push(`${key}=${(params as any)[key]}`)
+    }
     let url = `${ENDPOINT.CONFERENCE}/${conferenceId}/unlock`
-    if (account && account?.email && account?.password) {
-      const { email, password } = account
-      url = `${url}?user=${email}&password=${password}`
-    } else if (account && account?.auth && account?.token) {
-      options = {
-        params: {
-          auth: account.auth ?? ThirdParties.FACEBOOK,
-        },
-        headers: {
-          Authorization: `Bearer ${account.token}`,
-          'Content-Type': 'application/json',
-        },
-      }
+    if (kv.length > 0) {
+      url = `${url}?${kv.join('&')}`
     }
     const response: AxiosResponse = await axios.put(url, options)
     return response
@@ -274,13 +260,17 @@ const muteParticipant = async (
     const id = '' + participantId
     const payload: any = {}
     payload[id] = participantMuteState
-    const config = getOptionsParams(account)
+    const { options, params } = getQueryParamsAndOptions(account)
+    const kv = []
+    for (const key in params) {
+      kv.push(`${key}=${(params as any)[key]}`)
+    }
+    let url = `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute`
+    if (kv.length > 0) {
+      url = `${url}?${kv.join('&')}`
+    }
 
-    const response: AxiosResponse = await axios.put(
-      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute`,
-      payload,
-      config
-    )
+    const response: AxiosResponse = await axios.put(url, options, payload)
     return response
   } catch (e: any) {
     console.log(e)
