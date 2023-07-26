@@ -6,6 +6,7 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
 import { MOCK_API_CALLS } from './mock'
 import { getOptionsParams } from '../../utils/apiUtils'
+import { ThirdParties } from '../../utils/commonUtils'
 
 const ENDPOINT = {
   SERIES: `${MAIN_ENDPOINT}/series`,
@@ -192,9 +193,24 @@ const getVipConferenceList = async (account: AccountCredentials) => {
 
 const lockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
-    const config = getOptionsParams(account)
+    let options = {}
+    let url = `${ENDPOINT.CONFERENCE}/${conferenceId}/lock`
+    if (account && account?.email && account?.password) {
+      const { email, password } = account
+      url = `${url}?user=${email}&password=${password}`
+    } else if (account && account?.auth && account?.token) {
+      options = {
+        params: {
+          auth: account.auth ?? ThirdParties.FACEBOOK,
+        },
+        headers: {
+          Authorization: `Bearer ${account.token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    }
 
-    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/lock`, config)
+    const response: AxiosResponse = await axios.put(url, options)
     return response
   } catch (e: any) {
     console.log(e)
@@ -214,9 +230,23 @@ const lockConference = async (conferenceId: string | number, account: AccountCre
 
 const unlockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
-    const config = getOptionsParams(account)
-
-    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/unlock`, config)
+    let options = {}
+    let url = `${ENDPOINT.CONFERENCE}/${conferenceId}/unlock`
+    if (account && account?.email && account?.password) {
+      const { email, password } = account
+      url = `${url}?user=${email}&password=${password}`
+    } else if (account && account?.auth && account?.token) {
+      options = {
+        params: {
+          auth: account.auth ?? ThirdParties.FACEBOOK,
+        },
+        headers: {
+          Authorization: `Bearer ${account.token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    }
+    const response: AxiosResponse = await axios.put(url, options)
     return response
   } catch (e: any) {
     console.log(e)
