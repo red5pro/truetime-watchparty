@@ -15,6 +15,10 @@ import { Serie } from '../../../models/Serie'
 import moment from 'moment'
 import { isWatchParty } from '../../../settings/variables'
 
+const context = 'live'
+const guidPrefix = new RegExp(`^${context}/`)
+const pathHasGuid = (path: string) => guidPrefix.test(path)
+
 const getInitialValues = () => {
   const todayDate = moment()
   todayDate.set({ hour: 0, minute: 0, second: 0, millisecond: 0 })
@@ -24,7 +28,7 @@ const getInitialValues = () => {
     startDatetime: todayDate,
     endDatetime: todayDate,
     serie: '',
-    streamGuid: '',
+    streamGuid: `${context}/demo-stream`,
   }
 
   return initialValues
@@ -71,13 +75,14 @@ const CreateEvent = (props: ICreateEventProps) => {
       email: account.username,
       password: account.password,
     }
+    const { streamGuid } = values
 
     // Saving event datetime in UTC
     const data = {
       displayName: values.displayName,
-      streamGuid: values.streamGuid ?? '',
       startTime: values.startDatetime.utc().valueOf(),
       endTime: values.endDatetime.utc().valueOf(),
+      streamGuid: pathHasGuid(streamGuid) ? streamGuid : `${context}/${streamGuid}`,
     }
 
     const response = await SERIES_API_CALLS.createEpisode(values.serie, data, cred)
@@ -124,6 +129,15 @@ const CreateEvent = (props: ICreateEventProps) => {
                     <Field
                       component={TextField}
                       name="displayName"
+                      type="text"
+                      hiddenLabel
+                      className={classes.input}
+                      fullWidth
+                    />
+                    <FormLabel className={classes.label}>Stream GUID</FormLabel>
+                    <Field
+                      component={TextField}
+                      name="streamGuid"
                       type="text"
                       hiddenLabel
                       className={classes.input}
