@@ -76,7 +76,7 @@ const SubscriberMenu = (props: SubscriberMenuProps) => {
   }
 
   const toggleMuteVideo = () => {
-    const muted = participant.muteState?.audioMuted
+    const muted = participant.muteState?.videoMuted
     actions?.onMuteVideo(participant, !muted)
     onToggleMenu()
   }
