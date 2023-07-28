@@ -27,11 +27,12 @@ export const getCurrentEpisode = async (retrieveNextEpisodes = true) => {
 
       currentSerie = series.find((s: Serie) => s.seriesId === currentEpisode.seriesId)
 
-      if (retrieveNextEpisodes) {
+      if (retrieveNextEpisodes && currentEpisode) {
         const allEpisodesResponse = await SERIES_API_CALLS.getAllEpisodesBySerie(currentSerie.seriesId)
         if (allEpisodesResponse.status !== 200) throw allEpisodesResponse
 
-        nextEpisodes = allEpisodesResponse.data ?? []
+        nextEpisodes = allEpisodesResponse.data ? allEpisodesResponse.data.episodes : []
+        nextEpisodes = nextEpisodes.filter((e: any) => e.episodeId !== currentEpisode.episodeId)
       }
       return [currentEpisode, currentSerie, nextEpisodes]
     }
