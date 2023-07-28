@@ -3,16 +3,18 @@ import { Stack } from '@mui/material'
 import { Mic, MicOff, Videocam, VideocamOff } from '@mui/icons-material'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import useStyles from './PublisherControls.module'
+import { ParticipantMuteState } from '../../models/Participant'
 
 interface PublisherControlsProps {
   cameraOn: boolean
   microphoneOn: boolean
+  muteState?: ParticipantMuteState
   onCameraToggle(on: boolean): any
   onMicrophoneToggle(on: boolean): any
 }
 
 const PublisherControls = (props: PublisherControlsProps) => {
-  const { cameraOn, microphoneOn, onCameraToggle, onMicrophoneToggle } = props
+  const { cameraOn, microphoneOn, muteState, onCameraToggle, onMicrophoneToggle } = props
 
   const [isCameraOn, setIsCameraOn] = React.useState<boolean>(cameraOn)
   const [isMicrophoneOn, setIsMicrophoneOn] = React.useState<boolean>(microphoneOn)
@@ -26,6 +28,13 @@ const PublisherControls = (props: PublisherControlsProps) => {
   React.useEffect(() => {
     onMicrophoneToggle(isMicrophoneOn)
   }, [isMicrophoneOn])
+
+  React.useEffect(() => {
+    if (muteState) {
+      setIsCameraOn(!muteState.videoMuted)
+      setIsMicrophoneOn(!muteState.audioMuted)
+    }
+  }, [muteState])
 
   const onCamera = () => setIsCameraOn(!isCameraOn)
   const onMicrophone = () => setIsMicrophoneOn(!isMicrophoneOn)
