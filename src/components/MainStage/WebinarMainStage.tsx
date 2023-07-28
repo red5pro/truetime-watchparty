@@ -44,6 +44,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     subscriberListRef,
     publisherRef,
     mediaStream,
+    publishMuteState,
     userRole,
     subscriberMenuActions,
     requiresSubscriberScroll,
@@ -335,6 +336,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               <PublisherControls
                 cameraOn={true}
                 microphoneOn={true}
+                muteState={publishMuteState}
                 onCameraToggle={onPublisherCameraToggle}
                 onMicrophoneToggle={onPublisherMicrophoneToggle}
               />

@@ -35,15 +35,20 @@ const getScreenshareParticipants = (state: any, action: any, pid: number) => {
 }
 
 const listReducer = (state: any, action: any) => {
+  let currentParticipant: Participant | undefined
   const pid = state.connection ? state.connection.participantId : undefined
 
   switch (action.type) {
     case 'UPDATE_LIST':
+      // NOTE: VIP is not included in the list of participants.
+      // NOTE: Current user if not included in the list of participants.
+      currentParticipant = action.payload.find((p: Participant) => p.participantId === pid)
       return {
         ...state,
         list: action.payload.filter((p: Participant) => p.participantId !== pid),
         vip: action.vip,
         anonymousViewerAmount: action.anonymousViewerAmount,
+        currentParticipantState: currentParticipant?.muteState ?? {},
       }
     case 'UPDATE_SCREENSHARES':
       return {
@@ -77,6 +82,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
     closed: false,
     connection: undefined,
     conference: undefined,
+    currentParticipantState: undefined,
     status: undefined,
     vip: undefined,
     anonymousViewerAmount: 0,

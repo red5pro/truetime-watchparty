@@ -13,7 +13,7 @@ import Subscriber from '../Subscriber/Subscriber'
 import useStyles from './MainStage.module'
 
 import Publisher from '../Publisher/Publisher'
-import { Participant } from '../../models/Participant'
+import { Participant, ParticipantMuteState } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 import ShareLinkModal from '../Modal/ShareLinkModal'
 import ErrorModal from '../Modal/ErrorModal'
@@ -50,6 +50,7 @@ const MainStage = (props: IMainStageProps) => {
     subscriberListRef,
     publisherRef,
     mediaStream,
+    publishMuteState,
     userRole,
     subscriberMenuActions,
     requiresSubscriberScroll,
@@ -257,6 +258,7 @@ const MainStage = (props: IMainStageProps) => {
               <PublisherControls
                 cameraOn={true}
                 microphoneOn={true}
+                muteState={publishMuteState}
                 onCameraToggle={onPublisherCameraToggle}
                 onMicrophoneToggle={onPublisherMicrophoneToggle}
               />
@@ -327,6 +329,7 @@ const MainStage = (props: IMainStageProps) => {
             host={STREAM_HOST}
             streamGuid={getStreamGuid() || ''}
             stream={mediaStream}
+            muteState={publishMuteState}
             styles={layout.layout !== Layout.FULLSCREEN ? layout.style.publisher : layout.style.publisherVideo}
             onFail={onPublisherFail}
             onStart={onPublisherBroadcast}

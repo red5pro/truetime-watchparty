@@ -12,7 +12,7 @@ import { API_SOCKET_HOST, isWatchParty } from '../../settings/variables'
 import { PublisherRef } from '../Publisher'
 import { Paths, UserRoles } from '../../utils/commonUtils'
 import styles from './MainStageLayout'
-import { Participant } from '../../models/Participant'
+import { Participant, ParticipantMuteState } from '../../models/Participant'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import WebinarMainStage from './WebinarMainStage'
 import MainStage from './MainStage'
@@ -61,6 +61,7 @@ const MainStageWrapper = () => {
   const [nonFatalError, setNonFatalError] = React.useState<any>()
   const [maxParticipants, setMaxParticipants] = React.useState<number>(8)
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
+  const [publishMuteState, setPublishMutestate] = React.useState<ParticipantMuteState | undefined>()
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
   const [subscriberMenuActions, setSubscriberMenuActions] = React.useState<any>()
   const [layout, dispatch] = React.useReducer(layoutReducer, {
@@ -175,6 +176,14 @@ const MainStageWrapper = () => {
       setPublishMediaStream(mediaStream)
     }
   }, [mediaStream])
+
+  React.useEffect(() => {
+    const { currentParticipantState } = data
+    if (currentParticipantState) {
+      console.log('CURRENT PARTICIPANT STATE OF USER', data.currentParticipantState)
+      setPublishMutestate(currentParticipantState)
+    }
+  }, [data.currentParticipantState])
 
   React.useEffect(() => {
     if (maxParticipants > 0) {
@@ -451,6 +460,7 @@ const MainStageWrapper = () => {
     subscriberListRef,
     publisherRef,
     mediaStream,
+    publishMuteState,
     userRole,
     subscriberMenuActions,
     requiresSubscriberScroll,

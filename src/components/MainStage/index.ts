@@ -1,5 +1,5 @@
 import { FatalError } from '../../models/FatalError'
-import { Participant } from '../../models/Participant'
+import { Participant, ParticipantMuteState } from '../../models/Participant'
 
 export interface IMainStageWrapperProps {
   loading: boolean
@@ -9,6 +9,7 @@ export interface IMainStageWrapperProps {
   subscriberListRef: any
   publisherRef: any
   mediaStream: MediaStream | undefined
+  publishMuteState: ParticipantMuteState | undefined
   userRole: string
   subscriberMenuActions: {
     onMuteAudio: (participant: Participant, requestMute: boolean) => Promise<void>

@@ -9,6 +9,7 @@ import useStyles from './Publisher.module'
 import { getOrigin } from '../../utils/streamManagerUtils'
 import { ENABLE_DEBUG_UTILS } from '../../settings/variables'
 import { PublisherPost, PublisherRef } from '.'
+import { ParticipantMuteState } from '../../models/Participant'
 
 const getSenderFromConnection = (connection: RTCPeerConnection, type: string) => {
   return connection.getSenders().find((s: RTCRtpSender) => s.track?.kind === type)
@@ -35,14 +36,15 @@ interface PublisherProps {
   stream?: MediaStream
   host: string
   streamGuid: string
+  muteState?: ParticipantMuteState
   styles: any
   onStart(): any
   onInterrupt(): any
   onFail(): any
 }
 
-const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref: React.Ref<PublisherRef>) {
-  const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt, onFail } = props
+const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<PublisherRef>) => {
+  const { useStreamManager, stream, host, streamGuid, muteState, styles, onStart, onInterrupt, onFail } = props
   const { classes } = useStyles()
 
   React.useImperativeHandle(ref, () => ({ shutdown, send, toggleCamera, toggleMicrophone }))
@@ -95,6 +97,14 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
       }
     }
   }, [elementId])
+
+  React.useEffect(() => {
+    if (muteState) {
+      toggleCamera(!muteState.videoMuted)
+      toggleMicrophone(!muteState.audioMuted)
+      console.log('STATE OF PUB')
+    }
+  }, [muteState])
 
   const onPublisherEvent = (event: any) => {
     const { streamName } = element
@@ -182,6 +192,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
   }
 
   const toggleCamera = (on: boolean) => {
+    if (cameraOn === on) return
     if (pubRef && pubRef.current) {
       const connection = (pubRef.current as any).getPeerConnection()
       const sender = getSenderFromConnection(connection, 'video')
@@ -197,6 +208,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
   }
 
   const toggleMicrophone = (on: boolean) => {
+    if (micOn === on) return
     if (pubRef && pubRef.current) {
       const connection = (pubRef.current as any).getPeerConnection()
       const sender = getSenderFromConnection(connection, 'audio')
