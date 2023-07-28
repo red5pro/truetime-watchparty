@@ -5,7 +5,7 @@ const useStyles = makeStyles()((theme: any) => {
     container: {
       width: '100%',
       maxWidth: 360,
-      backgroundColor: '#303030',
+      backgroundColor: '#303030CC',
       padding: '20px',
       borderRadius: '24px',
       maxHeight: '70%',

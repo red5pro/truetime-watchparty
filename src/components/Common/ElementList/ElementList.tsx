@@ -1,6 +1,7 @@
 import { Box, Divider, List, ListItem, ListItemButton, ListItemText } from '@mui/material'
 import { Fragment } from 'react'
 import { Episode } from '../../../models/Episode'
+import moment from 'moment'
 import useStyles from './ElementList.module'
 
 interface IElementListProps {
@@ -25,7 +26,7 @@ const ElementList = (props: IElementListProps) => {
               {/* <ListItemButton className={classes.itemButton} component="a" href="#simple-list"> */}
               <Box marginRight={2}>
                 <ListItemText sx={{ whiteSpace: 'nowrap' }} primary={date.toLocaleDateString('en-US', dateOptions)} />
-                <ListItemText primary={`${date.getHours()}:${date.getMinutes()}`} />
+                <ListItemText primary={`${moment(date).format('HH:mm')}`} />
               </Box>
               <ListItemText primary={value.displayName} className={classes.itemDisplayName} />
               {/* </ListItemButton> */}

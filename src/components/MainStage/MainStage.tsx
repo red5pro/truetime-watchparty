@@ -122,8 +122,8 @@ const MainStage = () => {
         request.auth = auth
         request.accessToken = token
       } else {
-        const { email, password } = cookies.account
-        request.username = email
+        const { username, email, password } = cookies.account
+        request.username = username ?? email
         request.password = password
       }
     }
