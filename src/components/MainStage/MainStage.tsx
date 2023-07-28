@@ -187,7 +187,7 @@ const MainStage = () => {
   React.useEffect(() => {
     if (maxParticipants > 0) {
       const half = Math.floor(maxParticipants / 2)
-      const column = `fit-content(230px)`
+      const column = `fit-content(190px)`
       //      const column = `calc((100% / ${half}) - 12px)`
       const style = Array(half).fill(column).join(' ')
       setMaxParticipantGridColumnStyle({
