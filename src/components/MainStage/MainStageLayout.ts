@@ -140,7 +140,7 @@ const styles = {
       justifyContent: 'center',
     },
     subscriber: {
-      height: '100%',
+      // height: '100%',
       borderRadius: '20px',
       backgroundColor: 'black',
       aspectRatio: '1 / 1',

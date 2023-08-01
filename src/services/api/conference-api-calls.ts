@@ -5,7 +5,8 @@ import { ParticipantMuteState } from './../../models/Participant'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { MAIN_ENDPOINT } from '../../settings/variables'
 import { MOCK_API_CALLS } from './mock'
-import { getOptionsParams } from '../../utils/apiUtils'
+import { getOptionsParams, getQueryParamsAndOptions } from '../../utils/apiUtils'
+import { ThirdParties } from '../../utils/commonUtils'
 
 const ENDPOINT = {
   SERIES: `${MAIN_ENDPOINT}/series`,
@@ -192,9 +193,17 @@ const getVipConferenceList = async (account: AccountCredentials) => {
 
 const lockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
-    const config = getOptionsParams(account)
+    const { options, params } = getQueryParamsAndOptions(account)
+    const kv = []
+    for (const key in params) {
+      kv.push(`${key}=${(params as any)[key]}`)
+    }
+    let url = `${ENDPOINT.CONFERENCE}/${conferenceId}/lock`
+    if (kv.length > 0) {
+      url = `${url}?${kv.join('&')}`
+    }
 
-    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/lock`, config)
+    const response: AxiosResponse = await axios.put(url, options)
     return response
   } catch (e: any) {
     console.log(e)
@@ -214,9 +223,16 @@ const lockConference = async (conferenceId: string | number, account: AccountCre
 
 const unlockConference = async (conferenceId: string | number, account: AccountCredentials) => {
   try {
-    const config = getOptionsParams(account)
-
-    const response: AxiosResponse = await axios.put(`${ENDPOINT.CONFERENCE}/${conferenceId}/unlock`, config)
+    const { options, params } = getQueryParamsAndOptions(account)
+    const kv = []
+    for (const key in params) {
+      kv.push(`${key}=${(params as any)[key]}`)
+    }
+    let url = `${ENDPOINT.CONFERENCE}/${conferenceId}/unlock`
+    if (kv.length > 0) {
+      url = `${url}?${kv.join('&')}`
+    }
+    const response: AxiosResponse = await axios.put(url, options)
     return response
   } catch (e: any) {
     console.log(e)
@@ -244,13 +260,17 @@ const muteParticipant = async (
     const id = '' + participantId
     const payload: any = {}
     payload[id] = participantMuteState
-    const config = getOptionsParams(account)
+    const { options, params } = getQueryParamsAndOptions(account)
+    const kv = []
+    for (const key in params) {
+      kv.push(`${key}=${(params as any)[key]}`)
+    }
+    let url = `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute`
+    if (kv.length > 0) {
+      url = `${url}?${kv.join('&')}`
+    }
 
-    const response: AxiosResponse = await axios.put(
-      `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/mute`,
-      config,
-      payload
-    )
+    const response: AxiosResponse = await axios.put(url, payload, options)
     return response
   } catch (e: any) {
     console.log(e)
