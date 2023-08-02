@@ -2,6 +2,7 @@ export interface ParticipantMuteState {
   audioMuted: boolean | undefined
   videoMuted: boolean | undefined
   chatMuted: boolean | undefined
+  screenMuted: boolean | undefined
 }
 
 export interface Participant {

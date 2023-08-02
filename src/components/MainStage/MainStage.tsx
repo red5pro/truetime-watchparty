@@ -18,7 +18,7 @@ import WatchContext from '../WatchContext/WatchContext'
 
 import styles from './MainStageLayout'
 import Publisher from '../Publisher/Publisher'
-import { Participant } from '../../models/Participant'
+import { Participant, ParticipantMuteState } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 import ShareLinkModal from '../Modal/ShareLinkModal'
 import ErrorModal from '../Modal/ErrorModal'
@@ -87,6 +87,7 @@ const MainStage = () => {
   const [maxParticipants, setMaxParticipants] = React.useState<number>(0)
   const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
+  const [publishMuteState, setPublishMutestate] = React.useState<ParticipantMuteState | undefined>()
   const [availableVipParticipant, setAvailableVipParticipant] = React.useState<Participant | undefined>()
   const [requiresSubscriberScroll, setRequiresSubscriberScroll] = React.useState<boolean>(false)
   const [viewportHeight, setViewportHeight] = React.useState<number>(0)
@@ -121,8 +122,8 @@ const MainStage = () => {
         request.auth = auth
         request.accessToken = token
       } else {
-        const { email, password } = cookies.account
-        request.username = email
+        const { username, email, password } = cookies.account
+        request.username = username ?? email
         request.password = password
       }
     }
@@ -186,7 +187,7 @@ const MainStage = () => {
   React.useEffect(() => {
     if (maxParticipants > 0) {
       const half = Math.floor(maxParticipants / 2)
-      const column = `fit-content(230px)`
+      const column = `fit-content(190px)`
       //      const column = `calc((100% / ${half}) - 12px)`
       const style = Array(half).fill(column).join(' ')
       setMaxParticipantGridColumnStyle({
@@ -248,6 +249,14 @@ const MainStage = () => {
       setRequiresSubscriberScroll(false)
     }
   }, [data.list, layout, viewportHeight, relayout])
+
+  React.useEffect(() => {
+    const { currentParticipantState } = data
+    if (currentParticipantState) {
+      console.log('CURRENT PARTICIPANT STATE OF USER', data.currentParticipantState)
+      setPublishMutestate(currentParticipantState)
+    }
+  }, [data.currentParticipantState])
 
   const onPublisherBroadcast = () => {
     const streamGuid = getStreamGuid()
@@ -533,6 +542,7 @@ const MainStage = () => {
               <PublisherControls
                 cameraOn={true}
                 microphoneOn={true}
+                muteState={publishMuteState}
                 onCameraToggle={onPublisherCameraToggle}
                 onMicrophoneToggle={onPublisherMicrophoneToggle}
               />
@@ -604,6 +614,7 @@ const MainStage = () => {
             host={STREAM_HOST}
             streamGuid={getStreamGuid()}
             stream={mediaContext?.mediaStream}
+            muteState={publishMuteState}
             styles={layout.layout !== Layout.FULLSCREEN ? layout.style.publisher : layout.style.publisherVideo}
             onFail={onPublisherFail}
             onStart={onPublisherBroadcast}
