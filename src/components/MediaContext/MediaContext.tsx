@@ -69,20 +69,23 @@ const MediaProvider = (props: IMediaProviderProps) => {
   }, [microphoneSelected])
 
   const getMediaStream = async () => {
+    setMediaStream(undefined)
     setError(undefined)
     setLoading(true)
     try {
       console.log('REQUEST CONSTRAINTS', constraints)
       const mStream = await navigator.mediaDevices.getUserMedia(constraints)
+      setLoading(false)
       setMediaStream(mStream)
     } catch (e) {
       console.error(e)
+      setLoading(false)
       setError({
         status: 0,
-        statusText: `Could not instantiate media: ${(e as Error).message}`,
+        statusText: `Could not instantiate media: ${
+          (e as Error).message
+        }. Please check your camera and microphone access and permissions.`,
       })
-    } finally {
-      setLoading(false)
     }
   }
 
