@@ -95,7 +95,6 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
     if (muteState) {
       toggleCamera(!muteState.videoMuted)
       toggleMicrophone(!muteState.audioMuted)
-      console.log('STATE OF PUB')
     }
   }, [muteState])
 
