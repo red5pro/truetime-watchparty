@@ -9,7 +9,8 @@ const useStyles = makeStyles()((theme: any) => {
       padding: '20px',
       borderRadius: '24px',
       maxHeight: '70%',
-      overflow: 'scroll',
+      overflowX: 'hidden',
+      boxSizing: 'border-box',
     },
     itemButton: {},
     itemDisplayName: {
