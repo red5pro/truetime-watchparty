@@ -97,6 +97,6 @@ export const getNextConference = async (account: AccountCredentials) => {
     data: null,
     error: true,
     title: 'Warning!',
-    statusText: 'There are not any current events. Please check back later!',
+    statusText: 'There are not any current events to join. Please check back later!',
   }
 }
