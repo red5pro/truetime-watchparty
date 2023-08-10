@@ -20,7 +20,7 @@ const VipTimerStep = (props: IVipTimerProps) => {
     <Box display="flex" justifyContent="flex-end" alignItems="center">
       <Box display="flex" flexDirection="column" justifyContent="center" className={classes.container}>
         <Typography className={classes.title}>Let’s get started!</Typography>
-        <Typography>This is the total time you have to visit watch parties</Typography>
+        <Typography>This timer will keep track of the time spent visiting in each event watch party.</Typography>
 
         <Box marginTop={2}>
           <CustomButton onClick={onActions.onNextStep} size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY}>
