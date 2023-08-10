@@ -47,7 +47,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
       // if (typeof constraints.video === 'boolean') {
       //   constraints.video = {}
       // }
-      const videoConstraint = { ...constraints.video, deviceId: cameraSelected }
+      const videoConstraint = { ...constraints.video, deviceId: { exact: cameraSelected } }
       setConstraints({
         ...constraints,
         video: videoConstraint,
@@ -60,7 +60,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
       // if (typeof constraints.audio === 'boolean') {
       //   constraints.audio = {}
       // }
-      const audioConstraint = { ...constraints.audio, deviceId: microphoneSelected }
+      const audioConstraint = { ...constraints.audio, deviceId: { exact: microphoneSelected } }
       setConstraints({
         ...constraints,
         audio: audioConstraint,
@@ -69,19 +69,23 @@ const MediaProvider = (props: IMediaProviderProps) => {
   }, [microphoneSelected])
 
   const getMediaStream = async () => {
+    setMediaStream(undefined)
     setError(undefined)
     setLoading(true)
     try {
+      console.log('REQUEST CONSTRAINTS', constraints)
       const mStream = await navigator.mediaDevices.getUserMedia(constraints)
+      setLoading(false)
       setMediaStream(mStream)
     } catch (e) {
       console.error(e)
+      setLoading(false)
       setError({
         status: 0,
-        statusText: `Could not instantiate media: ${(e as Error).message}`,
+        statusText: `Could not instantiate media: ${
+          (e as Error).message
+        }. Please check your camera and microphone access and permissions.`,
       })
-    } finally {
-      setLoading(false)
     }
   }
 
