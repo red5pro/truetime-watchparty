@@ -7,7 +7,13 @@ import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-mat
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
 
 import useCookies from '../../hooks/useCookies'
-import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import {
+  API_SOCKET_HOST,
+  ENABLE_MUTE_API,
+  STREAM_HOST,
+  USE_STREAM_MANAGER,
+  PREFER_WHIP_WHEP,
+} from '../../settings/variables'
 import Loading from '../Common/Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
 
@@ -428,6 +434,7 @@ const MainStage = () => {
         <Box sx={layout.style.mainVideoContainer}>
           <Subscriber
             ref={mainVideoRef}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
             streamGuid={mainStreamGuid}
@@ -494,6 +501,7 @@ const MainStage = () => {
               styles={layout.style.vipsubscriber}
               videoStyles={layout.style.vipsubscriberVideo}
               host={STREAM_HOST}
+              preferWhipWhep={PREFER_WHIP_WHEP}
               useStreamManager={USE_STREAM_MANAGER}
             />
           </Box>
@@ -512,6 +520,7 @@ const MainStage = () => {
                   styles={layout.style.subscriber}
                   videoStyles={layout.style.subscriberVideo}
                   host={STREAM_HOST}
+                  preferWhipWhep={PREFER_WHIP_WHEP}
                   useStreamManager={USE_STREAM_MANAGER}
                   menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
                   onSubscribeStart={onRelayout}
@@ -610,6 +619,7 @@ const MainStage = () => {
           <Publisher
             key="publisher"
             ref={publisherRef}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
             streamGuid={getStreamGuid()}

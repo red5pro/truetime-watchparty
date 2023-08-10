@@ -1,4 +1,4 @@
-import { setLogLevel, RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
+import { setLogLevel, WHIPClient, RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
 import Loading from '../Common/Loading/Loading'
 import VideoElement from '../VideoElement/VideoElement'
@@ -31,6 +31,7 @@ interface PublisherRef {
 
 interface PublisherProps {
   useStreamManager: boolean
+  preferWhipWhep: boolean
   stream?: MediaStream
   host: string
   streamGuid: string
@@ -42,7 +43,18 @@ interface PublisherProps {
 }
 
 const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<PublisherRef>) => {
-  const { useStreamManager, stream, host, streamGuid, muteState, styles, onStart, onInterrupt, onFail } = props
+  const {
+    preferWhipWhep,
+    useStreamManager,
+    stream,
+    host,
+    streamGuid,
+    muteState,
+    styles,
+    onStart,
+    onInterrupt,
+    onFail,
+  } = props
   const { classes } = useStyles()
 
   React.useImperativeHandle(ref, () => ({ shutdown, toggleCamera, toggleMicrophone }))
@@ -103,7 +115,8 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
     // if (event.type === 'WebSocket.Message.Unhandled') {
     //   console.log(event)
     // }
-    if (event.type === 'Publish.Available') {
+    const { type } = event
+    if (type === 'Publish.Available' || type === 'Publish.Start') {
       onStart()
     } else if (event.type === 'Publisher.Connection.Closed') {
       // Unexpected close.
@@ -116,19 +129,21 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
 
   const start = async () => {
     setIsPublishing(true)
-    const pub = new RTCPublisher()
+    const pub = preferWhipWhep ? new WHIPClient() : new RTCPublisher()
     try {
       const config = {
-        app: useStreamManager ? 'streammanager' : context,
+        app: !preferWhipWhep && useStreamManager ? 'streammanager' : context,
         host: host,
         streamName: streamName,
         mediaElementId: elementId,
         clearMediaOnUnpublish: true,
+        enableChannelSignaling: true, // WHIP/WHEP specific
+        trickleIce: true, // Flag to use trickle ice to send candidates
         connectionParams: {
           /* username, password, token? */
         },
       }
-      if (useStreamManager) {
+      if (!preferWhipWhep && useStreamManager) {
         const payload = await getOrigin(host, context, streamName)
         config.connectionParams = { ...config.connectionParams, host: payload.serverAddress, app: payload.scope }
       }

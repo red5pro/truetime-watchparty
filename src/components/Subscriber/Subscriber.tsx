@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { RTCSubscriber } from 'red5pro-webrtc-sdk'
+import { WHEPClient, RTCSubscriber } from 'red5pro-webrtc-sdk'
 import VideoElement from '../VideoElement/VideoElement'
 import Loading from '../Common/Loading/Loading'
 import { Box, Stack } from '@mui/material'
@@ -22,6 +22,7 @@ interface SubscriberRef {
 interface ISubscriberProps {
   host: string
   streamGuid: string
+  preferWhipWhep: boolean
   useStreamManager: boolean
   resubscribe: boolean
   styles: any
@@ -38,6 +39,7 @@ const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidNam
 
 const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<SubscriberRef>) => {
   const {
+    preferWhipWhep,
     useStreamManager,
     resubscribe,
     host,
@@ -151,18 +153,20 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
   const start = async () => {
     setIsSubscribing(true)
     try {
-      const sub = new RTCSubscriber()
+      const sub = preferWhipWhep ? new WHEPClient() : new RTCSubscriber()
       const config = {
-        app: useStreamManager ? 'streammanager' : context,
+        app: !preferWhipWhep && useStreamManager ? 'streammanager' : context,
         host: host,
         streamName: streamName,
         mediaElementId: elementId,
         subscriptionId: `${streamName}-${Math.floor(Math.random() * 0x10000).toString(16)}`,
+        enableChannelSignaling: true, // WHIP/WHEP specific
+        trickleIce: true, // Flag to use trickle ice to send candidates
         connectionParams: {
           /* username, password, token? */
         },
       }
-      if (useStreamManager) {
+      if (!preferWhipWhep && useStreamManager) {
         const payload = await getEdge(host, context, streamName)
         config.connectionParams = { ...config.connectionParams, host: payload.serverAddress, app: payload.scope }
       }
