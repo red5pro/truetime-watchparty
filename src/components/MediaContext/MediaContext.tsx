@@ -82,9 +82,9 @@ const MediaProvider = (props: IMediaProviderProps) => {
       setLoading(false)
       setError({
         status: 0,
-        statusText: `Could not instantiate media: ${
+        statusText: `It appears this camera or micrphone isn't working properly, please select a different camera or microphone. ${
           (e as Error).message
-        }. Please check your camera and microphone access and permissions.`,
+        }.`,
       })
     }
   }
