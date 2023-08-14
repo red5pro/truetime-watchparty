@@ -17,7 +17,7 @@ const VipTimer = (props: IVipTimerStepProps) => {
   const [minutes, setMinutes] = React.useState<number>(0)
   const [seconds, setSeconds] = React.useState<number>(0)
 
-  const [timer, setTimer] = React.useState<NodeJS.Timer>()
+  const [timer, setTimer] = React.useState<NodeJS.Timer | number | any>()
   const [countDownDate, setCountDownDate] = React.useState<number>(0)
 
   // const [progressBar, setProgressBar] = React.useState<number>(0)
