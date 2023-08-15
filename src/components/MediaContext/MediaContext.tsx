@@ -82,7 +82,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
       setLoading(false)
       setError({
         status: 0,
-        statusText: `It appears this camera or micrphone isn't working properly, please select a different camera or microphone. ${
+        statusText: `It appears this camera or micrphone isn't working properly. Please select a different camera or microphone. ${
           (e as Error).message
         }.`,
       })
