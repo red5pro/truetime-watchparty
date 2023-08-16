@@ -8,6 +8,7 @@ import { ENABLE_DEBUG_UTILS } from '../../settings/variables'
 interface MainStageSubscriberProps {
   participant: Participant
   host: string
+  preferWhipWhep: boolean
   useStreamManager: boolean
   styles: any
   videoStyles: any
@@ -16,7 +17,8 @@ interface MainStageSubscriberProps {
 }
 
 const MainStageSubscriber = (props: MainStageSubscriberProps) => {
-  const { participant, host, useStreamManager, styles, videoStyles, menuActions, onSubscribeStart } = props
+  const { participant, host, preferWhipWhep, useStreamManager, styles, videoStyles, menuActions, onSubscribeStart } =
+    props
 
   return (
     // TODO: Set `mute` to false for production
@@ -24,6 +26,7 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
     <Box sx={{ ...styles, position: 'relative' }}>
       <Subscriber
         host={host}
+        preferWhipWhep={preferWhipWhep}
         useStreamManager={useStreamManager}
         mute={false}
         showControls={false}

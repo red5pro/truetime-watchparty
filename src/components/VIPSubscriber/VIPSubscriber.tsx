@@ -5,18 +5,20 @@ import Subscriber from '../Subscriber/Subscriber'
 interface VIPSubscriber {
   participant: Participant
   host: string
+  preferWhipWhep: boolean
   useStreamManager: boolean
   styles: any
   videoStyles: any
 }
 
 const VIPSubscriber = (props: VIPSubscriber) => {
-  const { participant, host, useStreamManager, styles, videoStyles } = props
+  const { participant, host, preferWhipWhep, useStreamManager, styles, videoStyles } = props
 
   return (
     <Box sx={{ position: 'relative' }}>
       <Subscriber
         host={host}
+        preferWhipWhep={preferWhipWhep}
         useStreamManager={useStreamManager}
         mute={false}
         showControls={false}

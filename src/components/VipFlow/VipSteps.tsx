@@ -3,7 +3,7 @@ import * as React from 'react'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import { AccountCredentials } from '../../models/AccountCredentials'
 import { Episode } from '../../models/Episode'
-import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import { STREAM_HOST, USE_STREAM_MANAGER, PREFER_WHIP_WHEP } from '../../settings/variables'
 
 import { IStepActionsSubComponent, UserRoles } from '../../utils/commonUtils'
 import Loading from '../Common/Loading/Loading'
@@ -187,6 +187,7 @@ const VipSteps = () => {
         <Box className={classes.mainVideoContainer}>
           <Subscriber
             ref={mainVideoRef}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             useStreamManager={USE_STREAM_MANAGER}
             host={STREAM_HOST}
             streamGuid={mainStreamGuid}

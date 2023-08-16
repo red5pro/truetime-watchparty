@@ -12,12 +12,13 @@ export interface MediaControlOption {
 interface MediaControlProps {
   icon: React.ReactNode
   options: [MediaControlOption]
+  disabled: boolean
   onChange(select: MediaControlOption): any
   value: any
 }
 
 const MediaControl = (props: MediaControlProps) => {
-  const { icon, options, value, onChange } = props
+  const { icon, options, disabled, value, onChange } = props
 
   const { classes } = useStyles()
 
@@ -57,6 +58,7 @@ const MediaControl = (props: MediaControlProps) => {
           buttonType={BUTTONTYPE.TRANSPARENT}
           startIcon={icon}
           onClick={toggleOpen}
+          disabled={disabled || !options || options.length <= 0}
         >
           {options && options.length > selectedIndex ? options[selectedIndex].name : 'N/A'}
         </CustomButton>

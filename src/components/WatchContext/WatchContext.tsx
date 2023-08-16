@@ -69,6 +69,14 @@ const WatchProvider = (props: IWatchProviderProps) => {
   }
 
   const join = (url: string, joinRequest: ConnectionRequest) => {
+    console.log('JOIN', url, joinRequest)
+    if (socketRef && socketRef.current) {
+      const ws = socketRef.current as WebSocket
+      if (ws.readyState === ws.OPEN || ws.readyState === ws.CONNECTING) {
+        console.log('JOIN - SOCKET ALREADY OPEN')
+        return
+      }
+    }
     leave()
     setLoading(true)
     const socket = new WebSocket(url)
@@ -126,6 +134,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
   }
 
   const retry = (url: string, joinRequest: ConnectionRequest) => {
+    console.log('JOIN RETRY', url, joinRequest)
     join(url, joinRequest)
   }
 
