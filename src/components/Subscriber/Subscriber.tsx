@@ -7,6 +7,7 @@ import { MicOff, VideocamOff, AccountBox } from '@mui/icons-material'
 import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import { getEdge } from '../../utils/streamManagerUtils'
 import useStyles from './Subscriber.module'
+import MediaContext from '../MediaContext/MediaContext'
 
 enum StreamingModes {
   AV = 'Video/Audio',
@@ -37,7 +38,9 @@ interface ISubscriberProps {
 const DELAY = 2000
 const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
 
-const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps, ref: React.Ref<SubscriberRef>) {
+const useMediaContext = () => React.useContext(MediaContext.Context)
+
+const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<SubscriberRef>) => {
   const {
     useStreamManager,
     resubscribe,
@@ -52,6 +55,8 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
     onSubscribeStart,
     isMainVideo,
   } = props
+
+  const { speakerSelected } = useMediaContext()
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 
@@ -232,7 +237,6 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
     }
   }
 
-
   return (
     <Box className={classes.container} sx={styles}>
       {(!videoOn || isVideoOff) && <AccountBox fontSize="large" className={classes.accountIcon} />}
@@ -242,6 +246,7 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
         controls={showControls}
         styles={{ ...videoStyles, display: videoOn ? 'unset' : 'none' }}
         volume={playbackVolume}
+        speakerSelected={speakerSelected}
       />
       <Stack direction="row" spacing={1} className={classes.iconBar}>
         {(!audioOn || isAudioOff) && <MicOff />}
