@@ -23,6 +23,16 @@ function updateAudioDeviceList(audioTrack: any, devices: MediaDeviceInfo[]) {
   }
 }
 
+function updateAudioOutputDeviceList(audioTrack: any, devices: MediaDeviceInfo[]) {
+  const speakers = devices.filter((item: MediaDeviceInfo) => {
+    return item.kind === 'audiooutput'
+  })
+  return {
+    currentTrack: audioTrack,
+    availableDevices: speakers,
+  }
+}
+
 export const getDeviceListing = async (mediaStream?: MediaStream) => {
   let videoTrack: any = null
   let audioTrack: any = null
@@ -43,7 +53,8 @@ export const getDeviceListing = async (mediaStream?: MediaStream) => {
     console.log('Available Devices', devices)
     const cameraList = updateCameraDeviceList(videoTrack, devices)
     const microphoneList = updateAudioDeviceList(audioTrack, devices)
-    return [cameraList, microphoneList]
+    const audioOutputList = updateAudioOutputDeviceList(undefined, devices)
+    return [cameraList, microphoneList, audioOutputList]
   } catch (error: any) {
     console.error('Could not access camera devices: ' + error)
     return []

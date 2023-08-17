@@ -7,6 +7,7 @@ import { MicOff, VideocamOff, AccountBox } from '@mui/icons-material'
 import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import { getEdge } from '../../utils/streamManagerUtils'
 import useStyles from './Subscriber.module'
+import MediaContext from '../MediaContext/MediaContext'
 
 enum StreamingModes {
   AV = 'Video/Audio',
@@ -37,6 +38,8 @@ interface ISubscriberProps {
 const DELAY = 2000
 const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
 
+const useMediaContext = () => React.useContext(MediaContext.Context)
+
 const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<SubscriberRef>) => {
   const {
     preferWhipWhep,
@@ -52,6 +55,8 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
     isVideoOff, // from organizer mute
     onSubscribeStart,
   } = props
+
+  const { speakerSelected } = useMediaContext()
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 
@@ -243,6 +248,7 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
         controls={showControls}
         styles={{ ...videoStyles, display: videoOn ? 'unset' : 'none' }}
         volume={playbackVolume}
+        speakerSelected={speakerSelected}
       />
       <Stack direction="row" spacing={1} className={classes.iconBar}>
         {(!audioOn || isAudioOff) && <MicOff />}

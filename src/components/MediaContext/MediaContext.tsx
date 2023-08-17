@@ -15,6 +15,7 @@ interface IMediaContextProps {
   microphoneSelected: string | undefined
   setCameraSelected: (deviceId: string | undefined) => void
   setMicrophoneSelected: (deviceId: string | undefined) => void
+  setSpeakerSelected: (deviceId: string | undefined) => void
   setConstraints: (constraints: any) => void
   setMediaStream: (stream: MediaStream | undefined) => void
   retry: () => void
@@ -31,6 +32,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
   const [mediaStream, setMediaStream] = React.useState<MediaStream | undefined>()
   const [cameraSelected, setCameraSelected] = React.useState<string | undefined>()
   const [microphoneSelected, setMicrophoneSelected] = React.useState<string | undefined>()
+  const [speakerSelected, setSpeakerSelected] = React.useState<string | undefined>()
 
   React.useEffect(() => {
     startAdapter()
@@ -100,8 +102,10 @@ const MediaProvider = (props: IMediaProviderProps) => {
     constraints,
     cameraSelected,
     microphoneSelected,
+    speakerSelected,
     setCameraSelected,
     setMicrophoneSelected,
+    setSpeakerSelected,
     setConstraints,
     setMediaStream,
     retry,
