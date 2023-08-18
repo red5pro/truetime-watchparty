@@ -28,8 +28,8 @@ const styles = {
       zIndex: -100,
       position: 'absolute',
       width: 'calc(100vw - 14rem)',
-      height: 'calc(100vh - 8rem)',
-      top: '4rem',
+      height: 'calc(100vh - 9rem)',
+      top: '5rem',
       left: '13rem',
     },
     mainVideo: {
@@ -91,7 +91,7 @@ const styles = {
     },
     subscriberContainer: {
       display: 'flex',
-      overflowY: 'scroll',
+      // overflowY: 'scroll',
       // flexGrow: 9,
       flexDirection: 'column',
       aspectRatio: '0.25',
@@ -100,6 +100,9 @@ const styles = {
       height: '100%',
       rowGap: '10px',
       minWidth: '100% !important',
+      paddingLeft: '20px',
+      paddingTop: '20px',
+      boxSizing: 'border-box',
     },
     subscriber: {
       maxHeight: '124px',
