@@ -18,6 +18,7 @@ interface ScreenShareRef {
 interface ScreenShareProps {
   owner: string
   useStreamManager: boolean
+  preferWhipWhep: boolean
   host: string
   styles: any
   isSharingScreen: boolean
@@ -25,7 +26,7 @@ interface ScreenShareProps {
 }
 
 const ScreenSharePublisher = React.forwardRef((props: ScreenShareProps, ref: React.Ref<ScreenShareRef>) => {
-  const { owner, useStreamManager, host, styles, isSharingScreen, onEnded } = props
+  const { owner, useStreamManager, preferWhipWhep, host, styles, isSharingScreen, onEnded } = props
   const { classes } = useStyles()
 
   const screensharePubRef = React.useRef<PublisherRef>(null)
@@ -117,6 +118,7 @@ const ScreenSharePublisher = React.forwardRef((props: ScreenShareProps, ref: Rea
             aspectRatio: 'unset',
           }}
           useStreamManager={useStreamManager}
+          preferWhipWhep={preferWhipWhep}
           stream={mediaStream}
           streamGuid={getSharescreenStreamGuid()}
           onStart={onStart}

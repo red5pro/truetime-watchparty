@@ -9,7 +9,7 @@ import WatchContext from '../../components/WatchContext/WatchContext'
 import JoinContext from '../../components/JoinContext/JoinContext'
 import Loading from '../../components/Common/Loading/Loading'
 import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
-import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER, PREFER_WHIP_WHEP } from '../../settings/variables'
 import { FatalError } from '../../models/FatalError'
 import ErrorModal from '../../components/Modal/ErrorModal'
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
@@ -237,6 +237,7 @@ const Page = () => {
             key="publisher"
             ref={publisherRef}
             useStreamManager={USE_STREAM_MANAGER}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             streamGuid={getStreamGuid()}
             stream={mediaStream}
@@ -263,6 +264,7 @@ const Page = () => {
                   videoStyles={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   host={STREAM_HOST}
                   useStreamManager={USE_STREAM_MANAGER}
+                  preferWhipWhep={PREFER_WHIP_WHEP}
                   menuActions={undefined}
                 />
               )

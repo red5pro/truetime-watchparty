@@ -10,6 +10,7 @@ interface MainStageSubscriberProps {
   participant: Participant
   host: string
   useStreamManager: boolean
+  preferWhipWhep: boolean
   styles: any
   videoStyles: any
   menuActions?: any
@@ -22,6 +23,7 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
     participant,
     host,
     useStreamManager,
+    preferWhipWhep,
     styles,
     videoStyles,
     menuActions,
@@ -36,6 +38,7 @@ const MainStageSubscriber = (props: MainStageSubscriberProps) => {
       <Subscriber
         host={host}
         useStreamManager={useStreamManager}
+        preferWhipWhep={preferWhipWhep}
         mute={false}
         showControls={false}
         streamGuid={participant.streamGuid}

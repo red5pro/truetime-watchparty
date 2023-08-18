@@ -115,6 +115,15 @@ const WatchProvider = (props: IWatchProviderProps) => {
   }
 
   const join = (url: string, joinRequest: ConnectionRequest) => {
+    console.log('JOIN', url, joinRequest)
+    if (socketRef && socketRef.current) {
+      const ws = socketRef.current as WebSocket
+      if (ws.readyState === ws.OPEN || ws.readyState === ws.CONNECTING) {
+        console.log('JOIN - SOCKET ALREADY OPEN')
+        return
+      }
+    }
+
     if (!hostSocket || (hostSocket && hostSocket.url !== url)) {
       leave()
       setLoading(true)

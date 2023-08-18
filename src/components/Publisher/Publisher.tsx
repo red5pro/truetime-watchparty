@@ -1,4 +1,4 @@
-import { setLogLevel, RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
+import { setLogLevel, RTCPublisher, WHIPClient, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
 import Loading from '../Common/Loading/Loading'
 import VideoElement from '../VideoElement/VideoElement'
@@ -33,6 +33,7 @@ const publisherReducer = (state: any, action: any) => {
 
 interface PublisherProps {
   useStreamManager: boolean
+  preferWhipWhep: boolean
   stream?: MediaStream
   host: string
   streamGuid: string
@@ -44,7 +45,18 @@ interface PublisherProps {
 }
 
 const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<PublisherRef>) => {
-  const { useStreamManager, stream, host, streamGuid, muteState, styles, onStart, onInterrupt, onFail } = props
+  const {
+    useStreamManager,
+    preferWhipWhep,
+    stream,
+    host,
+    streamGuid,
+    muteState,
+    styles,
+    onStart,
+    onInterrupt,
+    onFail,
+  } = props
   const { classes } = useStyles()
 
   React.useImperativeHandle(ref, () => ({ shutdown, send, toggleCamera, toggleMicrophone }))
@@ -102,7 +114,6 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
     if (muteState) {
       toggleCamera(!muteState.videoMuted)
       toggleMicrophone(!muteState.audioMuted)
-      console.log('STATE OF PUB')
     }
   }, [muteState])
 
@@ -112,12 +123,13 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
     // if (event.type === 'WebSocket.Message.Unhandled') {
     //   console.log(event)
     // }
-    if (event.type === 'Publish.Available') {
+    const { type } = event
+    if (type === 'Publish.Available' || type === 'Publish.Start') {
       onStart()
-    } else if (event.type === 'Publisher.Connection.Closed') {
+    } else if (type === 'Publisher.Connection.Closed') {
       // Unexpected close.
       onInterrupt()
-    } else if (event.type === 'Connect.Failure') {
+    } else if (type === 'Connect.Failure') {
       // Cannot establish connection.
       onFail()
     }
@@ -125,10 +137,10 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
 
   const start = async (id: string | undefined, context: string, streamName: string) => {
     setIsPublishing(true)
-    const pub = new RTCPublisher()
+    const pub = preferWhipWhep ? new WHIPClient() : new RTCPublisher()
     try {
       const config = {
-        app: useStreamManager ? 'streammanager' : context,
+        app: !preferWhipWhep && useStreamManager ? 'streammanager' : context,
         host: host,
         streamName: streamName,
         mediaElementId: id,
@@ -136,8 +148,10 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
         connectionParams: {
           /* username, password, token? */
         },
+        enableChannelSignaling: true, // WHIP/WHEP specific
+        trickleIce: true, // Flag to use trickle ice to send candidates
       }
-      if (useStreamManager) {
+      if (!preferWhipWhep && useStreamManager) {
         const payload = await getOrigin(host, context, streamName)
         config.connectionParams = { ...config.connectionParams, host: payload.serverAddress, app: payload.scope }
       }

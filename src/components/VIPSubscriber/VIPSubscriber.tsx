@@ -6,18 +6,20 @@ interface VIPSubscriber {
   participant: Participant
   host: string
   useStreamManager: boolean
+  preferWhipWhep: boolean
   styles: any
   videoStyles: any
 }
 
 const VIPSubscriber = (props: VIPSubscriber) => {
-  const { participant, host, useStreamManager, styles, videoStyles } = props
+  const { participant, host, useStreamManager, preferWhipWhep, styles, videoStyles } = props
 
   return (
     <Box sx={{ position: 'relative' }}>
       <Subscriber
         host={host}
         useStreamManager={useStreamManager}
+        preferWhipWhep={preferWhipWhep}
         mute={false}
         showControls={false}
         streamGuid={participant.streamGuid}

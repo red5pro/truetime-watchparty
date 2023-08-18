@@ -10,7 +10,7 @@ import WatchpartyParticipants from '../WatchpartyParticipants/WatchpartyParticip
 import { ConnectionRequest } from '../../../models/ConferenceStatusEvent'
 import WatchContext from '../../WatchContext/WatchContext'
 import Publisher from '../../Publisher/Publisher'
-import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER } from '../../../settings/variables'
+import { API_SOCKET_HOST, STREAM_HOST, USE_STREAM_MANAGER, PREFER_WHIP_WHEP } from '../../../settings/variables'
 import { FatalError } from '../../../models/FatalError'
 import ErrorModal from '../../Modal/ErrorModal'
 import MediaContext from '../../MediaContext/MediaContext'
@@ -264,6 +264,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
             key="publisher"
             ref={vipRef}
             useStreamManager={USE_STREAM_MANAGER}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             streamGuid={getStreamGuid()}
             stream={mediaStream}
@@ -301,6 +302,7 @@ const VipJoinWatchparty = (props: IVipSeeParticipantsProps) => {
                   }}
                   host={STREAM_HOST}
                   useStreamManager={USE_STREAM_MANAGER}
+                  preferWhipWhep={PREFER_WHIP_WHEP}
                 />
               )
             })}

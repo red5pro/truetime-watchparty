@@ -6,7 +6,13 @@ import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-material'
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
 
-import { ENABLE_MUTE_API, isWatchParty, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import {
+  ENABLE_MUTE_API,
+  isWatchParty,
+  STREAM_HOST,
+  USE_STREAM_MANAGER,
+  PREFER_WHIP_WHEP,
+} from '../../settings/variables'
 import Loading from '../Common/Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
 
@@ -134,6 +140,7 @@ const MainStage = (props: IMainStageProps) => {
           <Subscriber
             ref={mainVideoRef}
             useStreamManager={USE_STREAM_MANAGER}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             streamGuid={mainStreamGuid}
             resubscribe={true}
@@ -211,6 +218,7 @@ const MainStage = (props: IMainStageProps) => {
               videoStyles={layout.style.vipsubscriberVideo}
               host={STREAM_HOST}
               useStreamManager={USE_STREAM_MANAGER}
+              preferWhipWhep={PREFER_WHIP_WHEP}
             />
           </Box>
         )}
@@ -229,6 +237,7 @@ const MainStage = (props: IMainStageProps) => {
                   videoStyles={layout.style.subscriberVideo}
                   host={STREAM_HOST}
                   useStreamManager={USE_STREAM_MANAGER}
+                  preferWhipWhep={PREFER_WHIP_WHEP}
                   menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
                   onSubscribeStart={onRelayout}
                 />
@@ -326,6 +335,7 @@ const MainStage = (props: IMainStageProps) => {
             key="publisher"
             ref={publisherRef}
             useStreamManager={USE_STREAM_MANAGER}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             streamGuid={getStreamGuid() || ''}
             stream={mediaStream}
