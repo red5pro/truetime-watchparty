@@ -201,7 +201,11 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 styles={
                   layout.layout !== Layout.FULLSCREEN
                     ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
-                    : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(1)' } }
+                    : {
+                        ...layout.style.publisherVideo,
+                        ...layout.style.subscriber,
+                        ...{ transform: 'scaleX(1)', width: '100%', backgroundColor: 'black' },
+                      }
                 }
                 onFail={onPublisherFail}
                 onStart={onPublisherBroadcast}
