@@ -378,9 +378,10 @@ const MainStageWrapper = () => {
     onMuteAudio: async (participant: Participant, requestMute: boolean) => {
       const { muteState } = participant
       const requestState = { ...muteState!, audioMuted: requestMute }
+      const conferenceId = data.conference?.conferenceId
       try {
         const result = await CONFERENCE_API_CALLS.muteParticipant(
-          data.conference.conferenceId,
+          conferenceId,
           getCookies().account,
           participant.participantId,
           requestState
@@ -390,15 +391,16 @@ const MainStageWrapper = () => {
         }
       } catch (e) {
         console.error(e)
-        setNonFatalError(e)
+        setNonFatalError({ ...(e as any), title: 'Error in muting participant.' })
       }
     },
     onMuteVideo: async (participant: Participant, requestMute: boolean) => {
       const { muteState } = participant
       const requestState = { ...muteState!, videoMuted: requestMute }
+      const conferenceId = data.conference?.conferenceI
       try {
         const result = await CONFERENCE_API_CALLS.muteParticipant(
-          data.conference.conferenceId,
+          conferenceId,
           getCookies().account,
           participant.participantId,
           requestState
@@ -406,9 +408,9 @@ const MainStageWrapper = () => {
         if (result.status >= 300) {
           throw result
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error(e)
-        setNonFatalError(e)
+        setNonFatalError({ ...(e as any), title: 'Error in muting participant.' })
       }
     },
     onBan: (participant: Participant) => {

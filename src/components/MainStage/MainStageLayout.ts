@@ -223,11 +223,12 @@ const styles = {
       gap: '10px',
       justifyContent: 'center',
       overflow: 'hidden',
+      width: '100%',
     },
     subscriber: {
       height: '100%',
       borderRadius: '20px',
-      // backgroundColor: 'black',
+      backgroundColor: 'black',
       aspectRatio: '1 / 1',
       padding: '0 !important',
     },
