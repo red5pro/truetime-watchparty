@@ -79,6 +79,7 @@ const MainStageWrapper = () => {
       'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
   })
   const [isAnonymous, setIsAnonymous] = React.useState<boolean>(false)
+  const [conferenceId, setConferenceId] = React.useState<any | undefined>(undefined)
 
   React.useEffect(() => {
     setIsAnonymous(isAnonymousParticipant)
@@ -217,6 +218,12 @@ const MainStageWrapper = () => {
     }
   }, [data.list, layout, viewportHeight, relayout])
 
+  React.useEffect(() => {
+    if (data.conference) {
+      setConferenceId(data.conference.conferenceId)
+    }
+  }, [data.conference])
+
   const getAnonymousSocketUrl = (token: string) => {
     const request: ConnectionRequest = {
       // displayName: 'anon',
@@ -314,10 +321,10 @@ const MainStageWrapper = () => {
   }
 
   const toggleLock = async () => {
-    const conferenceId = data.conference.conferenceId
+    const confId = conferenceId ?? data.conference.conferenceId
     if (!seriesEpisode.locked) {
       try {
-        const result = await lock(conferenceId)
+        const result = await lock(confId)
         if (result.status >= 300) {
           throw result
         }
@@ -327,7 +334,7 @@ const MainStageWrapper = () => {
       }
     } else {
       try {
-        const result = await unlock(conferenceId)
+        const result = await unlock(confId)
         if (result.status >= 300) {
           throw result
         }
@@ -378,10 +385,10 @@ const MainStageWrapper = () => {
     onMuteAudio: async (participant: Participant, requestMute: boolean) => {
       const { muteState } = participant
       const requestState = { ...muteState!, audioMuted: requestMute }
-      const conferenceId = data.conference?.conferenceId
+      const confId = conferenceId ?? data.conference?.conferenceId
       try {
         const result = await CONFERENCE_API_CALLS.muteParticipant(
-          conferenceId,
+          confId,
           getCookies().account,
           participant.participantId,
           requestState
@@ -397,10 +404,10 @@ const MainStageWrapper = () => {
     onMuteVideo: async (participant: Participant, requestMute: boolean) => {
       const { muteState } = participant
       const requestState = { ...muteState!, videoMuted: requestMute }
-      const conferenceId = data.conference?.conferenceI
+      const confId = conferenceId ?? data.conference?.conferenceId
       try {
         const result = await CONFERENCE_API_CALLS.muteParticipant(
-          conferenceId,
+          confId,
           getCookies().account,
           participant.participantId,
           requestState
@@ -420,11 +427,8 @@ const MainStageWrapper = () => {
 
   const onContinueBan = async (participant: Participant) => {
     try {
-      const result = await CONFERENCE_API_CALLS.banParticipant(
-        data.conference.conferenceId,
-        getCookies().account,
-        participant.participantId
-      )
+      const confId = conferenceId ?? data.conference?.conferenceId
+      const result = await CONFERENCE_API_CALLS.banParticipant(confId, getCookies().account, participant.participantId)
       if (result.status >= 300) {
         throw result
       }
