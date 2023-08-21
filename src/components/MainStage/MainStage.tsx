@@ -211,7 +211,7 @@ const MainStage = () => {
     if (data.closed) {
       shutdown()
     }
-    if (!fatalError) {
+    if (data.closed && !fatalError) {
       setFatalError({
         status: 404,
         title: 'Connection Disruption',
