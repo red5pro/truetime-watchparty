@@ -46,7 +46,7 @@ const useStyles = makeStyles()((theme: any) => {
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      width: '86vw',
+      // width: '86vw',
     },
     header: {
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
