@@ -52,6 +52,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
       // if (typeof constraints.video === 'boolean') {
       //   constraints.video = {}
       // }
+      console.log('SETTING CAMERA DEVICE', cameraSelected)
       const videoConstraint = { ...constraints.video, deviceId: { exact: cameraSelected } }
       setConstraints({
         ...constraints,
@@ -65,6 +66,7 @@ const MediaProvider = (props: IMediaProviderProps) => {
       // if (typeof constraints.audio === 'boolean') {
       //   constraints.audio = {}
       // }
+      console.log('SETTING MICROPHONE DEVICE', microphoneSelected)
       const audioConstraint = { ...constraints.audio, deviceId: { exact: microphoneSelected } }
       setConstraints({
         ...constraints,
