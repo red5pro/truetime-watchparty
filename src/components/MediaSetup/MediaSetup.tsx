@@ -48,6 +48,9 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
     setMicrophoneSelected,
     setSpeakerSelected,
     speakerSelected,
+    permissionsChanged,
+    clearPermissionsChanged,
+    dismissError,
     retry,
   } = useMediaContext()
 
@@ -60,13 +63,23 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
 
   React.useEffect(() => {
     if (!constraints) {
+      console.log('LANDING REQUEST -> Get Devices.')
       getDevices()
       setConstraints(storedConstraints || DEFAULT_CONSTRAINTS)
     }
   }, [])
 
   React.useEffect(() => {
+    if (permissionsChanged) {
+      console.log('PERMISSIONS CHANGED -> Get Devices.')
+      clearPermissionsChanged()
+      getDevices()
+    }
+  }, [permissionsChanged])
+
+  React.useEffect(() => {
     if (mediaStream) {
+      console.log('MEDIA STREAM CHANGED -> Get Devices.')
       getDevices(mediaStream)
     }
   }, [mediaStream])
