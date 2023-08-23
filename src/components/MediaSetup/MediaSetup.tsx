@@ -22,6 +22,10 @@ const deviceReducer = (state: any, action: any) => {
   }
 }
 
+const isEmptyOrDefault = (value: string) => {
+  return value === '' || value === 'default'
+}
+
 const mediaSelectClasses = {
   root: {},
 }
@@ -101,8 +105,12 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
     if (microphones.currentTrack) {
       selectedMicrophone = microphones.availableDevices.find((d) => d.label === microphones.currentTrack.label)
     }
-    setCameraSelected(selectedCamera?.deviceId)
-    setMicrophoneSelected(selectedMicrophone?.deviceId)
+    if (!isEmptyOrDefault(cameraSelected)) {
+      setCameraSelected(selectedCamera?.deviceId)
+    }
+    if (!isEmptyOrDefault(microphoneSelected)) {
+      setMicrophoneSelected(selectedMicrophone?.deviceId)
+    }
     setSpeakerSelected(selectedSpeaker?.deviceId)
     dispatch({ type: 'CAMERAS', payload: cameras.availableDevices })
     dispatch({ type: 'MICROPHONES', payload: microphones.availableDevices })
