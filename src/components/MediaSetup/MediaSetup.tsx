@@ -22,6 +22,10 @@ const deviceReducer = (state: any, action: any) => {
   }
 }
 
+const isEmptyOrDefault = (value: string) => {
+  return value === '' || value === 'default'
+}
+
 const mediaSelectClasses = {
   root: {},
 }
@@ -44,6 +48,9 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
     setMicrophoneSelected,
     setSpeakerSelected,
     speakerSelected,
+    permissionsChanged,
+    clearPermissionsChanged,
+    dismissError,
     retry,
   } = useMediaContext()
 
@@ -56,13 +63,23 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
 
   React.useEffect(() => {
     if (!constraints) {
+      console.log('LANDING REQUEST -> Get Devices.')
       getDevices()
       setConstraints(storedConstraints || DEFAULT_CONSTRAINTS)
     }
   }, [])
 
   React.useEffect(() => {
+    if (permissionsChanged) {
+      console.log('PERMISSIONS CHANGED -> Get Devices.')
+      clearPermissionsChanged()
+      getDevices()
+    }
+  }, [permissionsChanged])
+
+  React.useEffect(() => {
     if (mediaStream) {
+      console.log('MEDIA STREAM CHANGED -> Get Devices.')
       getDevices(mediaStream)
     }
   }, [mediaStream])
@@ -101,8 +118,12 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
     if (microphones.currentTrack) {
       selectedMicrophone = microphones.availableDevices.find((d) => d.label === microphones.currentTrack.label)
     }
-    setCameraSelected(selectedCamera?.deviceId)
-    setMicrophoneSelected(selectedMicrophone?.deviceId)
+    if (!isEmptyOrDefault(cameraSelected)) {
+      setCameraSelected(selectedCamera?.deviceId)
+    }
+    if (!isEmptyOrDefault(microphoneSelected)) {
+      setMicrophoneSelected(selectedMicrophone?.deviceId)
+    }
     setSpeakerSelected(selectedSpeaker?.deviceId)
     dispatch({ type: 'CAMERAS', payload: cameras.availableDevices })
     dispatch({ type: 'MICROPHONES', payload: microphones.availableDevices })
