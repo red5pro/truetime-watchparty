@@ -7,20 +7,21 @@ interface ScreenShareSubscriberProps {
   participantScreenshare: Participant
   host: string
   useStreamManager: boolean
+  preferWhipWhep: boolean
   styles: any
   videoStyles?: any
   onSubscribeStart?(): any
 }
 
 const ScreenShareSubscriber = (props: ScreenShareSubscriberProps) => {
-  const { participantScreenshare, host, useStreamManager, styles, onSubscribeStart } = props
-
+  const { participantScreenshare, host, useStreamManager, preferWhipWhep, styles, onSubscribeStart } = props
 
   return (
     <Box sx={{ ...styles, position: 'relative' }}>
       <Subscriber
         host={host}
         useStreamManager={useStreamManager}
+        preferWhipWhep={preferWhipWhep}
         mute={false}
         showControls={false}
         streamGuid={participantScreenshare.screenshareGuid || ''}

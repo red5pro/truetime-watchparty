@@ -13,7 +13,7 @@ import {
 } from '@mui/icons-material'
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
 
-import { ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import { ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER, PREFER_WHIP_WHEP } from '../../settings/variables'
 import Loading from '../Common/Loading/Loading'
 
 import useStyles from './MainStage.module'
@@ -44,6 +44,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     subscriberListRef,
     publisherRef,
     mediaStream,
+    publishMuteState,
     userRole,
     subscriberMenuActions,
     requiresSubscriberScroll,
@@ -121,7 +122,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   }
 
   return (
-    <Box id="root-container" className={classes.rootContainer}>
+    <Box id="root-container" className={classes.rootContainer} position="fixed" overflow="hidden">
       {/* Loading Message */}
       {(!data.conference || loading) && (
         <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
@@ -134,6 +135,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           <ScreenSharePublisher
             owner={getStreamGuid() || ''}
             useStreamManager={USE_STREAM_MANAGER}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
             isSharingScreen={screenShare}
@@ -148,6 +150,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               key={sc.screenshareGuid}
               participantScreenshare={sc}
               useStreamManager={USE_STREAM_MANAGER}
+              preferWhipWhep={PREFER_WHIP_WHEP}
               host={STREAM_HOST}
               styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
               videoStyles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
@@ -163,14 +166,21 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       >
         <Grid
           container
-          xs={layout.layout === Layout.FULLSCREEN ? 12 : 4}
           ref={subscriberListRef}
-          // maxHeight={layout.layout !== Layout.FULLSCREEN ? 'calc(100vh - 10rem)' : '100%'}
-          minHeight={layout.layout !== Layout.FULLSCREEN ? `calc(100vh - 5rem)` : '100%'}
+          minHeight={layout.layout !== Layout.FULLSCREEN ? 'unset' : 'auto'}
+          maxHeight={layout.layout !== Layout.FULLSCREEN ? 'calc(100vh - 7rem)' : 'auto'}
           width={layout.layout !== Layout.FULLSCREEN ? '100%' : 'fit-content'}
           minWidth={layout.layout !== Layout.FULLSCREEN ? '100%' : 'auto'}
-          flexWrap="nowrap"
-          style={layout.layout !== Layout.FULLSCREEN ? { ...layout.style.subscriberContainer } : { ...{ gap: '10px' } }}
+          flexWrap={
+            layout.layout !== Layout.FULLSCREEN || (layout.layout === Layout.FULLSCREEN && data.list.length < 3)
+              ? 'nowrap'
+              : 'wrap'
+          }
+          style={
+            layout.layout !== Layout.FULLSCREEN
+              ? layout.style.subscriberContainer
+              : layout.style.subscriberContainerFull
+          }
         >
           {!isAnonymous && (
             <Grid
@@ -178,21 +188,24 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               item
               sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-              maxHeight={
-                layout.layout !== Layout.FULLSCREEN ? '124px' : calculateParticipantHeight(data.list.length + 1)
-              }
+              maxHeight={layout.layout !== Layout.FULLSCREEN ? '124px' : data.list.length < 3 ? '100%' : '50%'}
             >
               <Publisher
                 key="publisher"
                 ref={publisherRef}
                 useStreamManager={USE_STREAM_MANAGER}
+                preferWhipWhep={PREFER_WHIP_WHEP}
                 host={STREAM_HOST}
                 streamGuid={getStreamGuid() || ''}
                 stream={mediaStream}
                 styles={
                   layout.layout !== Layout.FULLSCREEN
                     ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
-                    : { ...layout.style.publisherVideo, ...layout.style.subscriber, ...{ transform: 'scaleX(1)' } }
+                    : {
+                        ...layout.style.publisherVideo,
+                        ...layout.style.subscriber,
+                        ...{ transform: 'scaleX(1)', width: '100%', backgroundColor: 'black' },
+                      }
                 }
                 onFail={onPublisherFail}
                 onStart={onPublisherBroadcast}
@@ -206,16 +219,16 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               item
               key={s.participantId}
               xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-              maxHeight={
-                layout.layout !== Layout.FULLSCREEN ? '124px' : calculateParticipantHeight(data.list.length + 1)
-              }
+              sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
+              maxHeight={layout.layout !== Layout.FULLSCREEN ? '124px' : data.list.length < 3 ? '100%' : '50%'}
             >
               <MainStageSubscriber
                 participant={s}
-                styles={{ ...layout.style.subscriber, transform: 'scaleX(1)' }}
+                styles={{ ...layout.style.subscriber }}
                 videoStyles={layout.style.subscriberVideo}
                 host={STREAM_HOST}
                 useStreamManager={USE_STREAM_MANAGER}
+                preferWhipWhep={PREFER_WHIP_WHEP}
                 menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
                 onSubscribeStart={onRelayout}
                 isLayoutFullscreen={layout.layout === Layout.FULLSCREEN}
@@ -223,7 +236,8 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
             </Grid>
           ))}
         </Grid>
-        {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && data.list.length > 5 && (
+
+        {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
           <CustomButton
             className={classes.moreButton}
             size={BUTTONSIZE.SMALL}
@@ -330,6 +344,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               <PublisherControls
                 cameraOn={true}
                 microphoneOn={true}
+                muteState={publishMuteState}
                 onCameraToggle={onPublisherCameraToggle}
                 onMicrophoneToggle={onPublisherMicrophoneToggle}
               />
@@ -341,7 +356,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 <>
                   {!screenShare ? (
                     <Tooltip
-                      title={data?.screenshareParticipant?.length > 0 ? 'Take Over' : 'Share Screen'}
+                      title={data?.screenshareParticipants?.length > 0 ? 'Take Over' : 'Share Screen'}
                       placement="top"
                     >
                       <IconButton
@@ -424,6 +439,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
             key="publisher"
             ref={publisherRef}
             useStreamManager={USE_STREAM_MANAGER}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             streamGuid={getStreamGuid()}
             stream={mediaStream}

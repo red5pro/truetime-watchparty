@@ -74,6 +74,18 @@ const TabsSection = (props: ITabsSectionProps) => {
   const [countries, setCountries] = React.useState<{ country: string; count: number }[]>([])
 
   React.useEffect(() => {
+    const getData = async () => {
+      const response = await getSeries()
+
+      if (response) {
+        setSeries(response)
+      }
+    }
+
+    getData()
+  }, [])
+
+  React.useEffect(() => {
     if (data) {
       const { head, rows } = mappingFunctions(value, data)
 
@@ -83,22 +95,28 @@ const TabsSection = (props: ITabsSectionProps) => {
     }
   }, [data])
 
+  const getSeries = async () => {
+    const response = await SERIES_API_CALLS.getSeriesList()
+
+    if (response.status !== 200) {
+      setError({
+        status: `Warning!`,
+        statusText: `${response.statusText}`,
+      })
+      return
+    }
+
+    return response.data.series
+  }
+
   const getData = async (tabValue: number, shouldUpdateValues: boolean) => {
     setButtonLabel(getLabelButton(tabValue) ?? '')
 
     if (tabValue === 1) {
       if (!series?.length || shouldUpdateValues) {
-        const response = await SERIES_API_CALLS.getSeriesList()
-
-        if (response.status !== 200) {
-          setError({
-            status: `Warning!`,
-            statusText: `${response.statusText}`,
-          })
-          return
-        }
-        setSeries(response.data.series)
-        setData(response.data.series)
+        const response = await getSeries()
+        setSeries(response)
+        setData(response)
       } else {
         setData(series)
       }

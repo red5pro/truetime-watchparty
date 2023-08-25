@@ -46,7 +46,7 @@ const ViewEvents = (props: IViewEventsProps) => {
     <Box
       className={classes.root}
       sx={{
-        backgroundImage: !error && isWatchParty ? `url(${require('../../../assets/images/BoxMainImage.png')})` : '',
+        backgroundImage: !error && isWatchParty ? "url('../../../assets/images/BoxMainImage.png')" : '',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: '40% 100%',
       }}
@@ -111,10 +111,10 @@ const ViewEvents = (props: IViewEventsProps) => {
               </>
             )}
           </Box>
-          {eventData.nextEpisodes?.length > 0 && (
+          {eventData.loaded && eventData.nextEpisodes?.length > 0 && (
             <Box className={classes.rightContainer}>
               <Typography sx={{ fontWeight: 600, textAlign: 'left' }} marginBottom={2}>
-                Other events in this tournament
+                Other events in this series
               </Typography>
               <ElementList items={eventData.nextEpisodes} />
             </Box>

@@ -35,15 +35,20 @@ const getScreenshareParticipants = (state: any, action: any, pid: number) => {
 }
 
 const listReducer = (state: any, action: any) => {
+  let currentParticipant: Participant | undefined
   const pid = state.connection ? state.connection.participantId : undefined
 
   switch (action.type) {
     case 'UPDATE_LIST':
+      // NOTE: VIP is not included in the list of participants.
+      // NOTE: Current user if not included in the list of participants.
+      currentParticipant = action.payload.find((p: Participant) => p.participantId === pid)
       return {
         ...state,
         list: action.payload.filter((p: Participant) => p.participantId !== pid),
         vip: action.vip,
         anonymousViewerAmount: action.anonymousViewerAmount,
+        currentParticipantState: currentParticipant?.muteState ?? {},
       }
     case 'UPDATE_SCREENSHARES':
       return {
@@ -77,6 +82,7 @@ const WatchProvider = (props: IWatchProviderProps) => {
     closed: false,
     connection: undefined,
     conference: undefined,
+    currentParticipantState: undefined,
     status: undefined,
     vip: undefined,
     anonymousViewerAmount: 0,
@@ -97,7 +103,10 @@ const WatchProvider = (props: IWatchProviderProps) => {
     const anonymousViewers = participants.filter((p: Participant) => {
       return (p.role as string).toLowerCase() === UserRoles.ANONYMOUS.toLowerCase()
     })
-    const list = participants.filter((p: Participant) => isNotRoles(p, [UserRoles.VIP, UserRoles.ANONYMOUS]))
+    const list = participants
+      .filter((p: Participant) => isNotRoles(p, [UserRoles.VIP, UserRoles.ANONYMOUS]))
+      .sort((a: Participant) => (a.role.toLocaleLowerCase() === UserRoles.ORGANIZER.toLocaleLowerCase() ? -1 : 1))
+
     dispatch({ type: 'UPDATE_LIST', payload: list, vip, anonymousViewerAmount: anonymousViewers.length })
   }
 
@@ -106,6 +115,15 @@ const WatchProvider = (props: IWatchProviderProps) => {
   }
 
   const join = (url: string, joinRequest: ConnectionRequest) => {
+    console.log('JOIN', url, joinRequest)
+    if (socketRef && socketRef.current) {
+      const ws = socketRef.current as WebSocket
+      if (ws.readyState === ws.OPEN || ws.readyState === ws.CONNECTING) {
+        console.log('JOIN - SOCKET ALREADY OPEN')
+        return
+      }
+    }
+
     if (!hostSocket || (hostSocket && hostSocket.url !== url)) {
       leave()
       setLoading(true)

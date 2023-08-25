@@ -8,11 +8,11 @@ interface IVideoElementProps {
   muted: boolean
   controls: boolean
   volume?: number
+  speakerSelected?: string
 }
 
-const VideoElement = (props: IVideoElementProps) => {
-  const { elementId, styles, muted, controls, volume } = props
-  const videoRef = React.useRef<HTMLVideoElement>(null)
+const VideoElement = ({ elementId, styles, muted, controls, volume, speakerSelected }: IVideoElementProps) => {
+  const videoRef: any = React.useRef(null)
   const { classes } = useVideoStyles()
 
   React.useEffect(() => {
@@ -29,6 +29,16 @@ const VideoElement = (props: IVideoElementProps) => {
       videoRef.current.muted = muted
     }
   }, [muted, elementId])
+
+  React.useEffect(() => {
+    if (videoRef && videoRef.current && speakerSelected) {
+      try {
+        videoRef.current.setSinkId(speakerSelected)
+      } catch (e: any) {
+        console.error(`Error in setting speaker out.`, e)
+      }
+    }
+  }, [speakerSelected, elementId])
 
   return (
     <Box className={classes.container}>

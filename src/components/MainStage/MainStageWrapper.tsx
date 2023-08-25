@@ -12,7 +12,7 @@ import { API_SOCKET_HOST, isWatchParty } from '../../settings/variables'
 import { PublisherRef } from '../Publisher'
 import { Paths, UserRoles } from '../../utils/commonUtils'
 import styles from './MainStageLayout'
-import { Participant } from '../../models/Participant'
+import { Participant, ParticipantMuteState } from '../../models/Participant'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import WebinarMainStage from './WebinarMainStage'
 import MainStage from './MainStage'
@@ -46,7 +46,6 @@ const MainStageWrapper = () => {
     unlock,
     isAnonymousParticipant,
     cohostsList,
-    getCoHostsList,
   } = useJoinContext()
   const { mediaStream } = useMediaContext()
   const { error, loading, data, join, retry } = useWatchContext()
@@ -62,6 +61,7 @@ const MainStageWrapper = () => {
   const [nonFatalError, setNonFatalError] = React.useState<any>()
   const [maxParticipants, setMaxParticipants] = React.useState<number>(8)
   const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
+  const [publishMuteState, setPublishMutestate] = React.useState<ParticipantMuteState | undefined>()
   const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
   const [subscriberMenuActions, setSubscriberMenuActions] = React.useState<any>()
   const [layout, dispatch] = React.useReducer(layoutReducer, {
@@ -79,6 +79,7 @@ const MainStageWrapper = () => {
       'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
   })
   const [isAnonymous, setIsAnonymous] = React.useState<boolean>(false)
+  const [conferenceId, setConferenceId] = React.useState<any | undefined>(undefined)
 
   React.useEffect(() => {
     setIsAnonymous(isAnonymousParticipant)
@@ -132,12 +133,12 @@ const MainStageWrapper = () => {
     }
     if (data.closed) {
       shutdown()
+    }
+    if (data.closed && !fatalError) {
       setFatalError({
         status: 404,
         title: 'Connection Disruption',
-        statusText: `Your session was interrupted expectedly. You are no longer in the ${
-          isWatchParty ? 'Watch Party' : 'Webinar'
-        }.`,
+        statusText: `Your session was interrupted expectedly. You are no longer in the Watch Party.`,
         closeLabel: 'OK',
         onClose: onLeave,
       } as FatalError)
@@ -146,19 +147,15 @@ const MainStageWrapper = () => {
 
   React.useEffect(() => {
     if (data.connection) {
-      const { connection, conference } = data
+      const { connection } = data
 
       if (connection && connection.role) {
         const { role } = connection
         setUserRole(role.toLowerCase())
         setSubscriberMenuActions(getMenuActionsFromRole(role.toLowerCase()))
       }
-
-      if (!isWatchParty && connection && connection.role !== UserRoles.ORGANIZER.toLocaleLowerCase() && conference) {
-        getCoHostsList(conference.conferenceId)
-      }
     }
-  }, [data.connection, data.conference])
+  }, [data.connection])
 
   React.useEffect(() => {
     if (
@@ -166,7 +163,6 @@ const MainStageWrapper = () => {
       cohostsList?.length &&
       cohostsList?.includes((email: string) => email === getCookies().account.email)
     ) {
-      debugger
       setUserRole(UserRoles.COHOST.toLowerCase())
     }
   }, [cohostsList])
@@ -181,6 +177,14 @@ const MainStageWrapper = () => {
       setPublishMediaStream(mediaStream)
     }
   }, [mediaStream])
+
+  React.useEffect(() => {
+    const { currentParticipantState } = data
+    if (currentParticipantState) {
+      console.log('CURRENT PARTICIPANT STATE OF USER', data.currentParticipantState)
+      setPublishMutestate(currentParticipantState)
+    }
+  }, [data.currentParticipantState])
 
   React.useEffect(() => {
     if (maxParticipants > 0) {
@@ -213,6 +217,12 @@ const MainStageWrapper = () => {
       setRequiresSubscriberScroll(false)
     }
   }, [data.list, layout, viewportHeight, relayout])
+
+  React.useEffect(() => {
+    if (data.conference) {
+      setConferenceId(data.conference.conferenceId)
+    }
+  }, [data.conference])
 
   const getAnonymousSocketUrl = (token: string) => {
     const request: ConnectionRequest = {
@@ -253,6 +263,14 @@ const MainStageWrapper = () => {
   }
 
   const getMenuActionsFromRole = (role: string) => {
+    if (role === UserRoles.COHOST.toLocaleLowerCase()) {
+      const cohostMenuActions = {
+        onMuteAudio: organizerSubscriberMenuActions.onMuteAudio,
+        onMuteVideo: organizerSubscriberMenuActions.onMuteVideo,
+      }
+      return cohostMenuActions
+    }
+
     const allowed = [UserRoles.ADMIN, UserRoles.ORGANIZER].map((r) => r.toLowerCase())
     return allowed.indexOf(role) > -1 ? organizerSubscriberMenuActions : undefined
   }
@@ -303,10 +321,10 @@ const MainStageWrapper = () => {
   }
 
   const toggleLock = async () => {
-    const conferenceId = data.conference.conferenceId
+    const confId = conferenceId ?? data.conference.conferenceId
     if (!seriesEpisode.locked) {
       try {
-        const result = await lock(conferenceId)
+        const result = await lock(confId)
         if (result.status >= 300) {
           throw result
         }
@@ -316,7 +334,7 @@ const MainStageWrapper = () => {
       }
     } else {
       try {
-        const result = await unlock(conferenceId)
+        const result = await unlock(confId)
         if (result.status >= 300) {
           throw result
         }
@@ -349,7 +367,7 @@ const MainStageWrapper = () => {
 
   const onMoreScroll = () => {
     if (subscriberListRef && subscriberListRef.current) {
-      subscriberListRef.current.lastChild.scrollIntoView()
+      subscriberListRef.current.lastChild.scrollIntoView(false)
     }
   }
 
@@ -367,9 +385,10 @@ const MainStageWrapper = () => {
     onMuteAudio: async (participant: Participant, requestMute: boolean) => {
       const { muteState } = participant
       const requestState = { ...muteState!, audioMuted: requestMute }
+      const confId = conferenceId ?? data.conference?.conferenceId
       try {
         const result = await CONFERENCE_API_CALLS.muteParticipant(
-          data.conference.conferenceId,
+          confId,
           getCookies().account,
           participant.participantId,
           requestState
@@ -379,15 +398,16 @@ const MainStageWrapper = () => {
         }
       } catch (e) {
         console.error(e)
-        setNonFatalError(e)
+        setNonFatalError({ ...(e as any), title: 'Error in muting participant.' })
       }
     },
     onMuteVideo: async (participant: Participant, requestMute: boolean) => {
       const { muteState } = participant
       const requestState = { ...muteState!, videoMuted: requestMute }
+      const confId = conferenceId ?? data.conference?.conferenceId
       try {
         const result = await CONFERENCE_API_CALLS.muteParticipant(
-          data.conference.conferenceId,
+          confId,
           getCookies().account,
           participant.participantId,
           requestState
@@ -395,9 +415,9 @@ const MainStageWrapper = () => {
         if (result.status >= 300) {
           throw result
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error(e)
-        setNonFatalError(e)
+        setNonFatalError({ ...(e as any), title: 'Error in muting participant.' })
       }
     },
     onBan: (participant: Participant) => {
@@ -407,11 +427,8 @@ const MainStageWrapper = () => {
 
   const onContinueBan = async (participant: Participant) => {
     try {
-      const result = await CONFERENCE_API_CALLS.banParticipant(
-        data.conference.conferenceId,
-        getCookies().account,
-        participant.participantId
-      )
+      const confId = conferenceId ?? data.conference?.conferenceId
+      const result = await CONFERENCE_API_CALLS.banParticipant(confId, getCookies().account, participant.participantId)
       if (result.status >= 300) {
         throw result
       }
@@ -435,9 +452,10 @@ const MainStageWrapper = () => {
   const calculateGrid = (totalParticipants: number) => {
     if (totalParticipants < 5) {
       return 12 / totalParticipants
-    } else {
-      return 3
+    } else if (totalParticipants >= 7) {
+      return 2.5
     }
+    return 3
   }
 
   const mainStageProps: IMainStageWrapperProps = {
@@ -448,6 +466,7 @@ const MainStageWrapper = () => {
     subscriberListRef,
     publisherRef,
     mediaStream,
+    publishMuteState,
     userRole,
     subscriberMenuActions,
     requiresSubscriberScroll,

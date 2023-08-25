@@ -10,8 +10,9 @@ export const RECAPTCHA_SITE_KEY = process.env.REACT_APP_RECAPTCHA_SITE_KEY || 'A
 export const RECAPTCHA_SECRET_KEY = process.env.REACT_APP_RECAPTCHA_SECRET_KEY || 'ADDME'
 
 export const SM_ACCESS_TOKEN = process.env.REACT_APP_SM_TOKEN || ''
-export const USE_STREAM_MANAGER = process.env.REACT_APP_SM === '1' || false
+export const USE_STREAM_MANAGER = process.env.REACT_APP_SM === '1' || true
 export const USE_CLOUD_STORAGE = process.env.REACT_APP_SM_CLOUDSTORAGE === '1' || false
+export const PREFER_WHIP_WHEP = process.env.REACT_APP_PREFER_WHIP_WHEP === '1' || true
 export const API_SOCKET_HOST = USE_LOCAL_SERVICES
   ? 'ws://localhost:8001'
   : `wss://${API_SERVER_HOST}/conference-api/1.0/ws/conference`

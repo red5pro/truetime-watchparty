@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Alert, Box, Button, CardContent, MenuItem, Select, Stack } from '@mui/material'
+import { Alert, Box, Button, CardContent, MenuItem, Select, Stack, Typography } from '@mui/material'
 
 import MediaContext from '../MediaContext/MediaContext'
 import useMediaStyles from './MediaSetup.module'
@@ -7,7 +7,7 @@ import { DEFAULT_CONSTRAINTS } from '../../settings/variables'
 import { getDeviceListing } from '../../utils/deviceSelectorUtil'
 import Loading from '../Common/Loading/Loading'
 import MediaControl, { MediaControlOption } from '../MediaSetup/MediaControl'
-import { Mic, Videocam } from '@mui/icons-material'
+import { Mic, Videocam, Speaker } from '@mui/icons-material'
 
 const useMediaContext = () => React.useContext(MediaContext.Context)
 
@@ -17,7 +17,13 @@ const deviceReducer = (state: any, action: any) => {
       return { ...state, cameras: action.payload }
     case 'MICROPHONES':
       return { ...state, microphones: action.payload }
+    case 'SPEAKERS':
+      return { ...state, speakers: action.payload }
   }
+}
+
+const isEmptyOrDefault = (value: string) => {
+  return value === '' || value === 'default'
 }
 
 const mediaSelectClasses = {
@@ -40,24 +46,40 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
     setCameraSelected,
     microphoneSelected,
     setMicrophoneSelected,
+    setSpeakerSelected,
+    speakerSelected,
+    permissionsChanged,
+    clearPermissionsChanged,
+    dismissError,
     retry,
   } = useMediaContext()
 
   const videoRef: any = React.useRef(null)
   const { classes } = useMediaStyles()
 
-  const [devices, dispatch] = React.useReducer(deviceReducer, { cameras: [], microphones: [] })
+  const [devices, dispatch] = React.useReducer(deviceReducer, { cameras: [], microphones: [], speakers: [] })
   // TODO: store constraints?
   const [storedConstraints, setStoredConstraints] = React.useState<any | undefined>()
 
   React.useEffect(() => {
     if (!constraints) {
+      console.log('LANDING REQUEST -> Get Devices.')
+      getDevices()
       setConstraints(storedConstraints || DEFAULT_CONSTRAINTS)
     }
   }, [])
 
   React.useEffect(() => {
+    if (permissionsChanged) {
+      console.log('PERMISSIONS CHANGED -> Get Devices.')
+      clearPermissionsChanged()
+      getDevices()
+    }
+  }, [permissionsChanged])
+
+  React.useEffect(() => {
     if (mediaStream) {
+      console.log('MEDIA STREAM CHANGED -> Get Devices.')
       getDevices(mediaStream)
     }
   }, [mediaStream])
@@ -85,14 +107,27 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
     }
   }, [videoRef, mediaStream])
 
-  const getDevices = async (stream: MediaStream) => {
-    const [cameras, microphones] = await getDeviceListing(stream)
-    const selectedCamera = cameras.availableDevices.find((d) => d.label === cameras.currentTrack.label)
-    const selectedMicrophone = microphones.availableDevices.find((d) => d.label === microphones.currentTrack.label)
-    setCameraSelected(selectedCamera?.deviceId)
-    setMicrophoneSelected(selectedMicrophone?.deviceId)
+  const getDevices = async (stream?: MediaStream) => {
+    const [cameras, microphones, speakers] = await getDeviceListing(stream)
+    let selectedCamera = cameras.availableDevices.length > 0 ? cameras.availableDevices[0] : undefined
+    let selectedMicrophone = microphones.availableDevices.length > 0 ? microphones.availableDevices[0] : undefined
+    const selectedSpeaker = speakers.availableDevices.length > 0 ? speakers.availableDevices[0] : undefined
+    if (cameras.currentTrack) {
+      selectedCamera = cameras.availableDevices.find((d) => d.label === cameras.currentTrack.label)
+    }
+    if (microphones.currentTrack) {
+      selectedMicrophone = microphones.availableDevices.find((d) => d.label === microphones.currentTrack.label)
+    }
+    if (!isEmptyOrDefault(cameraSelected)) {
+      setCameraSelected(selectedCamera?.deviceId)
+    }
+    if (!isEmptyOrDefault(microphoneSelected)) {
+      setMicrophoneSelected(selectedMicrophone?.deviceId)
+    }
+    setSpeakerSelected(selectedSpeaker?.deviceId)
     dispatch({ type: 'CAMERAS', payload: cameras.availableDevices })
     dispatch({ type: 'MICROPHONES', payload: microphones.availableDevices })
+    dispatch({ type: 'SPEAKERS', payload: speakers.availableDevices })
   }
 
   const onMicrophoneSelect = (event: any) => {
@@ -135,30 +170,48 @@ const MediaSetup = ({ selfCleanup }: IMediaSetupProps) => {
           className={classes.video}
         />
         <Stack direction="row" alignItems="center" sx={{ width: '100%' }}>
-          {cameraSelected && (
-            <MediaControl
-              icon={<Mic />}
-              options={devices.microphones.map((d: MediaDeviceInfo) => {
-                return { name: d.label, value: d.deviceId }
-              })}
-              onChange={(sel: MediaControlOption) => {
-                setMicrophoneSelected(sel.value)
-              }}
-              value={cameraSelected}
-            />
-          )}
-          {microphoneSelected && (
-            <MediaControl
-              icon={<Videocam sx={{ color: 'rgb(156, 243, 97)' }} />}
-              options={devices.cameras.map((d: MediaDeviceInfo) => {
-                return { name: d.label, value: d.deviceId }
-              })}
-              onChange={(sel: MediaControlOption) => {
-                setCameraSelected(sel.value)
-              }}
-              value={microphoneSelected}
-            />
-          )}
+          {/* {cameraSelected && ( */}
+          <MediaControl
+            icon={<Mic />}
+            options={devices.microphones.map((d: MediaDeviceInfo) => {
+              return { name: d.label, value: d.deviceId }
+            })}
+            onChange={(sel: MediaControlOption) => {
+              setMicrophoneSelected(sel.value)
+            }}
+            value={cameraSelected}
+            disabled={loading}
+          />
+          {/* )} */}
+          {/* {microphoneSelected && ( */}
+          <MediaControl
+            icon={<Videocam sx={{ color: 'rgb(156, 243, 97)' }} />}
+            options={devices.cameras.map((d: MediaDeviceInfo) => {
+              return { name: d.label, value: d.deviceId }
+            })}
+            onChange={(sel: MediaControlOption) => {
+              setCameraSelected(sel.value)
+            }}
+            value={microphoneSelected}
+            disabled={loading}
+          />
+          {/* )} */}
+        </Stack>
+        <Stack direction="column" alignItems="center" sx={{ paddingTop: '16px', width: '100%' }}>
+          <Typography variant="caption" sx={{ color: 'white' }}>
+            Select Speaker
+          </Typography>
+          <MediaControl
+            icon={<Speaker sx={{ color: 'rgb(156, 243, 97)' }} />}
+            options={devices.speakers.map((d: MediaDeviceInfo) => {
+              return { name: d.label, value: d.deviceId }
+            })}
+            onChange={(sel: MediaControlOption) => {
+              setSpeakerSelected(sel.value)
+            }}
+            value={speakerSelected}
+            disabled={loading}
+          />
         </Stack>
         {loading && (
           <Box className={classes.loadingContainer}>

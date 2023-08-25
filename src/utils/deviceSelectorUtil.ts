@@ -23,21 +23,38 @@ function updateAudioDeviceList(audioTrack: any, devices: MediaDeviceInfo[]) {
   }
 }
 
-export const getDeviceListing = async (mediaStream: any) => {
-  const tracks = mediaStream.getTracks()
-  const audioTracks = tracks.filter((track: any) => {
-    return track.kind.includes('audio')
+function updateAudioOutputDeviceList(audioTrack: any, devices: MediaDeviceInfo[]) {
+  const speakers = devices.filter((item: MediaDeviceInfo) => {
+    return item.kind === 'audiooutput'
   })
-  const videoTracks = tracks.filter((track: any) => {
-    return track.kind.includes('video')
-  })
+  return {
+    currentTrack: audioTrack,
+    availableDevices: speakers,
+  }
+}
+
+export const getDeviceListing = async (mediaStream?: MediaStream) => {
+  let videoTrack: any = null
+  let audioTrack: any = null
+  if (mediaStream) {
+    const tracks = mediaStream.getTracks()
+    const audioTracks = tracks.filter((track: any) => {
+      return track.kind.includes('audio')
+    })
+    const videoTracks = tracks.filter((track: any) => {
+      return track.kind.includes('video')
+    })
+    videoTrack = videoTracks.length > 0 ? videoTracks[0] : null
+    audioTrack = audioTracks.length > 0 ? audioTracks[0] : null
+  }
 
   try {
     const devices = await navigator.mediaDevices.enumerateDevices()
-
-    const cameraList = updateCameraDeviceList(videoTracks[0], devices)
-    const microphoneList = updateAudioDeviceList(audioTracks[0], devices)
-    return [cameraList, microphoneList]
+    console.log('Available Devices', devices)
+    const cameraList = updateCameraDeviceList(videoTrack, devices)
+    const microphoneList = updateAudioDeviceList(audioTrack, devices)
+    const audioOutputList = updateAudioOutputDeviceList(undefined, devices)
+    return [cameraList, microphoneList, audioOutputList]
   } catch (error: any) {
     console.error('Could not access camera devices: ' + error)
     return []

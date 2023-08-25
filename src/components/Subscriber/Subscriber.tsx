@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { RTCSubscriber } from 'red5pro-webrtc-sdk'
+import { RTCSubscriber, WHEPClient } from 'red5pro-webrtc-sdk'
 import VideoElement from '../VideoElement/VideoElement'
 import Loading from '../Common/Loading/Loading'
 import { Box, Stack } from '@mui/material'
@@ -7,6 +7,7 @@ import { MicOff, VideocamOff, AccountBox } from '@mui/icons-material'
 import { getContextAndNameFromGuid } from '../../utils/commonUtils'
 import { getEdge } from '../../utils/streamManagerUtils'
 import useStyles from './Subscriber.module'
+import MediaContext from '../MediaContext/MediaContext'
 
 enum StreamingModes {
   AV = 'Video/Audio',
@@ -23,6 +24,7 @@ interface ISubscriberProps {
   host: string
   streamGuid: string
   useStreamManager: boolean
+  preferWhipWhep: boolean
   resubscribe: boolean
   styles: any
   videoStyles: AnalyserOptions | any
@@ -37,9 +39,12 @@ interface ISubscriberProps {
 const DELAY = 2000
 const RETRY_EVENTS = ['Connect.Failure', 'Subscribe.Fail', 'Subscribe.InvalidName', 'Subscribe.Play.Unpublish']
 
-const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps, ref: React.Ref<SubscriberRef>) {
+const useMediaContext = () => React.useContext(MediaContext.Context)
+
+const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<SubscriberRef>) => {
   const {
     useStreamManager,
+    preferWhipWhep,
     resubscribe,
     host,
     streamGuid,
@@ -52,6 +57,8 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
     onSubscribeStart,
     isMainVideo,
   } = props
+
+  const { speakerSelected } = useMediaContext()
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 
@@ -155,9 +162,9 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
   const start = async () => {
     setIsSubscribing(true)
     try {
-      const sub = new RTCSubscriber()
+      const sub = preferWhipWhep ? new WHEPClient() : new RTCSubscriber()
       const config = {
-        app: useStreamManager ? 'streammanager' : context,
+        app: !preferWhipWhep && useStreamManager ? 'streammanager' : context,
         host: host,
         streamName: streamName,
         mediaElementId: elementId,
@@ -165,8 +172,10 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
         connectionParams: {
           /* username, password, token? */
         },
+        enableChannelSignaling: true, // WHIP/WHEP specific
+        trickleIce: true, // Flag to use trickle ice to send candidates
       }
-      if (useStreamManager) {
+      if (!preferWhipWhep && useStreamManager) {
         const payload = await getEdge(host, context, streamName)
         config.connectionParams = { ...config.connectionParams, host: payload.serverAddress, app: payload.scope }
       }
@@ -232,7 +241,6 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
     }
   }
 
-
   return (
     <Box className={classes.container} sx={styles}>
       {(!videoOn || isVideoOff) && <AccountBox fontSize="large" className={classes.accountIcon} />}
@@ -242,6 +250,7 @@ const Subscriber = React.forwardRef(function Subscriber(props: ISubscriberProps,
         controls={showControls}
         styles={{ ...videoStyles, display: videoOn ? 'unset' : 'none' }}
         volume={playbackVolume}
+        speakerSelected={speakerSelected}
       />
       <Stack direction="row" spacing={1} className={classes.iconBar}>
         {(!audioOn || isAudioOff) && <MicOff />}

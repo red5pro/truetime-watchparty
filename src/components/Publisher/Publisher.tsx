@@ -1,4 +1,4 @@
-import { setLogLevel, RTCPublisher, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
+import { setLogLevel, RTCPublisher, WHIPClient, RTCPublisherEventTypes } from 'red5pro-webrtc-sdk'
 import * as React from 'react'
 import Loading from '../Common/Loading/Loading'
 import VideoElement from '../VideoElement/VideoElement'
@@ -9,6 +9,7 @@ import useStyles from './Publisher.module'
 import { getOrigin } from '../../utils/streamManagerUtils'
 import { ENABLE_DEBUG_UTILS } from '../../settings/variables'
 import { PublisherPost, PublisherRef } from '.'
+import { ParticipantMuteState } from '../../models/Participant'
 
 const getSenderFromConnection = (connection: RTCPeerConnection, type: string) => {
   return connection.getSenders().find((s: RTCRtpSender) => s.track?.kind === type)
@@ -32,17 +33,30 @@ const publisherReducer = (state: any, action: any) => {
 
 interface PublisherProps {
   useStreamManager: boolean
+  preferWhipWhep: boolean
   stream?: MediaStream
   host: string
   streamGuid: string
+  muteState?: ParticipantMuteState
   styles: any
   onStart(): any
   onInterrupt(): any
   onFail(): any
 }
 
-const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref: React.Ref<PublisherRef>) {
-  const { useStreamManager, stream, host, streamGuid, styles, onStart, onInterrupt, onFail } = props
+const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<PublisherRef>) => {
+  const {
+    useStreamManager,
+    preferWhipWhep,
+    stream,
+    host,
+    streamGuid,
+    muteState,
+    styles,
+    onStart,
+    onInterrupt,
+    onFail,
+  } = props
   const { classes } = useStyles()
 
   React.useImperativeHandle(ref, () => ({ shutdown, send, toggleCamera, toggleMicrophone }))
@@ -96,18 +110,26 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
     }
   }, [elementId])
 
+  React.useEffect(() => {
+    if (muteState) {
+      toggleCamera(!muteState.videoMuted)
+      toggleMicrophone(!muteState.audioMuted)
+    }
+  }, [muteState])
+
   const onPublisherEvent = (event: any) => {
     const { streamName } = element
     console.log(`[Red5ProPublisher(${streamName})]: PublisherEvent - ${event.type}.`)
     // if (event.type === 'WebSocket.Message.Unhandled') {
     //   console.log(event)
     // }
-    if (event.type === 'Publish.Available') {
+    const { type } = event
+    if (type === 'Publish.Available' || type === 'Publish.Start') {
       onStart()
-    } else if (event.type === 'Publisher.Connection.Closed') {
+    } else if (type === 'Publisher.Connection.Closed') {
       // Unexpected close.
       onInterrupt()
-    } else if (event.type === 'Connect.Failure') {
+    } else if (type === 'Connect.Failure') {
       // Cannot establish connection.
       onFail()
     }
@@ -115,10 +137,10 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
 
   const start = async (id: string | undefined, context: string, streamName: string) => {
     setIsPublishing(true)
-    const pub = new RTCPublisher()
+    const pub = preferWhipWhep ? new WHIPClient() : new RTCPublisher()
     try {
       const config = {
-        app: useStreamManager ? 'streammanager' : context,
+        app: !preferWhipWhep && useStreamManager ? 'streammanager' : context,
         host: host,
         streamName: streamName,
         mediaElementId: id,
@@ -126,8 +148,10 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
         connectionParams: {
           /* username, password, token? */
         },
+        enableChannelSignaling: true, // WHIP/WHEP specific
+        trickleIce: true, // Flag to use trickle ice to send candidates
       }
-      if (useStreamManager) {
+      if (!preferWhipWhep && useStreamManager) {
         const payload = await getOrigin(host, context, streamName)
         config.connectionParams = { ...config.connectionParams, host: payload.serverAddress, app: payload.scope }
       }
@@ -182,6 +206,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
   }
 
   const toggleCamera = (on: boolean) => {
+    if (cameraOn === on) return
     if (pubRef && pubRef.current) {
       const connection = (pubRef.current as any).getPeerConnection()
       const sender = getSenderFromConnection(connection, 'video')
@@ -197,6 +222,7 @@ const Publisher = React.forwardRef(function Publisher(props: PublisherProps, ref
   }
 
   const toggleMicrophone = (on: boolean) => {
+    if (micOn === on) return
     if (pubRef && pubRef.current) {
       const connection = (pubRef.current as any).getPeerConnection()
       const sender = getSenderFromConnection(connection, 'audio')

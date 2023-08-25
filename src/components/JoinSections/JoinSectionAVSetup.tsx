@@ -9,6 +9,8 @@ import { ConferenceDetails } from '../../models/ConferenceDetails'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import MediaContext from '../MediaContext/MediaContext'
 
+const useMediaContext = () => React.useContext(MediaContext.Context)
+
 interface JoinSectionAVSetupProps {
   onBack?: () => void
   onJoin?: () => void
@@ -17,7 +19,8 @@ interface JoinSectionAVSetupProps {
 
 const JoinSectionAVSetup = (props: JoinSectionAVSetupProps) => {
   const { onBack, onJoin, shouldDisplayBackButton = true } = props
-  const mediaContext = React.useContext(MediaContext.Context)
+  // const mediaContext = React.useContext(MediaContext.Context)
+  const { error, loading, mediaStream } = useMediaContext()
 
   const { classes } = useStyles()
 
@@ -37,7 +40,7 @@ const JoinSectionAVSetup = (props: JoinSectionAVSetupProps) => {
           </Button>
         )}
         <CustomButton
-          disabled={!mediaContext?.mediaStream}
+          disabled={!mediaStream || loading || error}
           size={BUTTONSIZE.MEDIUM}
           buttonType={BUTTONTYPE.SECONDARY}
           onClick={onJoin}

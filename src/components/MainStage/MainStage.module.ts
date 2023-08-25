@@ -8,6 +8,7 @@ const useStyles = makeStyles()((theme: any) => {
       maxHeight: '100vh',
       maxWidth: '100vw',
       display: 'flex',
+      justifyContent: 'center',
     },
     loadingContainer: {
       position: 'absolute',
@@ -44,10 +45,17 @@ const useStyles = makeStyles()((theme: any) => {
       padding: '20px',
       display: 'flex',
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      position: 'relative',
+      justifyContent: 'center',
+      alignItems: 'center',
+      // width: '86vw',
     },
     header: {
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
+      position: 'absolute',
+      width: '100vw',
+      margin: 'unset',
+      padding: 'unset',
     },
     headerTitle: {
       fontSize: '16px',
@@ -62,6 +70,11 @@ const useStyles = makeStyles()((theme: any) => {
     },
     topControls: {
       justifyContent: 'flex-end',
+      width: '100vw',
+      maxWidth: 'unset',
+      minWidth: 'unset',
+      flexGrow: 'unset',
+      flexBasis: 'unset',
     },
     bottomBar: {
       width: '100%',
@@ -70,7 +83,7 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'absolute',
       left: 0,
       bottom: 0,
-      padding: '15px',
+      padding: '0 15px 15px',
       display: 'flex',
       flexDirection: 'row',
       maxHeight: '6rem',
@@ -83,7 +96,7 @@ const useStyles = makeStyles()((theme: any) => {
       alignSelf: 'flex-end',
     },
     moreButton: {
-      margin: 'auto',
+      margin: 'auto 15px',
     },
     chatInput: {
       width: '45%',

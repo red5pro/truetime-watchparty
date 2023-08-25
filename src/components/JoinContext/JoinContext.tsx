@@ -64,7 +64,7 @@ const JoinProvider = (props: JoinContextProps) => {
   })
 
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
-  const [cohostsList, setCohostsList] = React.useState<string[] | undefined>(undefined)
+  const [cohostsList, setCohostsList] = React.useState<string[] | undefined>([])
   // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
   const [isAnonymousParticipant, setIsAnonymousParticipant] = React.useState<boolean>(false)

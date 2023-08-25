@@ -2,7 +2,7 @@ import { Box, Stack, Typography } from '@mui/material'
 import React from 'react'
 import { useNavigate } from 'react-router'
 import Loading from '../../components/Common/Loading/Loading'
-import { STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import { STREAM_HOST, USE_STREAM_MANAGER, PREFER_WHIP_WHEP } from '../../settings/variables'
 import Subscriber from '../../components/Subscriber/Subscriber'
 import useQueryParams from '../../hooks/useQueryParams'
 import useStyles from '../WatchPage/WatchPage.module'
@@ -45,6 +45,7 @@ const WatchLivePage = () => {
         <Subscriber
           host={STREAM_HOST}
           useStreamManager={USE_STREAM_MANAGER}
+          preferWhipWhep={PREFER_WHIP_WHEP}
           mute={false}
           showControls={true}
           streamGuid={streamGuid}

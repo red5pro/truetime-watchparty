@@ -13,10 +13,15 @@ interface IMediaContextProps {
   mediaStream: MediaStream | undefined
   cameraSelected: string | undefined
   microphoneSelected: string | undefined
+  speakerSelected: string | undefined
+  permissionsChanged: boolean
   setCameraSelected: (deviceId: string | undefined) => void
   setMicrophoneSelected: (deviceId: string | undefined) => void
+  setSpeakerSelected: (deviceId: string | undefined) => void
   setConstraints: (constraints: any) => void
   setMediaStream: (stream: MediaStream | undefined) => void
+  clearPermissionsChanged: () => void
+  dismissError: () => void
   retry: () => void
 }
 
@@ -31,6 +36,8 @@ const MediaProvider = (props: IMediaProviderProps) => {
   const [mediaStream, setMediaStream] = React.useState<MediaStream | undefined>()
   const [cameraSelected, setCameraSelected] = React.useState<string | undefined>()
   const [microphoneSelected, setMicrophoneSelected] = React.useState<string | undefined>()
+  const [speakerSelected, setSpeakerSelected] = React.useState<string | undefined>()
+  const [permissionsChanged, setPermissionsChanged] = React.useState<boolean>(false)
 
   const [screenshareMediaStream, setScreenshareMediaStream] = React.useState<MediaStream | undefined>()
   const [screenShare, setScreenShare] = React.useState<boolean>(false)
@@ -50,7 +57,8 @@ const MediaProvider = (props: IMediaProviderProps) => {
       // if (typeof constraints.video === 'boolean') {
       //   constraints.video = {}
       // }
-      const videoConstraint = { ...constraints.video, deviceId: cameraSelected }
+      console.log('SETTING CAMERA DEVICE', cameraSelected)
+      const videoConstraint = { ...constraints.video, deviceId: { exact: cameraSelected } }
       setConstraints({
         ...constraints,
         video: videoConstraint,
@@ -63,7 +71,8 @@ const MediaProvider = (props: IMediaProviderProps) => {
       // if (typeof constraints.audio === 'boolean') {
       //   constraints.audio = {}
       // }
-      const audioConstraint = { ...constraints.audio, deviceId: microphoneSelected }
+      console.log('SETTING MICROPHONE DEVICE', microphoneSelected)
+      const audioConstraint = { ...constraints.audio, deviceId: { exact: microphoneSelected } }
       setConstraints({
         ...constraints,
         audio: audioConstraint,
@@ -71,21 +80,57 @@ const MediaProvider = (props: IMediaProviderProps) => {
     }
   }, [microphoneSelected])
 
+  // WAT-279
+  const hasAlreadyRequestedDevices = async () => {
+    try {
+      const cameraName = 'camera' as PermissionName
+      const status = await navigator.permissions.query({ name: cameraName })
+      const hasGranted = status.state === 'granted'
+      if (!hasGranted) {
+        status.onchange = () => {
+          setPermissionsChanged(true)
+          if (status.state === 'granted') {
+            getMediaStream()
+          }
+        }
+      }
+      return hasGranted
+    } catch (e) {
+      console.error(e)
+    }
+    return false
+  }
+
   const getMediaStream = async () => {
+    setMediaStream(undefined)
     setError(undefined)
     setLoading(true)
     try {
+      console.log('REQUEST CONSTRAINTS', constraints)
+      const hasAlreadyRequested = await hasAlreadyRequestedDevices()
+      console.log('HAS ALREADY REQUESTED PERMISSION?', hasAlreadyRequested)
       const mStream = await navigator.mediaDevices.getUserMedia(constraints)
+      setLoading(false)
       setMediaStream(mStream)
     } catch (e) {
       console.error(e)
+      setLoading(false)
       setError({
         status: 0,
-        statusText: `Could not instantiate media: ${(e as Error).message}`,
+        statusText: `It appears this camera or microphone isn't working properly. Please select a different camera or microphone. ${
+          (e as Error).message
+        }`,
       })
-    } finally {
-      setLoading(false)
     }
+  }
+
+  const clearPermissionsChanged = () => {
+    setPermissionsChanged(false)
+  }
+
+  const dismissError = () => {
+    setError(undefined)
+    setLoading(false)
   }
 
   const retry = () => {
@@ -132,10 +177,15 @@ const MediaProvider = (props: IMediaProviderProps) => {
     constraints,
     cameraSelected,
     microphoneSelected,
+    speakerSelected,
+    permissionsChanged,
     setCameraSelected,
     setMicrophoneSelected,
+    setSpeakerSelected,
     setConstraints,
     setMediaStream,
+    dismissError,
+    clearPermissionsChanged,
     retry,
     startScreenShareMedia,
     stopScreenShareMedia,
