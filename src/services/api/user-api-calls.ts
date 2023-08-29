@@ -39,8 +39,8 @@ const createUser = async (email: string, role?: string, adminCredentials?: Accou
     let params = {}
     if (adminCredentials) {
       params = {
-        user: adminCredentials.email,
-        password: adminCredentials.password,
+        user: encodeURIComponent(adminCredentials.email as string),
+        password: encodeURIComponent(adminCredentials.password as string),
       }
     }
 
@@ -48,6 +48,7 @@ const createUser = async (email: string, role?: string, adminCredentials?: Accou
       `${ENDPOINT.USER}`,
       {
         role: role ?? UserRoles.ORGANIZER,
+        // username: encodeURIComponent(email),
         username: email,
       },
       { params }
@@ -91,8 +92,8 @@ const signInFacebookUser = async (token: string) => {
 const signin = async (email: string, password: string) => {
   try {
     const params = {
-      user: email,
-      password: password,
+      user: encodeURIComponent(email),
+      password: encodeURIComponent(password),
     }
     const response: AxiosResponse = await axios.get(`${ENDPOINT.USER}/whoami`, { params })
 
@@ -117,9 +118,9 @@ const verifyAccount = async (email: string, password: string, token: string) => 
   try {
     const body = {
       token,
-      password,
+      password: encodeURIComponent(password),
     }
-    encodeURIComponent
+
     const response: AxiosResponse = await axios.put(`${ENDPOINT.USER}/${encodeURIComponent(email)}/verify`, body)
 
     return response
@@ -164,8 +165,8 @@ const resetPassword = async (email: string) => {
 const getUsers = async (email: string, password: string) => {
   try {
     const params = {
-      user: email,
-      password: password,
+      user: encodeURIComponent(email),
+      password: encodeURIComponent(password),
     }
     const response: AxiosResponse = await axios.get(`${ENDPOINT.USER}`, { params })
 
