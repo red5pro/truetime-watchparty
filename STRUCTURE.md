@@ -1,11 +1,15 @@
-# WatchParty Project Structure
+<h3 align="center">
+  <img src="assets/Red5_Truetime_black.png" alt="Red5 TrueTime" style="height: 60px" />
+</h3>
+
+# TrueTime WatchParty Project Structure
 
 * Create-React-App
 * React-Router-DOM
-* Redux? Recoil?
+* Recoil
 * MaterialUI
 * styled-components
-* Axios?
+* Axios
 * WebSocket (react-use-websocket?)
 * Red5 Pro WebRTC SDK [https://www.npmjs.com/package/red5pro-webrtc-sdk](https://www.npmjs.com/package/red5pro-webrtc-sdk)
 
@@ -17,7 +21,7 @@ The following directory structure is proposed in order to properly develop, test
 - src
   - api
   - assets
-  - atoms (if using recoil)
+  - atoms
   - components
     - <ComponentName>
       - <ComponentName>.module.css

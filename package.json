@@ -1,7 +1,23 @@
 {
-  "name": "watchparty-frontend",
+  "name": "truetime-watchparty",
   "version": "0.2.20",
-  "private": true,
+  "private": false,
+  "keywords": [
+    "Red5",
+    "Red5 Pro",
+    "red5pro",
+    "webrtc",
+    "webrtc-streaming",
+    "video",
+    "audio",
+    "streaming",
+    "live-streaming",
+    "video-streaming",
+    "audio-streaming",
+    "watchparty",
+    "TrueTime WatchParty",
+    "truetime-watchparty"
+  ],
   "dependencies": {
     "@date-io/moment": "^2.15.0",
     "@emotion/react": "^11.9.3",
