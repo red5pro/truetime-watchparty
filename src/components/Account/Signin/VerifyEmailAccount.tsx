@@ -53,7 +53,7 @@ const VerifyEmailAccount = (props: IVerifyEmailAccountProps) => {
   const { setCookie } = useCookies(['userAccount', 'account'])
 
   const initialValues = {
-    email: email ?? '',
+    email: decodeURIComponent(email) ?? '',
     token: token ?? '',
     password: '',
     passwordConfirmation: '',

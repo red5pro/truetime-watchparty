@@ -34,8 +34,8 @@ const ENDPOINT = {
 const getAllConferenceStats = async (user: string, password: string) => {
   try {
     const params = {
-      user,
-      password,
+      user: user,
+      password: password,
     }
     const response: AxiosResponse = await axios.get(`${ENDPOINT.STATS}`, { params })
 
@@ -55,8 +55,8 @@ const getAllConferenceStats = async (user: string, password: string) => {
 const getStatsByConference = async (user: string, password: string, conferenceId: number) => {
   try {
     const params = {
-      user,
-      password,
+      user: user,
+      password: password,
     }
     const response: AxiosResponse = await axios.get(`${ENDPOINT.STATS}/${conferenceId}`, { params })
 
