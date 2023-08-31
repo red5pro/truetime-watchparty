@@ -55,8 +55,8 @@ const getSeriesList = async () => {
 const createSerie = async (data: any, account: AccountCredentials) => {
   try {
     const params = {
-      user: encodeURIComponent(account.email as string),
-      password: encodeURIComponent(account.password as string),
+      user: account.email as string,
+      password: account.password as string,
     }
     const response: AxiosResponse = await axios.post(ENDPOINT.SERIES, data, { params })
     return response
@@ -99,8 +99,8 @@ const getAllEpisodesBySerie = async (serieId: number | string) => {
 const createEpisode = async (serieId: number | string, data: any, account: AccountCredentials) => {
   try {
     const params = {
-      user: encodeURIComponent(account.email as string),
-      password: encodeURIComponent(account.password as string),
+      user: account.email as string,
+      password: account.password as string,
     }
 
     const response: AxiosResponse = await axios.post(`${ENDPOINT.SERIES}/${serieId}/episode`, data, { params })
