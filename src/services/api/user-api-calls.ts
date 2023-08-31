@@ -92,8 +92,8 @@ const signInFacebookUser = async (token: string) => {
 const signin = async (email: string, password: string) => {
   try {
     const params = {
-      user: encodeURIComponent(email),
-      password: encodeURIComponent(password),
+      user: email,
+      password: password,
     }
     const response: AxiosResponse = await axios.get(`${ENDPOINT.USER}/whoami`, { params })
 
