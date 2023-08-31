@@ -8,6 +8,7 @@ const useStyles = makeStyles()((theme: any) => {
       justifyContent: 'center',
       position: 'relative',
       backgroundColor: 'black',
+      minHeight: '3rem',
     },
     loading: {
       position: 'absolute',

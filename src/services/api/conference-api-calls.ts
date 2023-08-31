@@ -356,6 +356,43 @@ const banParticipant = async (
 ) => {
   try {
     const id = '' + participantId
+    const { options, params } = getQueryParamsAndOptions(account)
+    const kv = []
+    for (const key in params) {
+      kv.push(`${key}=${(params as any)[key]}`)
+    }
+    let url = `${ENDPOINT.CONFERENCE}/${conferenceId}/participants/${id}/ban`
+    if (kv.length > 0) {
+      url = `${url}?${kv.join('&')}`
+    }
+    const response: AxiosResponse = await axios.put(url, {}, options)
+    return response
+  } catch (e: any) {
+    console.log(e)
+    const code = e.code === 'ERR_BAD_REQUEST' ? 400 : e.code
+    let message = e.message
+    const { response } = e
+    if (response && response.data) {
+      const { error } = response.data
+      if (error) {
+        message = error
+      }
+    }
+    return {
+      data: null,
+      status: code || 400,
+      statusText: message,
+    } as AxiosResponse
+  }
+}
+
+const kickParticipant = async (
+  conferenceId: string | number,
+  account: AccountCredentials,
+  participantId: string | number
+) => {
+  try {
+    const id = '' + participantId
     const config = getOptionsParams(account)
 
     const response: AxiosResponse = await axios.delete(
@@ -392,6 +429,7 @@ export const CONFERENCE_API_CALLS = {
   unlockConference,
   muteParticipant,
   banParticipant,
+  kickParticipant,
   getConferenceLoby,
   getNextVipConference,
   getVipConferenceList,

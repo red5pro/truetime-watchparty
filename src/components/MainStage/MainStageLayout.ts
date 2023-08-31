@@ -265,7 +265,7 @@ const styles = {
   empty: {
     ...base,
     topBar: {
-      display: 'none!important',
+      // display: 'none!important',
     },
     mainVideoContainerWb: {
       position: 'absolute',

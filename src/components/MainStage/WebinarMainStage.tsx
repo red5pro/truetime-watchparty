@@ -100,6 +100,12 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     }
   }, [data.closeCurrentScreenShare, data.screenshareParticipants])
 
+  React.useEffect(() => {
+    if (isAnonymous) {
+      onAnonymousEntry()
+    }
+  }, [isAnonymous])
+
   const onShareScreen = (value: boolean) => {
     if (value) {
       onLayoutSelect(Layout.STAGE)
@@ -113,9 +119,9 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     onShareScreen(false)
   }
 
-  if (isAnonymous) {
-    onAnonymousEntry()
-  }
+  // if (isAnonymous) {
+  //   onAnonymousEntry()
+  // }
 
   const toggleCohostModal = () => {
     setOpenAddCohostModal(!openAddCohostModal)

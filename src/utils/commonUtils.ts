@@ -14,8 +14,20 @@ export const getContextAndNameFromGuid = (guid: string) => {
   return { name: name, context: paths.join('/') }
 }
 
+function uuid() {
+  return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c: any) =>
+    (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
+  )
+}
+
 export const generateFingerprint = () => {
-  return crypto.randomUUID()
+  let value
+  try {
+    value = crypto.randomUUID()
+  } catch (e) {
+    value = uuid()
+  }
+  return value
 }
 
 export const getStartTimeFromTimestamp = (ts: number) => {
