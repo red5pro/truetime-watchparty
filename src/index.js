@@ -24,7 +24,7 @@ root.render(
     </ThemeProvider>
   </React.StrictMode>
 )
-console.log(`Watch Party Version: ${process.env.REACT_APP_VERSION}`)
+console.log(`Red5 TrueTime WatchParty Version: ${process.env.REACT_APP_VERSION}`)
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

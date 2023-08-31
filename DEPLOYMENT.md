@@ -1,4 +1,8 @@
-# Watch Party - React Signle-Page-Application (SPA)
+<h3 align="center">
+  <img src="assets/Red5_Truetime_black.png" alt="Red5 TrueTime" style="height: 60px" />
+</h3>
+
+# TrueTime WatchParty - React Single-Page-Application (SPA)
 
 ---
 
@@ -10,7 +14,7 @@ After pulling down this repo and prior to issuing a build command of the app, yo
 npm install
 ```
 
-# Deployment of WatchParty SPA
+# Deployment of TrueTime WatchParty SPA
 
 The deployment of the React Single-Page-Application (SPA) requires to first create a bundled build of the site. The endpoints used in the app are compiled in based on environment variables. These environments are held in files labelled `.env*`.
 
@@ -48,7 +52,7 @@ Providing the correct `BUMP` will go ahead and change the semver version within 
 The version will be printed out in the dev console logs, such as the following:
 
 ```
-Watch Party Version: 0.2.0
+Red5 TrueTime WatchParty Version: 0.2.0
 ```
 
 ## Build
