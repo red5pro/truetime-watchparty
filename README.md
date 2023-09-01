@@ -84,6 +84,12 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
+# Conference API
+
+The TrueTime WatchParty utilizes the Conference API distributed with the Red5 Pro Server.
+
+We have provided a [Postman Collection](docs/conferenceapi/Conference_API.postman_collection.json) that details the API.
+
 # Deployment
 
 Please refer to the [Deployment Instructions](DEPLOYMENT.md) on requirement for deployment.
