@@ -159,15 +159,19 @@ const CreateEvent = (props: ICreateEventProps) => {
                       className={classes.input}
                       fullWidth
                     />
-                    <FormLabel className={classes.label}>Stream GUID</FormLabel>
-                    <Field
-                      component={TextField}
-                      name="streamGuid"
-                      type="text"
-                      hiddenLabel
-                      className={classes.input}
-                      fullWidth
-                    />
+                    {isWatchParty && (
+                      <>
+                        <FormLabel className={classes.label}>Stream GUID</FormLabel>
+                        <Field
+                          component={TextField}
+                          name="streamGuid"
+                          type="text"
+                          hiddenLabel
+                          className={classes.input}
+                          fullWidth
+                        />
+                      </>
+                    )}
                     <Box display="flex" width="100%">
                       <Box display="flex" flexDirection="column" width="100%">
                         <FormLabel className={classes.label}>Start Date/Time</FormLabel>
@@ -210,7 +214,7 @@ const CreateEvent = (props: ICreateEventProps) => {
                         />
                       </Box>
                     </Box>
-                    <FormLabel className={classes.label}>Choose a Serie</FormLabel>
+                    <FormLabel className={classes.label}>Choose a Series</FormLabel>
                     <Select
                       id="serie"
                       name="serie"
@@ -237,20 +241,6 @@ const CreateEvent = (props: ICreateEventProps) => {
                     </Select>
                     {errors.serie && touched.serie && (
                       <Typography className={classes.errorValidation}>{errors.serie}</Typography>
-                    )}
-
-                    {isWatchParty && (
-                      <>
-                        <FormLabel className={classes.label}>Event Stream Guid</FormLabel>
-                        <Field
-                          component={TextField}
-                          name="streamGuid"
-                          type="text"
-                          hiddenLabel
-                          className={classes.input}
-                          fullWidth
-                        />
-                      </>
                     )}
                   </Box>
                   <Box display="flex" justifyContent="space-around">
