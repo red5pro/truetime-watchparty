@@ -20,7 +20,7 @@ const getFilenameFromName = (name: string) => {
   return file.substring(0, dot)
 }
 const getTitleFromFilename = (name: string) => {
-  const match = streamNameReg.exec(name)
+  const match = streamNameReg.exec(name.toLowerCase())
   if (match && match.length > 1) {
     const prepend = match[1]
     return camelCaseTitle(prepend)
@@ -112,7 +112,7 @@ const StreamListProvider = (props: StreamListContextProps) => {
     try {
       const response = await getLiveListing(STREAM_HOST)
       const webinars = response
-        .filter((s: Stream) => streamNameReg.exec(s.name))
+        .filter((s: Stream) => streamNameReg.exec(s.name.toLowerCase()))
         .map((s: Stream) => {
           s.title = getTitleFromFilename(s.name)
           return s
@@ -131,7 +131,7 @@ const StreamListProvider = (props: StreamListContextProps) => {
     try {
       // TODO: Change to true once we know mixer is sending to cloud...
       const response = await getVODMediafiles(STREAM_HOST, 'live', USE_CLOUD_STORAGE)
-      const webinars = response.filter((s: VODStream) => streamNameReg.exec(s.name))
+      const webinars = response.filter((s: VODStream) => streamNameReg.exec(s.name.toLowerCase()))
       const mp4s = webinars.map((s: VODStream) => {
         s.type = StreamFormatType.MP4
         return s
@@ -143,7 +143,7 @@ const StreamListProvider = (props: StreamListContextProps) => {
     try {
       // TODO: Change to true once we know mixer is sending to cloud...
       const response = await getVODPlaylists(STREAM_HOST, 'live', USE_CLOUD_STORAGE)
-      const webinars = response.filter((s: VODStream) => streamNameReg.exec(s.name))
+      const webinars = response.filter((s: VODStream) => streamNameReg.exec(s.name.toLowerCase()))
       const hls = webinars.map((s: VODStream) => {
         // Prefer MP4 over HLS if doubled
         const exists = streams.findIndex((vod: VODStream) => vod.filename === s.filename)
