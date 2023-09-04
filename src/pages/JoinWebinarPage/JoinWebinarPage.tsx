@@ -204,7 +204,9 @@ const JoinWebinarPage = () => {
             <JoinSectionAVSetup onBack={onReturnToNickname} onJoin={onJoin} />
           </Box>
         )}
-        {!loading && currentSection === Section.WatchParty && (
+        {/* No Chat box for anonymous viewers */}
+        {!loading && currentSection === Section.WatchParty && isAnonymousParticipant && <MainStageWrapper />}
+        {!loading && currentSection === Section.WatchParty && !isAnonymousParticipant && (
           <MainStageWithChatBox>
             <MainStageWrapper />
           </MainStageWithChatBox>

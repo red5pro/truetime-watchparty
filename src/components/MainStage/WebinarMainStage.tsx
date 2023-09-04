@@ -166,7 +166,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           <ScreenSharePublisher
             owner={getStreamGuid() || ''}
             useStreamManager={USE_STREAM_MANAGER}
-            preferWhipWhep={PREFER_WHIP_WHEP}
+            preferWhipWhep={PREFER_WHIP_WHEP && !isAnonymous}
             host={STREAM_HOST}
             styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
             isSharingScreen={screenShare}
@@ -181,7 +181,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               key={sc.screenshareGuid}
               participantScreenshare={sc}
               useStreamManager={USE_STREAM_MANAGER}
-              preferWhipWhep={PREFER_WHIP_WHEP}
+              preferWhipWhep={PREFER_WHIP_WHEP && !isAnonymous}
               host={STREAM_HOST}
               styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
               videoStyles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
@@ -225,7 +225,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 key="publisher"
                 ref={publisherRef}
                 useStreamManager={USE_STREAM_MANAGER}
-                preferWhipWhep={PREFER_WHIP_WHEP}
+                preferWhipWhep={PREFER_WHIP_WHEP && !isAnonymous}
                 host={STREAM_HOST}
                 streamGuid={getStreamGuid() || ''}
                 stream={mediaStream}
@@ -259,7 +259,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 videoStyles={layout.style.subscriberVideo}
                 host={STREAM_HOST}
                 useStreamManager={USE_STREAM_MANAGER}
-                preferWhipWhep={PREFER_WHIP_WHEP}
+                preferWhipWhep={PREFER_WHIP_WHEP && !isAnonymous}
                 menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
                 onSubscribeStart={onRelayout}
                 isLayoutFullscreen={layout.layout === Layout.FULLSCREEN}
@@ -470,7 +470,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
             key="publisher"
             ref={publisherRef}
             useStreamManager={USE_STREAM_MANAGER}
-            preferWhipWhep={PREFER_WHIP_WHEP}
+            preferWhipWhep={PREFER_WHIP_WHEP && !isAnonymous}
             host={STREAM_HOST}
             streamGuid={getStreamGuid()}
             stream={mediaStream}
