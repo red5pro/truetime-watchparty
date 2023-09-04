@@ -31,8 +31,8 @@ import { StatsByConference } from '../models/ConferenceStats'
 
 export const getStatsByConference = async (user: string, password: string) => {
   const account: AccountCredentials = {
-    email: user,
-    password: password,
+    email: encodeURIComponent(user),
+    password: encodeURIComponent(password),
   }
   const statsByConferences: StatsByConference[] = []
   const allConferencesPromise = CONFERENCE_API_CALLS.getAllConferences(account)
