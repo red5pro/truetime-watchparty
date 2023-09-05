@@ -119,14 +119,15 @@ const StreamListProvider = (props: StreamListContextProps) => {
         })
       dispatch({ type: 'UPDATE_LIVE', streams: webinars })
       return webinars
-    } catch (e) {
+    } catch (e: any) {
       console.error(e)
-      dispatch({ type: 'UPDATE_LIVE', error: e, streams: [] })
+      dispatch({ type: 'UPDATE_LIVE', error: typeof e === 'string' ? e : e.message, streams: [] })
       return []
     }
   }
 
   const loadVOD = async (liveStreams: [Stream]) => {
+    let error: any = undefined
     let streams: VODStream[] = []
     try {
       // TODO: Change to true once we know mixer is sending to cloud...
@@ -137,8 +138,9 @@ const StreamListProvider = (props: StreamListContextProps) => {
         return s
       })
       streams = streams.concat(mp4s)
-    } catch (e) {
+    } catch (e: any) {
       console.error(e)
+      error = typeof e === 'string' ? e : e.message
     }
     try {
       // TODO: Change to true once we know mixer is sending to cloud...
@@ -162,8 +164,9 @@ const StreamListProvider = (props: StreamListContextProps) => {
         return s
       })
       streams.sort((a: VODStream, b: VODStream) => a.lastModified - b.lastModified)
-    } catch (e) {
+    } catch (e: any) {
       console.error(e)
+      error = typeof e === 'string' ? e : e.message
     }
 
     // Strip all that are also considered "live".
@@ -171,7 +174,7 @@ const StreamListProvider = (props: StreamListContextProps) => {
     streams = streams.filter((vod: VODStream) => {
       return liveStreams.findIndex((s: Stream) => vod.filename === s.name) === -1
     })
-    dispatch({ type: 'UPDATE_VOD', streams })
+    dispatch({ type: 'UPDATE_VOD', error, streams })
   }
 
   const load = async () => {
@@ -198,6 +201,7 @@ const StreamListProvider = (props: StreamListContextProps) => {
 
   const exportedValues = {
     data,
+    loaded,
     reload,
   }
 

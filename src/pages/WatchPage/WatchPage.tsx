@@ -15,18 +15,20 @@ import Loading from '../../components/Common/Loading/Loading'
 import StreamListContext from '../../components/StreamListContext/StreamListContext'
 import { Stream, VODStream } from '../../models/Stream'
 import useStyles from './WatchPage.module'
+import ErrorModal from '../../components/Modal/ErrorModal'
 
 const useStreamListContext = () => React.useContext(StreamListContext.Context)
 const dateOptions: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric' }
 
 const WatchPage = () => {
-  const { data, reload } = useStreamListContext()
+  const { data, loaded, reload } = useStreamListContext()
 
   const { classes } = useStyles()
 
   const [interval, setInt] = React.useState<NodeJS.Timer>()
   const [loadingLive, setLoadingLive] = React.useState<boolean>(false)
   const [loadingVOD, setLoadingVOD] = React.useState<boolean>(false)
+  const [error, setError] = React.useState<string | undefined>(undefined)
 
   React.useEffect(() => {
     if (!interval) {
@@ -42,12 +44,22 @@ const WatchPage = () => {
   }, [])
 
   React.useEffect(() => {
-    setLoadingLive(data.loadingLive)
-  }, [data.loadingLive])
+    setLoadingLive(data.liveLoading)
+  }, [data.liveLoading])
 
   React.useEffect(() => {
-    setLoadingVOD(data.loadingVOD)
-  }, [data.loadingVOD])
+    setLoadingVOD(data.vodLoading)
+  }, [data.vodLoading])
+
+  React.useEffect(() => {
+    if (data.liveError || data.vodError) {
+      setError(data.liveError || data.vodError)
+    }
+  }, [data.liveError, data.vodError])
+
+  const onClose = () => {
+    setError(undefined)
+  }
 
   return (
     <Box className={classes.rootContainer}>
@@ -62,7 +74,8 @@ const WatchPage = () => {
             {loadingLive && <CircularProgress color="inherit" size={20} />}
           </Stack>
           <List disablePadding className={classes.listContainer}>
-            {data.liveStreams.length === 0 && <Typography>No Live Events Found.</Typography>}
+            {loadingLive && <Typography>Loading Live Videos...</Typography>}
+            {!loadingLive && data.liveStreams.length === 0 && <Typography>No Live Events Found.</Typography>}
             {data.liveStreams.map((value: Stream, i: number) => {
               return (
                 <Fragment key={value.name}>
@@ -91,7 +104,8 @@ const WatchPage = () => {
             {loadingVOD && <CircularProgress color="inherit" size={20} />}
           </Stack>
           <List disablePadding className={classes.listContainer}>
-            {data.vodStreams.length === 0 && <Typography>No VOD Events Found.</Typography>}
+            {loadingVOD && <Typography>Loading Previously Recorded VOD...</Typography>}
+            {!loadingVOD && data.vodStreams.length === 0 && <Typography>No VOD Events Found.</Typography>}
             {data.vodStreams.map((value: VODStream, i: number) => {
               const date = new Date(value.lastModified)
               const dateStr = date.toLocaleDateString('en-US', dateOptions)
@@ -121,6 +135,9 @@ const WatchPage = () => {
           </List>
         </Stack>
       </Box>
+      {error && (
+        <ErrorModal open={!!error} title="Error" message={error} closeLabel={'OK'} onClose={onClose}></ErrorModal>
+      )}
     </Box>
   )
 }
