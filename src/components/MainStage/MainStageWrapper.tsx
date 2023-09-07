@@ -168,19 +168,18 @@ const MainStageWrapper = () => {
         onClose: onLeave,
       } as FatalError)
     }
-  }, [data.closed])
-
-  React.useEffect(() => {
     if (data.connection) {
       const { connection } = data
-
       if (connection && connection.role) {
         const { role } = connection
         setUserRole(role.toLowerCase())
         setSubscriberMenuActions(getMenuActionsFromRole(role.toLowerCase()))
       }
     }
-  }, [data.connection])
+    if (data.conference && data.conference.conferenceId) {
+      setConferenceId(data.conference.conferenceId)
+    }
+  }, [data])
 
   React.useEffect(() => {
     if (
@@ -242,12 +241,6 @@ const MainStageWrapper = () => {
       setRequiresSubscriberScroll(false)
     }
   }, [data.list, layout, viewportHeight, relayout])
-
-  React.useEffect(() => {
-    if (data.conference) {
-      setConferenceId(data.conference.conferenceId)
-    }
-  }, [data.conference])
 
   const getAnonymousSocketUrl = (token: string) => {
     const request: ConnectionRequest = {
@@ -413,7 +406,7 @@ const MainStageWrapper = () => {
       const confId = conferenceId ?? data.conference?.conferenceId
       try {
         const result = await CONFERENCE_API_CALLS.muteParticipant(
-          confId,
+          confId ?? participant.conferenceId,
           getCookies().account,
           participant.participantId,
           requestState
@@ -432,7 +425,7 @@ const MainStageWrapper = () => {
       const confId = conferenceId ?? data.conference?.conferenceId
       try {
         const result = await CONFERENCE_API_CALLS.muteParticipant(
-          confId,
+          confId ?? participant.conferenceId,
           getCookies().account,
           participant.participantId,
           requestState
@@ -453,7 +446,11 @@ const MainStageWrapper = () => {
   const onContinueBan = async (participant: Participant) => {
     try {
       const confId = conferenceId ?? data.conference?.conferenceId
-      const result = await CONFERENCE_API_CALLS.banParticipant(confId, getCookies().account, participant.participantId)
+      const result = await CONFERENCE_API_CALLS.banParticipant(
+        confId ?? participant.conferenceId,
+        getCookies().account,
+        participant.participantId
+      )
       if (result.status >= 300) {
         throw result
       }
