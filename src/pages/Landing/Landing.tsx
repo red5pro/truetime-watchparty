@@ -31,6 +31,7 @@ import useCookies from '../../hooks/useCookies'
 import WbcLogo from '../../assets/logos/WbcLogo'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import useStyles from './Landing.module'
+import { isWatchParty } from '../../settings/variables'
 
 const Home = () => {
   const { classes } = useStyles()
@@ -69,7 +70,7 @@ const Home = () => {
       <Box className={classes.leftContainer}>
         <WbcLogo />
         <Box className={classes.titleContainer}>
-          <Typography className={classes.title}>Watch Party</Typography>
+          <Typography className={classes.title}>{isWatchParty ? 'Watch Party' : 'Webinar'}</Typography>
           <Typography className={classes.subtitle}>Unlimited events, special guest and more.</Typography>
         </Box>
         <Typography className={classes.partyCode}>Type Party Code</Typography>

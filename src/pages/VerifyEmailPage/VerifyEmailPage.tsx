@@ -32,6 +32,7 @@ import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import useCookies from '../../hooks/useCookies'
 import { getQueryParams } from '../../utils/commonUtils'
 import useStyles from './VerifyEmailPage.module'
+import { isWatchParty } from '../../settings/variables'
 
 const VerifyEmailPage = () => {
   const email = getQueryParams('email')
@@ -54,7 +55,7 @@ const VerifyEmailPage = () => {
         </Box>
         <Box>
           <Typography padding={2} className={classes.joinTitleSmall}>
-            Watch Party
+            {`${isWatchParty ? 'Watch Party' : 'Webinar'}`}
           </Typography>
         </Box>
       </Box>
