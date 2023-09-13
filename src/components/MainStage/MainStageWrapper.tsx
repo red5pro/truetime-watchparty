@@ -163,7 +163,9 @@ const MainStageWrapper = () => {
       setFatalError({
         status: 404,
         title: 'Connection Disruption',
-        statusText: `Your session was interrupted expectedly. You are no longer in the Watch Party.`,
+        statusText: `Your session was interrupted expectedly. You are no longer in the ${
+          isWatchParty ? 'Watch Party' : 'Webinar'
+        }.`,
         closeLabel: 'OK',
         onClose: onLeave,
       } as FatalError)

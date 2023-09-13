@@ -75,7 +75,9 @@ const PartyEndedPage = () => {
             <Typography marginTop={2} className={classes.thankyouMessage}>
               Thanks for attending
             </Typography>
-            <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>The host ended the Watch Party</Typography>
+            <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{`The host ended the ${
+              isWatchParty ? 'Watch Party' : 'Webinar'
+            }.`}</Typography>
             {/* TODO: How to recognize that the conference has ended? */}
             <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onRejoin}>
               Rejoin Party

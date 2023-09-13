@@ -42,6 +42,7 @@ import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
 import { UserRoles } from '../../utils/commonUtils'
+import { isWatchParty } from '../../settings/variables'
 
 const MainStageWrapper = React.lazy(() => import('../../components/MainStage/MainStageWrapper'))
 
@@ -58,7 +59,7 @@ enum Section {
 // List up to 2, then remaining amount
 const getParticipantText = (participants: Participant[] | undefined) => {
   if (!participants || participants.length === 0) {
-    return 'Nobody is currently in the Watch Party.'
+    return `Nobody is currently in the ${isWatchParty ? 'Watch Party' : 'Webinar'}.`
   }
   const maxLength = 2
   const length = participants.length
@@ -175,7 +176,7 @@ const JoinPage = () => {
     <Box className={classes.root} display="flex" flexDirection="column">
       {loading && (
         <Box className={classes.loadingContainer}>
-          <Loading text="Loading Watch Party" />
+          <Loading text={`Loading ${isWatchParty ? 'Watch Party' : 'Webinar'}`} />
         </Box>
       )}
       {currentSection !== Section.WatchParty && (

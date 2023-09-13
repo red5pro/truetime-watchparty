@@ -61,7 +61,9 @@ const ShareLink = (props: IShareLinkProps) => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" className={classes.root}>
       <Box display="flex" flexDirection="column" className={classes.container}>
-        <Typography className={classes.title}>Your watch party is ready!</Typography>
+        <Typography className={classes.title}>{`Your ${
+          isWatchParty ? 'Watch Party' : 'Webinar'
+        } is ready!`}</Typography>
         <Typography textAlign="center" marginY={1}>
           Now you can invite your friends
         </Typography>

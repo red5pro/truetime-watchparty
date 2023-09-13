@@ -39,6 +39,7 @@ import useStyles from './SignInModal.module'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import { UserAccount } from '../../models/UserAccount'
 import { USER_API_CALLS } from '../../services/api/user-api-calls'
+import { isWatchParty } from '../../settings/variables'
 
 // TODO: Move these to common utils.
 const testPassword = (value?: string) => {
@@ -132,7 +133,7 @@ const SignInModal = (props: SignInModalProps) => {
             {!signInEmail && !signInFacebook && (
               <>
                 <Typography className={classes.title}>Sign In</Typography>
-                <Typography marginY={1}>Sign In to your Watch Party!</Typography>
+                <Typography marginY={1}>{`Sign In to your ${isWatchParty ? 'Watch Party' : 'Webinar'}!`}</Typography>
                 <CustomButton
                   fullWidth
                   size={BUTTONSIZE.MEDIUM}
@@ -177,7 +178,9 @@ const SignInModal = (props: SignInModalProps) => {
                     <Form method="post">
                       <Stack direction="column" marginY={4}>
                         <Typography className={classes.title}>Sign In</Typography>
-                        <Typography>Please verify your account before entering your watch party</Typography>
+                        <Typography>{`Please verify your account before entering your ${
+                          isWatchParty ? 'Watch Party' : 'Webinar'
+                        }.`}</Typography>
                         <Field
                           component={TextField}
                           name="email"
