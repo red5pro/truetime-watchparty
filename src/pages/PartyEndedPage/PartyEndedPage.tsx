@@ -1,3 +1,28 @@
+/*
+Copyright © 2015 Infrared5, Inc. All rights reserved.
+
+The accompanying code comprising examples for use solely in conjunction with Red5 Pro (the "Example Code")
+is  licensed  to  you  by  Infrared5  Inc.  in  consideration  of  your  agreement  to  the  following
+license terms  and  conditions.  Access,  use,  modification,  or  redistribution  of  the  accompanying
+code  constitutes your acceptance of the following license terms and conditions.
+
+Permission is hereby granted, free of charge, to you to use the Example Code and associated documentation
+files (collectively, the "Software") without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The Software shall be used solely in conjunction with Red5 Pro. Red5 Pro is licensed under a separate end
+user  license  agreement  (the  "EULA"),  which  must  be  executed  with  Infrared5,  Inc.
+An  example  of  the EULA can be found on our website at: https://account.red5pro.com/assets/LICENSE.txt.
+
+The above copyright notice and this license shall be included in all copies or portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,  INCLUDING  BUT
+NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY, FITNESS  FOR  A  PARTICULAR  PURPOSE  AND
+NONINFRINGEMENT.   IN  NO  EVENT  SHALL INFRARED5, INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN  AN  ACTION  OF  CONTRACT,  TORT  OR  OTHERWISE,  ARISING  FROM,  OUT  OF  OR  IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 import { Box, Stack, Typography } from '@mui/material'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +33,7 @@ import Loading from '../../components/Common/Loading/Loading'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
 import useStyles from './PartyEndedPage.module'
+import { isWatchParty } from '../../settings/variables'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 
@@ -29,9 +55,11 @@ const PartyEndedPage = () => {
 
   return (
     <Box className={classes.root}>
-      <Box padding={2} className={classes.brandLogo}>
-        <WbcLogoSmall />
-      </Box>
+      {isWatchParty && (
+        <Box padding={2} className={classes.brandLogo}>
+          <WbcLogoSmall />
+        </Box>
+      )}
       {loading && <Loading />}
       <Stack className={classes.container}>
         {!loading && seriesEpisode && (
@@ -47,7 +75,9 @@ const PartyEndedPage = () => {
             <Typography marginTop={2} className={classes.thankyouMessage}>
               Thanks for attending
             </Typography>
-            <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>The host ended the Watch Party</Typography>
+            <Typography sx={{ fontSize: '18px', fontWeight: 400 }}>{`The host ended the ${
+              isWatchParty ? 'Watch Party' : 'Webinar'
+            }.`}</Typography>
             {/* TODO: How to recognize that the conference has ended? */}
             <CustomButton size={BUTTONSIZE.MEDIUM} buttonType={BUTTONTYPE.SECONDARY} onClick={onRejoin}>
               Rejoin Party
@@ -64,7 +94,7 @@ const PartyEndedPage = () => {
         />
       )}
       <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
-        <img alt="Party Ended Main Image" src={require('../../assets/images/BoxMainImage.png')}></img>
+        <img alt="Party Ended Main Image" src="../../assets/images/BoxMainImage.png"></img>
       </Box>
     </Box>
   )

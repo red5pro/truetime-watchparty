@@ -1,7 +1,23 @@
 {
-  "name": "watchparty-frontend",
-  "version": "0.2.17",
-  "private": true,
+  "name": "truetime-watchparty",
+  "version": "0.2.20",
+  "private": false,
+  "keywords": [
+    "Red5",
+    "Red5 Pro",
+    "red5pro",
+    "webrtc",
+    "webrtc-streaming",
+    "video",
+    "audio",
+    "streaming",
+    "live-streaming",
+    "video-streaming",
+    "audio-streaming",
+    "watchparty",
+    "TrueTime WatchParty",
+    "truetime-watchparty"
+  ],
   "dependencies": {
     "@date-io/moment": "^2.15.0",
     "@emotion/react": "^11.9.3",
@@ -10,7 +26,7 @@
     "@mui/material": "^5.9.0",
     "@mui/styled-engine-sc": "^5.8.0",
     "@mui/x-date-pickers": "^5.0.2",
-    "@pubnub/react-chat-components": "^0.12.0",
+    "@pubnub/react-chat-components": "^0.27.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
@@ -87,7 +103,7 @@
     "eslint-webpack-plugin": "^3.2.0",
     "husky": "^8.0.1",
     "prettier": "2.7.1",
-    "red5pro-webrtc-sdk": "^10.3.0",
+    "red5pro-webrtc-sdk": "^11.0.0",
     "replace-in-file": "^6.3.5",
     "tss-react": "^3.7.1"
   }

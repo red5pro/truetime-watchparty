@@ -1,226 +1,147 @@
+/*
+Copyright © 2015 Infrared5, Inc. All rights reserved.
+
+The accompanying code comprising examples for use solely in conjunction with Red5 Pro (the "Example Code")
+is  licensed  to  you  by  Infrared5  Inc.  in  consideration  of  your  agreement  to  the  following
+license terms  and  conditions.  Access,  use,  modification,  or  redistribution  of  the  accompanying
+code  constitutes your acceptance of the following license terms and conditions.
+
+Permission is hereby granted, free of charge, to you to use the Example Code and associated documentation
+files (collectively, the "Software") without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The Software shall be used solely in conjunction with Red5 Pro. Red5 Pro is licensed under a separate end
+user  license  agreement  (the  "EULA"),  which  must  be  executed  with  Infrared5,  Inc.
+An  example  of  the EULA can be found on our website at: https://account.red5pro.com/assets/LICENSE.txt.
+
+The above copyright notice and this license shall be included in all copies or portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,  INCLUDING  BUT
+NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY, FITNESS  FOR  A  PARTICULAR  PURPOSE  AND
+NONINFRINGEMENT.   IN  NO  EVENT  SHALL INFRARED5, INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN  AN  ACTION  OF  CONTRACT,  TORT  OR  OTHERWISE,  ARISING  FROM,  OUT  OF  OR  IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 import React from 'react'
 import * as portals from 'react-reverse-portal'
 import { useNavigate } from 'react-router-dom'
-import { IconButton, Box, Typography, Stack, Divider, Tooltip } from '@mui/material'
+import { IconButton, Box, Typography, Stack, Divider, Tooltip, Grid } from '@mui/material'
 import LogOutIcon from '@mui/icons-material/Logout'
 import { Lock, LockOpen, GroupAdd, ChatBubble, ExpandMore } from '@mui/icons-material'
 import { MessageList, MessageInput, TypingIndicator } from '@pubnub/react-chat-components'
 
-import useCookies from '../../hooks/useCookies'
-import { API_SOCKET_HOST, ENABLE_MUTE_API, STREAM_HOST, USE_STREAM_MANAGER } from '../../settings/variables'
+import {
+  ENABLE_MUTE_API,
+  isWatchParty,
+  STREAM_HOST,
+  USE_STREAM_MANAGER,
+  PREFER_WHIP_WHEP,
+} from '../../settings/variables'
 import Loading from '../Common/Loading/Loading'
 import Subscriber from '../Subscriber/Subscriber'
 
 import useStyles from './MainStage.module'
-import MediaContext from '../MediaContext/MediaContext'
-import JoinContext from '../JoinContext/JoinContext'
-import WatchContext from '../WatchContext/WatchContext'
 
-import styles from './MainStageLayout'
 import Publisher from '../Publisher/Publisher'
-import { Participant } from '../../models/Participant'
+import { Participant, ParticipantMuteState } from '../../models/Participant'
 import MainStageSubscriber from '../MainStageSubscriber/MainStageSubscriber'
 import ShareLinkModal from '../Modal/ShareLinkModal'
 import ErrorModal from '../Modal/ErrorModal'
-import { ConnectionRequest } from '../../models/ConferenceStatusEvent'
-import { UserRoles } from '../../utils/commonUtils'
+import { noop, UserRoles } from '../../utils/commonUtils'
 import VIPSubscriber from '../VIPSubscriber/VIPSubscriber'
 import PublisherPortalStage from './PublisherPortalStage'
-import PublisherPortalFullscreen from './PublisherPortalFullscreen'
 import VolumeControl from '../VolumeControl/VolumeControl'
 import PublisherControls from '../PublisherControls/PublisherControls'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../Common/CustomButton/CustomButton'
 import MainStageLayoutSelect from '../MainStageLayoutSelect/MainStageLayoutSelect'
-import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import SimpleAlertDialog from '../Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
-import { FatalError } from '../../models/FatalError'
 import PickerAdapter from '../ChatBox/PickerAdapter'
 import useChatStyles from './ChatStyles.module'
-
-const useJoinContext = () => React.useContext(JoinContext.Context)
-const useWatchContext = () => React.useContext(WatchContext.Context)
-const useMediaContext = () => React.useContext(MediaContext.Context)
-
-export enum Layout {
-  STAGE = 1,
-  FULLSCREEN,
-  EMPTY,
-}
-
-const layoutReducer = (state: any, action: any) => {
-  switch (action.type) {
-    case 'LAYOUT':
-      return { ...state, layout: action.layout, style: action.style }
-  }
-}
+import { IMainStageWrapperProps } from '.'
+import { Layout } from './MainStageWrapper'
+import PublisherPortalFullscreen from './PublisherPortalFullscreen'
 
 interface SubscriberRef {
   setVolume(value: number): any
 }
 
-interface PublisherRef {
-  shutdown(): any
-  toggleCamera(on: boolean): any
-  toggleMicrophone(on: boolean): any
+interface IMainStageProps extends IMainStageWrapperProps {
+  mainStreamGuid: string | undefined
+  setPublishMediaStream: (value: MediaStream | undefined) => void
+  maxParticipantGridColumnStyle: any
 }
 
-const MainStage = () => {
-  const { joinToken, seriesEpisode, fingerprint, nickname, getStreamGuid, lock, unlock } = useJoinContext()
-  const mediaContext = useMediaContext()
-  const { error, loading, data, join, retry } = useWatchContext()
+const MainStage = (props: IMainStageProps) => {
+  const {
+    data,
+    loading,
+    layout,
+    subscriberListRef,
+    publisherRef,
+    mediaStream,
+    publishMuteState,
+    userRole,
+    subscriberMenuActions,
+    requiresSubscriberScroll,
+    joinToken,
+    showLink,
+    seriesEpisode,
+    publishMediaStream,
+    chatIsHidden,
+    fatalError,
+    nonFatalError,
+    showBanConfirmation,
+    mainStreamGuid,
+    maxParticipantGridColumnStyle,
+    isAnonymous, // no anonymous viewing in Watch Party mode. Ignored and will redirect on `/join/anon/${token}`.
+
+    setShowBanConfirmation,
+    onContinueBan,
+    onLayoutSelect,
+    getStreamGuid,
+    calculateParticipantHeight,
+    calculateGrid,
+    onAnonymousEntry,
+    onPublisherFail,
+    onPublisherBroadcastInterrupt,
+    onPublisherBroadcast,
+    onRelayout,
+    onMoreScroll,
+    setShowLink,
+    toggleLink,
+    toggleLock,
+    onPublisherCameraToggle,
+    onPublisherMicrophoneToggle,
+    toggleChat,
+    setNonFatalError,
+    setPublishMediaStream,
+    onLeave,
+  } = props
 
   const { classes } = useStyles()
   const navigate = useNavigate()
-  const { getCookies } = useCookies(['account'])
 
   const portalNode = React.useMemo(() => portals.createHtmlPortalNode(), [])
 
   const mainVideoRef = React.useRef<SubscriberRef>(null)
-  const publisherRef = React.useRef<PublisherRef>(null)
-  const subscriberListRef = React.useRef<any>(null)
 
-  const [layout, dispatch] = React.useReducer(layoutReducer, { layout: Layout.STAGE, style: styles.stage })
-
-  const [showLink, setShowLink] = React.useState<boolean>(false)
-  const [userRole, setUserRole] = React.useState<string>(UserRoles.PARTICIPANT.toLowerCase())
-  const [maxParticipants, setMaxParticipants] = React.useState<number>(0)
-  const [mainStreamGuid, setMainStreamGuid] = React.useState<string | undefined>()
-  const [publishMediaStream, setPublishMediaStream] = React.useState<MediaStream | undefined>()
   const [availableVipParticipant, setAvailableVipParticipant] = React.useState<Participant | undefined>()
-  const [requiresSubscriberScroll, setRequiresSubscriberScroll] = React.useState<boolean>(false)
-  const [viewportHeight, setViewportHeight] = React.useState<number>(0)
-  const [relayout, setRelayout] = React.useState<boolean>(false)
-  const [chatIsHidden, setChatIsHidden] = React.useState<boolean>(true)
-  const [maxParticipantGridColumnStyle, setMaxParticipantGridColumnStyle] = React.useState<any>({
-    gridTemplateColumns:
-      'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
-  })
-
-  const [nonFatalError, setNonFatalError] = React.useState<any>()
-  const [fatalError, setFatalError] = React.useState<FatalError | undefined>()
-  const [showBanConfirmation, setShowBanConfirmation] = React.useState<Participant | undefined>()
 
   const { classes: chatClasses } = useChatStyles()
 
-  const getSocketUrl = (token: string, name: string, guid: string) => {
-    const request: ConnectionRequest = {
-      displayName: name,
-      joinToken: token,
-      streamGuid: guid,
-      messageType: 'JoinConferenceRequest',
-    } as ConnectionRequest
-
-    const fp = fingerprint
-    request.fingerprint = fp
-    const cookies = getCookies()
-    if (cookies?.account) {
-      // Registered User
-      if (cookies.account.token) {
-        const { auth, token } = cookies.account
-        request.auth = auth
-        request.accessToken = token
-      } else {
-        const { email, password } = cookies.account
-        request.username = email
-        request.password = password
-      }
-    }
-
-    return { url: API_SOCKET_HOST, request }
-  }
-
-  if (!mediaContext?.mediaStream || !getStreamGuid()) {
+  if (!mediaStream || !getStreamGuid()) {
     navigate(`/join/${joinToken}`)
   }
 
   React.useEffect(() => {
-    // Handler to call on window resize
-    function handleResize() {
-      // Set window width/height to state
-      setViewportHeight(window.innerHeight)
-    }
-    // Add event listener
-    window.addEventListener('resize', handleResize)
-    // Call handler right away so state gets updated with initial window size
-    handleResize()
-    // Remove event listener on cleanup
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  React.useEffect(() => {
-    // Fatal Socket Error.
-    if (error) {
-      setFatalError({
-        ...(error as any),
-        title: 'Connection Error',
-        closeLabel: 'RETRY',
-        onClose: () => {
-          setFatalError(undefined)
-          window.location.reload()
-        },
-      } as FatalError)
-    }
-  }, [error])
-
-  React.useEffect(() => {
-    if (!mediaContext?.mediaStream) {
+    if (!mediaStream) {
       navigate(`/join/${joinToken}`)
-    } else if (!publishMediaStream || publishMediaStream.id !== mediaContext?.mediaStream.id) {
-      const { mediaStream } = mediaContext
+    } else if (!publishMediaStream || publishMediaStream.id !== mediaStream.id) {
       setPublishMediaStream(mediaStream)
     }
-  }, [mediaContext?.mediaStream])
-
-  React.useEffect(() => {
-    if (seriesEpisode && seriesEpisode.loaded) {
-      const { maxParticipants } = seriesEpisode.series
-      const { streamGuid } = seriesEpisode.episode
-      if (streamGuid !== mainStreamGuid) {
-        setMainStreamGuid(streamGuid)
-      }
-      setMaxParticipants(maxParticipants)
-    }
-  }, [seriesEpisode])
-
-  React.useEffect(() => {
-    if (maxParticipants > 0) {
-      const half = maxParticipants / 2
-      const column = `fit-content(230px)`
-      //      const column = `calc((100% / ${half}) - 12px)`
-      const style = Array(half).fill(column).join(' ')
-      setMaxParticipantGridColumnStyle({
-        gridTemplateColumns: style,
-      })
-    }
-  }, [maxParticipants])
-
-  React.useEffect(() => {
-    const shutdown = async () => {
-      if (publisherRef && publisherRef.current) {
-        await publisherRef.current.shutdown()
-      }
-    }
-    if (data.closed) {
-      shutdown()
-      setFatalError({
-        status: 404,
-        title: 'Connection Disruption',
-        statusText: `Your session was interrupted expectedly. You are no longer in the Watch Party.`,
-        closeLabel: 'OK',
-        onClose: onLeave,
-      } as FatalError)
-    }
-  }, [data.closed])
-
-  React.useEffect(() => {
-    if (data.connection) {
-      const { connection } = data
-      if (connection && connection.role) {
-        setUserRole(connection.role.toLowerCase())
-      }
-    }
-  }, [data.connection])
+  }, [mediaStream])
 
   React.useEffect(() => {
     if (data.vip && data.vip.participantId !== availableVipParticipant?.participantId) {
@@ -230,185 +151,9 @@ const MainStage = () => {
     }
   }, [data.vip])
 
-  React.useEffect(() => {
-    if (layout.layout === Layout.STAGE && viewportHeight > 0 && subscriberListRef.current) {
-      let needsScroll = false
-      try {
-        const bounds = subscriberListRef.current?.getBoundingClientRect()
-        const lastBounds = subscriberListRef.current?.lastChild?.getBoundingClientRect()
-        if (bounds && lastBounds) {
-          needsScroll = lastBounds.bottom > bounds.bottom
-        }
-      } catch (e) {
-        // TODO
-      }
-      setRelayout(false)
-      setRequiresSubscriberScroll(needsScroll)
-    } else {
-      setRequiresSubscriberScroll(false)
-    }
-  }, [data.list, layout, viewportHeight, relayout])
-
-  const onPublisherBroadcast = () => {
-    const streamGuid = getStreamGuid()
-    const { url, request } = getSocketUrl(joinToken, nickname, streamGuid)
-    join(url, request)
-  }
-
-  const onPublisherBroadcastInterrupt = () => {
-    setFatalError({
-      status: 400,
-      title: 'Broadcast Stream Error',
-      statusText: `Your broadcast session was interrupted unexpectedly. You are no longer streaming.`,
-      closeLabel: 'Restart',
-      onClose: () => {
-        setFatalError(undefined)
-        window.location.reload()
-      },
-    } as FatalError)
-  }
-
-  const onPublisherFail = () => {
-    setFatalError({
-      status: 404,
-      title: 'Broadcast Stream Error',
-      statusText: `Could not start a broadcast.`,
-      closeLabel: 'Retry',
-      onClose: () => {
-        setFatalError(undefined)
-        window.location.reload()
-      },
-    } as FatalError)
-  }
-
-  const onLeave = () => {
-    navigate(`/thankyou/${joinToken}`)
-  }
-
-  const toggleLock = async () => {
-    const conferenceId = data.conference.conferenceId
-    if (!seriesEpisode.locked) {
-      try {
-        const result = await lock(conferenceId)
-        if (result.status >= 300) {
-          throw result
-        }
-      } catch (e) {
-        console.error(e)
-        setNonFatalError({ ...(e as any), title: 'Error in locking party.' })
-      }
-    } else {
-      try {
-        const result = await unlock(conferenceId)
-        if (result.status >= 300) {
-          throw result
-        }
-      } catch (e) {
-        console.error(e)
-        setNonFatalError({ ...(e as any), title: 'Error in unlocking party.' })
-      }
-    }
-  }
-
-  const toggleLink = () => {
-    setShowLink(!showLink)
-  }
-
-  const toggleChat = () => {
-    setChatIsHidden(!chatIsHidden)
-  }
-
   const onVolumeChange = (value: number) => {
     if (mainVideoRef && mainVideoRef.current) {
       mainVideoRef.current.setVolume(value / 100)
-    }
-  }
-
-  const onPublisherCameraToggle = (isOn: boolean) => {
-    if (publisherRef && publisherRef.current) {
-      publisherRef.current.toggleCamera(isOn)
-    }
-  }
-
-  const onPublisherMicrophoneToggle = (isOn: boolean) => {
-    if (publisherRef && publisherRef.current) {
-      publisherRef.current.toggleMicrophone(isOn)
-    }
-  }
-
-  const onMoreScroll = () => {
-    if (subscriberListRef && subscriberListRef.current) {
-      subscriberListRef.current.lastChild.scrollIntoView()
-    }
-  }
-
-  const onRelayout = () => {
-    setRelayout(true)
-  }
-
-  const onLayoutSelect = (layout: number) => {
-    const newStyle =
-      layout === Layout.FULLSCREEN ? styles.fullscreen : layout === Layout.EMPTY ? styles.empty : styles.stage
-    dispatch({ type: 'LAYOUT', layout: layout, style: newStyle })
-  }
-
-  const subscriberMenuActions = {
-    onMuteAudio: async (participant: Participant, requestMute: boolean) => {
-      const { muteState } = participant
-      const requestState = { ...muteState!, audioMuted: requestMute }
-      try {
-        const result = await CONFERENCE_API_CALLS.muteParticipant(
-          data.conference.conferenceId,
-          getCookies().account,
-          participant.participantId,
-          requestState
-        )
-        if (result.status >= 300) {
-          throw result
-        }
-      } catch (e) {
-        console.error(e)
-        setNonFatalError(e)
-      }
-    },
-    onMuteVideo: async (participant: Participant, requestMute: boolean) => {
-      const { muteState } = participant
-      const requestState = { ...muteState!, videoMuted: requestMute }
-      try {
-        const result = await CONFERENCE_API_CALLS.muteParticipant(
-          data.conference.conferenceId,
-          getCookies().account,
-          participant.participantId,
-          requestState
-        )
-        if (result.status >= 300) {
-          throw result
-        }
-      } catch (e) {
-        console.error(e)
-        setNonFatalError(e)
-      }
-    },
-    onBan: (participant: Participant) => {
-      setShowBanConfirmation(participant)
-    },
-  }
-
-  const onContinueBan = async (participant: Participant) => {
-    try {
-      const result = await CONFERENCE_API_CALLS.banParticipant(
-        data.conference.conferenceId,
-        getCookies().account,
-        participant.participantId
-      )
-      if (result.status >= 300) {
-        throw result
-      }
-    } catch (e) {
-      console.error(e)
-      setNonFatalError(e)
-    } finally {
-      setShowBanConfirmation(undefined)
     }
   }
 
@@ -420,6 +165,7 @@ const MainStage = () => {
           <Subscriber
             ref={mainVideoRef}
             useStreamManager={USE_STREAM_MANAGER}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             streamGuid={mainStreamGuid}
             resubscribe={true}
@@ -432,15 +178,24 @@ const MainStage = () => {
       )}
       <Box className={classes.content}>
         {/* Add / Share Modal */}
-        <ShareLinkModal joinToken={joinToken} open={showLink} onDismiss={() => setShowLink(false)} />
+        <ShareLinkModal joinToken={joinToken || ''} open={showLink} onDismiss={() => setShowLink(false)} />
         {/* Role-based Controls */}
         {data.conference && (
           <Box className={classes.topBar} sx={layout.style.topBar}>
-            <Stack direction="row" alignItems="center" justifyContent="center" className={classes.header}>
+            <Grid
+              direction="row"
+              alignItems="center"
+              xs={8}
+              display="flex"
+              width="100%"
+              paddingY={2}
+              justifyContent="center"
+              className={classes.header}
+            >
               <WbcLogoSmall />
               <Divider orientation="vertical" flexItem className={classes.headerDivider} />
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
-            </Stack>
+            </Grid>
             <Stack direction="row" alignItems="center" className={classes.topControls}>
               {userRole === UserRoles.ORGANIZER.toLowerCase() && (
                 <IconButton
@@ -466,14 +221,16 @@ const MainStage = () => {
                   </IconButton>
                 </Tooltip>
               )}
-              <CustomButton
-                size={BUTTONSIZE.SMALL}
-                buttonType={BUTTONTYPE.LEAVE}
-                startIcon={<LogOutIcon />}
-                onClick={onLeave}
-              >
-                Leave
-              </CustomButton>
+              {userRole !== UserRoles.ANONYMOUS.toLowerCase() && (
+                <CustomButton
+                  size={BUTTONSIZE.SMALL}
+                  buttonType={BUTTONTYPE.LEAVE}
+                  startIcon={<LogOutIcon />}
+                  onClick={onLeave}
+                >
+                  Leave
+                </CustomButton>
+              )}
             </Stack>
           </Box>
         )}
@@ -486,6 +243,7 @@ const MainStage = () => {
               videoStyles={layout.style.vipsubscriberVideo}
               host={STREAM_HOST}
               useStreamManager={USE_STREAM_MANAGER}
+              preferWhipWhep={PREFER_WHIP_WHEP}
             />
           </Box>
         )}
@@ -493,7 +251,7 @@ const MainStage = () => {
         <Box sx={layout.style.subscriberList}>
           <div
             ref={subscriberListRef}
-            style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle }}
+            style={{ ...layout.style.subscriberContainer, ...maxParticipantGridColumnStyle, width: '100%' }}
           >
             {data.list.map((s: Participant) => {
               return (
@@ -504,6 +262,7 @@ const MainStage = () => {
                   videoStyles={layout.style.subscriberVideo}
                   host={STREAM_HOST}
                   useStreamManager={USE_STREAM_MANAGER}
+                  preferWhipWhep={PREFER_WHIP_WHEP}
                   menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
                   onSubscribeStart={onRelayout}
                 />
@@ -533,6 +292,7 @@ const MainStage = () => {
               <PublisherControls
                 cameraOn={true}
                 microphoneOn={true}
+                muteState={publishMuteState}
                 onCameraToggle={onPublisherCameraToggle}
                 onMicrophoneToggle={onPublisherMicrophoneToggle}
               />
@@ -585,12 +345,11 @@ const MainStage = () => {
             )}
           </Stack>
         </Stack>
-
         {/* Loading Message */}
         {(!data.conference || loading) && (
           <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
             <Loading />
-            <Typography>Loading Watch Party</Typography>
+            <Typography>Loading {isWatchParty ? 'Watch Party' : 'Webinar'}</Typography>
           </Stack>
         )}
       </Box>
@@ -601,9 +360,11 @@ const MainStage = () => {
             key="publisher"
             ref={publisherRef}
             useStreamManager={USE_STREAM_MANAGER}
+            preferWhipWhep={PREFER_WHIP_WHEP}
             host={STREAM_HOST}
-            streamGuid={getStreamGuid()}
-            stream={mediaContext?.mediaStream}
+            streamGuid={getStreamGuid() || ''}
+            stream={mediaStream}
+            muteState={publishMuteState}
             styles={layout.layout !== Layout.FULLSCREEN ? layout.style.publisher : layout.style.publisherVideo}
             onFail={onPublisherFail}
             onStart={onPublisherBroadcast}

@@ -1,12 +1,37 @@
+/*
+Copyright © 2015 Infrared5, Inc. All rights reserved.
+
+The accompanying code comprising examples for use solely in conjunction with Red5 Pro (the "Example Code")
+is  licensed  to  you  by  Infrared5  Inc.  in  consideration  of  your  agreement  to  the  following
+license terms  and  conditions.  Access,  use,  modification,  or  redistribution  of  the  accompanying
+code  constitutes your acceptance of the following license terms and conditions.
+
+Permission is hereby granted, free of charge, to you to use the Example Code and associated documentation
+files (collectively, the "Software") without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The Software shall be used solely in conjunction with Red5 Pro. Red5 Pro is licensed under a separate end
+user  license  agreement  (the  "EULA"),  which  must  be  executed  with  Infrared5,  Inc.
+An  example  of  the EULA can be found on our website at: https://account.red5pro.com/assets/LICENSE.txt.
+
+The above copyright notice and this license shall be included in all copies or portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,  INCLUDING  BUT
+NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY, FITNESS  FOR  A  PARTICULAR  PURPOSE  AND
+NONINFRINGEMENT.   IN  NO  EVENT  SHALL INFRARED5, INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN  AN  ACTION  OF  CONTRACT,  TORT  OR  OTHERWISE,  ARISING  FROM,  OUT  OF  OR  IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 import React, { useReducer } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import useCookies from '../../hooks/useCookies'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
-import { getCurrentEpisode } from '../../services/conference/conference'
+import { getCurrentEpisode } from '../../services/conference'
 import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
-import { generateFingerprint, UserRoles } from '../../utils/commonUtils'
+import { generateFingerprint, Paths, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 
 function useUID() {
@@ -15,6 +40,7 @@ function useUID() {
   })
   return id
 }
+const anonReg = new RegExp(`^${Paths.ANONYMOUS}/`)
 
 const cannedSeries = { displayName: 'Accessing Information...' }
 const cannedEpisode = { displayName: '...', startTime: new Date().getTime() }
@@ -41,6 +67,9 @@ const JoinProvider = (props: JoinContextProps) => {
   const navigate = useNavigate()
   const { getCookies, removeCookie } = useCookies(['account', 'userAccount'])
 
+  const path = useLocation().pathname
+  // const isAnonymousParticipant = anonReg.exec(path)
+
   const [error, setError] = React.useState<any | undefined>()
   const [loading, setLoading] = React.useState<boolean>(false)
   const [ready, setReady] = React.useState<boolean>(false)
@@ -60,7 +89,10 @@ const JoinProvider = (props: JoinContextProps) => {
   })
 
   const [conferenceData, setConferenceData] = React.useState<ConferenceDetails | undefined>()
+  const [cohostsList, setCohostsList] = React.useState<string[] | undefined>([])
   // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
+
+  const [isAnonymousParticipant, setIsAnonymousParticipant] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     const cookies = getCookies()
@@ -74,6 +106,12 @@ const JoinProvider = (props: JoinContextProps) => {
     }
     setReady(true)
   }, [])
+
+  React.useEffect(() => {
+    const exec = anonReg.exec(path)
+    const isAnon = exec !== null
+    setIsAnonymousParticipant(isAnon)
+  }, [path])
 
   React.useEffect(() => {
     if (params && params.token) {
@@ -153,7 +191,7 @@ const JoinProvider = (props: JoinContextProps) => {
   // TODO: Be more clever when VIP...
   const getStreamGuid = () => {
     const isVIP = location.pathname === '/join/guest' || location.pathname === '/vip'
-    if (!isVIP && !nickname) return null
+    if (isAnonymousParticipant || (!isVIP && !nickname)) return null
     // Only keep numbers and letters, otherwise stream may break.
     const append = !isVIP ? joinToken : 'vip'
     const stripped = !isVIP ? nickname?.replace(/[^a-zA-Z0-9]/g, '') : 'VIP'
@@ -162,6 +200,10 @@ const JoinProvider = (props: JoinContextProps) => {
       guid = `${append?.split('-').join('')}/${stripped}_${uid}`
     }
     return guid
+  }
+
+  const getSharescreenStreamGuid = () => {
+    return `${getStreamGuid()}_SCREENSHARE`
   }
 
   const getMainStreamGuid = () => {
@@ -205,6 +247,38 @@ const JoinProvider = (props: JoinContextProps) => {
     return null
   }
 
+  const getCoHostsList = async (conferenceId: string) => {
+    if (conferenceData) {
+      try {
+        const result = await CONFERENCE_API_CALLS.getCohostList(conferenceId, getCookies().account)
+        if (result.status !== 200) {
+          throw { data: null, status: result.status, statusText: `Could not get the cohost list of this conference.` }
+        }
+        setCohostsList(result.data || [])
+
+        return result
+      } catch (e) {
+        console.error(e)
+        throw e
+      }
+    }
+    return null
+  }
+
+  const updateCoHostList = async (conferenceId: string, cohostEmailList: string[]) => {
+    try {
+      const result = await CONFERENCE_API_CALLS.updateCohostList(conferenceId, getCookies().account, cohostEmailList)
+      if (result.status === 200) {
+        setCohostsList(cohostEmailList || [])
+      }
+
+      return result
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  }
+
   const exportedValues = {
     loading,
     error,
@@ -213,17 +287,23 @@ const JoinProvider = (props: JoinContextProps) => {
     fingerprint,
     seriesEpisode,
     conferenceData,
+    isAnonymousParticipant,
     // conferenceLocked,
+    cohostsList,
+
     setConferenceData,
     updateNickname: (value: string) => {
       setNickname(value)
       LocalStorage.set('wp_nickname', value)
     },
     getStreamGuid,
+    getSharescreenStreamGuid,
     getMainStreamGuid,
     setJoinToken,
     lock,
     unlock,
+    getCoHostsList,
+    updateCoHostList,
   }
 
   return <JoinContext.Provider value={exportedValues}>{children}</JoinContext.Provider>

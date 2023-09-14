@@ -1,3 +1,28 @@
+/*
+Copyright © 2015 Infrared5, Inc. All rights reserved.
+
+The accompanying code comprising examples for use solely in conjunction with Red5 Pro (the "Example Code")
+is  licensed  to  you  by  Infrared5  Inc.  in  consideration  of  your  agreement  to  the  following
+license terms  and  conditions.  Access,  use,  modification,  or  redistribution  of  the  accompanying
+code  constitutes your acceptance of the following license terms and conditions.
+
+Permission is hereby granted, free of charge, to you to use the Example Code and associated documentation
+files (collectively, the "Software") without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The Software shall be used solely in conjunction with Red5 Pro. Red5 Pro is licensed under a separate end
+user  license  agreement  (the  "EULA"),  which  must  be  executed  with  Infrared5,  Inc.
+An  example  of  the EULA can be found on our website at: https://account.red5pro.com/assets/LICENSE.txt.
+
+The above copyright notice and this license shall be included in all copies or portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,  INCLUDING  BUT
+NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY, FITNESS  FOR  A  PARTICULAR  PURPOSE  AND
+NONINFRINGEMENT.   IN  NO  EVENT  SHALL INFRARED5, INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN  AN  ACTION  OF  CONTRACT,  TORT  OR  OTHERWISE,  ARISING  FROM,  OUT  OF  OR  IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 import * as React from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Box, Stack, Typography } from '@mui/material'
@@ -13,11 +38,13 @@ import MediaContext from '../../components/MediaContext/MediaContext'
 import JoinSectionLanding from '../../components/JoinSections/JoinSectionLanding'
 import JoinSectionNicknameInput from '../../components/JoinSections/JoinSectionNicknameInput'
 import JoinSectionAVSetup from '../../components/JoinSections/JoinSectionAVSetup'
-import MainStage from '../../components/MainStage/MainStage'
 import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
 import { UserRoles } from '../../utils/commonUtils'
+import { isWatchParty } from '../../settings/variables'
+
+const MainStageWrapper = React.lazy(() => import('../../components/MainStage/MainStageWrapper'))
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 const useMediaContext = () => React.useContext(MediaContext.Context)
@@ -32,7 +59,7 @@ enum Section {
 // List up to 2, then remaining amount
 const getParticipantText = (participants: Participant[] | undefined) => {
   if (!participants || participants.length === 0) {
-    return 'Nobody is currently in the Watch Party.'
+    return `Nobody is currently in the ${isWatchParty ? 'Watch Party' : 'Webinar'}.`
   }
   const maxLength = 2
   const length = participants.length
@@ -149,7 +176,7 @@ const JoinPage = () => {
     <Box className={classes.root} display="flex" flexDirection="column">
       {loading && (
         <Box className={classes.loadingContainer}>
-          <Loading text="Loading Watch Party" />
+          <Loading text={`Loading ${isWatchParty ? 'Watch Party' : 'Webinar'}`} />
         </Box>
       )}
       {currentSection !== Section.WatchParty && (
@@ -188,21 +215,21 @@ const JoinPage = () => {
             />
           </Box>
         )}
-        {!loading && conferenceData && currentSection === Section.AVSetup && (
+        {!loading && currentSection === Section.AVSetup && (
           <Box className={classes.joinSection}>
-            <JoinSectionAVSetup conferenceData={conferenceData} onBack={onReturnToNickname} onJoin={onJoin} />
+            <JoinSectionAVSetup onBack={onReturnToNickname} onJoin={onJoin} />
           </Box>
         )}
         {!loading && conferenceData && currentSection === Section.WatchParty && (
           <MainStageWithChatBox>
-            <MainStage />
+            <MainStageWrapper />
           </MainStageWithChatBox>
         )}
 
         <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
           <img
             alt="Join a Party Main Image"
-            src={require('../../assets/images/BoxMainImage.png')}
+            src="../../assets/images/BoxMainImage.png"
             style={{
               width: '100%',
               opacity: currentSection === Section.Nickname ? 0.5 : 1,
@@ -222,11 +249,7 @@ const JoinPage = () => {
             <Stack spacing={2} direction="row">
               {/* <OracleLogo /> */}
               <Box sx={{ width: 'auto', height: '70px' }}>
-                <img
-                  height="70px"
-                  alt="Logo Placeholder"
-                  src={require('../../assets/logos/sponsor-placeholder-2-logo.png')}
-                ></img>
+                <img height="70px" alt="Logo Placeholder" src="../../assets/logos/sponsor-placeholder-2-logo.png"></img>
               </Box>
             </Stack>
           </Stack>
