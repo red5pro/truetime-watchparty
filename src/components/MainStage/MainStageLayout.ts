@@ -129,6 +129,17 @@ const styles = {
       paddingTop: '20px',
       boxSizing: 'border-box',
     },
+    subscriberContainerWb: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      justifyContent: 'center',
+      rowGap: '16px',
+      columnGap: '16px',
+      height: '100%',
+      overflowY: 'scroll',
+      flexDirection: 'row',
+    },
     subscriberItem: {
       display: 'flex',
       alignItems: 'center',
@@ -252,6 +263,15 @@ const styles = {
       height: '100%',
       marginTop: '0!important',
       justifyContent: 'center',
+    },
+    subscriberContainerWb: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      justifyContent: 'center',
+      rowGap: '16px',
+      columnGap: '16px',
+      height: '100%',
     },
     subscriberContainerFull: {
       gap: '10px',

@@ -124,22 +124,8 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const gridContainerRef = React.useRef<any>(null)
 
   React.useEffect(() => {
-    console.log('LAYOUT', layout.layout, layout)
+    updateGridItemSize(windowWidth, windowHeight)
   }, [layout.layout])
-
-  // React.useEffect(() => {
-  //   // Handler to call on window resize
-  //   function handleResize() {
-  //     // Set window width/height to state
-  //     updateGridItemSize(window.innerWidth, window.innerHeight)
-  //   }
-  //   // Add event listener
-  //   window.addEventListener('resize', handleResize)
-  //   // Call handler right away so state gets updated with initial window size
-  //   handleResize()
-  //   // Remove event listener on cleanup
-  //   return () => window.removeEventListener('resize', handleResize)
-  // }, [])
 
   React.useEffect(() => {
     if (data.list.length > 0) {
@@ -194,9 +180,6 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
 
   const updateGridItemSize = (width: number, height: number) => {
     const parent = gridContainerRef?.current
-    if (parent) {
-      console.log('LAYOUT PARENT', parent, parent.clientWidth, parent.clientHeight)
-    }
     const totalParticipants = data.list.length + (isAnonymous ? 0 : 1)
     const { columnCount, rowCount } = calculateRowCols(totalParticipants)
     // setColumnCount(columnCount)
@@ -214,8 +197,8 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       aspectRatio: '1 / 1',
     }
     let gridStyle = {
-      maxWidth: `${maxWidth}px`,
-      maxHeight: `${maxWidth}px`,
+      maxWidth: `${(wSize + 16) * columnCount}px`,
+      maxHeight: `${(wSize + 16) * rowCount}px`,
     }
     if (width > height) {
       sizeStyle = {
@@ -223,13 +206,18 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         aspectRatio: '1 / 1',
       }
       gridStyle = {
-        maxWidth: `${maxHeight}px`,
-        maxHeight: `${maxHeight}px`,
+        maxWidth: `${(hSize + 16) * columnCount}px`,
+        maxHeight: `${(hSize + 16) * rowCount}px`,
       }
     }
-    setGridSizeStyle(gridStyle)
-    setGridItemSizeStyle(sizeStyle)
-    console.log('LAYOUT, CALCULATE ROW COLS', columnCount, rowCount, totalParticipants)
+    setGridSizeStyle(
+      layout.layout === Layout.FULLSCREEN
+        ? gridStyle
+        : { ...layout.style.subscriberContainer, maxHeight: 'calc(100vh - 7rem)' }
+    )
+    setGridItemSizeStyle(layout.layout === Layout.FULLSCREEN ? sizeStyle : { height: 'unset' })
+    onRelayout()
+    // console.log('LAYOUT, CALCULATE ROW COLS', columnCount, rowCount, totalParticipants)
   }
 
   return (
@@ -271,13 +259,13 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       )}
       {/* Other Participants Video Playback */}
       <Box
+        ref={gridContainerRef}
         id="participants-video-container"
         sx={isAnonymous ? layout.style.subscriberListWbAnon : layout.style.subscriberListWb}
         style={{
           justifyItems: 'center',
         }}
         m={1}
-        ref={gridContainerRef}
       >
         {/* <Grid
           container
@@ -296,22 +284,14 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           spacing={1}
         > */}
         <Box
+          ref={subscriberListRef}
           style={{
             ...gridSizeStyle,
-            ...{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'center',
-              rowGap: '16px',
-              columnGap: '16px',
-              height: '100%',
-            },
+            ...layout.style.subscriberContainerWb,
           }}
         >
           {!isAnonymous && (
             <Box id="publisher-item" key="publisher-item" style={gridItemSizeStyle}>
-              {/* style={layout.style.subscriberItem}> */}
               <Publisher
                 key="publisher"
                 ref={publisherRef}
@@ -325,7 +305,6 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                   ...layout.style.subscriber,
                   ...{ transform: 'scaleX(-1)' },
                 }}
-                // styles={{ height: '100%' }}
                 // styles={
                 //   layout.layout !== Layout.FULLSCREEN
                 //     ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
@@ -341,9 +320,8 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               />
             </Box>
           )}
-          {data.list.map((s: Participant) => (
-            <Box key={`${s.streamGuid}`} style={gridItemSizeStyle}>
-              {/* style={layout.style.subscriberItem}> */}
+          {data.list.map((s: Participant, i: number) => (
+            <Box key={`${s.streamGuid}_${i}`} style={gridItemSizeStyle}>
               <MainStageSubscriber
                 participant={s}
                 styles={{ ...layout.style.subscriber }}
