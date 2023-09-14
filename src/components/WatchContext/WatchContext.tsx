@@ -191,8 +191,8 @@ const WatchProvider = (props: IWatchProviderProps) => {
         } else if (messageType === MessageTypes.STATE_EVENT) {
           const details = payload as ConferenceStatusEvent
           dispatch({ type: 'SET_CONFERENCE_DATA', payload: details.state })
-          updateStreamsList(getMockParticipantList(details.state.conferenceId, 10))
-          // updateStreamsList(details.state.participants)
+          // updateStreamsList(getMockParticipantList(details.state.conferenceId, 0))
+          updateStreamsList(details.state.participants)
           updateScreenshareList(details.state.participants)
         }
       }

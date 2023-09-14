@@ -139,6 +139,7 @@ const styles = {
       height: '100%',
       overflowY: 'scroll',
       flexDirection: 'row',
+      alignContent: 'flex-start',
     },
     subscriberItem: {
       display: 'flex',

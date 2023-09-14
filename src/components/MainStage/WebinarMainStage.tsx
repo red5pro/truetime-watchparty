@@ -128,9 +128,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   }, [layout.layout])
 
   React.useEffect(() => {
-    if (data.list.length > 0) {
-      updateGridItemSize(windowWidth, windowHeight)
-    }
+    updateGridItemSize(windowWidth, windowHeight)
   }, [data.list, isAnonymous, windowWidth, windowHeight])
 
   React.useEffect(() => {
@@ -186,14 +184,14 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     // setRowCount(rowCount)
     const wDiv = parent.clientWidth / columnCount
     const hDiv = parent.clientHeight / rowCount
-    const wSize = wDiv - (columnCount - 1) * 16
-    const hSize = hDiv - (rowCount - 1) * 16
+    const wSize = wDiv - columnCount * 16
+    const hSize = hDiv - rowCount * 16
     const wCalc = `${wSize}px`
     const hCalc = `${hSize}px`
     const maxWidth = (wSize + 16) * columnCount
     const maxHeight = (hSize + 16) * rowCount
-    let sizeStyle: any = {
-      width: wCalc,
+    const sizeStyle: any = {
+      height: hSize < wSize ? hCalc : wCalc,
       aspectRatio: '1 / 1',
     }
     let gridStyle = {
@@ -201,10 +199,6 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       maxHeight: `${(wSize + 16) * rowCount}px`,
     }
     if (width > height) {
-      sizeStyle = {
-        height: hCalc,
-        aspectRatio: '1 / 1',
-      }
       gridStyle = {
         maxWidth: `${(hSize + 16) * columnCount}px`,
         maxHeight: `${(hSize + 16) * rowCount}px`,
@@ -218,6 +212,8 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     setGridItemSizeStyle(layout.layout === Layout.FULLSCREEN ? sizeStyle : { height: 'unset' })
     onRelayout()
     // console.log('LAYOUT, CALCULATE ROW COLS', columnCount, rowCount, totalParticipants)
+    // console.log('LAYOUT, CALCULATE Size', wCalc, hCalc)
+    // console.log('LAYOUT, CALCULATE GRID SIZE', gridStyle, sizeStyle)
   }
 
   return (
