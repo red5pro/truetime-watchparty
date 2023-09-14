@@ -34,6 +34,7 @@ const useStyles = makeStyles()((theme: any) => {
       position: 'relative',
       backgroundColor: 'black',
       borderRadius: '20px',
+      overflow: 'hidden',
     },
     loading: {
       position: 'absolute',

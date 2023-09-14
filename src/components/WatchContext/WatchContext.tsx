@@ -33,6 +33,26 @@ import {
 import { Participant } from '../../models/Participant'
 import { MessageTypes, UserRoles } from '../../utils/commonUtils'
 
+const getMockParticipantList = (conferenceId: number, amount: number) => {
+  const list: Participant[] = []
+  for (let i = 0; i < amount; i++) {
+    list.push({
+      participantId: 1000 + i,
+      conferenceId: 2,
+      streamGuid: 'live/test',
+      displayName: `Larry${i}`,
+      role: 'PARTICIPANT',
+      muteState: {
+        audioMuted: true,
+        videoMuted: false,
+        chatMuted: false,
+        screenMuted: false,
+      },
+    })
+  }
+  return list
+}
+
 interface IWatchProviderProps {
   children: any
 }
@@ -171,7 +191,8 @@ const WatchProvider = (props: IWatchProviderProps) => {
         } else if (messageType === MessageTypes.STATE_EVENT) {
           const details = payload as ConferenceStatusEvent
           dispatch({ type: 'SET_CONFERENCE_DATA', payload: details.state })
-          updateStreamsList(details.state.participants)
+          updateStreamsList(getMockParticipantList(details.state.conferenceId, 10))
+          // updateStreamsList(details.state.participants)
           updateScreenshareList(details.state.participants)
         }
       }

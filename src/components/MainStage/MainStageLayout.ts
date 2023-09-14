@@ -129,6 +129,11 @@ const styles = {
       paddingTop: '20px',
       boxSizing: 'border-box',
     },
+    subscriberItem: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     subscriber: {
       maxHeight: '124px',
       flexGrow: 1,
@@ -190,6 +195,7 @@ const styles = {
     },
     publisher: {
       borderRadius: '20px',
+      overflow: 'hidden',
       width: '100%',
       height: '100%',
     },
@@ -252,6 +258,11 @@ const styles = {
       justifyContent: 'center',
       overflow: 'hidden',
       width: '100%',
+    },
+    subscriberItem: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     subscriber: {
       height: '100%',

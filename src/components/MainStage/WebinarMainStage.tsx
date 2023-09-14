@@ -56,10 +56,13 @@ import { Layout } from './MainStageWrapper'
 import { IMainStageWrapperProps } from '.'
 import ScreenSharePublisher from '../ScreenShare/ScreenSharePublisher'
 import ScreenShareSubscriber from '../ScreenShareSubscriber/ScreenShareSubscriber'
+import { useWindowSize } from '../../hooks/useWindowSize'
 
 const ShareLinkModal = React.lazy(() => import('../Modal/ShareLinkModal'))
 const AddCoHostsModal = React.lazy(() => import('../Modal/AddCoHostModal/AddCoHostsModal'))
 const SimpleAlertDialog = React.lazy(() => import('../Modal/SimpleAlertDialog'))
+
+const MAX_COLS = 3
 
 const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const {
@@ -111,6 +114,39 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
   const [screenShare, setScreenShare] = React.useState<boolean>(false)
   const [openAddCohostModal, setOpenAddCohostModal] = React.useState<boolean>(false)
 
+  // const [columnCount, setColumnCount] = React.useState<number>(1)
+  // const [rowCount, setRowCount] = React.useState<number>(1)
+  const [gridSizeStyle, setGridSizeStyle] = React.useState<any>({})
+  const [gridItemSizeStyle, setGridItemSizeStyle] = React.useState<any>({ height: '100%', aspectRatio: '1 / 1' })
+
+  const { width: windowWidth, height: windowHeight } = useWindowSize()
+
+  const gridContainerRef = React.useRef<any>(null)
+
+  React.useEffect(() => {
+    console.log('LAYOUT', layout.layout, layout)
+  }, [layout.layout])
+
+  // React.useEffect(() => {
+  //   // Handler to call on window resize
+  //   function handleResize() {
+  //     // Set window width/height to state
+  //     updateGridItemSize(window.innerWidth, window.innerHeight)
+  //   }
+  //   // Add event listener
+  //   window.addEventListener('resize', handleResize)
+  //   // Call handler right away so state gets updated with initial window size
+  //   handleResize()
+  //   // Remove event listener on cleanup
+  //   return () => window.removeEventListener('resize', handleResize)
+  // }, [])
+
+  React.useEffect(() => {
+    if (data.list.length > 0) {
+      updateGridItemSize(windowWidth, windowHeight)
+    }
+  }, [data.list, isAnonymous, windowWidth, windowHeight])
+
   React.useEffect(() => {
     if (data.screenshareParticipants.length > 0 || screenShare) {
       onLayoutSelect(Layout.STAGE)
@@ -152,11 +188,55 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     setOpenAddCohostModal(!openAddCohostModal)
   }
 
+  const calculateRowCols = (totalParticipants: number) => {
+    return { columnCount: Math.min(totalParticipants, MAX_COLS), rowCount: Math.ceil(totalParticipants / MAX_COLS) }
+  }
+
+  const updateGridItemSize = (width: number, height: number) => {
+    const parent = gridContainerRef?.current
+    if (parent) {
+      console.log('LAYOUT PARENT', parent, parent.clientWidth, parent.clientHeight)
+    }
+    const totalParticipants = data.list.length + (isAnonymous ? 0 : 1)
+    const { columnCount, rowCount } = calculateRowCols(totalParticipants)
+    // setColumnCount(columnCount)
+    // setRowCount(rowCount)
+    const wDiv = parent.clientWidth / columnCount
+    const hDiv = parent.clientHeight / rowCount
+    const wSize = wDiv - (columnCount - 1) * 16
+    const hSize = hDiv - (rowCount - 1) * 16
+    const wCalc = `${wSize}px`
+    const hCalc = `${hSize}px`
+    const maxWidth = (wSize + 16) * columnCount
+    const maxHeight = (hSize + 16) * rowCount
+    let sizeStyle: any = {
+      width: wCalc,
+      aspectRatio: '1 / 1',
+    }
+    let gridStyle = {
+      maxWidth: `${maxWidth}px`,
+      maxHeight: `${maxWidth}px`,
+    }
+    if (width > height) {
+      sizeStyle = {
+        height: hCalc,
+        aspectRatio: '1 / 1',
+      }
+      gridStyle = {
+        maxWidth: `${maxHeight}px`,
+        maxHeight: `${maxHeight}px`,
+      }
+    }
+    setGridSizeStyle(gridStyle)
+    setGridItemSizeStyle(sizeStyle)
+    console.log('LAYOUT, CALCULATE ROW COLS', columnCount, rowCount, totalParticipants)
+  }
+
   return (
     <Box id="root-container" className={classes.rootContainer} position="fixed" overflow="hidden">
       {/* Loading Message */}
       {(!data.conference || loading) && (
-        <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainer}>
+        <Stack direction="column" alignContent="center" spacing={2} className={classes.loadingContainerWb}>
           <Loading />
           <Typography>Loading Webinar</Typography>
         </Stack>
@@ -193,34 +273,45 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       <Box
         id="participants-video-container"
         sx={isAnonymous ? layout.style.subscriberListWbAnon : layout.style.subscriberListWb}
+        style={{
+          justifyItems: 'center',
+        }}
         m={1}
+        ref={gridContainerRef}
       >
-        <Grid
+        {/* <Grid
           container
           ref={subscriberListRef}
           minHeight={layout.layout !== Layout.FULLSCREEN ? 'unset' : 'auto'}
           maxHeight={layout.layout !== Layout.FULLSCREEN ? 'calc(100vh - 7rem)' : 'auto'}
           width={layout.layout !== Layout.FULLSCREEN ? '100%' : 'fit-content'}
           minWidth={layout.layout !== Layout.FULLSCREEN ? '100%' : 'auto'}
-          flexWrap={
-            layout.layout !== Layout.FULLSCREEN || (layout.layout === Layout.FULLSCREEN && data.list.length < 3)
-              ? 'nowrap'
-              : 'wrap'
-          }
+          flexWrap={requiresGridWrap(layout.layout, data.list) ? 'wrap' : 'nowrap'}
           style={
             layout.layout !== Layout.FULLSCREEN
               ? layout.style.subscriberContainer
               : layout.style.subscriberContainerFull
           }
+          // columns={Math.min(2, data.list.length + (isAnonymous ? 0 : 1))}
+          spacing={1}
+        > */}
+        <Box
+          style={{
+            ...gridSizeStyle,
+            ...{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'center',
+              rowGap: '16px',
+              columnGap: '16px',
+              height: '100%',
+            },
+          }}
         >
           {!isAnonymous && (
-            <Grid
-              id="grid-stage-publisher"
-              item
-              sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
-              xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-              maxHeight={layout.layout !== Layout.FULLSCREEN ? '124px' : data.list.length < 3 ? '100%' : '50%'}
-            >
+            <Box id="publisher-item" key="publisher-item" style={gridItemSizeStyle}>
+              {/* style={layout.style.subscriberItem}> */}
               <Publisher
                 key="publisher"
                 ref={publisherRef}
@@ -229,30 +320,30 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 host={STREAM_HOST}
                 streamGuid={getStreamGuid() || ''}
                 stream={mediaStream}
-                styles={
-                  layout.layout !== Layout.FULLSCREEN
-                    ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
-                    : {
-                        ...layout.style.publisherVideo,
-                        ...layout.style.subscriber,
-                        ...{ transform: 'scaleX(1)', width: '100%', backgroundColor: 'black' },
-                      }
-                }
+                styles={{
+                  ...layout.style.publisherVideo,
+                  ...layout.style.subscriber,
+                  ...{ transform: 'scaleX(-1)' },
+                }}
+                // styles={{ height: '100%' }}
+                // styles={
+                //   layout.layout !== Layout.FULLSCREEN
+                //     ? { ...layout.style.subscriber, ...{ transform: 'scaleX(-1)' } }
+                //     : {
+                //         ...layout.style.publisherVideo,
+                //         ...layout.style.subscriber,
+                //         ...{ transform: 'scaleX(1)', width: '100%', backgroundColor: 'black' },
+                //       }
+                // }
                 onFail={onPublisherFail}
                 onStart={onPublisherBroadcast}
                 onInterrupt={onPublisherBroadcastInterrupt}
               />
-            </Grid>
+            </Box>
           )}
           {data.list.map((s: Participant) => (
-            <Grid
-              id="grid-stage-subscriber"
-              item
-              key={s.participantId}
-              xs={layout.layout === Layout.FULLSCREEN ? calculateGrid(data.list.length + 1) : 12}
-              sx={layout.layout !== Layout.FULLSCREEN ? layout.style.publisherContainer : layout.style.subscriber}
-              maxHeight={layout.layout !== Layout.FULLSCREEN ? '124px' : data.list.length < 3 ? '100%' : '50%'}
-            >
+            <Box key={`${s.streamGuid}`} style={gridItemSizeStyle}>
+              {/* style={layout.style.subscriberItem}> */}
               <MainStageSubscriber
                 participant={s}
                 styles={{ ...layout.style.subscriber }}
@@ -264,9 +355,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 onSubscribeStart={onRelayout}
                 isLayoutFullscreen={layout.layout === Layout.FULLSCREEN}
               />
-            </Grid>
+            </Box>
           ))}
-        </Grid>
+        </Box>
+        {/* </Grid> */}
 
         {requiresSubscriberScroll && layout.layout !== Layout.FULLSCREEN && (
           <CustomButton
@@ -303,7 +395,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               display="flex"
               alignItems="center"
               justifyContent="center"
-              className={classes.header}
+              className={classes.headerWb}
               paddingLeft="20%"
             >
               <Typography className={classes.headerTitle}>{data.conference.displayName}</Typography>
