@@ -10,7 +10,14 @@
 
 This repository contains code for the React-based client-side Red5 TrueTime WatchParty web application.
 
-> If you are looking for a basic Vanilla JS version, please visit: [https://github.com/red5pro/red5pro-watch-party-VANILLA](https://github.com/red5pro/red5pro-watch-party-VANILLA)
+## Solutions
+
+There are two solutions that the TrueTime WatchParty client provides:
+
+* [WatchParty for Fans](https://www.red5.net/truetime/watchparty-for-fans/)
+* [Studio for Webinars](https://www.red5.net/truetime/studio-for-webinars/)
+
+When building and deploying your own solution, you can define which solution to use by setting the `REACT_APP_WEBAPP_MODE` environment variable to either `watchparty` or `webinar`, respectively. More information about environment variables available is in the following section.
 
 # Requirements
 
