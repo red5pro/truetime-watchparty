@@ -299,7 +299,6 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 styles={{
                   ...layout.style.publisherVideo,
                   ...layout.style.subscriber,
-                  ...{ transform: 'scaleX(-1)' },
                 }}
                 // styles={
                 //   layout.layout !== Layout.FULLSCREEN

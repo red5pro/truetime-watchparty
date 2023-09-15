@@ -275,7 +275,7 @@ const Publisher = React.forwardRef((props: PublisherProps, ref: React.Ref<Publis
           elementId={elementId}
           muted={true}
           controls={false}
-          styles={{ ...styles, display: cameraOn ? 'unset' : 'none' }}
+          styles={{ ...styles, transform: 'scaleX(-1)', display: cameraOn ? 'unset' : 'none' }}
         />
       )}
       <Stack direction="row" spacing={1} className={classes.iconBar}>
