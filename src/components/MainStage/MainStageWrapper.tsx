@@ -446,11 +446,20 @@ const MainStageWrapper = () => {
   const onContinueBan = async (participant: Participant) => {
     try {
       const confId = conferenceId ?? data.conference?.conferenceId
-      const result = await CONFERENCE_API_CALLS.banParticipant(
-        confId ?? participant.conferenceId,
-        getCookies().account,
-        participant.participantId
-      )
+      let result
+      if (participant.role.toLowerCase() === UserRoles.COHOST.toLowerCase()) {
+        result = await CONFERENCE_API_CALLS.kickParticipant(
+          confId ?? participant.conferenceId,
+          getCookies().account,
+          participant.participantId
+        )
+      } else {
+        result = await CONFERENCE_API_CALLS.banParticipant(
+          confId ?? participant.conferenceId,
+          getCookies().account,
+          participant.participantId
+        )
+      }
       if (result.status >= 300) {
         throw result
       }
