@@ -309,6 +309,7 @@ const MainStageWrapper = () => {
   }
 
   const onAnonymousEntry = () => {
+    console.log('ANONYMOUS ENTRY')
     const { url, request } = getAnonymousSocketUrl(joinToken)
     join(url, request)
   }
