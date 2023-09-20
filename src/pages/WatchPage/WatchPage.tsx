@@ -38,7 +38,7 @@ const WatchPage = () => {
 
     return () => {
       if (interval) {
-        clearInterval(interval)
+        clearInterval(interval as any)
       }
     }
   }, [])
