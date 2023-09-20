@@ -134,6 +134,7 @@ const ScreenSharePublisher = React.forwardRef((props: ScreenShareProps, ref: Rea
           key="screenshare"
           ref={screensharePubRef}
           host={host}
+          disableFlip={true}
           styles={{
             height: '100%',
             borderRadius: '20px',

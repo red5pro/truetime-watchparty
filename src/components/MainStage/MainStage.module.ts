@@ -41,6 +41,15 @@ const useStyles = makeStyles()((theme: any) => {
       left: '50%',
       alignItems: 'center',
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
+      zIndex: 1000,
+    },
+    loadingContainerWb: {
+      position: 'absolute',
+      top: '20px',
+      left: '50%',
+      alignItems: 'center',
+      filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
+      zIndex: 1000,
     },
     mainVideo: {
       position: 'absolute',
@@ -55,7 +64,6 @@ const useStyles = makeStyles()((theme: any) => {
     },
     organizerTopControls: {
       display: 'flex',
-      justifyContent: 'flex-end',
       width: '100%',
       maxHeight: '5rem',
       zIndex: 1,
@@ -70,11 +78,22 @@ const useStyles = makeStyles()((theme: any) => {
       padding: '20px',
       display: 'flex',
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'end',
+      alignItems: 'center',
       // width: '86vw',
     },
     header: {
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
+    },
+    headerWb: {
+      filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
+      position: 'absolute',
+      width: '100%',
+      textAlign: 'center',
+      flexBasis: 'unset!important',
+      maxWidth: 'unset!important',
+      margin: 0,
+      padding: 0,
     },
     headerTitle: {
       fontSize: '16px',
