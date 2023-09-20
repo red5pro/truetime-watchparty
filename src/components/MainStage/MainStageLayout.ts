@@ -116,7 +116,7 @@ const styles = {
     },
     subscriberContainer: {
       display: 'flex',
-      // overflowY: 'scroll',
+      overflowY: 'scroll',
       // flexGrow: 9,
       flexDirection: 'column',
       aspectRatio: '0.25',
@@ -128,6 +128,23 @@ const styles = {
       paddingLeft: '20px',
       paddingTop: '20px',
       boxSizing: 'border-box',
+    },
+    subscriberContainerWb: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      justifyContent: 'center',
+      rowGap: '16px',
+      columnGap: '16px',
+      height: '100%',
+      overflowY: 'scroll',
+      flexDirection: 'row',
+      alignContent: 'flex-start',
+    },
+    subscriberItem: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     subscriber: {
       maxHeight: '124px',
@@ -190,6 +207,7 @@ const styles = {
     },
     publisher: {
       borderRadius: '20px',
+      overflow: 'hidden',
       width: '100%',
       height: '100%',
     },
@@ -247,11 +265,25 @@ const styles = {
       marginTop: '0!important',
       justifyContent: 'center',
     },
+    subscriberContainerWb: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      justifyContent: 'center',
+      rowGap: '16px',
+      columnGap: '16px',
+      height: '100%',
+    },
     subscriberContainerFull: {
       gap: '10px',
       justifyContent: 'center',
       overflow: 'hidden',
       width: '100%',
+    },
+    subscriberItem: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     subscriber: {
       height: '100%',

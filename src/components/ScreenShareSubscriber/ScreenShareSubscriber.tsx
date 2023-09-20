@@ -51,7 +51,7 @@ const ScreenShareSubscriber = (props: ScreenShareSubscriberProps) => {
         showControls={false}
         streamGuid={participantScreenshare.screenshareGuid || ''}
         resubscribe={true}
-        styles={styles}
+        styles={{ ...styles, backgroundColor: 'unset!important' }}
         videoStyles={{
           objectFit: 'contain',
           height: 'fit-content',
