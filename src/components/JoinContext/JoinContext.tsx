@@ -33,6 +33,7 @@ import { getCurrentEpisode } from '../../services/conference'
 import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
 import { generateFingerprint, Paths, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
+import useQueryParams from '../../hooks/useQueryParams'
 
 function useUID() {
   const [id] = React.useState<string | number>(() => {
@@ -64,6 +65,7 @@ const JoinProvider = (props: JoinContextProps) => {
 
   const uid = useUID()
   const params = useParams()
+  const query = useQueryParams()
   const navigate = useNavigate()
   const { getCookies, removeCookie } = useCookies(['account', 'userAccount'])
 
@@ -93,6 +95,7 @@ const JoinProvider = (props: JoinContextProps) => {
   // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
   const [isAnonymousParticipant, setIsAnonymousParticipant] = React.useState<boolean>(false)
+  const [isMixerParticipant, setIsMixerParticipant] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     const cookies = getCookies()
@@ -112,6 +115,15 @@ const JoinProvider = (props: JoinContextProps) => {
     const isAnon = exec !== null
     setIsAnonymousParticipant(isAnon)
   }, [path])
+
+  React.useEffect(() => {
+    if (query.get('mixer')) {
+      const value = query.get('mixer') === 'true'
+      setIsMixerParticipant(value)
+    } else {
+      setIsMixerParticipant(false)
+    }
+  }, [query])
 
   React.useEffect(() => {
     if (params && params.token) {
@@ -288,6 +300,7 @@ const JoinProvider = (props: JoinContextProps) => {
     seriesEpisode,
     conferenceData,
     isAnonymousParticipant,
+    isMixerParticipant,
     // conferenceLocked,
     cohostsList,
 

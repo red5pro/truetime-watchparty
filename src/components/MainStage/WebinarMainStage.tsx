@@ -85,6 +85,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     nonFatalError,
     showBanConfirmation,
     isAnonymous,
+    isMixer,
 
     setShowBanConfirmation,
     onContinueBan,
@@ -150,6 +151,12 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
       onAnonymousEntry()
     }
   }, [isAnonymous])
+
+  React.useEffect(() => {
+    if (isMixer) {
+      console.log('[NOTE] Participant is recognized as a Mixer Instance.')
+    }
+  }, [isMixer])
 
   const onShareScreen = (value: boolean) => {
     if (value) {
@@ -230,7 +237,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           <ScreenSharePublisher
             owner={getStreamGuid() || ''}
             useStreamManager={USE_STREAM_MANAGER}
-            preferWhipWhep={PREFER_WHIP_WHEP}
+            preferWhipWhep={isMixer ? false : PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
             isSharingScreen={screenShare}
@@ -245,7 +252,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               key={sc.screenshareGuid}
               participantScreenshare={sc}
               useStreamManager={USE_STREAM_MANAGER}
-              preferWhipWhep={PREFER_WHIP_WHEP}
+              preferWhipWhep={isMixer ? false : PREFER_WHIP_WHEP}
               host={STREAM_HOST}
               styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
               videoStyles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
@@ -292,7 +299,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 key="publisher"
                 ref={publisherRef}
                 useStreamManager={USE_STREAM_MANAGER}
-                preferWhipWhep={PREFER_WHIP_WHEP}
+                preferWhipWhep={isMixer ? false : PREFER_WHIP_WHEP}
                 host={STREAM_HOST}
                 streamGuid={getStreamGuid() || ''}
                 stream={mediaStream}
@@ -323,7 +330,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                 videoStyles={layout.style.subscriberVideo}
                 host={STREAM_HOST}
                 useStreamManager={USE_STREAM_MANAGER}
-                preferWhipWhep={PREFER_WHIP_WHEP}
+                preferWhipWhep={isMixer ? false : PREFER_WHIP_WHEP}
                 menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
                 onSubscribeStart={onRelayout}
                 isLayoutFullscreen={layout.layout === Layout.FULLSCREEN}
@@ -413,15 +420,16 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                   </IconButton>
                 </Tooltip>
               )}
-
-              <CustomButton
-                size={BUTTONSIZE.SMALL}
-                buttonType={BUTTONTYPE.LEAVE}
-                startIcon={<LogOutIcon />}
-                onClick={onLeave}
-              >
-                Leave
-              </CustomButton>
+              {!isMixer && (
+                <CustomButton
+                  size={BUTTONSIZE.SMALL}
+                  buttonType={BUTTONTYPE.LEAVE}
+                  startIcon={<LogOutIcon />}
+                  onClick={onLeave}
+                >
+                  Leave
+                </CustomButton>
+              )}
             </Grid>
           </Grid>
         )}
@@ -535,7 +543,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
             key="publisher"
             ref={publisherRef}
             useStreamManager={USE_STREAM_MANAGER}
-            preferWhipWhep={PREFER_WHIP_WHEP}
+            preferWhipWhep={isMixer ? false : PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             streamGuid={getStreamGuid()}
             stream={mediaStream}

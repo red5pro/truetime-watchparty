@@ -69,6 +69,7 @@ const MainStageWrapper = () => {
     getStreamGuid,
     lock,
     unlock,
+    isMixerParticipant,
     isAnonymousParticipant,
     cohostsList,
   } = useJoinContext()
@@ -104,11 +105,16 @@ const MainStageWrapper = () => {
       'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
   })
   const [isAnonymous, setIsAnonymous] = React.useState<boolean>(false)
+  const [isMixer, setIsMixer] = React.useState<boolean>(false)
   const [conferenceId, setConferenceId] = React.useState<any | undefined>(undefined)
 
   React.useEffect(() => {
     setIsAnonymous(isAnonymousParticipant)
   }, [isAnonymousParticipant])
+
+  React.useEffect(() => {
+    setIsMixer(isMixerParticipant)
+  }, [isMixerParticipant])
 
   React.useEffect(() => {
     // Handler to call on window resize
@@ -507,6 +513,7 @@ const MainStageWrapper = () => {
     nonFatalError,
     showBanConfirmation,
     isAnonymous,
+    isMixer,
 
     onLayoutSelect,
     calculateGrid,

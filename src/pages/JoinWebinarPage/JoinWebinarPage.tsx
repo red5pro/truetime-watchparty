@@ -74,7 +74,8 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 }
 
 const JoinWebinarPage = () => {
-  const { loading, error, joinToken, nickname, updateNickname, isAnonymousParticipant } = useJoinContext()
+  const { loading, error, joinToken, nickname, updateNickname, isMixerParticipant, isAnonymousParticipant } =
+    useJoinContext()
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
@@ -205,12 +206,12 @@ const JoinWebinarPage = () => {
             <JoinSectionAVSetup onBack={onReturnToNickname} onJoin={onJoin} />
           </Box>
         )}
-        {!loading && currentSection === Section.WatchParty && !isAnonymousParticipant && (
+        {!loading && currentSection === Section.WatchParty && !isMixerParticipant && (
           <MainStageWithChatBox>
             <MainStageWrapper />
           </MainStageWithChatBox>
         )}
-        {!loading && currentSection === Section.WatchParty && isAnonymousParticipant && (
+        {!loading && currentSection === Section.WatchParty && isMixerParticipant && (
           // <MainStageWithChatBox>
           <MainStageWrapper />
           // </MainStageWithChatBox>
