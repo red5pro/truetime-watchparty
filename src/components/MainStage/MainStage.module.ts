@@ -63,6 +63,7 @@ const useStyles = makeStyles()((theme: any) => {
       zIndex: 1,
     },
     organizerTopControls: {
+      position: 'absolute',
       display: 'flex',
       width: '100%',
       maxHeight: '5rem',

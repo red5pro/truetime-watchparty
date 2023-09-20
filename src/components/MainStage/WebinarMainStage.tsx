@@ -255,7 +255,10 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               preferWhipWhep={isMixer ? false : PREFER_WHIP_WHEP}
               host={STREAM_HOST}
               styles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
-              videoStyles={{ ...layout.style.subscriberMainVideoContainer, height: '100%' }}
+              videoStyles={{
+                ...layout.style.subscriberMainVideoContainer,
+                height: '100%',
+              }}
             />
           ))}
         </Box>
@@ -265,9 +268,16 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
         ref={gridContainerRef}
         id="participants-video-container"
         sx={isAnonymous ? layout.style.subscriberListWbAnon : layout.style.subscriberListWb}
-        style={{
-          justifyItems: 'center',
-        }}
+        style={
+          layout.layout === Layout.FULLSCREEN
+            ? { justifyItems: 'center' }
+            : {
+                justifyItems: 'center',
+                position: 'absolute',
+                left: 0,
+                top: 0,
+              }
+        }
         m={1}
       >
         {/* <Grid

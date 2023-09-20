@@ -54,10 +54,11 @@ const ScreenShareSubscriber = (props: ScreenShareSubscriberProps) => {
         styles={{ ...styles, backgroundColor: 'unset!important' }}
         videoStyles={{
           objectFit: 'contain',
+          width: 'fit-content',
           height: 'fit-content',
           maxHeight: '100%',
-          width: '100%',
           borderRadius: '20px',
+          overflow: 'hidden',
           margin: 'auto',
         }}
         onSubscribeStart={onSubscribeStart}
