@@ -41,6 +41,7 @@ import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import PasswordField from '../../Form/PasswordField'
 import { validationSchema } from '../../../utils/accountUtils'
 import { AccountCredentials } from '../../../models/AccountCredentials'
+import { isWatchParty } from '../../../settings/variables'
 import ResetPassword from './ResetPasswordForm'
 
 const initialValues = {
@@ -165,7 +166,9 @@ const SignInEmail = (props: ISignInEmailProps) => {
               <Box display="flex" flexDirection="column" marginY={4} className={classes.container}>
                 <Typography className={classes.title}>Sign In</Typography>
                 {!(isAdminLoggingIn || isVipLoggingIn) && (
-                  <Typography>Please verify your account before creating a watch party</Typography>
+                  <Typography>{`Please verify your account before creating a ${
+                    isWatchParty ? 'Watch Party' : 'Webinar'
+                  }`}</Typography>
                 )}
                 {isAdminLoggingIn ? (
                   <Field
