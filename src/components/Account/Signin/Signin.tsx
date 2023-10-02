@@ -71,7 +71,7 @@ const Signin = (props: ISignInProps) => {
           <Typography marginY={1}>
             {isAdminLoggingIn
               ? 'Login with your admin credentials'
-              : 'Create an account to start hosting watchparties!'}
+              : `Create an account to start hosting ${isWatchParty ? 'watchparties' : 'webinars'}!`}
           </Typography>
           <CustomButton
             fullWidth
