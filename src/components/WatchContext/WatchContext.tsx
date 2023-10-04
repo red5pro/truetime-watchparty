@@ -108,6 +108,8 @@ const listReducer = (state: any, action: any) => {
       return { ...state, error: action.payload }
     case 'CONFERENCE_CLOSE':
       return { ...state, closed: true, list: [], vip: undefined }
+    default:
+      return state
   }
 }
 
