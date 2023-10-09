@@ -96,6 +96,7 @@ const JoinProvider = (props: JoinContextProps) => {
 
   const [isAnonymousParticipant, setIsAnonymousParticipant] = React.useState<boolean>(false)
   const [isMixerParticipant, setIsMixerParticipant] = React.useState<boolean>(false)
+  const [mixerConfig, setMixerConfig] = React.useState<any>(null)
 
   React.useEffect(() => {
     const cookies = getCookies()
@@ -124,6 +125,15 @@ const JoinProvider = (props: JoinContextProps) => {
       setIsMixerParticipant(false)
     }
   }, [query])
+
+  React.useEffect(() => {
+    if (isMixerParticipant && !mixerConfig) {
+      setMixerConfig({
+        host: query.get('host'),
+        streamName: query.get('streamName'),
+      })
+    }
+  }, [query, isMixerParticipant])
 
   React.useEffect(() => {
     if (params && params.token) {
@@ -301,6 +311,7 @@ const JoinProvider = (props: JoinContextProps) => {
     conferenceData,
     isAnonymousParticipant,
     isMixerParticipant,
+    mixerConfiguration: mixerConfig,
     // conferenceLocked,
     cohostsList,
 

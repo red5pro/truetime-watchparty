@@ -42,6 +42,8 @@ import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import WebinarMainStage from './WebinarMainStage'
 import MainStage from './MainStage'
 import { IMainStageWrapperProps } from '.'
+import { useRecordRequest } from '../../hooks/useRecordRequest'
+import { RecordRequest } from '../../utils/originUtils'
 
 export enum Layout {
   STAGE = 1,
@@ -71,6 +73,7 @@ const MainStageWrapper = () => {
     unlock,
     isMixerParticipant,
     isAnonymousParticipant,
+    mixerConfiguration,
     cohostsList,
   } = useJoinContext()
   const { mediaStream } = useMediaContext()
@@ -108,6 +111,8 @@ const MainStageWrapper = () => {
   const [isMixer, setIsMixer] = React.useState<boolean>(false)
   const [conferenceId, setConferenceId] = React.useState<any | undefined>(undefined)
 
+  const { start: startRecord, stop: stopRecord } = useRecordRequest()
+
   React.useEffect(() => {
     setIsAnonymous(isAnonymousParticipant)
   }, [isAnonymousParticipant])
@@ -115,6 +120,12 @@ const MainStageWrapper = () => {
   React.useEffect(() => {
     setIsMixer(isMixerParticipant)
   }, [isMixerParticipant])
+
+  React.useEffect(() => {
+    if (mixerConfiguration) {
+      startRecord(mixerConfiguration as RecordRequest)
+    }
+  }, [mixerConfiguration])
 
   React.useEffect(() => {
     // Handler to call on window resize
@@ -127,7 +138,12 @@ const MainStageWrapper = () => {
     // Call handler right away so state gets updated with initial window size
     handleResize()
     // Remove event listener on cleanup
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      if (stopRecord) {
+        stopRecord()
+      }
+    }
   }, [])
 
   React.useEffect(() => {
