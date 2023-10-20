@@ -74,6 +74,7 @@ const MainStageWrapper = () => {
     isMixerParticipant,
     isAnonymousParticipant,
     mixerConfiguration,
+    singularLiveToken,
     cohostsList,
   } = useJoinContext()
   const { mediaStream } = useMediaContext()
@@ -536,6 +537,7 @@ const MainStageWrapper = () => {
     showBanConfirmation,
     isAnonymous,
     isMixer,
+    singularLiveToken,
 
     onLayoutSelect,
     calculateGrid,

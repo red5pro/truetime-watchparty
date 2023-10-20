@@ -97,6 +97,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const [isAnonymousParticipant, setIsAnonymousParticipant] = React.useState<boolean>(false)
   const [isMixerParticipant, setIsMixerParticipant] = React.useState<boolean>(false)
   const [mixerConfig, setMixerConfig] = React.useState<any>(null)
+  const [singularLiveToken, setSingularLiveToken] = React.useState<string | null>(null)
 
   React.useEffect(() => {
     const cookies = getCookies()
@@ -123,6 +124,10 @@ const JoinProvider = (props: JoinContextProps) => {
       setIsMixerParticipant(value)
     } else {
       setIsMixerParticipant(false)
+    }
+
+    if (query.get('sl_token')) {
+      setSingularLiveToken(query.get('sl_token'))
     }
   }, [query])
 
@@ -312,6 +317,7 @@ const JoinProvider = (props: JoinContextProps) => {
     isAnonymousParticipant,
     isMixerParticipant,
     mixerConfiguration: mixerConfig,
+    singularLiveToken,
     // conferenceLocked,
     cohostsList,
 

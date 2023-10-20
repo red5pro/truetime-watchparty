@@ -74,7 +74,17 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 }
 
 const JoinPage = () => {
-  const { loading, error, joinToken, seriesEpisode, conferenceData, nickname, updateNickname } = useJoinContext()
+  const {
+    loading,
+    error,
+    joinToken,
+    seriesEpisode,
+    conferenceData,
+    nickname,
+    updateNickname,
+    isMixerParticipant,
+    isAnonymousParticipant,
+  } = useJoinContext()
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
@@ -114,6 +124,12 @@ const JoinPage = () => {
       clearMediaContext()
     }
   }, [currentSection])
+
+  React.useEffect(() => {
+    if (isAnonymousParticipant && currentSection !== Section.WatchParty) {
+      setCurrentSection(Section.WatchParty)
+    }
+  }, [isAnonymousParticipant, currentSection])
 
   const clearMediaContext = () => {
     if (mediaContext && mediaContext.mediaStream) {
@@ -220,10 +236,15 @@ const JoinPage = () => {
             <JoinSectionAVSetup onBack={onReturnToNickname} onJoin={onJoin} />
           </Box>
         )}
-        {!loading && conferenceData && currentSection === Section.WatchParty && (
+        {!loading && currentSection === Section.WatchParty && !isMixerParticipant && (
           <MainStageWithChatBox>
             <MainStageWrapper />
           </MainStageWithChatBox>
+        )}
+        {!loading && currentSection === Section.WatchParty && isMixerParticipant && (
+          // <MainStageWithChatBox>
+          <MainStageWrapper />
+          // </MainStageWithChatBox>
         )}
 
         <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>

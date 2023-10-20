@@ -51,6 +51,7 @@ export interface IMainStageWrapperProps {
   showBanConfirmation: Participant | undefined
   isAnonymous: boolean
   isMixer: boolean
+  singularLiveToken?: string
 
   onLayoutSelect: (layout: number) => void
   getStreamGuid: () => string | null

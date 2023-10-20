@@ -57,6 +57,7 @@ import { IMainStageWrapperProps } from '.'
 import ScreenSharePublisher from '../ScreenShare/ScreenSharePublisher'
 import ScreenShareSubscriber from '../ScreenShareSubscriber/ScreenShareSubscriber'
 import { useWindowSize } from '../../hooks/useWindowSize'
+import SingularLiveOverlay from '../SingularLiveOverlay/SingularLiveOverlay'
 
 const ShareLinkModal = React.lazy(() => import('../Modal/ShareLinkModal'))
 const AddCoHostsModal = React.lazy(() => import('../Modal/AddCoHostModal/AddCoHostsModal'))
@@ -86,6 +87,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     showBanConfirmation,
     isAnonymous,
     isMixer,
+    singularLiveToken,
 
     setShowBanConfirmation,
     onContinueBan,
@@ -595,6 +597,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           onDeny={() => setShowBanConfirmation(undefined)}
         />
       )}
+      {singularLiveToken && <SingularLiveOverlay token={singularLiveToken} />}
     </Box>
   )
 }
