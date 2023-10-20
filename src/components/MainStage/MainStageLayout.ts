@@ -116,7 +116,7 @@ const styles = {
     },
     subscriberContainer: {
       display: 'flex',
-      overflowY: 'scroll',
+      overflowY: 'hidden',
       // flexGrow: 9,
       flexDirection: 'column',
       aspectRatio: '0.25',
@@ -137,7 +137,7 @@ const styles = {
       rowGap: '16px',
       columnGap: '16px',
       height: '100%',
-      overflowY: 'scroll',
+      overflowY: 'hidden',
       flexDirection: 'row',
       alignContent: 'flex-start',
     },
@@ -382,7 +382,7 @@ const styles = {
     },
     subscriberContainer: {
       display: 'flex',
-      overflowY: 'auto',
+      overflowY: 'hidden',
       // flexGrow: 9,
       flexDirection: 'column',
       width: '144px',
