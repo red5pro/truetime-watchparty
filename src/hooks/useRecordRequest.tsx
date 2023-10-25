@@ -1,11 +1,21 @@
 import React from 'react'
-import { getOrigin } from '../utils/streamManagerUtils'
-import { RecordRequest, recordLiveStream } from '../utils/originUtils'
-import { DEFAULT_ORIGIN_ACCESS_TOKEN, STREAM_HOST } from '../settings/variables'
+import { forward, getOrigin } from '../utils/streamManagerUtils'
+import { STREAM_HOST } from '../settings/variables'
 
 const DELAY = 5000
-const context = 'live'
+const defaultContext = 'live'
 
+export interface RecordRequest {
+  host: string
+  streamName: string
+  accessToken: string
+  context: string | null
+}
+
+/**
+ * Hook to start and stop a recording request.
+ * @returns
+ */
 export function useRecordRequest() {
   let cancelled = false
   const timerRef = React.useRef<any>(null)
@@ -14,19 +24,25 @@ export function useRecordRequest() {
     if (!timerRef.current) {
       return
     }
-    const { host, accessToken, streamName } = request
+    const { host, context, streamName, accessToken } = request
+    const endpoint = `http://${host}:5080/api/v1/applications/${
+      context || defaultContext
+    }/streams/${streamName}/action/startrecord?accessToken=${accessToken}`
+    const encoded = endpoint
+      .split('')
+      .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
+      .join('')
+      .toUpperCase()
     try {
-      if (host) {
-        await recordLiveStream(host, context, streamName, accessToken || DEFAULT_ORIGIN_ACCESS_TOKEN)
-        clearTimeout(timerRef.current)
-        timerRef.current = undefined
-      } else {
-        const response = await getOrigin(STREAM_HOST, context, streamName)
-        const { serverAddress } = response
-        await recordLiveStream(serverAddress, context, streamName, accessToken || DEFAULT_ORIGIN_ACCESS_TOKEN)
-        clearTimeout(timerRef.current)
-        timerRef.current = undefined
+      clearTimeout(timerRef.current)
+      const result = await forward(STREAM_HOST, encoded)
+      if (!result || result.status !== 'success') {
+        // Already started...
+        if (result.code !== 409) {
+          throw new Error(result.status)
+        }
       }
+      timerRef.current = undefined
     } catch (e) {
       console.error(e)
       if (cancelled) {

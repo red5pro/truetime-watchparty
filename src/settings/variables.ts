@@ -27,7 +27,6 @@ import { AccountCredentials } from '../models/AccountCredentials'
 import { WebbAppMode } from '../utils/variableUtils'
 
 export const USE_LOCAL_SERVICES = false
-export const DEFAULT_ORIGIN_ACCESS_TOKEN = 'abc123'
 
 export const SERVER_HOST = process.env.REACT_APP_SERVER_HOST || 'localhost'
 export const API_SERVER_HOST = process.env.REACT_APP_API_SERVER_HOST || 'localhost'

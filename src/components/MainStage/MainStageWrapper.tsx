@@ -42,8 +42,7 @@ import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import WebinarMainStage from './WebinarMainStage'
 import MainStage from './MainStage'
 import { IMainStageWrapperProps } from '.'
-import { useRecordRequest } from '../../hooks/useRecordRequest'
-import { RecordRequest } from '../../utils/originUtils'
+import { RecordRequest, useRecordRequest } from '../../hooks/useRecordRequest'
 
 export enum Layout {
   STAGE = 1,
@@ -124,7 +123,11 @@ const MainStageWrapper = () => {
 
   React.useEffect(() => {
     if (mixerConfiguration) {
-      startRecord(mixerConfiguration as RecordRequest)
+      if (mixerConfiguration.host && mixerConfiguration.streamName && mixerConfiguration.accessToken) {
+        startRecord(mixerConfiguration as RecordRequest)
+      } else {
+        setNonFatalError('Could not start recoding. Request requires host, streamName query parameters.')
+      }
     }
   }, [mixerConfiguration])
 

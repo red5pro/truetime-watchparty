@@ -53,6 +53,20 @@ const getVODOrigins = async (host: string, context: string, name: string, access
   return origins
 }
 
+const parseForwardResponse = async (response: any) => {
+  let json
+  try {
+    const txt = await response.text()
+    json = JSON.parse(txt)
+  } catch (e) {
+    json = await response.json()
+  }
+  if (json.errorMessage) {
+    throw new Error(json.errorMessage)
+  }
+  return json
+}
+
 export const getOrigin = async (host: string, context: string, streamName: string, transcode = false) => {
   let url = `https://${host}/streammanager/api/4.0/event/${context}/${streamName}?action=broadcast`
   if (transcode) {
@@ -152,4 +166,17 @@ export const getVODPlaylists = async (host: string, context: string, useCloud = 
     }
   }
   return vods
+}
+
+/**
+ *
+ * @param host Request to forward a command along to the origin through a stream manager proxy.
+ * @param hex String Hex Encoded URL command.
+ * @returns Object
+ */
+export const forward = async (host: string, hex: string) => {
+  const url = `https://${host}/streammanager/forward?target=${hex}`
+  const result = await fetch(url)
+  const json = await parseForwardResponse(result)
+  return json
 }

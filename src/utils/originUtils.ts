@@ -1,11 +1,10 @@
-export interface RecordRequest {
-  host: string | null
-  accessToken: string | null
-  streamName: string
-}
-
 export const recordLiveStream = async (host: string, context: string, streamName: string, accessToken: string) => {
-  const url = `http://${host}:5080/api/v1/applications/${context}/streams/${streamName}/action/startrecord?accessToken=${accessToken}`
+  const endpoint = `http://${host}:5080/api/v1/applications/${context}/streams/${streamName}/action/startrecord?accessToken=${accessToken}`
+  const encoded = endpoint
+    .split('')
+    .map((c) => c.charCodeAt(0).toString(16).padStart(2, '0'))
+    .join('')
+  const url = encoded.toUpperCase()
   try {
     const response = await fetch(url, { method: 'GET' })
     if (response.status >= 200 || response.status < 300) {

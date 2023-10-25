@@ -30,7 +30,7 @@ import useCookies from '../../hooks/useCookies'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { getCurrentEpisode } from '../../services/conference'
-import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
+import { FORCE_LIVE_CONTEXT, SM_ACCESS_TOKEN } from '../../settings/variables'
 import { generateFingerprint, Paths, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 import useQueryParams from '../../hooks/useQueryParams'
@@ -97,6 +97,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const [isAnonymousParticipant, setIsAnonymousParticipant] = React.useState<boolean>(false)
   const [isMixerParticipant, setIsMixerParticipant] = React.useState<boolean>(false)
   const [mixerConfig, setMixerConfig] = React.useState<any>(null)
+  const [isRecordRequested, setIsRecordRequested] = React.useState<boolean>(false)
   const [singularLiveToken, setSingularLiveToken] = React.useState<string | null>(null)
 
   React.useEffect(() => {
@@ -122,6 +123,10 @@ const JoinProvider = (props: JoinContextProps) => {
     if (query.get('mixer')) {
       const value = query.get('mixer') === 'true'
       setIsMixerParticipant(value)
+      if (value) {
+        const doRecord = query.get('record') === 'true'
+        setIsRecordRequested(doRecord)
+      }
     } else {
       setIsMixerParticipant(false)
     }
@@ -132,13 +137,14 @@ const JoinProvider = (props: JoinContextProps) => {
   }, [query])
 
   React.useEffect(() => {
-    if (isMixerParticipant && !mixerConfig) {
+    if (isMixerParticipant && isRecordRequested && !mixerConfig) {
       setMixerConfig({
         host: query.get('host'),
         streamName: query.get('streamName'),
+        accessToken: query.get('accessToken') || SM_ACCESS_TOKEN,
       })
     }
-  }, [query, isMixerParticipant])
+  }, [query, isMixerParticipant, isRecordRequested])
 
   React.useEffect(() => {
     if (params && params.token) {
@@ -317,6 +323,7 @@ const JoinProvider = (props: JoinContextProps) => {
     isAnonymousParticipant,
     isMixerParticipant,
     mixerConfiguration: mixerConfig,
+    isRecordRequested,
     singularLiveToken,
     // conferenceLocked,
     cohostsList,
