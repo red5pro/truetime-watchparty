@@ -40,7 +40,6 @@ const useStyles = makeStyles()((theme: any) => {
       backgroundColor: '#303030',
       padding: '20px',
       borderRadius: '24px',
-      overflow: 'scroll',
     },
     itemButton: {},
     itemDisplayName: {
