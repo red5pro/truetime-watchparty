@@ -9,6 +9,11 @@ import Loading from '../../components/Common/Loading/Loading'
 
 const mp4Reg = /.*\.mp4/gi
 
+const isMixedContent = (url: string) => {
+  const origin = window.location.origin
+  return origin && origin.startsWith('https:') && url.startsWith('http:')
+}
+
 const WatchVODPage = () => {
   const query = useQueryParams()
   const navigate = useNavigate()
@@ -29,12 +34,12 @@ const WatchVODPage = () => {
     if (query.get('url')) {
       if (!streamUrl) {
         try {
-          let url = decodeURIComponent(query.get('url') as string)
+          const url = decodeURIComponent(query.get('url') as string)
           // Debugging. Load Big Buck Bunny for CORS.
           // const debug = 'vid_bigbuckbunny.mp4'
           // const debug = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-          const debug = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-          url = /^http:/.exec(url) ? debug : url
+          // const debug = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+          // url = /^http:/.exec(url) ? debug : url
           setStreamUrl(url)
         } catch (e) {
           console.error(e)
@@ -68,8 +73,14 @@ const WatchVODPage = () => {
           if (data.fatal) {
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
-                // try to recover network error
-                hls.startLoad()
+                if (isMixedContent(streamUrl)) {
+                  setError(
+                    'Mixed Content is not supported. The VOD files need to reside on a secure endpoint served over HTTPS.'
+                  )
+                } else {
+                  // try to recover network error
+                  hls.startLoad()
+                }
                 break
               case Hls.ErrorTypes.MEDIA_ERROR:
                 if (requiresSwapOnError) {
