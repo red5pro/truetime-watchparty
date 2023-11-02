@@ -5,7 +5,7 @@
     "webappName": "watchparty",
     "webappSource": "./",
     "buildCommand": "npm install && BUMP=none npm run build:webapp:watchparty",
-    "webappOutput": "dist"
+    "webappOutput": "build"
   },
   {
     "title": "TrueTime Webinar",
@@ -13,6 +13,6 @@
     "webappName": "webinar",
     "webappSource": "./",
     "buildCommand": "npm install && BUMP=none npm run build:webapp:webinar",
-    "webappOutput": "dist"
+    "webappOutput": "build"
   }
 ]
