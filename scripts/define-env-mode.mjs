@@ -11,7 +11,7 @@ const inject = async () => {
   const output = {
     files: './.env.example',
     from: /BUILD_PATH=.*/g,
-    to: `BUILD_PATH="/${mode}"`,
+    to: `BUILD_PATH="./${mode}"`,
   }
 
   console.log(`Defining mode: ${options.to}`)
