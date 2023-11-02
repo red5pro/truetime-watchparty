@@ -1,0 +1,18 @@
+[
+  {
+    "title": "TrueTime WatchParty",
+    "webappParentDirectory": "truetime",
+    "webappName": "watchparty",
+    "webappSource": "./",
+    "buildCommand": "npm install && BUMP=none npm run build:webapp:watchparty",
+    "webappOutput": "dist"
+  },
+  {
+    "title": "TrueTime Webinar",
+    "webappParentDirectory": "truetime",
+    "webappName": "webinar",
+    "webappSource": "./",
+    "buildCommand": "npm install && BUMP=none npm run build:webapp:webinar",
+    "webappOutput": "dist"
+  }
+]
