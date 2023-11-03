@@ -11,7 +11,7 @@ jobs:
       runs-on: ubuntu-latest
       strategy:
         matrix:
-          node-version: [14.x, 16.x, 18.x]
+          node-version: [18.x]
       steps:
       - uses: actions/checkout@v3
       - name: build_watchparty
@@ -19,13 +19,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm run build:webapp:watchparty
+      - run: npm install && npm run build:webapp:watchparty
       - name: build_webinar
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm run build:webapp:webinar
+      - run: npm install && npm run build:webapp:webinar
       - name: release
         uses: actions/create-release@v1
         id: create_release
