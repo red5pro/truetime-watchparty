@@ -4,7 +4,7 @@
     "webappParentDirectory": "truetime",
     "webappName": "watchparty",
     "webappSource": "./",
-    "buildCommand": "npm install && BUMP=none npm run build:webapp:watchparty",
+    "buildCommand": "wget https://github.com/red5pro/truetime-watchparty/releases/latest/download/watchparty.zip && unzip watchparty.zip && mv build/watchparty ./ && rm -rf build && rm -f watchparty.zip",
     "webappOutput": "watchparty"
   },
   {
@@ -12,7 +12,7 @@
     "webappParentDirectory": "truetime",
     "webappName": "webinar",
     "webappSource": "./",
-    "buildCommand": "npm install && BUMP=none npm run build:webapp:webinar",
+    "buildCommand": "wget https://github.com/red5pro/truetime-watchparty/releases/latest/download/webinar.zip && unzip webinar.zip && mv build/webinar ./ && rm -rf build && rm -f webinar.zip",
     "webappOutput": "webinar"
   }
 ]
