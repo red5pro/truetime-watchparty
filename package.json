@@ -69,6 +69,8 @@
     "build:demo": "env-cmd -f .env-demo react-scripts build",
     "build:webapp:watchparty": "env-cmd -f .env.example react-scripts build",
     "build:webapp:webinar": "env-cmd -f .env.example react-scripts build",
+    "postbuild:webapp:watchparty": "zip -9 -y -r ./build/watchparty.zip ./build/watchparty",
+    "postbuild:webapp:webinar": "zip -9 -y -r ./build/webinar.zip ./build/webinar",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint:check": "eslint src/**/*.{tsx,ts,js}",
