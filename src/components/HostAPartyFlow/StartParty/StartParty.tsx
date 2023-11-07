@@ -97,7 +97,7 @@ const StartParty = (props: IStartPartyProps) => {
         </Box>
       )}
       {isWatchParty && (
-        <img className={classes.image} alt="Start Party Main Image" src="../../../assets/images/BoxMainImage.png"></img>
+        <img className={classes.image} alt="Start Party Main Image" src="assets/images/BoxMainImage.png"></img>
       )}
     </Box>
   )

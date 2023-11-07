@@ -58,7 +58,7 @@ const VipView = (props: IVipViewProps) => {
         )}
       </Box>
       <Box sx={{ width: '45%' }}>
-        <img alt="Vip View Main Image" src="../../../assets/images/BoxingSession.png" style={{ maxWidth: '70%' }}></img>
+        <img alt="Vip View Main Image" src="assets/images/BoxingSession.png" style={{ maxWidth: '70%' }}></img>
       </Box>
     </Box>
   )

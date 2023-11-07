@@ -94,7 +94,7 @@ const PartyEndedPage = () => {
         />
       )}
       <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
-        <img alt="Party Ended Main Image" src="../../assets/images/BoxMainImage.png"></img>
+        <img alt="Party Ended Main Image" src="assets/images/BoxMainImage.png"></img>
       </Box>
     </Box>
   )

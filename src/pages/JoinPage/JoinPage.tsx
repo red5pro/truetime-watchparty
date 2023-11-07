@@ -229,7 +229,7 @@ const JoinPage = () => {
         <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
           <img
             alt="Join a Party Main Image"
-            src="../../assets/images/BoxMainImage.png"
+            src="assets/images/BoxMainImage.png"
             style={{
               width: '100%',
               opacity: currentSection === Section.Nickname ? 0.5 : 1,

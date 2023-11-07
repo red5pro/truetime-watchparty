@@ -11,12 +11,12 @@ const inject = async () => {
   const output = {
     files: './.env.example',
     from: /BUILD_PATH=.*/g,
-    to: `BUILD_PATH="./build/${mode}"`,
+    to: `BUILD_PATH="./build/truetime-${mode}"`,
   }
   const basename = {
     files: './.env.example',
     from: /REACT_APP_BASENAME=.*/g,
-    to: `REACT_APP_BASENAME="./truetime/${mode}"`,
+    to: `REACT_APP_BASENAME=truetime-${mode}"`,
   }
 
   console.log(`Defining mode: ${options.to}`)

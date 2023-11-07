@@ -113,11 +113,7 @@ const ThankYouPage = () => {
       )}
       {isWatchParty && (
         <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: '20%' }}>
-          <img
-            alt="Thank you Page Main Image"
-            src="../../assets/images/BoxingSession.png"
-            style={{ maxWidth: '70%' }}
-          ></img>
+          <img alt="Thank you Page Main Image" src="assets/images/BoxingSession.png" style={{ maxWidth: '70%' }}></img>
         </Box>
       )}
     </Box>

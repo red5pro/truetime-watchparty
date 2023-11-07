@@ -42,8 +42,8 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/watchparty.zip
-          asset_name: watchparty.zip
+          asset_path: ./build/truetime-watchparty.zip
+          asset_name: truetime-watchparty.zip
           asset_content_type: application/zip
       - name: upload webinar
         uses: actions/upload-release-asset@v1
@@ -51,6 +51,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/webinar.zip
-          asset_name: webinar.zip
+          asset_path: ./build/truetime-webinar.zip
+          asset_name: truetime-webinar.zip
           asset_content_type: application/zip
