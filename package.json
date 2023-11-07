@@ -2,6 +2,7 @@
   "name": "truetime-watchparty",
   "version": "0.2.20",
   "private": false,
+  "homepage": "./",
   "keywords": [
     "Red5",
     "Red5 Pro",

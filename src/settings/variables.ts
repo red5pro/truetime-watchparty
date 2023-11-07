@@ -40,6 +40,7 @@ export const API_SOCKET_HOST = USE_LOCAL_SERVICES
   ? 'ws://localhost:8001'
   : `wss://${API_SERVER_HOST}/conference-api/1.0/ws/conference`
 export const STREAM_HOST = USE_LOCAL_SERVICES ? 'localhost' : SERVER_HOST
+export const BASENAME = process.env.REACT_APP_BASENAME || '/'
 
 export const DEFAULT_CONSTRAINTS = {
   audio: true,

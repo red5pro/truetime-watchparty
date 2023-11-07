@@ -13,12 +13,18 @@ const inject = async () => {
     from: /BUILD_PATH=.*/g,
     to: `BUILD_PATH="./build/${mode}"`,
   }
+  const basename = {
+    files: './.env.example',
+    from: /REACT_APP_BASENAME=.*/g,
+    to: `REACT_APP_BASENAME="./truetime/${mode}"`,
+  }
 
   console.log(`Defining mode: ${options.to}`)
   try {
     const results = await replace(options)
     const outResults = await replace(output)
-    console.log('Replacement results:', results, outResults)
+    const basenameResults = await replace(basename)
+    console.log('Replacement results:', results, outResults, basenameResults)
   } catch (error) {
     console.error('Error occurred:', error)
   }
