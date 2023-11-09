@@ -16,7 +16,7 @@ const inject = async () => {
   const publicURL = {
     files: './.env.example',
     from: /PUBLIC_URL=.*/g,
-    to: `PUBLIC_URL=/truetime-${mode}"`,
+    to: `PUBLIC_URL="/truetime-${mode}"`,
   }
   const basename = {
     files: './.env.example',
