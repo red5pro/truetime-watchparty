@@ -35,6 +35,7 @@ import useStyles from './StartParty.module'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import Loading from '../../Common/Loading/Loading'
 import { isWatchParty } from '../../../settings/variables'
+import { assetBasepath } from '../../../utils/pathUtils'
 
 const useEventContext = () => React.useContext(EventContext.Context)
 
@@ -97,7 +98,11 @@ const StartParty = (props: IStartPartyProps) => {
         </Box>
       )}
       {isWatchParty && (
-        <img className={classes.image} alt="Start Party Main Image" src="assets/images/BoxMainImage.png"></img>
+        <img
+          className={classes.image}
+          alt="Start Party Main Image"
+          src={`${assetBasepath}assets/images/BoxMainImage.png`}
+        ></img>
       )}
     </Box>
   )
