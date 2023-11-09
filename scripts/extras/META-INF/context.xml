@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="truetime-webinar">
+<Context path="truetime-watchparty">
   <Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
 </Context>

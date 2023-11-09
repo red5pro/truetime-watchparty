@@ -74,7 +74,8 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 }
 
 const JoinPage = () => {
-  const { loading, error, joinToken, seriesEpisode, conferenceData, nickname, updateNickname } = useJoinContext()
+  const { loading, error, joinToken, seriesEpisode, conferenceData, nickname, updateNickname, isChatEnabled } =
+    useJoinContext()
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
@@ -220,12 +221,16 @@ const JoinPage = () => {
             <JoinSectionAVSetup onBack={onReturnToNickname} onJoin={onJoin} />
           </Box>
         )}
-        {!loading && conferenceData && currentSection === Section.WatchParty && (
+        {!loading && conferenceData && currentSection === Section.WatchParty && isChatEnabled && (
           <MainStageWithChatBox>
             <MainStageWrapper />
           </MainStageWithChatBox>
         )}
-
+        {!loading && conferenceData && currentSection === Section.WatchParty && !isChatEnabled && (
+          <React.Suspense fallback={<Loading />}>
+            <MainStageWrapper />
+          </React.Suspense>
+        )}
         <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
           <img
             alt="Join a Party Main Image"

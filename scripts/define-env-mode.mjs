@@ -21,7 +21,7 @@ const inject = async () => {
   const basename = {
     files: './.env.example',
     from: /REACT_APP_BASENAME=.*/g,
-    to: `REACT_APP_BASENAME=truetime-${mode}"`,
+    to: `REACT_APP_BASENAME="truetime-${mode}"`,
   }
 
   console.log(`Defining mode: ${options.to}`)
