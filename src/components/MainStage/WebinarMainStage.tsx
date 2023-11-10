@@ -439,6 +439,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           direction="row"
           alignItems="bottom"
           spacing={2}
+          style={isChatAllowed ? {} : { justifyContent: 'unset!important' }}
         >
           {publishMediaStream && ENABLE_MUTE_API && (
             <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
