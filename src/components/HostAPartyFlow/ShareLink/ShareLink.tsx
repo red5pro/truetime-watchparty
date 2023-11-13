@@ -43,7 +43,14 @@ const ShareLink = (props: IShareLinkProps) => {
 
   const textLinkRef = React.useRef<HTMLInputElement>(null)
 
-  const linkToCopy = `${location.href}join/${joinToken}`
+  const getCopyLink = () => {
+    const parts = location.href.split('?')
+    if (parts.length > 1) {
+      return [`${parts[0]}join/${joinToken}`, `${parts[1]}`].join('?')
+    }
+    return `${location.href}/join/${joinToken}`
+  }
+  const linkToCopy = getCopyLink()
 
   const copyToClipboard = () => {
     textLinkRef.current?.focus()

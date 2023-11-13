@@ -116,7 +116,7 @@ const styles = {
     },
     subscriberContainer: {
       display: 'flex',
-      overflowY: 'scroll',
+      overflowY: 'auto',
       // flexGrow: 9,
       flexDirection: 'column',
       aspectRatio: '0.25',
@@ -137,7 +137,7 @@ const styles = {
       rowGap: '16px',
       columnGap: '16px',
       height: '100%',
-      overflowY: 'scroll',
+      overflowY: 'auto',
       flexDirection: 'row',
       alignContent: 'flex-start',
     },

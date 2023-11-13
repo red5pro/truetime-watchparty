@@ -45,9 +45,17 @@ const ShareLinkModal = (props: ShareLinkModalProps) => {
   const { classes } = useStyles()
 
   const textLinkRef = React.useRef<HTMLInputElement>(null)
-  const linkToCopy = `${location.origin}/join/${joinToken}`
 
   const [textCopied, setTextCopied] = React.useState<boolean>(false)
+
+  const getCopyLink = () => {
+    const path = location.pathname
+    if (path.match(/\/join\/.*/)) {
+      return `${location.origin}${path}`
+    }
+    return `${location.origin}/join/${joinToken}`
+  }
+  const linkToCopy = getCopyLink()
 
   const copyToClipboard = () => {
     textLinkRef.current?.focus()
