@@ -112,7 +112,7 @@
     "fs-extra": "^11.1.1",
     "husky": "^8.0.1",
     "prettier": "2.7.1",
-    "red5pro-webrtc-sdk": "^11.0.0",
+    "red5pro-webrtc-sdk": "^12.0.0",
     "replace-in-file": "^6.3.5",
     "tss-react": "^3.7.1"
   }
