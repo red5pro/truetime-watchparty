@@ -50,6 +50,7 @@ export interface IMainStageWrapperProps {
   nonFatalError: any
   showBanConfirmation: Participant | undefined
   isAnonymous: boolean
+  isChatAllowed: boolean
 
   onLayoutSelect: (layout: number) => void
   getStreamGuid: () => string | null

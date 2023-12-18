@@ -70,6 +70,7 @@ const MainStageWrapper = () => {
     lock,
     unlock,
     isAnonymousParticipant,
+    isChatEnabled,
     cohostsList,
   } = useJoinContext()
   const { mediaStream } = useMediaContext()
@@ -104,6 +105,7 @@ const MainStageWrapper = () => {
       'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
   })
   const [isAnonymous, setIsAnonymous] = React.useState<boolean>(false)
+  const [isChatAllowed, setIsChatAllowed] = React.useState<boolean>(true)
   const [conferenceId, setConferenceId] = React.useState<any | undefined>(undefined)
 
   React.useEffect(() => {
@@ -224,6 +226,10 @@ const MainStageWrapper = () => {
       })
     }
   }, [maxParticipants])
+
+  React.useEffect(() => {
+    setIsChatAllowed(isChatEnabled)
+  }, [isChatEnabled])
 
   React.useEffect(() => {
     if (layout.layout === Layout.STAGE && viewportHeight > 0 && subscriberListRef.current) {
@@ -512,6 +518,7 @@ const MainStageWrapper = () => {
     nonFatalError,
     showBanConfirmation,
     isAnonymous,
+    isChatAllowed,
 
     onLayoutSelect,
     calculateGrid,

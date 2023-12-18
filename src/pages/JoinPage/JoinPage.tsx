@@ -43,6 +43,7 @@ import WbcLogoSmall from '../../assets/logos/WbcLogoSmall'
 import MainStageWithChatBox from '../../components/MainStageWithChatBox/MainStageWithChatBox'
 import { UserRoles } from '../../utils/commonUtils'
 import { isWatchParty } from '../../settings/variables'
+import { assetBasepath } from '../../utils/pathUtils'
 
 const MainStageWrapper = React.lazy(() => import('../../components/MainStage/MainStageWrapper'))
 
@@ -74,7 +75,8 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 }
 
 const JoinPage = () => {
-  const { loading, error, joinToken, seriesEpisode, conferenceData, nickname, updateNickname } = useJoinContext()
+  const { loading, error, joinToken, seriesEpisode, conferenceData, nickname, updateNickname, isChatEnabled } =
+    useJoinContext()
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
@@ -220,16 +222,20 @@ const JoinPage = () => {
             <JoinSectionAVSetup onBack={onReturnToNickname} onJoin={onJoin} />
           </Box>
         )}
-        {!loading && conferenceData && currentSection === Section.WatchParty && (
+        {!loading && conferenceData && currentSection === Section.WatchParty && isChatEnabled && (
           <MainStageWithChatBox>
             <MainStageWrapper />
           </MainStageWithChatBox>
         )}
-
+        {!loading && conferenceData && currentSection === Section.WatchParty && !isChatEnabled && (
+          <React.Suspense fallback={<Loading />}>
+            <MainStageWrapper />
+          </React.Suspense>
+        )}
         <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
           <img
             alt="Join a Party Main Image"
-            src="../../assets/images/BoxMainImage.png"
+            src={`${assetBasepath}assets/images/BoxMainImage.png`}
             style={{
               width: '100%',
               opacity: currentSection === Section.Nickname ? 0.5 : 1,
@@ -249,7 +255,11 @@ const JoinPage = () => {
             <Stack spacing={2} direction="row">
               {/* <OracleLogo /> */}
               <Box sx={{ width: 'auto', height: '70px' }}>
-                <img height="70px" alt="Logo Placeholder" src="../../assets/logos/sponsor-placeholder-2-logo.png"></img>
+                <img
+                  height="70px"
+                  alt="Logo Placeholder"
+                  src={`${assetBasepath}assets/logos/sponsor-placeholder-2-logo.png`}
+                ></img>
               </Box>
             </Stack>
           </Stack>

@@ -96,6 +96,7 @@ const MainStage = (props: IMainStageProps) => {
     mainStreamGuid,
     maxParticipantGridColumnStyle,
     isAnonymous, // no anonymous viewing in Watch Party mode. Ignored and will redirect on `/join/anon/${token}`.
+    isChatAllowed,
 
     setShowBanConfirmation,
     onContinueBan,
@@ -286,6 +287,7 @@ const MainStage = (props: IMainStageProps) => {
           )}
         </Box>
         {/* Bottom Controls / Chat */}
+
         <Stack className={classes.bottomBar} direction="row" alignItems="bottom" spacing={2}>
           {publishMediaStream && ENABLE_MUTE_API && (
             <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
@@ -298,7 +300,7 @@ const MainStage = (props: IMainStageProps) => {
               />
             </Stack>
           )}
-          {data.conference && (
+          {data.conference && isChatAllowed && (
             <Stack direction="row" spacing={1} alignItems="flex-end" justifyContent="center">
               <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
 
@@ -325,7 +327,7 @@ const MainStage = (props: IMainStageProps) => {
                 onVolumeChange={onVolumeChange}
               />
             )}
-            {data.conference && layout.layout !== Layout.FULLSCREEN && (
+            {data.conference && layout.layout !== Layout.FULLSCREEN && isChatAllowed && (
               <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
                 <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
                   <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>

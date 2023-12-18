@@ -31,6 +31,7 @@ import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles'
 import reportWebVitals from './reportWebVitals'
 import AppRoutes from './routes/routes'
 import { mergeThemes } from '../src/utils/theme'
+import { isWatchParty } from './settings/variables'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
@@ -49,7 +50,7 @@ root.render(
     </ThemeProvider>
   </React.StrictMode>
 )
-console.log(`Red5 TrueTime WatchParty Version: ${process.env.REACT_APP_VERSION}`)
+console.log(`Red5 TrueTime ${!isWatchParty ? 'Webinar' : 'WatchParty'} Version: ${process.env.REACT_APP_VERSION}`)
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

@@ -30,7 +30,7 @@ import useCookies from '../../hooks/useCookies'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { getCurrentEpisode } from '../../services/conference'
-import { FORCE_LIVE_CONTEXT } from '../../settings/variables'
+import { FORCE_LIVE_CONTEXT, PUBLISH_API_KEY } from '../../settings/variables'
 import { generateFingerprint, Paths, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 
@@ -93,6 +93,7 @@ const JoinProvider = (props: JoinContextProps) => {
   // const [conferenceLocked, setConferenceLocked] = React.useState<boolean>(false)
 
   const [isAnonymousParticipant, setIsAnonymousParticipant] = React.useState<boolean>(false)
+  const [isChatEnabled, setIsChatEnabled] = React.useState<boolean>(true)
 
   React.useEffect(() => {
     const cookies = getCookies()
@@ -141,6 +142,7 @@ const JoinProvider = (props: JoinContextProps) => {
   }, [joinToken])
 
   React.useEffect(() => {
+    setIsChatEnabled(PUBLISH_API_KEY !== undefined && PUBLISH_API_KEY !== '')
     if (!seriesEpisode.loaded && ready) {
       getCurrentSeriesEpisodeData()
     }
@@ -288,6 +290,7 @@ const JoinProvider = (props: JoinContextProps) => {
     seriesEpisode,
     conferenceData,
     isAnonymousParticipant,
+    isChatEnabled,
     // conferenceLocked,
     cohostsList,
 
