@@ -83,7 +83,8 @@ const Subscriber = React.forwardRef((props: ISubscriberProps, ref: React.Ref<Sub
     isMainVideo,
   } = props
 
-  const { speakerSelected } = useMediaContext()
+  const mediaContext = useMediaContext()
+  const { speakerSelected } = mediaContext ?? { speakerSelected: null }
 
   React.useImperativeHandle(ref, () => ({ setVolume }))
 

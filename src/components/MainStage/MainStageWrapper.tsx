@@ -42,6 +42,7 @@ import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import WebinarMainStage from './WebinarMainStage'
 import MainStage from './MainStage'
 import { IMainStageWrapperProps } from '.'
+import { RecordRequest, useRecordRequest } from '../../hooks/useRecordRequest'
 
 export enum Layout {
   STAGE = 1,
@@ -69,7 +70,10 @@ const MainStageWrapper = () => {
     getStreamGuid,
     lock,
     unlock,
+    isMixerParticipant,
     isAnonymousParticipant,
+    mixerConfiguration,
+    singularLiveToken,
     isChatEnabled,
     cohostsList,
   } = useJoinContext()
@@ -105,12 +109,29 @@ const MainStageWrapper = () => {
       'calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px) calc((100% / 4) - 12px)',
   })
   const [isAnonymous, setIsAnonymous] = React.useState<boolean>(false)
+  const [isMixer, setIsMixer] = React.useState<boolean>(false)
   const [isChatAllowed, setIsChatAllowed] = React.useState<boolean>(true)
   const [conferenceId, setConferenceId] = React.useState<any | undefined>(undefined)
+
+  const { start: startRecord, stop: stopRecord } = useRecordRequest()
 
   React.useEffect(() => {
     setIsAnonymous(isAnonymousParticipant)
   }, [isAnonymousParticipant])
+
+  React.useEffect(() => {
+    setIsMixer(isMixerParticipant)
+  }, [isMixerParticipant])
+
+  React.useEffect(() => {
+    if (mixerConfiguration) {
+      if (mixerConfiguration.host && mixerConfiguration.streamName && mixerConfiguration.accessToken) {
+        startRecord(mixerConfiguration as RecordRequest)
+      } else {
+        setNonFatalError('Could not start recoding. Request requires host, streamName query parameters.')
+      }
+    }
+  }, [mixerConfiguration])
 
   React.useEffect(() => {
     // Handler to call on window resize
@@ -123,7 +144,12 @@ const MainStageWrapper = () => {
     // Call handler right away so state gets updated with initial window size
     handleResize()
     // Remove event listener on cleanup
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      if (stopRecord) {
+        stopRecord()
+      }
+    }
   }, [])
 
   React.useEffect(() => {
@@ -310,6 +336,7 @@ const MainStageWrapper = () => {
   }
 
   const onAnonymousEntry = () => {
+    console.log('ANONYMOUS ENTRY')
     const { url, request } = getAnonymousSocketUrl(joinToken)
     join(url, request)
   }
@@ -518,6 +545,8 @@ const MainStageWrapper = () => {
     nonFatalError,
     showBanConfirmation,
     isAnonymous,
+    isMixer,
+    singularLiveToken,
     isChatAllowed,
 
     onLayoutSelect,

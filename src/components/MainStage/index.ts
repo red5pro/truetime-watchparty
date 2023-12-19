@@ -50,6 +50,8 @@ export interface IMainStageWrapperProps {
   nonFatalError: any
   showBanConfirmation: Participant | undefined
   isAnonymous: boolean
+  isMixer: boolean
+  singularLiveToken?: string
   isChatAllowed: boolean
 
   onLayoutSelect: (layout: number) => void

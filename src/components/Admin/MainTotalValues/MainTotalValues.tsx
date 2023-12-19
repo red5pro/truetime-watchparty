@@ -63,7 +63,7 @@ const MainTotalValues = ({ cookies, stats }: IMainTotalValuesProps) => {
 
     return () => {
       if (interval) {
-        clearInterval(interval)
+        clearInterval(interval as any)
       }
     }
   }, [])

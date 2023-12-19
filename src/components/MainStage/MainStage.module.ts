@@ -63,6 +63,7 @@ const useStyles = makeStyles()((theme: any) => {
       zIndex: 1,
     },
     organizerTopControls: {
+      position: 'absolute',
       display: 'flex',
       width: '100%',
       maxHeight: '5rem',
@@ -84,6 +85,10 @@ const useStyles = makeStyles()((theme: any) => {
     },
     header: {
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
+      position: 'absolute',
+      width: '100vw',
+      margin: 'unset',
+      padding: 'unset',
     },
     headerWb: {
       filter: 'drop-shadow(0.2rem 0.2rem 0.1rem #000)',
@@ -108,6 +113,11 @@ const useStyles = makeStyles()((theme: any) => {
     },
     topControls: {
       justifyContent: 'flex-end',
+      width: '100vw',
+      maxWidth: 'unset',
+      minWidth: 'unset',
+      flexGrow: 'unset',
+      flexBasis: 'unset',
     },
     bottomBar: {
       width: '100%',

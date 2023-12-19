@@ -62,6 +62,7 @@ import useChatStyles from './ChatStyles.module'
 import { IMainStageWrapperProps } from '.'
 import { Layout } from './MainStageWrapper'
 import PublisherPortalFullscreen from './PublisherPortalFullscreen'
+import SingularLiveOverlay from '../SingularLiveOverlay/SingularLiveOverlay'
 
 interface SubscriberRef {
   setVolume(value: number): any
@@ -96,6 +97,8 @@ const MainStage = (props: IMainStageProps) => {
     mainStreamGuid,
     maxParticipantGridColumnStyle,
     isAnonymous, // no anonymous viewing in Watch Party mode. Ignored and will redirect on `/join/anon/${token}`.
+    isMixer,
+    singularLiveToken,
     isChatAllowed,
 
     setShowBanConfirmation,
@@ -132,17 +135,19 @@ const MainStage = (props: IMainStageProps) => {
 
   const { classes: chatClasses } = useChatStyles()
 
-  if (!mediaStream || !getStreamGuid()) {
-    navigate(`/join/${joinToken}`)
-  }
+  // In wrapper >
+  // if (!mediaStream || !getStreamGuid()) {
+  //   navigate(`/join/${joinToken}`)
+  // }
 
-  React.useEffect(() => {
-    if (!mediaStream) {
-      navigate(`/join/${joinToken}`)
-    } else if (!publishMediaStream || publishMediaStream.id !== mediaStream.id) {
-      setPublishMediaStream(mediaStream)
-    }
-  }, [mediaStream])
+  // React.useEffect(() => {
+  //   if (!mediaStream) {
+  //     navigate(`/join/${joinToken}`)
+  //   } else if (!publishMediaStream || publishMediaStream.id !== mediaStream.id) {
+  //     setPublishMediaStream(mediaStream)
+  //   }
+  // }, [mediaStream])
+  // < In wrapper
 
   React.useEffect(() => {
     if (data.vip && data.vip.participantId !== availableVipParticipant?.participantId) {
@@ -151,6 +156,12 @@ const MainStage = (props: IMainStageProps) => {
       setAvailableVipParticipant(undefined)
     }
   }, [data.vip])
+
+  React.useEffect(() => {
+    if (isAnonymous) {
+      onAnonymousEntry()
+    }
+  }, [isAnonymous])
 
   const onVolumeChange = (value: number) => {
     if (mainVideoRef && mainVideoRef.current) {
@@ -166,7 +177,7 @@ const MainStage = (props: IMainStageProps) => {
           <Subscriber
             ref={mainVideoRef}
             useStreamManager={USE_STREAM_MANAGER}
-            preferWhipWhep={PREFER_WHIP_WHEP}
+            preferWhipWhep={isMixer ? false : PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             streamGuid={mainStreamGuid}
             resubscribe={true}
@@ -222,7 +233,7 @@ const MainStage = (props: IMainStageProps) => {
                   </IconButton>
                 </Tooltip>
               )}
-              {userRole !== UserRoles.ANONYMOUS.toLowerCase() && (
+              {userRole !== UserRoles.ANONYMOUS.toLowerCase() && !isMixer && (
                 <CustomButton
                   size={BUTTONSIZE.SMALL}
                   buttonType={BUTTONTYPE.LEAVE}
@@ -244,7 +255,7 @@ const MainStage = (props: IMainStageProps) => {
               videoStyles={layout.style.vipsubscriberVideo}
               host={STREAM_HOST}
               useStreamManager={USE_STREAM_MANAGER}
-              preferWhipWhep={PREFER_WHIP_WHEP}
+              preferWhipWhep={isMixer ? false : PREFER_WHIP_WHEP}
             />
           </Box>
         )}
@@ -263,7 +274,7 @@ const MainStage = (props: IMainStageProps) => {
                   videoStyles={layout.style.subscriberVideo}
                   host={STREAM_HOST}
                   useStreamManager={USE_STREAM_MANAGER}
-                  preferWhipWhep={PREFER_WHIP_WHEP}
+                  preferWhipWhep={isMixer ? false : PREFER_WHIP_WHEP}
                   menuActions={userRole === UserRoles.PARTICIPANT.toLowerCase() ? undefined : subscriberMenuActions}
                   onSubscribeStart={onRelayout}
                 />
@@ -362,7 +373,7 @@ const MainStage = (props: IMainStageProps) => {
             key="publisher"
             ref={publisherRef}
             useStreamManager={USE_STREAM_MANAGER}
-            preferWhipWhep={PREFER_WHIP_WHEP}
+            preferWhipWhep={isMixer ? false : PREFER_WHIP_WHEP}
             host={STREAM_HOST}
             streamGuid={getStreamGuid() || ''}
             stream={mediaStream}
@@ -405,6 +416,7 @@ const MainStage = (props: IMainStageProps) => {
           onDeny={() => setShowBanConfirmation(undefined)}
         />
       )}
+      {singularLiveToken && <SingularLiveOverlay token={singularLiveToken} />}
     </Box>
   )
 }

@@ -34,6 +34,7 @@ const useStyles = makeStyles()((theme: any) => {
       width: '100%',
       height: '100%',
       overflow: 'auto',
+      position: 'relative',
     },
     brandLogo: {
       position: 'absolute',

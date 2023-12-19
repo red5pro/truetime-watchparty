@@ -75,8 +75,18 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 }
 
 const JoinPage = () => {
-  const { loading, error, joinToken, seriesEpisode, conferenceData, nickname, updateNickname, isChatEnabled } =
-    useJoinContext()
+  const {
+    loading,
+    error,
+    joinToken,
+    seriesEpisode,
+    conferenceData,
+    nickname,
+    updateNickname,
+    isChatEnabled,
+    isMixerParticipant,
+    isAnonymousParticipant,
+  } = useJoinContext()
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
@@ -116,6 +126,12 @@ const JoinPage = () => {
       clearMediaContext()
     }
   }, [currentSection])
+
+  React.useEffect(() => {
+    if (isAnonymousParticipant && currentSection !== Section.WatchParty) {
+      setCurrentSection(Section.WatchParty)
+    }
+  }, [isAnonymousParticipant, currentSection])
 
   const clearMediaContext = () => {
     if (mediaContext && mediaContext.mediaStream) {
@@ -222,12 +238,17 @@ const JoinPage = () => {
             <JoinSectionAVSetup onBack={onReturnToNickname} onJoin={onJoin} />
           </Box>
         )}
-        {!loading && conferenceData && currentSection === Section.WatchParty && isChatEnabled && (
+        {!loading && currentSection === Section.WatchParty && isMixerParticipant && (
+          // <MainStageWithChatBox>
+          <MainStageWrapper />
+          // </MainStageWithChatBox>
+        )}
+        {!loading && conferenceData && currentSection === Section.WatchParty && !isMixerParticipant && isChatEnabled && (
           <MainStageWithChatBox>
             <MainStageWrapper />
           </MainStageWithChatBox>
         )}
-        {!loading && conferenceData && currentSection === Section.WatchParty && !isChatEnabled && (
+        {!loading && conferenceData && currentSection === Section.WatchParty && !isMixerParticipant && !isChatEnabled && (
           <React.Suspense fallback={<Loading />}>
             <MainStageWrapper />
           </React.Suspense>

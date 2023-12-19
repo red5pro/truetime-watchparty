@@ -36,6 +36,10 @@ import ThankYouPage from '../pages/ThankYouPage/ThankYouPage'
 import Landing from '../pages/Landing/Landing'
 
 import { BASENAME, isWatchParty } from '../settings/variables'
+import WatchPage from '../pages/WatchPage/WatchPage'
+import StreamListContext from '../components/StreamListContext/StreamListContext'
+import WatchVODPage from '../pages/WatchVODPage/WatchVODPage'
+import WatchLivePage from '../pages/WatchLivePage/WatchLivePage'
 import { Paths } from '../utils/commonUtils'
 
 const Signin = React.lazy(() => import('../pages/SignIn/SignIn'))
@@ -105,6 +109,16 @@ const AppRoutes = () => {
           <Route path="*" element={<Landing />} />
           {/* TODO: Remove for production. Here for simple VIP entrance in demos. */}
           <Route path="/vip" element={<SimpleVipPage />} />
+          <Route
+            path="/watch"
+            element={
+              <StreamListContext.Provider>
+                <WatchPage />
+              </StreamListContext.Provider>
+            }
+          />
+          <Route path="/watch/live" element={<WatchLivePage />} />
+          <Route path="/watch/vod" element={<WatchVODPage />} />
         </Routes>
       </React.Suspense>
     </BrowserRouter>

@@ -74,8 +74,16 @@ const getParticipantText = (participants: Participant[] | undefined) => {
 }
 
 const JoinWebinarPage = () => {
-  const { loading, error, joinToken, nickname, updateNickname, isAnonymousParticipant, isChatEnabled } =
-    useJoinContext()
+  const {
+    loading,
+    error,
+    joinToken,
+    nickname,
+    updateNickname,
+    isMixerParticipant,
+    isAnonymousParticipant,
+    isChatEnabled,
+  } = useJoinContext()
 
   const mediaContext = useMediaContext()
   const { classes } = useStyles()
@@ -206,12 +214,17 @@ const JoinWebinarPage = () => {
             <JoinSectionAVSetup onBack={onReturnToNickname} onJoin={onJoin} />
           </Box>
         )}
-        {!loading && currentSection === Section.WatchParty && isChatEnabled && (
+        {!loading && currentSection === Section.WatchParty && isMixerParticipant && (
+          // <MainStageWithChatBox>
+          <MainStageWrapper />
+          // </MainStageWithChatBox>
+        )}
+        {!loading && currentSection === Section.WatchParty && !isMixerParticipant && isChatEnabled && (
           <MainStageWithChatBox>
             <MainStageWrapper />
           </MainStageWithChatBox>
         )}
-        {!loading && currentSection === Section.WatchParty && !isChatEnabled && (
+        {!loading && currentSection === Section.WatchParty && !isMixerParticipant && !isChatEnabled && (
           <React.Suspense fallback={<Loading />}>
             <MainStageWrapper />
           </React.Suspense>
