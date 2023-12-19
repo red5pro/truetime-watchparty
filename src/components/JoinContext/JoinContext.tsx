@@ -30,7 +30,7 @@ import useCookies from '../../hooks/useCookies'
 import { ConferenceDetails } from '../../models/ConferenceDetails'
 import { CONFERENCE_API_CALLS } from '../../services/api/conference-api-calls'
 import { getCurrentEpisode } from '../../services/conference'
-import { FORCE_LIVE_CONTEXT, SM_ACCESS_TOKEN } from '../../settings/variables'
+import { FORCE_LIVE_CONTEXT, PUBLISH_API_KEY, SM_ACCESS_TOKEN } from '../../settings/variables'
 import { generateFingerprint, Paths, UserRoles } from '../../utils/commonUtils'
 import { LocalStorage } from '../../utils/localStorageUtils'
 import useQueryParams from '../../hooks/useQueryParams'
@@ -99,6 +99,7 @@ const JoinProvider = (props: JoinContextProps) => {
   const [mixerConfig, setMixerConfig] = React.useState<any>(null)
   const [isRecordRequested, setIsRecordRequested] = React.useState<boolean>(false)
   const [singularLiveToken, setSingularLiveToken] = React.useState<string | null>(null)
+  const [isChatEnabled, setIsChatEnabled] = React.useState<boolean>(true)
 
   React.useEffect(() => {
     const cookies = getCookies()
@@ -174,6 +175,7 @@ const JoinProvider = (props: JoinContextProps) => {
   }, [joinToken])
 
   React.useEffect(() => {
+    setIsChatEnabled(PUBLISH_API_KEY !== undefined && PUBLISH_API_KEY !== '')
     if (!seriesEpisode.loaded && ready) {
       getCurrentSeriesEpisodeData()
     }
@@ -325,6 +327,7 @@ const JoinProvider = (props: JoinContextProps) => {
     mixerConfiguration: mixerConfig,
     isRecordRequested,
     singularLiveToken,
+    isChatEnabled,
     // conferenceLocked,
     cohostsList,
 

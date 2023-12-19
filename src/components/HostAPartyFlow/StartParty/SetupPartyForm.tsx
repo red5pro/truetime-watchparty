@@ -52,7 +52,7 @@ import { AccountCredentials } from '../../../models/AccountCredentials'
 import { generateJoinToken, IStepActionsSubComponent } from '../../../utils/commonUtils'
 import { CONFERENCE_API_CALLS } from '../../../services/api/conference-api-calls'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
-import { isWatchParty } from '../../../settings/variables'
+import { hasRecaptchaEnabled, isWatchParty } from '../../../settings/variables'
 
 interface ISetupPartyFormProps {
   onActions: IStepActionsSubComponent
@@ -111,7 +111,7 @@ const SetupPartyForm = (props: ISetupPartyFormProps) => {
   }, [executeRecaptcha])
 
   const handleSubmit = async (values: IPartyData) => {
-    const token = await handleReCaptchaVerify()
+    const token = hasRecaptchaEnabled ? await handleReCaptchaVerify() : true
     if (token) {
       const joinToken = generateJoinToken()
       const conference: ConferenceDetails = {

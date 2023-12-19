@@ -28,6 +28,7 @@ import { AccountCredentials } from '../../../models/AccountCredentials'
 import { isMobileScreen, IStepActionsSubComponent } from '../../../utils/commonUtils'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../Common/CustomButton/CustomButton'
 import useStyles from './VipView.module'
+import { assetBasepath } from '../../../utils/pathUtils'
 
 interface IVipViewProps {
   onActions: IStepActionsSubComponent
@@ -58,7 +59,11 @@ const VipView = (props: IVipViewProps) => {
         )}
       </Box>
       <Box sx={{ width: '45%' }}>
-        <img alt="Vip View Main Image" src="../../../assets/images/BoxingSession.png" style={{ maxWidth: '70%' }}></img>
+        <img
+          alt="Vip View Main Image"
+          src={`${assetBasepath}assets/images/BoxingSession.png`}
+          style={{ maxWidth: '70%' }}
+        ></img>
       </Box>
     </Box>
   )

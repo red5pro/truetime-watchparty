@@ -61,6 +61,8 @@ export const loadFBScriptAsyncronously = (callback: (value: boolean) => void) =>
   }
 
   script.onerror = () => {
-    loadFBScriptAsyncronously(callback)
+    if (window.location.protocol === 'https:') {
+      loadFBScriptAsyncronously(callback)
+    }
   }
 }

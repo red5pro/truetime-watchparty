@@ -74,6 +74,7 @@ const MainStageWrapper = () => {
     isAnonymousParticipant,
     mixerConfiguration,
     singularLiveToken,
+    isChatEnabled,
     cohostsList,
   } = useJoinContext()
   const { mediaStream } = useMediaContext()
@@ -109,6 +110,7 @@ const MainStageWrapper = () => {
   })
   const [isAnonymous, setIsAnonymous] = React.useState<boolean>(false)
   const [isMixer, setIsMixer] = React.useState<boolean>(false)
+  const [isChatAllowed, setIsChatAllowed] = React.useState<boolean>(true)
   const [conferenceId, setConferenceId] = React.useState<any | undefined>(undefined)
 
   const { start: startRecord, stop: stopRecord } = useRecordRequest()
@@ -250,6 +252,10 @@ const MainStageWrapper = () => {
       })
     }
   }, [maxParticipants])
+
+  React.useEffect(() => {
+    setIsChatAllowed(isChatEnabled)
+  }, [isChatEnabled])
 
   React.useEffect(() => {
     if (layout.layout === Layout.STAGE && viewportHeight > 0 && subscriberListRef.current) {
@@ -541,6 +547,7 @@ const MainStageWrapper = () => {
     isAnonymous,
     isMixer,
     singularLiveToken,
+    isChatAllowed,
 
     onLayoutSelect,
     calculateGrid,

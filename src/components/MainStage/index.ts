@@ -52,6 +52,7 @@ export interface IMainStageWrapperProps {
   isAnonymous: boolean
   isMixer: boolean
   singularLiveToken?: string
+  isChatAllowed: boolean
 
   onLayoutSelect: (layout: number) => void
   getStreamGuid: () => string | null

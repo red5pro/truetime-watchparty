@@ -34,6 +34,7 @@ import SimpleAlertDialog from '../../components/Modal/SimpleAlertDialog'
 import { getStartTimeFromTimestamp } from '../../utils/commonUtils'
 import useStyles from './PartyEndedPage.module'
 import { isWatchParty } from '../../settings/variables'
+import { assetBasepath } from '../../utils/pathUtils'
 
 const useJoinContext = () => React.useContext(JoinContext.Context)
 
@@ -94,7 +95,7 @@ const PartyEndedPage = () => {
         />
       )}
       <Box sx={{ width: '50%', position: 'absolute', right: 0, bottom: 0 }}>
-        <img alt="Party Ended Main Image" src="../../assets/images/BoxMainImage.png"></img>
+        <img alt="Party Ended Main Image" src={`${assetBasepath}assets/images/BoxMainImage.png`}></img>
       </Box>
     </Box>
   )

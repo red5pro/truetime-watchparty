@@ -26,20 +26,24 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3'
 import HostAPartySteps from '../../components/HostAPartyFlow/HostAPartySteps'
 
-import { RECAPTCHA_SITE_KEY } from '../../settings/variables'
+import { RECAPTCHA_SITE_KEY, hasRecaptchaEnabled } from '../../settings/variables'
 
 const Home = () => {
-  return (
-    <GoogleReCaptchaProvider
-      reCaptchaKey={RECAPTCHA_SITE_KEY}
-      scriptProps={{
-        defer: true,
-        appendTo: 'head',
-      }}
-    >
-      <HostAPartySteps />
-    </GoogleReCaptchaProvider>
-  )
+  if (hasRecaptchaEnabled) {
+    return (
+      <GoogleReCaptchaProvider
+        reCaptchaKey={RECAPTCHA_SITE_KEY}
+        scriptProps={{
+          defer: true,
+          appendTo: 'head',
+        }}
+      >
+        <HostAPartySteps />
+      </GoogleReCaptchaProvider>
+    )
+  }
+
+  return <HostAPartySteps />
 }
 
 export default Home

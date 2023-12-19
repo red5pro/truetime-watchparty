@@ -32,6 +32,7 @@ import WbcLogo from '../../assets/logos/WbcLogo'
 import CustomButton, { BUTTONSIZE, BUTTONTYPE } from '../../components/Common/CustomButton/CustomButton'
 import useStyles from './Landing.module'
 import { isWatchParty } from '../../settings/variables'
+import { assetBasepath } from '../../utils/pathUtils'
 
 const Home = () => {
   const { classes } = useStyles()
@@ -101,7 +102,11 @@ const Home = () => {
       </Box>
       <Box className={classes.rightContainer}>
         <Box className={classes.imageContainer}>
-          <img className={classes.image} alt="Landing Page Image" src="../../assets/images/LandingPageImage.png"></img>
+          <img
+            className={classes.image}
+            alt="Landing Page Image"
+            src={`${assetBasepath}assets/images/LandingPageImage.png`}
+          ></img>
         </Box>
       </Box>
     </Box>

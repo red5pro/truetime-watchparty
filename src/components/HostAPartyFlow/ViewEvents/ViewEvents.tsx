@@ -36,6 +36,7 @@ import EventContext from '../../EventContext/EventContext'
 import Loading from '../../Common/Loading/Loading'
 import SimpleAlertDialog from '../../Modal/SimpleAlertDialog'
 import { isWatchParty } from '../../../settings/variables'
+import { assetBasepath } from '../../../utils/pathUtils'
 
 const useEventContext = () => React.useContext(EventContext.Context)
 
@@ -71,7 +72,7 @@ const ViewEvents = (props: IViewEventsProps) => {
     <Box
       className={classes.root}
       sx={{
-        backgroundImage: !error && isWatchParty ? "url('../../../assets/images/BoxMainImage.png')" : '',
+        backgroundImage: !error && isWatchParty ? `url('${assetBasepath}assets/images/BoxMainImage.png')` : '',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: '40% 100%',
       }}

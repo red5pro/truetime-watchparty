@@ -35,7 +35,7 @@ import JoinPage from '../pages/JoinPage/JoinPage'
 import ThankYouPage from '../pages/ThankYouPage/ThankYouPage'
 import Landing from '../pages/Landing/Landing'
 
-import { isWatchParty } from '../settings/variables'
+import { BASENAME, isWatchParty } from '../settings/variables'
 import WatchPage from '../pages/WatchPage/WatchPage'
 import StreamListContext from '../components/StreamListContext/StreamListContext'
 import WatchVODPage from '../pages/WatchVODPage/WatchVODPage'
@@ -53,7 +53,7 @@ const AdminPage = React.lazy(() => import('../pages/Admin/AdminPage'))
 
 const AppRoutes = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={BASENAME}>
       <React.Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Home />} />

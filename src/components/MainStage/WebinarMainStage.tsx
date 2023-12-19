@@ -88,6 +88,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
     isAnonymous,
     isMixer,
     singularLiveToken,
+    isChatAllowed,
 
     setShowBanConfirmation,
     onContinueBan,
@@ -454,6 +455,7 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
           direction="row"
           alignItems="bottom"
           spacing={2}
+          style={isChatAllowed ? {} : { justifyContent: 'unset!important' }}
         >
           {publishMediaStream && ENABLE_MUTE_API && (
             <Stack direction="row" spacing={2} justifyContent="flex-start" className={classes.layoutContainer}>
@@ -503,9 +505,9 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
               {(data.screenshareParticipants?.length > 0 || screenShare) && (
                 <MainStageLayoutSelect layout={layout.layout} onSelect={onLayoutSelect} />
               )}
-
-              <Box className={chatClasses.inputChatContainer}>
-                {/* {layout.layout === Layout.FULLSCREEN && (
+              {isChatAllowed && (
+                <Box className={chatClasses.inputChatContainer}>
+                  {/* {layout.layout === Layout.FULLSCREEN && (
                 <Box
                   sx={{ display: chatIsHidden ? 'none' : 'block' }}
                   className={`${chatClasses.fullScreenChatContainer} ${chatClasses.chatContainer} `}
@@ -515,37 +517,40 @@ const WebinarMainStage = (props: IMainStageWrapperProps) => {
                   </MessageList>
                 </Box>
               )} */}
-                <Box onClick={() => toggleChat()}>
-                  <MessageInput
-                    typingIndicator
-                    emojiPicker={<PickerAdapter />}
-                    placeholder="Chat Message"
-                    onSend={chatIsHidden ? () => toggleChat() : () => noop()}
-                  />
+                  <Box onClick={() => toggleChat()}>
+                    <MessageInput
+                      typingIndicator
+                      emojiPicker={<PickerAdapter />}
+                      placeholder="Chat Message"
+                      onSend={chatIsHidden ? () => toggleChat() : () => noop()}
+                    />
+                  </Box>
                 </Box>
-              </Box>
+              )}
             </Stack>
           )}
-          <Stack direction="row" spacing={1} className={classes.partyControls}>
-            {data.conference && (
-              <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
-                <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
-                  <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
-                    <TypingIndicator />
-                  </MessageList>
-                  {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
+          {isChatAllowed && (
+            <Stack direction="row" spacing={1} className={classes.partyControls}>
+              {data.conference && (
+                <Box display="flex" flexDirection="column" alignItems="flex-end" className={chatClasses.container}>
+                  <Box sx={{ display: chatIsHidden ? 'none' : 'block' }} className={chatClasses.chatContainer}>
+                    <MessageList enableReactions fetchMessages={0} reactionsPicker={<PickerAdapter />}>
+                      <TypingIndicator />
+                    </MessageList>
+                    {/* <MessageInput typingIndicator emojiPicker={<PickerAdapter />} placeholder="Chat Message" /> */}
+                  </Box>
+                  <CustomButton
+                    size={BUTTONSIZE.SMALL}
+                    buttonType={BUTTONTYPE.TRANSPARENT}
+                    startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
+                    onClick={toggleChat}
+                  >
+                    {chatIsHidden ? 'Show' : 'Hide'} Chat
+                  </CustomButton>
                 </Box>
-                <CustomButton
-                  size={BUTTONSIZE.SMALL}
-                  buttonType={BUTTONTYPE.TRANSPARENT}
-                  startIcon={<ChatBubble sx={{ color: 'rgb(156, 243, 97)' }} />}
-                  onClick={toggleChat}
-                >
-                  {chatIsHidden ? 'Show' : 'Hide'} Chat
-                </CustomButton>
-              </Box>
-            )}
-          </Stack>
+              )}
+            </Stack>
+          )}
         </Stack>
       )}
       {/* Publisher Portal to be moved from one view layout state to another */}

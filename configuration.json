@@ -1,0 +1,18 @@
+[
+  {
+    "title": "TrueTime WatchParty",
+    "webappParentDirectory": "truetime",
+    "webappName": "truetime-watchparty",
+    "webappSource": "./",
+    "buildCommand": "wget https://github.com/red5pro/truetime-watchparty/releases/latest/download/truetime-watchparty.zip && unzip truetime-watchparty.zip && mv build/truetime-watchparty ./ && rm -rf build && rm -f truetime-watchparty.zip",
+    "webappOutput": "truetime-watchparty"
+  },
+  {
+    "title": "TrueTime Webinar",
+    "webappParentDirectory": "truetime",
+    "webappName": "truetime-webinar",
+    "webappSource": "./",
+    "buildCommand": "wget https://github.com/red5pro/truetime-watchparty/releases/latest/download/truetime-webinar.zip && unzip truetime-webinar.zip && mv build/truetime-webinar ./ && rm -rf build && rm -f truetime-webinar.zip",
+    "webappOutput": "truetime-webinar"
+  }
+]
