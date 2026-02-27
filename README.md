@@ -2,19 +2,19 @@
   <img src="assets/Red5_Truetime_black.png" alt="Red5 TrueTime" style="height: 60px" />
 </h3>
 
-# Red5 TrueTime WatchParty
+# [Red5 TrueTime WatchParty™](https://www.red5.net/truetime/watchparty-for-production/)
 
-![Red5 TrueTime WatchParty](docs/watchparty-vod.png)
+![Red5 TrueTime WatchParty™](docs/watchparty-vod.png)
 
 [See it in action!](https://www.youtube.com/watch?v=EhleTDPz-B8&list=TLGGpEZCWusB0F4yODExMjAyMg)
 
-This repository contains code for the React-based client-side Red5 TrueTime WatchParty web application.
+This repository contains code for the React-based client-side Red5 TrueTime WatchParty™ web application.
 
 ## Solutions
 
-There are two solutions that the TrueTime WatchParty client provides:
+There are two solutions that the TrueTime WatchParty™ client provides:
 
-* [WatchParty for Fans](https://www.red5.net/truetime/watchparty-for-fans/)
+* [WatchParty™ for Fans](https://www.red5.net/truetime/watchparty-for-fans/)
 * [Studio for Webinars](https://www.red5.net/truetime/studio-for-webinars/)
 
 When building and deploying your own solution, you can define which solution to use by setting the `REACT_APP_WEBAPP_MODE` environment variable to either `watchparty` or `webinar`, respectively. More information about environment variables available is in the following section.
@@ -45,11 +45,11 @@ The variables are:
 
 ## Server Side
 
-The TrueTime WatchParty web application utilizes [Red5 Pro Server](https://www.red5pro.com/) for streaming sub-second live video of all party participants and main video feed(s).
+The TrueTime WatchParty™ web application utilizes [Red5 Pro Server](https://www.red5pro.com/) for streaming sub-second live video of all party participants and main video feed(s).
 
-Additionally, the Red5 TrueTime WatchParty application requires communication with the **upcoming** release of the `Conference API` for the [Red5 Pro Server](https://www.red5pro.com/).
+Additionally, the Red5 TrueTime WatchParty™ application requires communication with the **upcoming** release of the `Conference API` for the [Red5 Pro Server](https://www.red5pro.com/).
 
-# Getting Started with Red5 TrueTime WatchParty
+# Getting Started with Red5 TrueTime WatchParty™
 
 ### `git clone git@github.com:red5pro/red5pro-watch-party.git`
 
@@ -93,7 +93,7 @@ You don't have to ever use `eject`. The curated feature set is suitable for smal
 
 # Conference API
 
-The TrueTime WatchParty utilizes the Conference API distributed with the Red5 Pro Server.
+The TrueTime WatchParty™ utilizes the Conference API distributed with the Red5 Pro Server.
 
 We have provided a [Postman Collection](docs/conferenceapi/Conference_API.postman_collection.json) that details the API.
 
