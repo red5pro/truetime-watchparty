@@ -47,7 +47,7 @@ The variables are:
 
 The TrueTime WatchParty™ web application utilizes [Red5 Pro – Server Live Streaming Software At Scale with Ultra-Low Latency](https://www.red5.net/red5-pro/low-latency-streaming-software) for streaming sub-second live video of all party participants and main video feed(s).
 
-Additionally, the Red5 TrueTime WatchParty™ utilizes the [Conference API](https://www.red5.net/docs/red5-cloud/development/sdks/conference-sdk/) distributed with the [Red5 Pro Server](https://www.red5pro.com/).
+Additionally, the Red5 TrueTime WatchParty™ utilizes the [Conference API](https://www.red5.net/docs/red5-cloud/development/sdks/conference-sdk/) distributed with the [Red5 Pro Server](https://www.red5.net/red5-pro/low-latency-streaming-software).
 
 # Getting Started with Red5 TrueTime WatchParty™
 
